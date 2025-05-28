@@ -1,0 +1,9 @@
+services:
+  php-fpm:
+    build:
+      dockerfile: ./php-fpm/Dockerfile
+      target: dev
+      args:
+        XDEBUG_PORT: ${XDEBUG_PORT}
+    environment:
+      PHP_IDE_CONFIG: "serverName=${PHP_SERVER_NAME}"

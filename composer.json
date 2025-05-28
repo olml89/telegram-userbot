@@ -1,0 +1,36 @@
+{
+    "name": "olml89/telegram-userbot",
+    "description": "Telegram userbot to automatize the behaviour of a user telegram account in a customizable way",
+    "type": "project",
+    "version": "1.0.0",
+    "authors": [
+        {
+            "name": "olml89"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require-dev": {
+        "phpunit/phpunit": "^12.1",
+        "phpstan/phpstan": "^2.1",
+        "phpmd/phpmd": "^2.15",
+        "laravel/pint": "^1.22"
+    },
+    "autoload": {
+        "psr-4": {
+            "olml89\\TelegramUserbot\\": "src/",
+            "Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "test": "./vendor/bin/phpunit --coverage-text",
+        "pint": "./vendor/bin/pint --test",
+        "pint-fix": "./vendor/bin/pint",
+        "phpmd": "./vendor/bin/phpmd src/,tests/ text ruleset.xml --color --exclude vendor",
+        "phpstan": "./vendor/bin/phpstan --memory-limit=2048M analyse -c phpstan.neon",
+        "check": [
+            "composer pint",
+            "composer phpmd",
+            "composer phpstan"
+        ]
+    }
+}

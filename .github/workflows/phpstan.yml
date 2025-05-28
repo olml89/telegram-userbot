@@ -1,0 +1,21 @@
+name: PHPStan level 10
+
+on: [push]
+
+jobs:
+  phpstan:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3.4.0
+
+      - name: Install composer and dependencies
+        uses: php-actions/composer@v6
+
+      - name: Run PHPStan checks
+        uses: php-actions/phpstan@v3
+        with:
+          version: composer
+          php_version: 8.4
+          configuration: ./phpstan.neon
