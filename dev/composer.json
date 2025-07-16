@@ -1,0 +1,28 @@
+{
+    "name": "olml89/telegram-userbot-dev",
+    "description": "Auxiliar container running only on development environment. It provides testing, static analysis and code linting tools.",
+    "type": "project",
+    "version": "1.0.0",
+    "license": "proprietary",
+    "authors": [
+        {
+            "name": "olml89"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require-dev": {
+        "laravel/pint": "^1.24",
+        "phpstan/phpstan": "^2.1",
+        "phpstan/phpstan-strict-rules": "^2.0",
+        "phpstan/phpstan-phpunit": "^2.0",
+        "phpstan/phpstan-mockery": "^2.0",
+        "phpunit/phpunit": "^12.2",
+        "mockery/mockery": "^1.6"
+    },
+    "scripts": {
+        "pint": "pint/pint.sh",
+        "phpstan": "phpstan/phpstan.sh",
+        "phpunit": "phpunit/phpunit.sh",
+        "pre-commit": "bin/git/validate-commit.sh"
+    }
+}

@@ -1,0 +1,77 @@
+services:
+
+  backend:
+    build:
+      dockerfile: ./backend/Dockerfile
+      target: dev
+      args:
+        XDEBUG_PORT: ${XDEBUG_BACKEND_PORT}
+    environment:
+      PHP_IDE_CONFIG: "serverName=${PHP_SERVER_NAME}"
+    volumes:
+      - ./shared:/telegram-userbot/shared
+      - ./backend:/telegram-userbot/backend
+
+  bot-manager:
+    build:
+      dockerfile: bot-manager/Dockerfile
+      target: dev
+      args:
+        XDEBUG_PORT: ${XDEBUG_BOT_MANAGER_PORT}
+    environment:
+      PHP_IDE_CONFIG: "serverName=${PHP_SERVER_NAME}"
+    volumes:
+      - ./shared:/telegram-userbot/shared
+      - ./bot-manager:/telegram-userbot/bot-manager
+
+  bot:
+    build:
+      dockerfile: bot/Dockerfile
+      target: dev
+      args:
+        XDEBUG_PORT: ${XDEBUG_BOT_PORT}
+    environment:
+      PHP_IDE_CONFIG: "serverName=${PHP_SERVER_NAME}"
+    volumes:
+      - ./shared:/telegram-userbot/shared
+      - ./bot:/telegram-userbot/bot
+
+  shared:
+    container_name: telegram_userbot_shared
+    build:
+      dockerfile: shared/Dockerfile
+      context: .
+    environment:
+      APP_ENV: ${APP_ENV}
+    tty: true
+    entrypoint: [bin/entrypoint.sh]
+    volumes:
+      - ./shared:/telegram-userbot/shared
+
+  dev:
+    depends_on:
+      - backend
+      - bot
+      - bot-manager
+      - shared
+    container_name: telegram_userbot_dev
+    build:
+      dockerfile: dev/Dockerfile
+      target: dev
+      args:
+        XDEBUG_PORT: ${XDEBUG_DEV_PORT}
+    cpus: 12
+    mem_limit: 24g
+    tty: true
+    entrypoint: [bin/entrypoint.sh]
+    environment:
+      APP_ENV: ${APP_ENV}
+      PHP_IDE_CONFIG: "serverName=${PHP_SERVER_NAME}"
+      COMPOSER_PROCESS_TIMEOUT: 0
+    volumes:
+      - ./.git:/telegram-userbot/.git
+      - ./dev:/telegram-userbot/dev
+      - ./shared:/telegram-userbot/shared
+      - ./backend:/telegram-userbot/backend
+      - ./bot-manager:/telegram-userbot/bot-manager
+      - ./bot:/telegram-userbot/bot

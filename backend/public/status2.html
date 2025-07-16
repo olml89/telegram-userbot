@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <title>Control del Bot</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 2rem;
+            background-color: #f0f0f0;
+            color: #333;
+            max-width: 500px;
+            margin: auto;
+        }
+
+        .status-label {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            border-radius: 999px;
+            font-weight: bold;
+            margin-bottom: 1rem;
+        }
+
+        .online {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .offline {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        .bot-button {
+            padding: 0.8rem 2rem;
+            font-size: 1rem;
+            font-weight: bold;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .bot-button:disabled {
+            background-color: #ccc;
+            cursor: wait;
+        }
+
+        .start {
+            background-color: #28a745;
+            color: white;
+        }
+
+        .stop {
+            background-color: #dc3545;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+<h1>Estado del Bot</h1>
+
+<div id="status-container">
+    <!-- Label con el texto del estado o mensajes de log -->
+    <span id="status-text" class="status-label offline">Desconectado</span>
+</div>
+
+<!-- Contenedor principal de la acción (botón o inputs según estado) -->
+<div id="action-container">
+    <!-- Botón principal: su texto y comportamiento cambia según estado -->
+    <button id="control-button" class="bot-button" disabled>...</button>
+    <!-- Contenedor para el input de código OTP, inicialmente oculto -->
+    <div id="code-container" style="display: none; margin-top: 0.5em;">
+        <input type="text" id="code-input" placeholder="Introduce el código" />
+        <button id="code-submit-button" class="bot-button" disabled>Enviar código</button>
+    </div>
+</div>
+
+<script src="app2.js" defer></script>
+</body>
+</html>

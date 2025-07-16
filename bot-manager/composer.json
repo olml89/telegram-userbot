@@ -1,0 +1,35 @@
+{
+    "name": "olml89/telegram-userbot-bot-manager",
+    "description": "Websocket server to listen to commands, status manager, and management of bot container through supervisorctl using Redis messages.",
+    "type": "project",
+    "version": "1.0.0",
+    "license": "proprietary",
+    "authors": [
+        {
+            "name": "olml89"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require": {
+        "php": "^8.4",
+        "ext-redis": "*",
+        "olml89/telegram-userbot-shared": "*",
+        "cboden/ratchet": "^0.4.4",
+        "clue/redis-react": "^3@dev || ^2"
+    },
+    "repositories": [
+        {
+            "type": "path",
+            "url": "../shared",
+            "options": {
+                "symlink": true
+            }
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "olml89\\TelegramUserbot\\BotManager\\": "src/",
+            "Test\\BotManager\\Unit\\": "tests/Unit"
+        }
+    }
+}

@@ -1,0 +1,17 @@
+includes:
+    - /telegram-userbot/dev/phpstan/phpstan.neon
+
+parameters:
+    tmpDir: var/.phpstan.cache
+
+    paths:
+        - bin
+        - src
+        - tests
+
+    excludePaths:
+        - vendor
+
+    # https://phpstan.org/blog/solving-phpstan-access-to-undefined-property#universal-object-crates
+    universalObjectCratesClasses:
+        - Ratchet\ConnectionInterface

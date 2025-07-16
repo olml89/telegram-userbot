@@ -1,0 +1,29 @@
+{
+    "name": "olml89/telegram-userbot-shared",
+    "description": "Shared utilities between microservices",
+    "type": "library",
+    "version": "1.0.0",
+    "license": "proprietary",
+    "authors": [
+        {
+            "name": "olml89"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require": {
+        "php": "^8.4",
+        "vlucas/phpdotenv": "^5.6",
+        "php-di/php-di": "^7.0",
+        "monolog/monolog": "^3.9"
+    },
+    "suggest": {
+        "ext-redis": "To use Redis/PhpRedis implementations",
+        "clue/redis-react": "To use Redis/React implementations"
+    },
+    "autoload": {
+        "psr-4": {
+            "olml89\\TelegramUserbot\\Shared\\": "src/",
+            "Test\\Shared\\Unit\\": "tests/Unit"
+        }
+    }
+}

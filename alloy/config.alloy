@@ -1,0 +1,216 @@
+local.file_match "alloy" {
+	path_targets = [{
+		__address__ = "localhost",
+		__path__    = "/telegram-userbot/shared/var/log/alloy/alloy.log",
+		job         = "alloy",
+		service     = "alloy",
+	}]
+}
+
+loki.source.file "alloy" {
+	targets               = local.file_match.alloy.targets
+	forward_to            = [loki.write.default.receiver]
+	legacy_positions_file = "/tmp/positions.yaml"
+}
+
+local.file_match "nginx_access" {
+	path_targets = [{
+		__address__ = "localhost",
+		__path__    = "/telegram-userbot/shared/var/log/nginx/access.log",
+		job         = "nginx-access",
+		service     = "nginx",
+	}]
+}
+
+loki.source.file "nginx_access" {
+	targets               = local.file_match.nginx_access.targets
+	forward_to            = [loki.write.default.receiver]
+	legacy_positions_file = "/tmp/positions.yaml"
+}
+
+local.file_match "nginx_error" {
+	path_targets = [{
+		__address__ = "localhost",
+		__path__    = "/telegram-userbot/shared/var/log/nginx/error.log",
+		job         = "nginx-error",
+		service     = "nginx",
+	}]
+}
+
+loki.source.file "nginx_error" {
+	targets               = local.file_match.nginx_error.targets
+	forward_to            = [loki.write.default.receiver]
+	legacy_positions_file = "/tmp/positions.yaml"
+}
+
+local.file_match "redis" {
+	path_targets = [{
+		__address__ = "localhost",
+		__path__    = "/telegram-userbot/shared/var/log/redis/redis-server.log",
+		job         = "redis",
+		service     = "redis",
+	}]
+}
+
+loki.source.file "redis" {
+	targets               = local.file_match.redis.targets
+	forward_to            = [loki.write.default.receiver]
+	legacy_positions_file = "/tmp/positions.yaml"
+}
+
+local.file_match "monolog" {
+	path_targets = [{
+		__address__ = "localhost",
+		__path__    = "/telegram-userbot/shared/var/log/monolog.log",
+		job         = "monolog",
+		service     = "monolog",
+	}]
+}
+
+loki.source.file "monolog" {
+	targets               = local.file_match.monolog.targets
+	forward_to            = [loki.write.default.receiver]
+	legacy_positions_file = "/tmp/positions.yaml"
+}
+
+local.file_match "websocket_server" {
+	path_targets = [{
+		__address__ = "localhost",
+		__path__    = "/telegram-userbot/shared/var/log/bot-manager/websocket-server.log",
+		job         = "websocket-server",
+		service     = "bot-manager",
+	}]
+}
+
+loki.source.file "websocket_server" {
+	targets               = local.file_match.websocket_server.targets
+	forward_to            = [loki.write.default.receiver]
+	legacy_positions_file = "/tmp/positions.yaml"
+}
+
+local.file_match "status" {
+	path_targets = [{
+		__address__ = "localhost",
+		__path__    = "/telegram-userbot/shared/var/log/bot-manager/status.log",
+		job         = "status",
+		service     = "bot-manager",
+	}]
+}
+
+loki.source.file "status" {
+	targets               = local.file_match.status.targets
+	forward_to            = [loki.write.default.receiver]
+	legacy_positions_file = "/tmp/positions.yaml"
+}
+
+local.file_match "command" {
+	path_targets = [{
+		__address__ = "localhost",
+		__path__    = "/telegram-userbot/shared/var/log/bot-manager/command.log",
+		job         = "command",
+		service     = "bot-manager",
+	}]
+}
+
+loki.source.file "command" {
+	targets               = local.file_match.command.targets
+	forward_to            = [loki.write.default.receiver]
+	legacy_positions_file = "/tmp/positions.yaml"
+}
+
+local.file_match "supervisord" {
+	path_targets = [{
+		__address__  = "localhost",
+		__path__     = "/telegram-userbot/shared/var/log/bot/supervisord.log",
+		job          = "supervisord",
+		service      = "bot",
+	}]
+}
+
+loki.source.file "supervisord" {
+	targets               = local.file_match.supervisord.targets
+	forward_to            = [loki.write.default.receiver]
+	legacy_positions_file = "/tmp/positions.yaml"
+}
+
+local.file_match "request_status" {
+	path_targets = [{
+		__address__  = "localhost",
+		__path__     = "/telegram-userbot/shared/var/log/bot/request-status.log",
+		job          = "request-status",
+		service      = "bot",
+	}]
+}
+
+loki.source.file "request_status" {
+	targets               = local.file_match.request_status.targets
+	forward_to            = [loki.write.default.receiver]
+	legacy_positions_file = "/tmp/positions.yaml"
+}
+
+local.file_match "phone_login" {
+	path_targets = [{
+		__address__  = "localhost",
+		__path__     = "/telegram-userbot/shared/var/log/bot/phone-login.log",
+		job          = "phone-login",
+		service      = "bot",
+	}]
+}
+
+loki.source.file "phone_login" {
+	targets               = local.file_match.phone_login.targets
+	forward_to            = [loki.write.default.receiver]
+	legacy_positions_file = "/tmp/positions.yaml"
+}
+
+local.file_match "complete_phone_login" {
+	path_targets = [{
+		__address__  = "localhost",
+		__path__     = "/telegram-userbot/shared/var/log/bot/complete-phone-login.log",
+		job          = "complete-phone-login",
+		service      = "bot",
+	}]
+}
+
+loki.source.file "complete_phone_login" {
+	targets               = local.file_match.complete_phone_login.targets
+	forward_to            = [loki.write.default.receiver]
+	legacy_positions_file = "/tmp/positions.yaml"
+}
+
+local.file_match "logout" {
+	path_targets = [{
+		__address__  = "localhost",
+		__path__     = "/telegram-userbot/shared/var/log/bot/logout.log",
+		job          = "logout",
+		service      = "bot",
+	}]
+}
+
+loki.source.file "logout" {
+	targets               = local.file_match.logout.targets
+	forward_to            = [loki.write.default.receiver]
+	legacy_positions_file = "/tmp/positions.yaml"
+}
+
+local.file_match "runner" {
+	path_targets = [{
+		__address__  = "localhost",
+		__path__     = "/telegram-userbot/shared/var/log/bot/runner.log",
+		job          = "runner",
+		service      = "bot",
+	}]
+}
+
+loki.source.file "runner" {
+	targets               = local.file_match.runner.targets
+	forward_to            = [loki.write.default.receiver]
+	legacy_positions_file = "/tmp/positions.yaml"
+}
+
+loki.write "default" {
+	endpoint {
+		url = "http://loki:3100/loki/api/v1/push"
+	}
+	external_labels = {}
+}

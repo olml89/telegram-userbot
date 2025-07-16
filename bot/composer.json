@@ -1,0 +1,37 @@
+{
+    "name": "olml89/telegram-userbot-bot",
+    "description": "Container to run isolated instances of MadelineProto API at demand by bot-manager through Redis messages.",
+    "type": "project",
+    "version": "1.0.0",
+    "license": "proprietary",
+    "authors": [
+        {
+            "name": "olml89"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require": {
+        "php": "^8.4",
+        "ext-redis": "*",
+        "ext-pcntl": "*",
+        "ext-posix": "*",
+        "ext-ffi": "*",
+        "olml89/telegram-userbot-shared": "*",
+        "danog/madelineproto": "^8.4"
+    },
+    "repositories": [
+        {
+            "type": "path",
+            "url": "../shared",
+            "options": {
+                "symlink": true
+            }
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "olml89\\TelegramUserbot\\Bot\\": "src/",
+            "Test\\Bot\\Unit\\": "tests/Unit"
+        }
+    }
+}
