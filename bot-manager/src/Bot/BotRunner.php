@@ -13,13 +13,10 @@ use olml89\TelegramUserbot\BotManager\Bot\Command\Command\StopCommand;
 use olml89\TelegramUserbot\BotManager\Bot\Command\CommandHandler;
 use olml89\TelegramUserbot\BotManager\Bot\Status\StatusManager;
 use olml89\TelegramUserbot\Shared\Bot\Command\CompletePhoneLogin\PhoneCodeStorage;
-use olml89\TelegramUserbot\Shared\Bot\Process\LogRecord\StartedProcess;
-use olml89\TelegramUserbot\Shared\Bot\Process\LogRecord\StoppedProcess;
 use olml89\TelegramUserbot\Shared\Bot\Process\ProcessManager;
 use olml89\TelegramUserbot\Shared\Bot\Process\ProcessNotStartedException;
 use olml89\TelegramUserbot\Shared\Bot\Process\ProcessNotStoppedException;
 use olml89\TelegramUserbot\Shared\Bot\Status\InvalidStatusException;
-use olml89\TelegramUserbot\Shared\Bot\Status\StatusType;
 use olml89\TelegramUserbot\Shared\Logger\LogRecord\LoggableLogger;
 use olml89\TelegramUserbot\Shared\Redis\RedisStorageException;
 use Throwable;
@@ -49,8 +46,7 @@ final readonly class BotRunner implements CommandHandler
      */
     public function requestStatus(RequestStatusCommand $command): void
     {
-        $this->processManager->start($command->process);
-        $this->loggableLogger->log(new StartedProcess($command->process));
+        $command->process()->start($this->processManager, $this->loggableLogger);
     }
 
     /**
@@ -59,10 +55,9 @@ final readonly class BotRunner implements CommandHandler
      */
     public function phoneLogin(PhoneLoginCommand $command): void
     {
-        $this->statusManager->status()->assertEquals(StatusType::NotLoggedIn, StatusType::LoggedOut);
+        $command->checkAllowedBy($this->statusManager->status());
 
-        $this->processManager->start($command->process);
-        $this->loggableLogger->log(new StartedProcess($command->process));
+        $command->process()->start($this->processManager, $this->loggableLogger);
     }
 
     /**
@@ -72,11 +67,10 @@ final readonly class BotRunner implements CommandHandler
      */
     public function completePhoneLogin(CompletePhoneLoginCommand $command): void
     {
-        $this->statusManager->status()->assertEquals(StatusType::WaitingCode);
+        $command->checkAllowedBy($this->statusManager->status());
 
-        $this->phoneCodeStorage->store($command->phoneCode);
-        $this->processManager->start($command->process);
-        $this->loggableLogger->log(new StartedProcess($command->process));
+        $this->phoneCodeStorage->store($command->phoneCode());
+        $command->process()->start($this->processManager, $this->loggableLogger);
     }
 
     /**
@@ -85,10 +79,9 @@ final readonly class BotRunner implements CommandHandler
      */
     public function logout(LogoutCommand $command): void
     {
-        $this->statusManager->status()->assertEquals(StatusType::LoggedIn);
+        $command->checkAllowedBy($this->statusManager->status());
 
-        $this->processManager->start($command->process);
-        $this->loggableLogger->log(new StartedProcess($command->process));
+        $command->process()->start($this->processManager, $this->loggableLogger);
     }
 
     /**
@@ -97,10 +90,9 @@ final readonly class BotRunner implements CommandHandler
      */
     public function start(StartCommand $command): void
     {
-        $this->statusManager->status()->assertEquals(StatusType::LoggedIn);
+        $command->checkAllowedBy($this->statusManager->status());
 
-        $this->processManager->start($command->process);
-        $this->loggableLogger->log(new StartedProcess($command->process));
+        $command->process()->start($this->processManager, $this->loggableLogger);
     }
 
     /**
@@ -109,9 +101,8 @@ final readonly class BotRunner implements CommandHandler
      */
     public function stop(StopCommand $command): void
     {
-        $this->statusManager->status()->assertEquals(StatusType::Running);
+        $command->checkAllowedBy($this->statusManager->status());
 
-        $this->processManager->stop($command->process);
-        $this->loggableLogger->log(new StoppedProcess($command->process));
+        $command->process()->stop($this->processManager, $this->loggableLogger);
     }
 }

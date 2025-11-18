@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace olml89\TelegramUserbot\Shared\Supervisor;
 
 use olml89\TelegramUserbot\Shared\App\ExecResult;
-use olml89\TelegramUserbot\Shared\Bot\Process\Process;
 use olml89\TelegramUserbot\Shared\Bot\Process\ProcessManager;
 use olml89\TelegramUserbot\Shared\Bot\Process\ProcessNotStartedException;
 use olml89\TelegramUserbot\Shared\Bot\Process\ProcessNotStoppedException;
 use olml89\TelegramUserbot\Shared\Bot\Process\ProcessResult;
+use olml89\TelegramUserbot\Shared\Bot\Process\ProcessType;
 
 /**
  * It executes supervisorctl with a given config and returns the result to be examined
@@ -21,14 +21,14 @@ final readonly class SupervisorCtl implements ProcessManager
     ) {
     }
 
-    private function execute(string $supervisorCommand, Process $process): ExecResult
+    private function execute(string $supervisorCommand, ProcessType $processType): ExecResult
     {
         $return = exec(
             command: sprintf(
                 'supervisorctl -c %s %s %s',
                 $this->supervisorConfig->supervisorConfigPath,
                 $supervisorCommand,
-                $process->value,
+                $processType->value,
             ),
             output: $output,
             result_code: $code,
@@ -40,13 +40,13 @@ final readonly class SupervisorCtl implements ProcessManager
     /**
      * @throws ProcessNotStartedException
      */
-    public function start(Process $process): ProcessResult
+    public function start(ProcessType $processType): ProcessResult
     {
-        $executed = $this->execute('start', $process);
+        $executed = $this->execute('start', $processType);
         $processResult = ProcessResult::Started;
 
         if (!$executed->hasProcessResult($processResult)) {
-            throw new ProcessNotStartedException($process, $executed);
+            throw new ProcessNotStartedException($processType, $executed);
         }
 
         return $processResult;
@@ -55,22 +55,22 @@ final readonly class SupervisorCtl implements ProcessManager
     /**
      * @throws ProcessNotStoppedException
      */
-    public function stop(Process $process): ProcessResult
+    public function stop(ProcessType $processType): ProcessResult
     {
-        $executed = $this->execute('stop', $process);
+        $executed = $this->execute('stop', $processType);
         $processResult = ProcessResult::Stopped;
 
         if (!$executed->hasProcessResult($processResult)) {
-            throw new ProcessNotStoppedException($process, $executed);
+            throw new ProcessNotStoppedException($processType, $executed);
         }
 
         return $processResult;
     }
 
-    public function isRunning(Process $process): bool
+    public function isRunning(ProcessType $processType): bool
     {
         return $this
-            ->execute('status', $process)
+            ->execute('status', $processType)
             ->hasProcessResult(ProcessResult::Running);
     }
 }

@@ -4,25 +4,52 @@ declare(strict_types=1);
 
 namespace olml89\TelegramUserbot\BotManager\Bot\Command\Command;
 
-use olml89\TelegramUserbot\BotManager\Bot\Command\BaseProcessableCommand;
 use olml89\TelegramUserbot\BotManager\Bot\Command\Command;
 use olml89\TelegramUserbot\BotManager\Bot\Command\CommandHandler;
 use olml89\TelegramUserbot\BotManager\Bot\Command\CommandType;
+use olml89\TelegramUserbot\BotManager\Bot\Command\IsCommand;
+use olml89\TelegramUserbot\BotManager\Bot\Command\IsStatusRestrictedCommand;
+use olml89\TelegramUserbot\BotManager\Bot\Command\ProcessableCommand;
+use olml89\TelegramUserbot\BotManager\Bot\Command\StatusRestrictedCommand;
 use olml89\TelegramUserbot\Shared\Bot\Command\CompletePhoneLogin\PhoneCode;
 use olml89\TelegramUserbot\Shared\Bot\Process\Process;
+use olml89\TelegramUserbot\Shared\Bot\Process\ProcessType;
 use olml89\TelegramUserbot\Shared\Bot\Process\ProcessNotStartedException;
 use olml89\TelegramUserbot\Shared\Bot\Status\InvalidStatusException;
+use olml89\TelegramUserbot\Shared\Bot\Status\StatusType;
 use olml89\TelegramUserbot\Shared\Redis\RedisStorageException;
 
-final readonly class CompletePhoneLoginCommand extends BaseProcessableCommand implements Command
+final readonly class CompletePhoneLoginCommand implements Command, ProcessableCommand, StatusRestrictedCommand
 {
-    public PhoneCode $phoneCode;
+    use IsCommand;
+    use IsStatusRestrictedCommand;
+
+    private PhoneCode $phoneCode;
 
     public function __construct(PhoneCode $phoneCode)
     {
-        parent::__construct(CommandType::CompletePhoneLogin, Process::CompletePhoneLogin);
-
+        $this->type = CommandType::CompletePhoneLogin;
         $this->phoneCode = $phoneCode;
+    }
+
+    public function process(): Process
+    {
+        return new Process(ProcessType::CompletePhoneLogin);
+    }
+
+    /**
+     * @return StatusType[]
+     */
+    protected function allowedStatusTypes(): array
+    {
+        return [
+            StatusType::WaitingCode,
+        ];
+    }
+
+    public function phoneCode(): PhoneCode
+    {
+        return $this->phoneCode;
     }
 
     /**

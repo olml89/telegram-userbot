@@ -8,7 +8,6 @@ use JsonException;
 use olml89\TelegramUserbot\BotManager\Bot\Status\LogRecord\SubscribedToChannel;
 use olml89\TelegramUserbot\Shared\Bot\Status\InvalidStatusTypeException;
 use olml89\TelegramUserbot\Shared\Bot\Status\StatusFactory;
-use olml89\TelegramUserbot\Shared\Bot\Status\StatusHandler;
 use olml89\TelegramUserbot\Shared\Logger\LogRecord\ErrorLogRecord;
 use olml89\TelegramUserbot\Shared\Logger\LogRecord\LoggableLogger;
 use olml89\TelegramUserbot\Shared\Redis\RedisConfig;
@@ -27,21 +26,21 @@ final readonly class StatusSubscriber
     ) {
     }
 
-    public function subscribe(StatusHandler $statusHandler): void
+    public function subscribe(StatusManager $statusManager): void
     {
         $this->subscriber->subscribe(
             $this->config->statusChannel,
-            fn (string $message) => $this->processMessage($message, $statusHandler),
+            fn (string $message) => $this->processMessage($message, $statusManager),
         );
 
         $this->loggableLogger->log(new SubscribedToChannel($this->config->statusChannel));
     }
 
-    private function processMessage(string $message, StatusHandler $statusHandler): void
+    private function processMessage(string $message, StatusManager $statusManager): void
     {
         try {
             $status = $this->statusFactory->fromJson($message);
-            $statusHandler->handle($status);
+            $statusManager->process($status);
         } catch (JsonException|InvalidStatusTypeException $e) {
             $this->loggableLogger->log(new ErrorLogRecord('Invalid status', $e));
         }

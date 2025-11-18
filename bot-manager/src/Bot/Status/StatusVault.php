@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace olml89\TelegramUserbot\BotManager\Bot\Status;
 
 use olml89\TelegramUserbot\Shared\Bot\Status\Status;
-use olml89\TelegramUserbot\Shared\Bot\Status\Status\DisconnectedStatus;
+use olml89\TelegramUserbot\Shared\Bot\Status\StatusType;
 
 final class StatusVault
 {
@@ -13,7 +13,7 @@ final class StatusVault
 
     public function __construct()
     {
-        $this->status = new DisconnectedStatus();
+        $this->status = new Status(StatusType::Disconnected);
     }
 
     public function get(): Status

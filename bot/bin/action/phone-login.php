@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 use DI\Container;
 use DI\ContainerBuilder;
-use olml89\TelegramUserbot\Bot\Action\Action;
 use olml89\TelegramUserbot\Bot\Action\ActionRunner;
 use olml89\TelegramUserbot\Bot\Action\PhoneLogin;
 use olml89\TelegramUserbot\Shared\Logger\Channel;
@@ -24,11 +23,12 @@ $containerBuilder->addDefinitions([
         return $logRecordLoggerFactory->create(Channel::PhoneLogin);
     }),
 
-    Action::class => DI\autowire(PhoneLogin::class),
-
 ]);
+
+/** @var PhoneLogin $action */
+$action = $containerBuilder->build()->get(PhoneLogin::class);
 
 /** @var ActionRunner $actionRunner */
 $actionRunner = $containerBuilder->build()->get(ActionRunner::class);
 
-$actionRunner->run();
+$actionRunner->run($action);

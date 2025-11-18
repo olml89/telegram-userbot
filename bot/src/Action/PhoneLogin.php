@@ -4,27 +4,22 @@ declare(strict_types=1);
 
 namespace olml89\TelegramUserbot\Bot\Action;
 
-use danog\MadelineProto\Exception;
-use olml89\TelegramUserbot\Bot\MadelineProto\ApiManager;
+use danog\MadelineProto\API;
+use olml89\TelegramUserbot\Bot\Bot\BotConfig;
 use olml89\TelegramUserbot\Bot\MadelineProto\IpcWorkerOutputCatcherFactory;
 
 final readonly class PhoneLogin implements Action
 {
     public function __construct(
-        private ApiManager $apiManager,
+        private BotConfig $botConfig,
         private IpcWorkerOutputCatcherFactory $ipcWorkerOutputCatcherFactory,
     ) {
     }
 
-    /**
-     * @throws Exception
-     */
-    public function run(): void
+    public function run(API $api): void
     {
-        $api = $this->apiManager->build();
-
         $this->ipcWorkerOutputCatcherFactory
             ->create($api, $api->phoneLogin(...))
-            ->run($this->apiManager->config->phoneNumber);
+            ->run($this->botConfig->phoneNumber);
     }
 }

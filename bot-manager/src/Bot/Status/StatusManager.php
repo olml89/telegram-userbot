@@ -9,7 +9,6 @@ use olml89\TelegramUserbot\BotManager\Websocket\WebSocketConnectionPool;
 use olml89\TelegramUserbot\Shared\App\AppConfig;
 use olml89\TelegramUserbot\Shared\App\Environment\Environment;
 use olml89\TelegramUserbot\Shared\Bot\Status\Status;
-use olml89\TelegramUserbot\Shared\Bot\Status\StatusHandler;
 use olml89\TelegramUserbot\Shared\Logger\LogRecord\LoggableLogger;
 use Throwable;
 
@@ -17,7 +16,7 @@ use Throwable;
  * It has control over the current MadelineProto API status on the bot container via Redis subscription to Status
  * update events. It broadcasts the new Status to the websocket connections on status update.
  */
-final readonly class StatusManager implements StatusHandler
+final readonly class StatusManager
 {
     public function __construct(
         private AppConfig $appConfig,
@@ -34,7 +33,10 @@ final readonly class StatusManager implements StatusHandler
         return $this->statusVault->get();
     }
 
-    public function handle(Status $status): void
+    /**
+     * Logs, stores and emits a received status
+     */
+    public function process(Status $status): void
     {
         $this->loggableLogger->log(new ReceivedStatus($status));
         $this->statusVault->set($status);
@@ -42,6 +44,9 @@ final readonly class StatusManager implements StatusHandler
         $this->emit();
     }
 
+    /**
+     * Emits current status with or without its message replaced by an error message
+     */
     public function emit(?Throwable $e = null): void
     {
         $status = $this->statusVault->get();

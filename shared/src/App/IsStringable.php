@@ -12,8 +12,6 @@ use Stringable;
  */
 trait IsStringable
 {
-    abstract public function jsonSerialize(): array;
-
     /**
      * @throws JsonException
      */

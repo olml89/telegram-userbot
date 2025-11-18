@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 use DI\Container;
 use DI\ContainerBuilder;
-use olml89\TelegramUserbot\Bot\Action\Action;
 use olml89\TelegramUserbot\Bot\Action\ActionRunner;
 use olml89\TelegramUserbot\Bot\Action\Runner;
 use olml89\TelegramUserbot\Shared\Logger\Channel;
@@ -24,11 +23,12 @@ $containerBuilder->addDefinitions([
         return $logRecordLoggerFactory->create(Channel::Runner);
     }),
 
-    Action::class => DI\autowire(Runner::class),
-
 ]);
+
+/** @var Runner $action */
+$action = $containerBuilder->build()->get(Runner::class);
 
 /** @var ActionRunner $actionRunner */
 $actionRunner = $containerBuilder->build()->get(ActionRunner::class);
 
-$actionRunner->run();
+$actionRunner->run($action);

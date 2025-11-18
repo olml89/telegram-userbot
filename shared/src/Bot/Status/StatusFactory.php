@@ -32,6 +32,6 @@ final readonly class StatusFactory
             throw InvalidStatusTypeException::invalidType($typeValue);
         }
 
-        return $statusType->status($message, $time);
+        return new Status($statusType, $message, $time);
     }
 }

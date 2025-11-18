@@ -20,7 +20,7 @@ use olml89\TelegramUserbot\Shared\Logger\LogRecord\LoggableLogger;
 final readonly class StatusBroadcaster implements StatusEmitter
 {
     public function __construct(
-        private StatusTypeCalculator $statusTypeCalculator,
+        private ApiStatusCalculator $apiStatusCalculator,
         private StatusPublisher $statusPublisher,
         private LoggableLogger $loggableLogger,
     ) {
@@ -32,16 +32,16 @@ final readonly class StatusBroadcaster implements StatusEmitter
         $this->loggableLogger->log(new EmittedStatus($status));
     }
 
-    public function broadcast(?API $api, ?Output $output = null): void
+    public function broadcast(?API $api = null, ?Output $output = null): void
     {
         if ($output instanceof Output && ! $output->isBroadcastable()) {
             return;
         }
 
         $status = $this
-            ->statusTypeCalculator
+            ->apiStatusCalculator
             ->calculate($api)
-            ->status($output);
+            ->withMessage($output);
 
         $this->emit($status);
     }

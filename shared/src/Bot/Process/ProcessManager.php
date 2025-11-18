@@ -7,10 +7,10 @@ namespace olml89\TelegramUserbot\Shared\Bot\Process;
 interface ProcessManager
 {
     /** @throws ProcessNotStartedException */
-    public function start(Process $process): ProcessResult;
+    public function start(ProcessType $processType): ProcessResult;
 
     /** @throws ProcessNotStoppedException */
-    public function stop(Process $process): ProcessResult;
+    public function stop(ProcessType $processType): ProcessResult;
 
-    public function isRunning(Process $process): bool;
+    public function isRunning(ProcessType $processType): bool;
 }
