@@ -29,7 +29,7 @@ final readonly class IpcWorkerOutputCatcher
 {
     public function __construct(
         private string $logPath,
-        private ?API $api,
+        private ApiWrapper $apiWrapper,
         private StatusBroadcaster $statusBroadcaster,
         private LoggableLogger $loggableLogger,
         private Closure $ipcWorkerProcess,
@@ -62,7 +62,7 @@ final readonly class IpcWorkerOutputCatcher
         });
 
         $future->await();
-        $this->statusBroadcaster->broadcast($this->api);
+        $this->statusBroadcaster->broadcast($this->apiWrapper);
     }
 
     /**
@@ -76,7 +76,7 @@ final readonly class IpcWorkerOutputCatcher
                 ($this->ipcWorkerProcess)(...$arguments);
             } catch (Throwable $e) {
                 $this->loggableLogger->log(new ErrorLogRecord('Error during IPC process', $e));
-                $this->statusBroadcaster->broadcast($this->api, new ExceptionOutput($e));
+                $this->statusBroadcaster->broadcast($this->apiWrapper, new ExceptionOutput($e));
             }
         });
     }
@@ -104,12 +104,12 @@ final readonly class IpcWorkerOutputCatcher
 
                     foreach (explode(PHP_EOL, $chunk) as $line) {
                         $output = new MadelineProtoFileLoggerOutput($line);
-                        $this->statusBroadcaster->broadcast($this->api, $output);
+                        $this->statusBroadcaster->broadcast($this->apiWrapper, $output);
                     }
                 }
             } catch (Throwable $e) {
                 $this->loggableLogger->log(new ErrorLogRecord('Error during log watcher process', $e));
-                $this->statusBroadcaster->broadcast($this->api, new ExceptionOutput($e));
+                $this->statusBroadcaster->broadcast($this->apiWrapper, new ExceptionOutput($e));
             }
         });
     }

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace olml89\TelegramUserbot\Bot\Action\Action;
 
-use danog\MadelineProto\API;
 use olml89\TelegramUserbot\Bot\Action\Action;
+use olml89\TelegramUserbot\Bot\MadelineProto\ApiWrapper;
 use olml89\TelegramUserbot\Bot\MadelineProto\IpcWorkerOutputCatcherFactory;
 use olml89\TelegramUserbot\Shared\Bot\Command\CompletePhoneLogin\InvalidPhoneCodeException;
 use olml89\TelegramUserbot\Shared\Bot\Command\CompletePhoneLogin\PhoneCodeStorage;
@@ -23,13 +23,13 @@ final readonly class CompletePhoneLogin implements Action
      * @throws RedisStorageException
      * @throws InvalidPhoneCodeException
      */
-    public function run(API $api): void
+    public function run(ApiWrapper $apiWrapper): void
     {
         $phoneCode = $this->phoneCodeStorage->retrieve();
 
         $this
             ->ipcWorkerOutputCatcherFactory
-            ->create($api, $api->completePhoneLogin(...))
-            ->run((string)$phoneCode);
+            ->create($apiWrapper, $apiWrapper->completePhoneLogin(...))
+            ->run($phoneCode);
     }
 }

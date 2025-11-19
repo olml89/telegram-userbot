@@ -7,8 +7,8 @@ use DI\ContainerBuilder;
 use olml89\TelegramUserbot\Bot\Bot\BotConfig;
 use olml89\TelegramUserbot\Bot\Bot\BotLogFile;
 use olml89\TelegramUserbot\Bot\Bot\BotSession;
+use olml89\TelegramUserbot\Bot\Redis\AmphpRedisPublisher;
 use olml89\TelegramUserbot\Shared\App\Environment\Env;
-use olml89\TelegramUserbot\Shared\Redis\PhpRedis\PhpRedisPublisher;
 use olml89\TelegramUserbot\Shared\Redis\PhpRedis\PhpRedisStorage;
 use olml89\TelegramUserbot\Shared\Redis\RedisPublisher;
 use olml89\TelegramUserbot\Shared\Redis\RedisStorage;
@@ -50,7 +50,7 @@ return $containerBuilder->addDefinitions([
         );
     }),
 
-    RedisPublisher::class => DI\autowire(PhpRedisPublisher::class),
+    RedisPublisher::class => DI\autowire(AmphpRedisPublisher::class),
     RedisStorage::class => DI\autowire(PhpRedisStorage::class),
 
 ]);

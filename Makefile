@@ -3,7 +3,7 @@
 APP_ENV ?= production
 
 
-# Load postgres variables safely
+# Load database variables safely
 -include backend/.env
 DB_USER ?= postgres
 DB_PASSWORD ?= postgres
@@ -28,15 +28,15 @@ endif
 build:
 	$(eval SERVICE := $(word 2, $(MAKECMDGOALS)))
 	$(if $(SERVICE), \
-		docker-compose $(DOCKER_COMPOSE) $(ENV) build $(SERVICE), \
-		docker-compose $(DOCKER_COMPOSE) $(ENV) build \
+		docker-compose $(DOCKER_COMPOSE) $(ENV) build --no-cache $(SERVICE), \
+		docker-compose $(DOCKER_COMPOSE) $(ENV) build --no-cache \
 	)
 
 upd:
 	$(eval SERVICE := $(word 2, $(MAKECMDGOALS)))
 	$(if $(SERVICE), \
-		docker-compose $(DOCKER_COMPOSE) $(ENV) up -d --build --remove-orphans $(SERVICE), \
-		docker-compose $(DOCKER_COMPOSE) $(ENV) up -d --build --remove-orphans \
+		docker-compose $(DOCKER_COMPOSE) $(ENV) up -d --remove-orphans $(SERVICE), \
+		docker-compose $(DOCKER_COMPOSE) $(ENV) up -d --remove-orphans \
 	)
 
 stop:
@@ -98,21 +98,6 @@ postgres:
 redis:
 	docker-compose $(DOCKER_COMPOSE) $(ENV) exec redis redis-cli
 
-
-# Install dependencies (on dev, on prod they are already installed inside the images)
-.PHONY: composer-install
-SERVICES := bot bot-manager backend shared
-
-composer-install: up $(addprefix install-,$(SERVICES))
-
-install-%:
-	@if [ "$*" = "shared" ]; then \
-		echo "🔧 Installing shared dependencies (via bot container)..."; \
-		docker-compose $(DOCKER_COMPOSE) exec -T bot sh -c "/telegram-userbot/shared/bin/composer-install.sh"; \
-	else \
-		echo "🔧 Installing $* dependencies..."; \
-		docker-compose $(DOCKER_COMPOSE) exec -T $* sh -c "/telegram-userbot/shared/bin/composer-install.sh"; \
-	fi
 
 # Development recipes
 # The -T flag disables TTY, required when running from non-interactive environments like Git hooks

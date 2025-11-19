@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace olml89\TelegramUserbot\Bot\Action\Action;
 
-use danog\MadelineProto\API;
 use olml89\TelegramUserbot\Bot\Action\Action;
 use olml89\TelegramUserbot\Bot\Bot\BotConfig;
+use olml89\TelegramUserbot\Bot\MadelineProto\ApiWrapper;
 use olml89\TelegramUserbot\Bot\MadelineProto\IpcWorkerOutputCatcherFactory;
 
 final readonly class PhoneLogin implements Action
@@ -17,10 +17,10 @@ final readonly class PhoneLogin implements Action
     ) {
     }
 
-    public function run(API $api): void
+    public function run(ApiWrapper $apiWrapper): void
     {
         $this->ipcWorkerOutputCatcherFactory
-            ->create($api, $api->phoneLogin(...))
+            ->create($apiWrapper, $apiWrapper->phoneLogin(...))
             ->run($this->botConfig->phoneNumber);
     }
 }

@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace olml89\TelegramUserbot\Bot\Action\Action;
 
-use danog\MadelineProto\API;
 use olml89\TelegramUserbot\Bot\Action\Action;
 use olml89\TelegramUserbot\Bot\Bot\BotSession;
+use olml89\TelegramUserbot\Bot\MadelineProto\ApiWrapper;
 use olml89\TelegramUserbot\Bot\MadelineProto\IpcWorkerOutputCatcherFactory;
 
 final readonly class Logout implements Action
@@ -17,14 +17,14 @@ final readonly class Logout implements Action
     ) {
     }
 
-    public function run(API $api): void
+    public function run(ApiWrapper $apiWrapper): void
     {
         // Reset the session so the MadelineProto IPC doesn't hang
         $this->botSession->reset();
 
         $this
             ->ipcWorkerOutputCatcherFactory
-            ->create($api, $api->logout(...))
+            ->create($apiWrapper, $apiWrapper->logout(...))
             ->run();
     }
 }

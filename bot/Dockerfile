@@ -48,7 +48,7 @@ COPY bot/supervisor/conf.d/*.conf /etc/supervisor/conf.d/
 
 # Install additional PHP extensions
 COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/local/bin/
-RUN install-php-extensions redis pcntl posix ffi;
+RUN install-php-extensions pcntl posix ffi
 
 FROM base AS prod
 

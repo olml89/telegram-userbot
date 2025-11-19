@@ -12,7 +12,6 @@
     "minimum-stability": "stable",
     "require": {
         "php": "^8.4",
-        "ext-redis": "*",
         "ext-pcntl": "*",
         "ext-posix": "*",
         "ext-ffi": "*",

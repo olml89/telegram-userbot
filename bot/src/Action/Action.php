@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace olml89\TelegramUserbot\Bot\Action;
 
-use danog\MadelineProto\API;
+use olml89\TelegramUserbot\Bot\MadelineProto\ApiWrapper;
 use Throwable;
 
 interface Action
@@ -12,5 +12,5 @@ interface Action
     /**
      * @throws Throwable
      */
-    public function run(API $api): void;
+    public function run(ApiWrapper $apiWrapper): void;
 }

@@ -4,11 +4,14 @@ declare(strict_types=1);
 
 namespace olml89\TelegramUserbot\Bot\Action;
 
+use danog\MadelineProto\Exception;
 use olml89\TelegramUserbot\Bot\Action\LogRecord\ActionFinished;
 use olml89\TelegramUserbot\Bot\Action\LogRecord\ActionStarted;
 use olml89\TelegramUserbot\Bot\Bot\Status\StatusBroadcaster;
-use olml89\TelegramUserbot\Bot\Bot\Status\ApiStatusCalculator;
-use olml89\TelegramUserbot\Bot\MadelineProto\ApiBuilder;
+use olml89\TelegramUserbot\Bot\MadelineProto\ApiInitializationException;
+use olml89\TelegramUserbot\Bot\MadelineProto\ApiInitializer;
+use olml89\TelegramUserbot\Bot\MadelineProto\ApiWrapper;
+use olml89\TelegramUserbot\Bot\Output\ExceptionOutput;
 use olml89\TelegramUserbot\Shared\Bot\Process\ProcessManager;
 use olml89\TelegramUserbot\Shared\Bot\Process\ProcessNotStartedException;
 use olml89\TelegramUserbot\Shared\Bot\Process\ProcessType;
@@ -22,8 +25,8 @@ use Throwable;
 final readonly class ActionRunner
 {
     public function __construct(
-        private ApiBuilder $apiBuilder,
-        private ApiStatusCalculator $apiStatusCalculator,
+        private ApiWrapper $apiWrapper,
+        private ApiInitializer $apiInitializer,
         private StatusBroadcaster $statusBroadcaster,
         private LoggableLogger $loggableLogger,
         private ProcessManager $processManager,
@@ -32,17 +35,20 @@ final readonly class ActionRunner
 
     public function run(Action $action): void
     {
-        $api = $this->apiBuilder->build();
+        try {
+            $this->apiInitializer->initialize($this->apiWrapper);
+        } catch (Exception|ApiInitializationException $e) {
+            $this->statusBroadcaster->broadcast($this->apiWrapper, new ExceptionOutput($e));
+            $this->loggableLogger->log(new ErrorLogRecord('Error instantiating MadelineProto API', $e));
 
-        if (is_null($api)) {
             return;
         }
 
-        $currentStatus = $this->apiStatusCalculator->calculate($api);
+        $currentStatus = $this->apiWrapper->status();
 
         try {
             $this->loggableLogger->log(new ActionStarted($action));
-            $action->run($api);
+            $action->run($this->apiWrapper);
             $this->loggableLogger->log(new ActionFinished($action));
         } catch (Throwable $e) {
             $this->statusBroadcaster->emit($currentStatus->withMessage($e->getMessage()));
