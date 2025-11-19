@@ -4,22 +4,16 @@ declare(strict_types=1);
 
 namespace olml89\TelegramUserbot\BotManager\Bot\Command\Command;
 
-use olml89\TelegramUserbot\BotManager\Bot\Command\Command;
-use olml89\TelegramUserbot\BotManager\Bot\Command\CommandHandler;
 use olml89\TelegramUserbot\BotManager\Bot\Command\CommandType;
-use olml89\TelegramUserbot\BotManager\Bot\Command\IsCommand;
+use olml89\TelegramUserbot\BotManager\Bot\Command\IsUnrestrictedCommand;
+use olml89\TelegramUserbot\BotManager\Bot\Command\UnrestrictedCommand;
 
-final readonly class BroadcastStatusCommand implements Command
+final readonly class BroadcastStatusCommand implements UnrestrictedCommand
 {
-    use IsCommand;
+    use IsUnrestrictedCommand;
 
     public function __construct()
     {
         $this->type = CommandType::BroadcastStatus;
-    }
-
-    public function handle(CommandHandler $commandHandler): void
-    {
-        $commandHandler->broadcastStatus();
     }
 }

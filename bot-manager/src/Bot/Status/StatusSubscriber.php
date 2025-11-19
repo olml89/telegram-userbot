@@ -40,7 +40,7 @@ final readonly class StatusSubscriber
     {
         try {
             $status = $this->statusFactory->fromJson($message);
-            $statusManager->process($status);
+            $statusManager->record($status);
         } catch (JsonException|InvalidStatusTypeException $e) {
             $this->loggableLogger->log(new ErrorLogRecord('Invalid status', $e));
         }

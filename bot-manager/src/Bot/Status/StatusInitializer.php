@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace olml89\TelegramUserbot\BotManager\Bot\Status;
 
 use olml89\TelegramUserbot\BotManager\Bot\Command\Command\RequestStatusCommand;
-use olml89\TelegramUserbot\BotManager\Bot\Command\CommandHandler;
+use olml89\TelegramUserbot\BotManager\Bot\Command\CommandBus;
 use olml89\TelegramUserbot\Shared\Logger\LogRecord\ErrorLogRecord;
 use olml89\TelegramUserbot\Shared\Logger\LogRecord\LoggableLogger;
 use Throwable;
@@ -19,7 +19,7 @@ use Throwable;
 final readonly class StatusInitializer
 {
     public function __construct(
-        private CommandHandler $commandHandler,
+        private CommandBus $commandBus,
         private LoggableLogger $loggableLogger,
     ) {
     }
@@ -27,7 +27,7 @@ final readonly class StatusInitializer
     public function initialize(): void
     {
         try {
-            new RequestStatusCommand()->handle($this->commandHandler);
+            $this->commandBus->dispatch(new RequestStatusCommand());
         } catch (Throwable $e) {
             $this->loggableLogger->log(new ErrorLogRecord('Error initializing status', $e));
         }

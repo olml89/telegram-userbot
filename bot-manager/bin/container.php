@@ -4,9 +4,15 @@ declare(strict_types=1);
 
 use DI\Container;
 use DI\ContainerBuilder;
-use olml89\TelegramUserbot\BotManager\Bot\BotRunner;
-use olml89\TelegramUserbot\BotManager\Bot\Command\CommandHandler;
+use olml89\TelegramUserbot\BotManager\Bot\Command\CommandBus;
 use olml89\TelegramUserbot\BotManager\Bot\Command\CommandRunner;
+use olml89\TelegramUserbot\BotManager\Bot\Command\Handler\BroadcastStatusHandler;
+use olml89\TelegramUserbot\BotManager\Bot\Command\Handler\CompletePhoneLoginHandler;
+use olml89\TelegramUserbot\BotManager\Bot\Command\Handler\LogoutHandler;
+use olml89\TelegramUserbot\BotManager\Bot\Command\Handler\PhoneLoginHandler;
+use olml89\TelegramUserbot\BotManager\Bot\Command\Handler\RequestStatusHandler;
+use olml89\TelegramUserbot\BotManager\Bot\Command\Handler\StartHandler;
+use olml89\TelegramUserbot\BotManager\Bot\Command\Handler\StopHandler;
 use olml89\TelegramUserbot\BotManager\Bot\Status\StatusInitializer;
 use olml89\TelegramUserbot\BotManager\Bot\Status\StatusManager;
 use olml89\TelegramUserbot\BotManager\Bot\Status\StatusSubscriber;
@@ -16,6 +22,7 @@ use olml89\TelegramUserbot\BotManager\Websocket\WebSocketServer;
 use olml89\TelegramUserbot\BotManager\Websocket\WebSocketServerConfig;
 use olml89\TelegramUserbot\Shared\App\Environment\Env;
 use olml89\TelegramUserbot\Shared\Bot\Command\CompletePhoneLogin\PhoneCodeStorage;
+use olml89\TelegramUserbot\Shared\Bot\Process\ProcessManager;
 use olml89\TelegramUserbot\Shared\Logger\Channel;
 use olml89\TelegramUserbot\Shared\Logger\LogRecordLogger;
 use olml89\TelegramUserbot\Shared\Logger\LogRecordLoggerFactory;
@@ -24,6 +31,7 @@ use olml89\TelegramUserbot\Shared\Redis\PhpRedis\PhpRedisStorage;
 use olml89\TelegramUserbot\Shared\Redis\RedisPublisher;
 use olml89\TelegramUserbot\Shared\Redis\RedisStorage;
 use olml89\TelegramUserbot\Shared\Redis\RedisSubscriber;
+use olml89\TelegramUserbot\Shared\Supervisor\SupervisorCtl;
 
 require dirname(__DIR__) . '/vendor/autoload.php';
 
@@ -47,6 +55,16 @@ $containerBuilder->addDefinitions([
             port: 8080,
         );
     }),
+
+    CommandBus::class => DI\autowire()->constructor([
+        DI\autowire(BroadcastStatusHandler::class),
+        DI\autowire(CompletePhoneLoginHandler::class),
+        DI\autowire(LogoutHandler::class),
+        DI\autowire(PhoneLoginHandler::class),
+        DI\autowire(RequestStatusHandler::class),
+        DI\autowire(StartHandler::class),
+        DI\autowire(StopHandler::class),
+    ]),
 
     RedisPublisher::class => DI\autowire(PhpRedisPublisher::class),
     RedisSubscriber::class => DI\autowire(ReactRedisSubscriber::class),
@@ -98,7 +116,7 @@ $containerBuilder->addDefinitions([
         return $logRecordLoggerFactory->create(Channel::Command);
     }),
 
-    CommandHandler::class => DI\autowire(BotRunner::class)->constructorParameter(
+    ProcessManager::class => DI\autowire(SupervisorCtl::class)->constructorParameter(
         'loggableLogger',
         DI\get(Channel::Command->value),
     ),

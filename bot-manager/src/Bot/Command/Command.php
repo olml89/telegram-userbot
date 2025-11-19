@@ -9,5 +9,4 @@ use Stringable;
 
 interface Command extends JsonSerializable, Stringable
 {
-    public function handle(CommandHandler $commandHandler): void;
 }

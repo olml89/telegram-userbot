@@ -20,7 +20,7 @@ enum Channel: string
     case PhoneLogin = 'bot/phone-login';
     case CompletePhoneLogin = 'bot/complete-phone-login';
     case Logout = 'bot/logout';
-    case Runner = 'bot/runner';
+    case Loop = 'bot/loop';
 
     public function logFilePath(LoggerConfig $config): string
     {

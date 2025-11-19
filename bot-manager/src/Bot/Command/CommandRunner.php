@@ -16,7 +16,7 @@ use Throwable;
 final readonly class CommandRunner
 {
     public function __construct(
-        private CommandHandler $commandHandler,
+        private CommandBus $commandBus,
         private LoggableLogger $loggableLogger,
     ) {
     }
@@ -28,7 +28,7 @@ final readonly class CommandRunner
     {
         try {
             $this->loggableLogger->log(new HandlingCommand($command));
-            $command->handle($this->commandHandler);
+            $this->commandBus->dispatch($command);
         } catch (Throwable $e) {
             $this->loggableLogger->log(new ErrorLogRecord('Error running the command', $e));
 

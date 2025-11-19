@@ -13,7 +13,10 @@ use danog\MadelineProto\Settings\Logger;
 use olml89\TelegramUserbot\Bot\Bot\BotConfig;
 use olml89\TelegramUserbot\Bot\Bot\BotSession;
 use olml89\TelegramUserbot\Bot\Bot\Status\StatusBroadcaster;
+use olml89\TelegramUserbot\Bot\Output\ExceptionOutput;
 use olml89\TelegramUserbot\Bot\Output\MadelineProtoCallableLoggerOutput;
+use olml89\TelegramUserbot\Shared\Logger\LogRecord\ErrorLogRecord;
+use olml89\TelegramUserbot\Shared\Logger\LogRecord\LoggableLogger;
 use Stringable;
 
 /**
@@ -26,40 +29,46 @@ final readonly class ApiInitializer
         private BotConfig $botConfig,
         private BotSession $botSession,
         private StatusBroadcaster $statusBroadcaster,
+        private LoggableLogger $loggableLogger,
     ) {
     }
 
-    /**
-     * @throws Exception
-     * @throws ApiInitializationException
-     */
-    public function initialize(ApiWrapper $apiWrapper): void
+    public function initialize(ApiWrapper $apiWrapper): bool
     {
-        $appInfo = new AppInfo()
-            ->setApiId($this->botConfig->apiId)
-            ->setApiHash($this->botConfig->apiHash);
+        try {
+            $appInfo = new AppInfo()
+                ->setApiId($this->botConfig->apiId)
+                ->setApiHash($this->botConfig->apiHash);
 
-        $loggerSettings = new Logger()
-            ->setType(MadelineProtoLogger::CALLABLE_LOGGER)
-            ->setExtra(
-                function (string|Stringable $output) use ($apiWrapper): void {
-                    echo $output . PHP_EOL;
+            $loggerSettings = new Logger()
+                ->setType(MadelineProtoLogger::CALLABLE_LOGGER)
+                ->setExtra(
+                    function (string|Stringable $output) use ($apiWrapper): void {
+                        echo $output . PHP_EOL;
 
-                    $this->statusBroadcaster->broadcast(
-                        $apiWrapper,
-                        new MadelineProtoCallableLoggerOutput($output),
-                    );
-                },
-            );
+                        $this->statusBroadcaster->broadcast(
+                            $apiWrapper,
+                            new MadelineProtoCallableLoggerOutput($output),
+                        );
+                    },
+                );
 
-        $settings = new Settings()
-            ->setAppInfo($appInfo)
-            ->setLogger($loggerSettings);
+            $settings = new Settings()
+                ->setAppInfo($appInfo)
+                ->setLogger($loggerSettings);
 
-        $api = new API($this->botSession->path(), $settings);
-        $apiWrapper->set($api);
+            $api = new API($this->botSession->path(), $settings);
+            $apiWrapper->set($api);
 
-        // Final broadcasting to get the current API status once the API instantiation has finished
-        $this->statusBroadcaster->broadcast($apiWrapper);
+            // Final broadcasting to get the current API status once the API instantiation has finished
+            $this->statusBroadcaster->broadcast($apiWrapper);
+
+            return true;
+        } catch (Exception|ApiInitializationException $e) {
+            $this->statusBroadcaster->broadcast($apiWrapper, new ExceptionOutput($e));
+            $this->loggableLogger->log(new ErrorLogRecord('Error instantiating MadelineProto API', $e));
+
+            return false;
+        }
     }
 }

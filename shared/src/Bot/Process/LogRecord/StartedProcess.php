@@ -4,18 +4,18 @@ declare(strict_types=1);
 
 namespace olml89\TelegramUserbot\Shared\Bot\Process\LogRecord;
 
-use olml89\TelegramUserbot\Shared\Bot\Process\ProcessType;
+use olml89\TelegramUserbot\Shared\Bot\Process\Process;
 use olml89\TelegramUserbot\Shared\Logger\LogRecord\InfoLogRecord;
 
 final readonly class StartedProcess extends InfoLogRecord
 {
-    public ProcessType $processType;
+    public Process $process;
 
-    public function __construct(ProcessType $processType)
+    public function __construct(Process $process)
     {
         parent::__construct(message: 'Started process in bot container');
 
-        $this->processType = $processType;
+        $this->process = $process;
     }
 
     /**
@@ -24,7 +24,7 @@ final readonly class StartedProcess extends InfoLogRecord
     protected function context(): array
     {
         return [
-            'process' => $this->processType->value,
+            'process' => $this->process->value,
         ];
     }
 }

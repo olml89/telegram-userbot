@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 use DI\Container;
 use DI\ContainerBuilder;
-use olml89\TelegramUserbot\Bot\Action\Action\Runner;
+use olml89\TelegramUserbot\Bot\Action\Action\Loop;
 use olml89\TelegramUserbot\Bot\Action\ActionRunner;
 use olml89\TelegramUserbot\Shared\Logger\Channel;
 use olml89\TelegramUserbot\Shared\Logger\LogRecord\LoggableLogger;
@@ -20,13 +20,13 @@ $containerBuilder->addDefinitions([
         /** @var LogRecordLoggerFactory $logRecordLoggerFactory */
         $logRecordLoggerFactory = $c->get(LogRecordLoggerFactory::class);
 
-        return $logRecordLoggerFactory->create(Channel::Runner);
+        return $logRecordLoggerFactory->create(Channel::Loop);
     }),
 
 ]);
 
-/** @var Runner $action */
-$action = $containerBuilder->build()->get(Runner::class);
+/** @var Loop $action */
+$action = $containerBuilder->build()->get(Loop::class);
 
 /** @var ActionRunner $actionRunner */
 $actionRunner = $containerBuilder->build()->get(ActionRunner::class);

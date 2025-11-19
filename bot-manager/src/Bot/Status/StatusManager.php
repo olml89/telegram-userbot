@@ -36,7 +36,7 @@ final readonly class StatusManager
     /**
      * Logs, stores and emits a received status
      */
-    public function process(Status $status): void
+    public function record(Status $status): void
     {
         $this->loggableLogger->log(new ReceivedStatus($status));
         $this->statusVault->set($status);

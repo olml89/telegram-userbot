@@ -8,7 +8,7 @@ use danog\MadelineProto\API;
 use danog\MadelineProto\EventHandler;
 use olml89\TelegramUserbot\Shared\Bot\Command\CompletePhoneLogin\PhoneCode;
 use olml89\TelegramUserbot\Shared\Bot\Process\ProcessManager;
-use olml89\TelegramUserbot\Shared\Bot\Process\ProcessType;
+use olml89\TelegramUserbot\Shared\Bot\Process\Process;
 use olml89\TelegramUserbot\Shared\Bot\Status\Status;
 use olml89\TelegramUserbot\Shared\Bot\Status\StatusType;
 
@@ -93,7 +93,7 @@ final class ApiWrapper
         $authorization = $api->getAuthorization();
 
         if ($authorization === API::LOGGED_IN) {
-            return $this->processManager->isRunning(ProcessType::Runner)
+            return $this->processManager->isRunning(Process::Loop)
                 ? StatusType::Running
                 : StatusType::LoggedIn;
         }

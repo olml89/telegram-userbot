@@ -13,18 +13,27 @@ use olml89\TelegramUserbot\Shared\Bot\Status\StatusType;
  */
 trait IsStatusRestrictedCommand
 {
+    use IsCommand;
+
     /**
      * @return StatusType[]
      */
-    abstract protected function allowedStatusTypes(): array;
+    abstract protected static function allowedStatusTypes(): array;
 
     /**
+     * @throws InvalidCommandException
      * @throws InvalidStatusException
      */
-    public function checkAllowedBy(Status $status): void
+    public static function validate(Command $command, Status $status): static
     {
-        if (!in_array($status->type, $this->allowedStatusTypes(), strict: true)) {
-            throw new InvalidStatusException($status->type, ...$this->allowedStatusTypes());
+        if (!$command instanceof static) {
+            throw new InvalidCommandException($command, static::class);
         }
+
+        if (!in_array($status->type, self::allowedStatusTypes(), strict: true)) {
+            throw new InvalidStatusException($status->type, ...self::allowedStatusTypes());
+        }
+
+        return $command;
     }
 }
