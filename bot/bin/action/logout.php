@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 use DI\Container;
 use DI\ContainerBuilder;
+use olml89\TelegramUserbot\Bot\Action\Action\Logout;
 use olml89\TelegramUserbot\Bot\Action\ActionRunner;
-use olml89\TelegramUserbot\Bot\Action\Logout;
 use olml89\TelegramUserbot\Shared\Logger\Channel;
 use olml89\TelegramUserbot\Shared\Logger\LogRecord\LoggableLogger;
 use olml89\TelegramUserbot\Shared\Logger\LogRecordLogger;

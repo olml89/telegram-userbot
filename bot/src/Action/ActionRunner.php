@@ -9,6 +9,8 @@ use olml89\TelegramUserbot\Bot\Action\LogRecord\ActionStarted;
 use olml89\TelegramUserbot\Bot\Bot\Status\StatusBroadcaster;
 use olml89\TelegramUserbot\Bot\Bot\Status\ApiStatusCalculator;
 use olml89\TelegramUserbot\Bot\MadelineProto\ApiBuilder;
+use olml89\TelegramUserbot\Shared\Bot\Process\ProcessManager;
+use olml89\TelegramUserbot\Shared\Bot\Process\ProcessNotStartedException;
 use olml89\TelegramUserbot\Shared\Bot\Process\ProcessType;
 use olml89\TelegramUserbot\Shared\Logger\LogRecord\ErrorLogRecord;
 use olml89\TelegramUserbot\Shared\Logger\LogRecord\LoggableLogger;
@@ -24,7 +26,7 @@ final readonly class ActionRunner
         private ApiStatusCalculator $apiStatusCalculator,
         private StatusBroadcaster $statusBroadcaster,
         private LoggableLogger $loggableLogger,
-        private LocalProcessRunner $localProcessRunner,
+        private ProcessManager $processManager,
     ) {
     }
 
@@ -46,8 +48,17 @@ final readonly class ActionRunner
             $this->statusBroadcaster->emit($currentStatus->withMessage($e->getMessage()));
             $this->loggableLogger->log(new ErrorLogRecord('Error running action', $e));
 
-            // Launch the request-status script in a separate process to not block the current API IPC process
-            $this->localProcessRunner->run(ProcessType::RequestStatus);
+            /**
+             * Clean-up
+             *
+             * At this point, the API object is broken.
+             * Launch the request-status script in a separate non-blocking process.
+             */
+            try {
+                $this->processManager->start(ProcessType::RequestStatus);
+            } catch (ProcessNotStartedException $e) {
+                $this->loggableLogger->log(new ErrorLogRecord('Error running cleanup', $e));
+            }
         }
     }
 }

@@ -2,9 +2,10 @@
 
 declare(strict_types=1);
 
-namespace olml89\TelegramUserbot\Bot\Action;
+namespace olml89\TelegramUserbot\Bot\Action\Action;
 
 use danog\MadelineProto\API;
+use olml89\TelegramUserbot\Bot\Action\Action;
 use olml89\TelegramUserbot\Bot\MadelineProto\BotEventHandler;
 
 final readonly class Runner implements Action

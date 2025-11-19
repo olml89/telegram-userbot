@@ -7,7 +7,7 @@ namespace olml89\TelegramUserbot\Shared\Supervisor;
 final readonly class SupervisorConfig
 {
     public function __construct(
-        public string $supervisorConfigPath,
+        public string $configPath,
     ) {
     }
 }

@@ -55,7 +55,7 @@ return $containerBuilder->addDefinitions([
 
     SupervisorConfig::class => DI\factory(function (): SupervisorConfig {
         return new SupervisorConfig(
-            supervisorConfigPath: Env::string('SUPERVISOR_CONFIG_PATH'),
+            configPath: Env::string('SUPERVISOR_CONFIG_PATH'),
         );
     }),
 

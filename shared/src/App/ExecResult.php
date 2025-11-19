@@ -33,10 +33,20 @@ final readonly class ExecResult implements Stringable
 
     public function __toString(): string
     {
-        if ($this->result === false || count($this->output) === 0) {
-            return '[No output returned]';
-        }
+        $result = ($this->result === false)
+            ? 'null'
+            : $this->result;
 
-        return $this->output[0];
+        $output = (count($this->output) === 0)
+            ? 'null'
+            : $this->output[0];
+
+        $string = json_encode([
+            'result' => $result,
+            'output' => $output,
+            'exitCode' => $this->code,
+        ]);
+
+        return ($string === false) ? '' : $string;
     }
 }

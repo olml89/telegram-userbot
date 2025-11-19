@@ -21,13 +21,13 @@ final readonly class SupervisorCtl implements ProcessManager
     ) {
     }
 
-    private function execute(string $supervisorCommand, ProcessType $processType): ExecResult
+    private function execute(SupervisorCommand $supervisorCommand, ProcessType $processType): ExecResult
     {
         $return = exec(
             command: sprintf(
                 'supervisorctl -c %s %s %s',
-                $this->supervisorConfig->supervisorConfigPath,
-                $supervisorCommand,
+                $this->supervisorConfig->configPath,
+                $supervisorCommand->value,
                 $processType->value,
             ),
             output: $output,
@@ -42,7 +42,7 @@ final readonly class SupervisorCtl implements ProcessManager
      */
     public function start(ProcessType $processType): ProcessResult
     {
-        $executed = $this->execute('start', $processType);
+        $executed = $this->execute(SupervisorCommand::Start, $processType);
         $processResult = ProcessResult::Started;
 
         if (!$executed->hasProcessResult($processResult)) {
@@ -57,7 +57,7 @@ final readonly class SupervisorCtl implements ProcessManager
      */
     public function stop(ProcessType $processType): ProcessResult
     {
-        $executed = $this->execute('stop', $processType);
+        $executed = $this->execute(SupervisorCommand::Stop, $processType);
         $processResult = ProcessResult::Stopped;
 
         if (!$executed->hasProcessResult($processResult)) {
@@ -70,7 +70,7 @@ final readonly class SupervisorCtl implements ProcessManager
     public function isRunning(ProcessType $processType): bool
     {
         return $this
-            ->execute('status', $processType)
+            ->execute(SupervisorCommand::Status, $processType)
             ->hasProcessResult(ProcessResult::Running);
     }
 }
