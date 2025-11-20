@@ -7,18 +7,20 @@ namespace olml89\TelegramUserbot\Bot\MadelineProto;
 use danog\MadelineProto\API;
 use danog\MadelineProto\EventHandler;
 use olml89\TelegramUserbot\Shared\Bot\Command\CompletePhoneLogin\PhoneCode;
-use olml89\TelegramUserbot\Shared\Bot\Process\ProcessManager;
-use olml89\TelegramUserbot\Shared\Bot\Process\Process;
 use olml89\TelegramUserbot\Shared\Bot\Status\Status;
-use olml89\TelegramUserbot\Shared\Bot\Status\StatusType;
 
 final class ApiWrapper
 {
     private ?API $api = null;
 
     public function __construct(
-        private readonly ProcessManager $processManager,
+        private readonly ApiStatusCalculator $apiStatusCalculator,
     ) {
+    }
+
+    public function status(): Status
+    {
+        return $this->apiStatusCalculator->calculate($this->api);
     }
 
     /**
@@ -77,33 +79,5 @@ final class ApiWrapper
     public function startLoop(string $eventHandlerClass): void
     {
         API::startAndLoopMulti([$this->api()], $eventHandlerClass);
-    }
-
-    public function status(): Status
-    {
-        return new Status($this->calculateStatusType($this->api));
-    }
-
-    public function calculateStatusType(?API $api): StatusType
-    {
-        if (is_null($api)) {
-            return StatusType::Disconnected;
-        }
-
-        $authorization = $api->getAuthorization();
-
-        if ($authorization === API::LOGGED_IN) {
-            return $this->processManager->isRunning(Process::Loop)
-                ? StatusType::Running
-                : StatusType::LoggedIn;
-        }
-
-        return match ($authorization) {
-            API::NOT_LOGGED_IN => StatusType::NotLoggedIn,
-            API::WAITING_CODE => StatusType::WaitingCode,
-            API::WAITING_SIGNUP => StatusType::WaitingSignup,
-            API::WAITING_PASSWORD => StatusType::WaitingPassword,
-            API::LOGGED_OUT => StatusType::LoggedOut,
-        };
     }
 }

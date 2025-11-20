@@ -26,6 +26,8 @@ final readonly class ActionRunner
 
     public function run(Action $action): void
     {
+        $this->loggableLogger->log(new ActionStarted($action));
+
         if (!$this->apiInitializer->initialize($this->apiWrapper)) {
             return;
         }
@@ -33,7 +35,6 @@ final readonly class ActionRunner
         $currentStatus = $this->apiWrapper->status();
 
         try {
-            $this->loggableLogger->log(new ActionStarted($action));
             $action->run($this->apiWrapper);
             $this->loggableLogger->log(new ActionFinished($action));
         } catch (Throwable $e) {
