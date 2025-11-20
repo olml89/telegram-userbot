@@ -50,10 +50,10 @@ run_phpstan() {
 
 if [ -z "$SERVICE" ]; then
 	# Analyze all services
-	run_phpstan "backend"
-	run_phpstan "bot-manager"
-	run_phpstan "bot"
 	run_phpstan "shared"
+	run_phpstan "backend"
+	run_phpstan "bot"
+	run_phpstan "bot-manager"
 else
 	case "$SERVICE" in
 		backend|bot-manager|bot|shared)

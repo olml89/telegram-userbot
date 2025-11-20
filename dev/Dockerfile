@@ -22,3 +22,6 @@ FROM base AS ci
 
 # Xdebug ci config (onky coverage mode)
 COPY dev/docker-php-ext-xdebug.ci.ini /usr/local/etc/php/docker-php-ext-xdebug.ini
+
+# Install git (needed to install dependencies on Github when dist fails due to rate limiting HTTP/2 429)
+RUN apk add --no-cache git

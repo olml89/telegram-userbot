@@ -79,10 +79,10 @@ run_phpunit() {
 
 if [ -z "$SERVICE" ]; then
 	# Test all services
-	run_phpunit "backend"
-	run_phpunit "bot-manager"
-	run_phpunit "bot"
 	run_phpunit "shared"
+	run_phpunit "backend"
+	run_phpunit "bot"
+	run_phpunit "bot-manager"
 else
 	case "$SERVICE" in
 		backend|bot-manager|bot|shared)

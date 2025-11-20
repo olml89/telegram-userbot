@@ -1,6 +1,7 @@
-[![PHPUnit](https://github.com/olml89/telegram-userbot/actions/workflows/ci.yml/badge.svg?branch=main&job=phpunit)]()
-![PHPStan](https://github.com/olml89/telegram-userbot/workflows/ci.yml/badge.svg?branch=main&job=phpstan)
-![Pint](https://github.com/olml89/telegram-userbot/workflows/ci.yml/badge.svg?branch=main&job=pint)
+![PHPUnit](https://github.com/olml89/telegram-userbot/actions/workflows/phpunit.yml/badge.svg?branch=main)
+[![codecov](https://codecov.io/gh/olml89/telegram-userbot/branch/main/graph/badge.svg)](https://codecov.io/gh/olml89/telegram-userbot)
+![PHPStan level:max](https://github.com/olml89/telegram-userbot/actions/workflows/phpstan.yml/badge.svg?branch=main)
+![Laravel Pint](https://github.com/olml89/telegram-userbot/actions/workflows/pint.yml/badge.svg?branch=main)
 
 # Telegram Userbot
 

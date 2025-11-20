@@ -1,8 +1,8 @@
 #!/bin/sh
 set -e
 
-echo "🔧 Installing backend dependencies..."
-/telegram-userbot/shared/bin/composer-install.sh
+# Install dependencies
+/telegram-userbot/shared/bin/composer-install.sh shared backend
 
 echo "✅ Container up [php-fpm]."
 php-fpm

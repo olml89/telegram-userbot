@@ -10,8 +10,12 @@ chmod +x phpunit/phpunit.sh
 chmod +x phpstan/phpstan.sh
 chmod +x pint/pint.sh
 
-echo "🔧 Installing dev dependencies..."
-/telegram-userbot/shared/bin/composer-install.sh
+# Install dependencies
+#
+# Dependencies from shared, backend, bot and bot-manager are:
+# - already installed because of the depends_on directive on the docker-compose.dev.yml
+# - properly installed because each Dockerfile installs the needed platform-reqs
+/telegram-userbot/shared/bin/composer-install.sh dev
 
 # Maintain the container always up with tail
 echo "✅ Container up [tail -f /dev/null]."

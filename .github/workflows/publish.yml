@@ -1,6 +1,8 @@
 name: GHCR
 
-# Builds and automatically publishes the Docker images
+# Builds and automatically publishes the dev Dockerfile to run the CI in GitHub
+#
+# The other Dockerfiles could be potentially uploaded to GHCR for production, deployment or other workflows.
 
 on:
   push:
@@ -8,11 +10,7 @@ on:
       - main
       - dev
     paths:
-      - 'shared/Dockerfile'
-      - 'dev/Dockerfile*'
-      - 'backend/Dockerfile'
-      - 'bot/Dockerfile'
-      - 'bot-manager/Dockerfile'
+      - 'dev/Dockerfile'
 
 jobs:
   build-and-push:
@@ -32,38 +30,6 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GHCR_TOKEN }}
-
-      - name: Build and push backend image
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          file: ./backend/Dockerfile
-          push: true
-          tags: ghcr.io/olml89/telegram-userbot-backend:dev
-
-      - name: Build and push bot image
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          file: ./bot/Dockerfile
-          push: true
-          tags: ghcr.io/olml89/telegram-userbot-bot:dev
-
-      - name: Build and push bot-manager image
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          file: ./bot-manager/Dockerfile
-          push: true
-          tags: ghcr.io/olml89/telegram-userbot-bot-manager:dev
-
-      - name: Build and push shared image
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          file: ./shared/Dockerfile
-          push: true
-          tags: ghcr.io/olml89/telegram-userbot-shared:latest
 
       - name: Build and push dev image (general CI)
         uses: docker/build-push-action@v5

@@ -45,10 +45,10 @@ run_pint() {
 
 if [ -z "$SERVICE" ]; then
 	# Format all services
-	run_pint "backend"
-	run_pint "bot-manager"
-	run_pint "bot"
 	run_pint "shared"
+	run_pint "backend"
+	run_pint "bot"
+	run_pint "bot-manager"
 else
 	case "$SERVICE" in
 		backend|bot-manager|bot|shared)

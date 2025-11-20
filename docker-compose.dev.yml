@@ -36,24 +36,11 @@ services:
       - ./shared:/telegram-userbot/shared
       - ./bot:/telegram-userbot/bot
 
-  shared:
-    container_name: telegram_userbot_shared
-    build:
-      dockerfile: shared/Dockerfile
-      context: .
-    environment:
-      APP_ENV: ${APP_ENV}
-    tty: true
-    entrypoint: [bin/entrypoint.sh]
-    volumes:
-      - ./shared:/telegram-userbot/shared
-
   dev:
     depends_on:
       - backend
       - bot
       - bot-manager
-      - shared
     container_name: telegram_userbot_dev
     build:
       dockerfile: dev/Dockerfile
