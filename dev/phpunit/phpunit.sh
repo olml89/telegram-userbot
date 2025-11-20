@@ -71,7 +71,10 @@ run_phpunit() {
 		echo "🔍 Add clover coverage"
 	fi
 
-	eval "$PHP $PHPUNIT"
+	if ! eval "$PHP $PHPUNIT"; then
+		echo "❌ phpunit found errors in '$SERVICE'"
+		exit 1
+	fi
 }
 
 if [ -z "$SERVICE" ]; then
@@ -91,3 +94,5 @@ else
 			;;
 	esac
 fi
+
+exit 0

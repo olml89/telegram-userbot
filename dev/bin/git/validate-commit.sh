@@ -15,9 +15,9 @@ if ! composer phpstan; then
   exit 1
 fi
 
-echo "🔍 Applying code linting (pint)..."
-if ! composer pint; then
-  echo "❌ pint failed. Exiting."
+echo "🔍 Checking code linting (pint)..."
+if ! composer pint -- --test; then
+  echo "❌ pint checks failed. Run pint linting before commiting."
   exit 1
 fi
 

@@ -103,6 +103,8 @@ redis:
 # The -T flag disables TTY, required when running from non-interactive environments like Git hooks
 .PHONY: phpstan pint phpunit
 
+# 1) Converts (bot, bot-manager, backend, shared) to --service=(bot, bot-manager, backend, shared)
+# 2) Converts ci to --ci (it runs phpstan without showing progress)
 phpstan:
 	$(eval ARGS := $(wordlist 2, $(words $(MAKECMDGOALS)), $(MAKECMDGOALS)))
 	$(eval CI :=)
@@ -112,6 +114,8 @@ phpstan:
 	$(eval SERVICE := $(filter-out ci,$(ARGS)))
 	docker-compose $(DOCKER_COMPOSE) $(ENV) exec -T dev composer phpstan -- $(if $(SERVICE),--service=$(SERVICE)) $(CI)
 
+# 1) Converts (bot, bot-manager, backend, shared) to --service=(bot, bot-manager, backend, shared)
+# 2) Converts test to --test (it runs checks without applying linting)
 pint:
 	$(eval ARGS := $(wordlist 2, $(words $(MAKECMDGOALS)), $(MAKECMDGOALS)))
 	$(eval TEST :=)

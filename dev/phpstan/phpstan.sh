@@ -37,11 +37,15 @@ run_phpstan() {
 	#
 	# The --ansi flag forces colored output, even when the command is run in a non-interactive shell
     # (e.g., from within a Git hook). This helps maintain readable output with syntax highlighting.
-    php -n -c "/usr/local/etc/php/docker-php-ext-opcache.ini" -d memory_limit=4G ./vendor/bin/phpstan analyse \
+    if ! php -n -c "/usr/local/etc/php/docker-php-ext-opcache.ini" -d memory_limit=4G ./vendor/bin/phpstan analyse \
     	--ansi \
     	--autoload-file="$AUTOLOAD" \
     	--configuration="$CONFIG" \
 	 	$NO_PROGRESS_FLAG
+	then
+		echo "❌ phpstan found errors in '$SERVICE'"
+		exit 1
+	fi
 }
 
 if [ -z "$SERVICE" ]; then
@@ -61,3 +65,5 @@ else
 		;;
 	esac
 fi
+
+exit 0
