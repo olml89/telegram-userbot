@@ -25,18 +25,12 @@ final class Kernel extends BaseKernel
 
     protected function configureContainer(ContainerConfigurator $container): void
     {
-        $container->extension('framework', [
-            'http_method_override' => true,
-        ]);
+        $container->import(resource: $this->getProjectDir() . '/config/framework.yaml');
     }
 
     protected function configureRoutes(RoutingConfigurator $routes): void
     {
-        $routes->import(
-            resource: $this->getProjectDir() . '/src/Infrastructure/Symfony/Http/Controller',
-            type: 'attribute',
-        );
-
+        $routes->import(resource: $this->getProjectDir() . '/config/routes.yaml');
     }
 
     public function getProjectDir(): string
