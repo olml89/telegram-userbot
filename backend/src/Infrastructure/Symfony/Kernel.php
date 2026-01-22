@@ -7,10 +7,9 @@ namespace olml89\TelegramUserbot\Backend\Infrastructure\Symfony;
 use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
 use Symfony\Bundle\FrameworkBundle\Kernel\MicroKernelTrait;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Bundle\BundleInterface;
 use Symfony\Component\HttpKernel\Kernel as BaseKernel;
-use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Routing\Loader\Configurator\RoutingConfigurator;
 
 final class Kernel extends BaseKernel
 {
@@ -31,11 +30,17 @@ final class Kernel extends BaseKernel
         ]);
     }
 
-    #[Route('/health', name: 'health', methods: ['GET'])]
-    public function health(): JsonResponse
+    protected function configureRoutes(RoutingConfigurator $routes): void
     {
-        return new JsonResponse([
-            'time' => time(),
-        ]);
+        $routes->import(
+            resource: $this->getProjectDir() . '/src/Infrastructure/Symfony/Http/Controller',
+            type: 'attribute',
+        );
+
+    }
+
+    public function getProjectDir(): string
+    {
+        return dirname(__DIR__, levels: 3);
     }
 }
