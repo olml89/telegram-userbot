@@ -11,7 +11,10 @@
     ],
     "minimum-stability": "stable",
     "require": {
-        "php": "^8.4"
+        "php": "^8.4",
+        "olml89/telegram-userbot-shared": "*",
+        "symfony/framework-bundle": "^8.0",
+        "symfony/runtime": "^8.0"
     },
     "repositories": [
         {
@@ -26,6 +29,11 @@
         "psr-4": {
             "olml89\\TelegramUserbot\\Backend\\": "src/",
             "Test\\Backend\\Unit\\": "tests/Unit"
+        }
+    },
+    "config": {
+        "allow-plugins": {
+            "symfony/runtime": true
         }
     }
 }

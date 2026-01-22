@@ -34,7 +34,7 @@ return $containerBuilder->addDefinitions([
 
     AppConfig::class => DI\factory(function (): AppConfig {
         return new AppConfig(
-            environment: Environment::tryFrom(Env::string('APP_ENV')) ?? Environment::Production,
+            environment: Environment::load(Env::string('APP_ENV')),
         );
     }),
 
