@@ -15,9 +15,9 @@ DOCKER_COMPOSE := -f docker-compose.prod.yml
 ENV := --env-file .env --env-file backend/.env
 
 
-# Override of the docker-compose on development
+# Override of the docker compose on development
 ifneq ($(APP_ENV),production)
-    $(info Using development environment -> adding docker-compose.dev.yml)
+    $(info Using development environment -> adding docker compose.dev.yml)
     DOCKER_COMPOSE += -f docker-compose.dev.yml
 endif
 
@@ -28,26 +28,26 @@ endif
 build:
 	$(eval SERVICE := $(word 2, $(MAKECMDGOALS)))
 	$(if $(SERVICE), \
-		docker-compose $(DOCKER_COMPOSE) $(ENV) build --no-cache $(SERVICE), \
-		docker-compose $(DOCKER_COMPOSE) $(ENV) build --no-cache \
+		docker compose $(DOCKER_COMPOSE) $(ENV) build --no-cache $(SERVICE), \
+		docker compose $(DOCKER_COMPOSE) $(ENV) build --no-cache \
 	)
 
 upd:
 	$(eval SERVICE := $(word 2, $(MAKECMDGOALS)))
 	$(if $(SERVICE), \
-		docker-compose $(DOCKER_COMPOSE) $(ENV) up -d --remove-orphans $(SERVICE), \
-		docker-compose $(DOCKER_COMPOSE) $(ENV) up -d --remove-orphans \
+		docker compose $(DOCKER_COMPOSE) $(ENV) up -d --remove-orphans $(SERVICE), \
+		docker compose $(DOCKER_COMPOSE) $(ENV) up -d --remove-orphans \
 	)
 
 stop:
 	$(eval SERVICE := $(word 2, $(MAKECMDGOALS)))
 	$(if $(SERVICE), \
-		docker-compose $(DOCKER_COMPOSE) $(ENV) stop $(SERVICE), \
-		docker-compose $(DOCKER_COMPOSE) $(ENV) stop \
+		docker compose $(DOCKER_COMPOSE) $(ENV) stop $(SERVICE), \
+		docker compose $(DOCKER_COMPOSE) $(ENV) stop \
 	)
 
 down:
-	docker-compose $(DOCKER_COMPOSE) $(ENV) down
+	docker compose $(DOCKER_COMPOSE) $(ENV) down
 
 
 # Debug containers
@@ -57,46 +57,46 @@ down:
 restart:
 	$(eval SERVICE := $(word 2, $(MAKECMDGOALS)))
 	$(if $(SERVICE),,$(error you must specify a container to restart, for example: make restart backend))
-	docker-compose $(DOCKER_COMPOSE) $(ENV) restart $(SERVICE)
+	docker compose $(DOCKER_COMPOSE) $(ENV) restart $(SERVICE)
 
 debug:
 	$(eval SERVICE := $(word 2, $(MAKECMDGOALS)))
 	$(if $(SERVICE),,$(error you must specify a container to debug, for example: make debug backend))
-	docker-compose $(DOCKER_COMPOSE) $(ENV) run --rm --entrypoint sh $(SERVICE)
+	docker compose $(DOCKER_COMPOSE) $(ENV) run --rm --entrypoint sh $(SERVICE)
 
 
 # Shell access containers
 .PHONY: alloy backend bot bot-manager dev grafana loki nginx postgres redis
 
 alloy:
-	docker-compose $(DOCKER_COMPOSE) $(ENV) exec alloy /bin/sh
+	docker compose $(DOCKER_COMPOSE) $(ENV) exec alloy /bin/sh
 
 backend:
-	docker-compose $(DOCKER_COMPOSE) $(ENV) exec backend /bin/sh
+	docker compose $(DOCKER_COMPOSE) $(ENV) exec backend /bin/sh
 
 bot:
-	docker-compose $(DOCKER_COMPOSE) $(ENV) exec bot /bin/sh
+	docker compose $(DOCKER_COMPOSE) $(ENV) exec bot /bin/sh
 
 bot-manager:
-	docker-compose $(DOCKER_COMPOSE) $(ENV) exec bot-manager /bin/sh
+	docker compose $(DOCKER_COMPOSE) $(ENV) exec bot-manager /bin/sh
 
 dev:
-	docker-compose $(DOCKER_COMPOSE) $(ENV) exec dev /bin/sh
+	docker compose $(DOCKER_COMPOSE) $(ENV) exec dev /bin/sh
 
 grafana:
-	docker-compose $(DOCKER_COMPOSE) $(ENV) exec grafana /bin/sh
+	docker compose $(DOCKER_COMPOSE) $(ENV) exec grafana /bin/sh
 
 loki:
-	docker-compose $(DOCKER_COMPOSE) $(ENV) exec loki /bin/sh
+	docker compose $(DOCKER_COMPOSE) $(ENV) exec loki /bin/sh
 
 nginx:
-	docker-compose $(DOCKER_COMPOSE) $(ENV) exec nginx /bin/sh
+	docker compose $(DOCKER_COMPOSE) $(ENV) exec nginx /bin/sh
 
 postgres:
-	docker-compose $(DOCKER_COMPOSE) $(ENV) exec -e PGPASSWORD=$(DB_PASSWORD) postgres psql -U $(DB_USER) -d $(DB_NAME)
+	docker compose $(DOCKER_COMPOSE) $(ENV) exec -e PGPASSWORD=$(DB_PASSWORD) postgres psql -U $(DB_USER) -d $(DB_NAME)
 
 redis:
-	docker-compose $(DOCKER_COMPOSE) $(ENV) exec redis redis-cli
+	docker compose $(DOCKER_COMPOSE) $(ENV) exec redis redis-cli
 
 
 # Development recipes
@@ -112,7 +112,7 @@ phpstan:
 		$(if $(filter ci,$(arg)),\
 			$(eval CI := --ci)))
 	$(eval SERVICE := $(filter-out ci,$(ARGS)))
-	docker-compose $(DOCKER_COMPOSE) $(ENV) exec -T dev composer phpstan -- $(if $(SERVICE),--service=$(SERVICE)) $(CI)
+	docker compose $(DOCKER_COMPOSE) $(ENV) exec -T dev composer phpstan -- $(if $(SERVICE),--service=$(SERVICE)) $(CI)
 
 # 1) Converts (bot, bot-manager, backend, shared) to --service=(bot, bot-manager, backend, shared)
 # 2) Converts test to --test (it runs checks without applying linting)
@@ -123,7 +123,7 @@ pint:
 		$(if $(filter test,$(arg)),\
 			$(eval TEST := --test)))
 	$(eval SERVICE := $(filter-out test,$(ARGS)))
-	docker-compose $(DOCKER_COMPOSE) $(ENV) exec -T dev composer pint -- $(if $(SERVICE),--service=$(SERVICE)) $(TEST)
+	docker compose $(DOCKER_COMPOSE) $(ENV) exec -T dev composer pint -- $(if $(SERVICE),--service=$(SERVICE)) $(TEST)
 
 # 1) Converts (bot, bot-manager, backend, shared) to --service=(bot, bot-manager, backend, shared)
 # 2) Converts ci to --ci
@@ -156,7 +156,7 @@ phpunit:
 			)\
 		)\
 	)
-	docker-compose $(DOCKER_COMPOSE) $(ENV) exec -T dev composer phpunit -- $(FINAL_ARGS)
+	docker compose $(DOCKER_COMPOSE) $(ENV) exec -T dev composer phpunit -- $(FINAL_ARGS)
 
 # Catch-all pattern rule to prevent Make from complaining about unknown targets
 %:
