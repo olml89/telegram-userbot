@@ -1,0 +1,3 @@
+controllers:
+  resource: ../../src/Infrastructure/Symfony/Http/Controller
+  type: attribute
