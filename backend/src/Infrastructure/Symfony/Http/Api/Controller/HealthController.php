@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace olml89\TelegramUserbot\Backend\Infrastructure\Symfony\Http\Controller;
+namespace olml89\TelegramUserbot\Backend\Infrastructure\Symfony\Http\Api\Controller;
 
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Attribute\Route;

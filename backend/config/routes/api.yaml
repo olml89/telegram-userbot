@@ -1,0 +1,4 @@
+api:
+  resource: ../../src/Infrastructure/Symfony/Http/Api/Controller
+  type: attribute
+  prefix: api
