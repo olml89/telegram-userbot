@@ -33,6 +33,9 @@ use olml89\TelegramUserbot\Shared\Redis\RedisStorage;
 use olml89\TelegramUserbot\Shared\Redis\RedisSubscriber;
 use olml89\TelegramUserbot\Shared\Supervisor\SupervisorCtl;
 
+/**
+ * Load bot-manager autoloader
+ */
 require dirname(__DIR__) . '/vendor/autoload.php';
 
 /**

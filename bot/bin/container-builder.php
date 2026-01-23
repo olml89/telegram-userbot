@@ -13,14 +13,17 @@ use olml89\TelegramUserbot\Shared\Redis\PhpRedis\PhpRedisStorage;
 use olml89\TelegramUserbot\Shared\Redis\RedisPublisher;
 use olml89\TelegramUserbot\Shared\Redis\RedisStorage;
 
-require dirname(__DIR__).'/vendor/autoload.php';
+/**
+ * Load bot autoloader
+ */
+require dirname(__DIR__) . '/vendor/autoload.php';
 
 /**
  * Get the shared PHP-DI ContainerBuilder
  *
  * @var ContainerBuilder<Container> $containerBuilder
  */
-$containerBuilder = require dirname(__DIR__, 2).'/shared/bin/container-builder.php';
+$containerBuilder = require dirname(__DIR__, 2) . '/shared/bin/container-builder.php';
 
 /**
  * Load bot env vars and definitions

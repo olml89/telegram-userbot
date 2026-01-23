@@ -16,9 +16,11 @@ use olml89\TelegramUserbot\Shared\Supervisor\SupervisorConfig;
 use olml89\TelegramUserbot\Shared\Supervisor\SupervisorCtl;
 
 /**
- * Don't use an autoloader here, since this is not a service that is being run, this is always imported
- * by external services.
- *
+ * Load shared autoloader
+ */
+require dirname(__DIR__) . '/vendor/autoload.php';
+
+/**
  * Configurate the shared PHP-DI ContainerBuilder
  *
  * @var ContainerBuilder<Container> $containerBuilder

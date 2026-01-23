@@ -12,10 +12,12 @@ WORKDIR /tmp
 # - git: needed to clone the repository
 # - build-base: needed to compile C/C++
 # - cmake: needed by PrimeModule to build
+# - netcat-openbsd: needed to perform the health check for the container
 RUN apk add --no-cache \
     git \
     build-base \
-    cmake
+    cmake \
+    netcat-openbsd
 
 # Clone and compile PrimeModule-ext to libprimemodule.so
 RUN git clone https://github.com/danog/PrimeModule-ext && \

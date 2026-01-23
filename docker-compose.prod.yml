@@ -5,7 +5,8 @@ services:
   nginx:
     container_name: telegram_userbot_nginx
     depends_on:
-      - backend
+      backend:
+        condition: service_started
     image: nginx:stable-alpine
     ports:
       - ${BACKEND_PORT}:80
@@ -19,14 +20,15 @@ services:
   backend:
     container_name: telegram_userbot_backend
     depends_on:
-      - bot-manager
-      - alloy
+      alloy:
+        condition: service_started
+      bot-manager:
+        condition: service_started
     build:
       dockerfile: backend/Dockerfile
       target: prod
     environment:
       APP_ENV: ${APP_ENV}
-      APP_DEBUGA: 'abcde'
     entrypoint: [bin/entrypoint.sh]
     extra_hosts:
       - 'host.docker.internal:host-gateway'
@@ -38,9 +40,12 @@ services:
   bot-manager:
     container_name: telegram_userbot_bot_manager
     depends_on:
-      - redis
-      - bot
-      - alloy
+      redis:
+        condition: service_started
+      alloy:
+        condition: service_started
+      bot:
+        condition: service_healthy
     build:
       dockerfile: bot-manager/Dockerfile
       target: prod
@@ -58,8 +63,16 @@ services:
   bot:
     container_name: telegram_userbot_bot
     depends_on:
-      - redis
-      - alloy
+      alloy:
+        condition: service_started
+      redis:
+        condition: service_started
+    healthcheck:
+      # Wait until the 9001 port is responsive, meaning supervisor is already running
+      test: [CMD, nc, -z, 0.0.0.0, '9001']
+      interval: 5s
+      timeout: 10s
+      retries: 50
     build:
       dockerfile: bot/Dockerfile
       target: prod
@@ -103,7 +116,8 @@ services:
   # Centralised logging services
   loki:
     depends_on:
-      - alloy
+      alloy:
+        condition: service_started
     container_name: telegram_userbot_loki
     image: grafana/loki:latest
     networks:
@@ -127,7 +141,8 @@ services:
   grafana:
     container_name: telegram_userbot_grafana
     depends_on:
-      - loki
+      loki:
+        condition: service_started
     image: grafana/grafana:latest
     environment:
       GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_SECURITY_ADMIN_PASSWORD}
