@@ -17,6 +17,7 @@ use olml89\TelegramUserbot\BotManager\Websocket\LogRecord\ClosedConnection;
 use olml89\TelegramUserbot\BotManager\Websocket\LogRecord\Listening;
 use olml89\TelegramUserbot\BotManager\Websocket\LogRecord\OpenedConnection;
 use olml89\TelegramUserbot\Shared\Bot\Command\CompletePhoneLogin\InvalidPhoneCodeException;
+use olml89\TelegramUserbot\Shared\Error\SentryReporter;
 use olml89\TelegramUserbot\Shared\Logger\LogRecord\ErrorLogRecord;
 use olml89\TelegramUserbot\Shared\Logger\LogRecord\LoggableLogger;
 use Ratchet\ConnectionInterface;
@@ -41,6 +42,7 @@ final readonly class WebSocketServer implements MessageComponentInterface
         private CommandFactory $commandFactory,
         private CommandRunner $commandRunner,
         private LoggableLogger $loggableLogger,
+        private SentryReporter $sentryReporter,
     ) {
     }
 
@@ -92,6 +94,9 @@ final readonly class WebSocketServer implements MessageComponentInterface
     {
         // Log the exception
         $this->loggableLogger->log(new ErrorLogRecord('Error on the websocket server loop', $e));
+
+        // Report to Sentry
+        $this->sentryReporter->report($e);
 
         // Emit the current status with the exception message (and stack trace on development)
         $this->statusManager->emit($e);
