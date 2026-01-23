@@ -7,7 +7,6 @@ namespace olml89\TelegramUserbot\BotManager\Bot\Status;
 use olml89\TelegramUserbot\BotManager\Bot\Status\LogRecord\ReceivedStatus;
 use olml89\TelegramUserbot\BotManager\Websocket\WebSocketConnectionPool;
 use olml89\TelegramUserbot\Shared\App\AppConfig;
-use olml89\TelegramUserbot\Shared\App\Environment\Environment;
 use olml89\TelegramUserbot\Shared\Bot\Status\Status;
 use olml89\TelegramUserbot\Shared\Logger\LogRecord\LoggableLogger;
 use Throwable;
@@ -53,7 +52,7 @@ final readonly class StatusManager
 
         if (!is_null($e)) {
             $status = $status->withMessage(
-                $this->appConfig->environment === Environment::Development ? $e : $e->getMessage()
+                $this->appConfig->environment->isDebuggable() ? $e : $e->getMessage(),
             );
         }
 

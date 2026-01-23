@@ -35,8 +35,6 @@ use Throwable;
 final readonly class WebSocketServer implements MessageComponentInterface
 {
     public function __construct(
-        private StatusInitializer $statusInitializer,
-        private WebSocketServerConfig $webSocketServerConfig,
         private WebSocketConnectionPool $socketConnectionPool,
         private StatusManager $statusManager,
         private CommandFactory $commandFactory,
@@ -46,12 +44,12 @@ final readonly class WebSocketServer implements MessageComponentInterface
     ) {
     }
 
-    public function listen(): void
+    public function listen(StatusInitializer $statusInitializer, WebSocketServerConfig $config): void
     {
         /**
          * Initialize Status of the StatusManager
          */
-        $this->statusInitializer->initialize();
+        $statusInitializer->initialize();
 
         /**
          * Listen to WebSocket connections
@@ -63,13 +61,13 @@ final readonly class WebSocketServer implements MessageComponentInterface
                 component: new WsServer($this),
             ),
             socket: new SocketServer(
-                uri: $this->webSocketServerConfig->uri(),
+                uri: $config->uri(),
                 loop: $loop,
             ),
             loop: $loop,
         );
 
-        $this->loggableLogger->log(new Listening($this->webSocketServerConfig));
+        $this->loggableLogger->log(new Listening($config));
         $loop->run();
     }
 
