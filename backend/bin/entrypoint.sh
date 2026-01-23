@@ -1,8 +1,8 @@
 #!/bin/sh
 set -e
 
-echo "🔧 Creating /telegram-userbot/backend/var/log..."
-mkdir -p /telegram-userbot/backend/var/log
+echo "🔧 Making /telegram-userbot/backend/bin/console executable..."
+chmod +x /telegram-userbot/backend/bin/console
 
 echo "🔧 Creating /telegram-userbot/backend/var/cache..."
 mkdir -p /telegram-userbot/backend/var/cache

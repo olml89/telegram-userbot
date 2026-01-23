@@ -15,9 +15,12 @@ COPY backend/ ./
 # Copy shared codebase to the container
 COPY shared/ /telegram-userbot/shared/
 
-# Create writable dirs for Symfony
-RUN mkdir -p /telegram-userbot/backend/var/cache /telegram-userbot/backend/var/log  &&  \
+# Create writable cache dir for Symfony
+RUN mkdir -p /telegram-userbot/backend/var/cache  &&  \
     chown -R www-data:www-data /telegram-userbot/backend/var
+
+# Make bin/console executable
+RUN chmod +x /telegram-userbot/backend/bin/console
 
 # Enable Opcache
 RUN docker-php-ext-enable opcache

@@ -1,0 +1,28 @@
+monolog:
+  handlers:
+
+    # Main app logger (debug, info, notice)
+    app:
+      type: filter
+      handler: app_stream
+      min_level: debug
+      max_level: notice
+      channels:
+        - '!event'
+
+    app_stream:
+      type: stream
+      path: /telegram-userbot/shared/var/log/backend/app.log
+
+    # Error logger (error, critical, alert, emergency)
+    error:
+      type: filter
+      handler: error_stream
+      min_level: error
+      max_level: emergency
+      channels:
+        - '!event'
+
+    error_stream:
+      type: stream
+      path: /telegram-userbot/shared/var/log/backend/error.log

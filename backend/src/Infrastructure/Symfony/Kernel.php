@@ -4,9 +4,15 @@ declare(strict_types=1);
 
 namespace olml89\TelegramUserbot\Backend\Infrastructure\Symfony;
 
+use olml89\TelegramUserbot\Backend\Infrastructure\Symfony\Configuration\FrameworkConfigurator;
+use olml89\TelegramUserbot\Backend\Infrastructure\Symfony\Configuration\PackageConfigurator;
+use olml89\TelegramUserbot\Backend\Infrastructure\Symfony\Configuration\RouteConfigurator;
+use olml89\TelegramUserbot\Backend\Infrastructure\Symfony\Configuration\ServiceConfigurator;
 use olml89\TelegramUserbot\Shared\App\Environment\Environment;
+use Sentry\SentryBundle\SentryBundle;
 use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
 use Symfony\Bundle\FrameworkBundle\Kernel\MicroKernelTrait;
+use Symfony\Bundle\MonologBundle\MonologBundle;
 use Symfony\Bundle\TwigBundle\TwigBundle;
 use Symfony\Bundle\WebProfilerBundle\WebProfilerBundle;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
@@ -18,42 +24,58 @@ final class Kernel extends BaseKernel
 {
     use MicroKernelTrait;
 
+    private readonly Environment $env;
+
+    public function __construct(Environment $env)
+    {
+        $this->env = $env;
+
+        parent::__construct(environment: $env->value, debug: $env->isDebuggable());
+    }
+
     /**
      * @return iterable<int, BundleInterface>
      */
     public function registerBundles(): iterable
     {
         yield new FrameworkBundle();
+        yield new MonologBundle();
         yield new TwigBundle();
 
-        if ($this->getEnvironment() === Environment::Development->value) {
+        if ($this->env === Environment::Development) {
             yield new WebProfilerBundle();
+        }
+
+        if ($this->env === Environment::Production) {
+            yield new SentryBundle();
         }
     }
 
     protected function configureContainer(ContainerConfigurator $container): void
     {
         /**
-         * Load framework configuration
+         * Register all classes in src as services, setting up autowiring by default
          */
-        $container->import(resource: $this->getConfigDir() . '/framework.yaml');
+        $container
+            ->services()
+            ->load(
+                namespace: 'olml89\\TelegramUserbot\\Backend\\',
+                resource: $this->getProjectDir() . '/src/*',
+            )
+            ->autowire()
+            ->autoconfigure();
 
         /**
-         * Load packages (Symfony related services)
-         * Overwrite with current environment packages configuration
+         * Load framework, packages and services configuration
          */
-        $container->import(resource: $this->getConfigDir() . '/packages/**/*.yaml');
-        $container->import(resource: $this->getConfigDir() . '/packages/' . $this->getEnvironment() . '/**/*.yaml');
+        new FrameworkConfigurator($this->getConfigDir())->configure($container);
+        new PackageConfigurator($this->getConfigDir(), $this->env)->configure($container);
+        new ServiceConfigurator($this->getConfigDir(), $this->env)->configure($container);
     }
 
     protected function configureRoutes(RoutingConfigurator $routes): void
     {
-        /**
-         * Load routes
-         * Overwrite with current environment routes
-         */
-        $routes->import(resource: $this->getConfigDir() . '/routes/**/*.yaml');
-        $routes->import(resource: $this->getConfigDir() . '/routes/' . $this->getEnvironment() . '/**/*.yaml');
+        new RouteConfigurator($this->getConfigDir(), $this->env)->configure($routes);
     }
 
     public function getProjectDir(): string
