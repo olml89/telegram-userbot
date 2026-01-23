@@ -32,26 +32,26 @@ Env::load(dirname(__DIR__));
 
 return $containerBuilder->addDefinitions([
 
-    BotConfig::class => DI\factory(function (): BotConfig {
-        return new BotConfig(
+    BotConfig::class => DI\factory(
+        fn (): BotConfig => new BotConfig(
             apiId: Env::int('TELEGRAM_API_ID'),
             apiHash: Env::string('TELEGRAM_API_HASH'),
             phoneNumber: Env::string('TELEGRAM_PHONE_NUMBER'),
             username: Env::string('TELEGRAM_USERNAME'),
-        );
-    }),
+        ),
+    ),
 
-    BotSession::class => DI\factory(function (): BotSession {
-        return new BotSession(
+    BotSession::class => DI\factory(
+        fn (): BotSession => new BotSession(
             path: '/telegram-userbot/bot/var/madeline.session',
-        );
-    }),
+        ),
+    ),
 
-    BotLogFile::class => DI\factory(function (): BotLogFile {
-        return new BotLogFile(
+    BotLogFile::class => DI\factory(
+        fn (): BotLogFile => new BotLogFile(
             path: '/telegram-userbot/bot/MadelineProto.log',
-        );
-    }),
+        ),
+    ),
 
     RedisPublisher::class => DI\autowire(AmphpRedisPublisher::class),
     RedisStorage::class => DI\autowire(PhpRedisStorage::class),

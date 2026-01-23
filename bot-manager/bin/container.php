@@ -52,12 +52,12 @@ Env::load(dirname(__DIR__));
 
 $containerBuilder->addDefinitions([
 
-    WebSocketServerConfig::class => DI\factory(function (): WebSocketServerConfig {
-        return new WebSocketServerConfig(
+    WebSocketServerConfig::class => DI\factory(
+        fn (): WebSocketServerConfig => new WebSocketServerConfig(
             host: '0.0.0.0',
             port: 8080,
-        );
-    }),
+        ),
+    ),
 
     CommandBus::class => DI\autowire()->constructor([
         DI\autowire(BroadcastStatusHandler::class),

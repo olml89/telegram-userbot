@@ -35,32 +35,32 @@ Env::load(dirname(__DIR__));
 
 return $containerBuilder->addDefinitions([
 
-    AppConfig::class => DI\factory(function (): AppConfig {
-        return new AppConfig(
+    AppConfig::class => DI\factory(
+        fn (): AppConfig => new AppConfig(
             environment: Environment::load(Env::string('APP_ENV')),
-        );
-    }),
+        ),
+    ),
 
-    LoggerConfig::class => DI\factory(function (): LoggerConfig {
-        return new LoggerConfig(
+    LoggerConfig::class => DI\factory(
+        fn (): LoggerConfig => new LoggerConfig(
             logDirectory: Env::string('LOG_DIRECTORY'),
             level: Level::tryFrom(Env::int('LOG_LEVEL')) ?? Level::Debug,
-        );
-    }),
+        ),
+    ),
 
-    RedisConfig::class => DI\factory(function (): RedisConfig {
-        return new RedisConfig(
+    RedisConfig::class => DI\factory(
+        fn (): RedisConfig => new RedisConfig(
             host: 'redis',
             statusChannel: Env::string('REDIS_STATUS_CHANNEL'),
             phoneCodeStorageKey: Env::string('REDIS_PHONE_CODE_STORAGE_KEY'),
-        );
-    }),
+        ),
+    ),
 
-    SupervisorConfig::class => DI\factory(function (): SupervisorConfig {
-        return new SupervisorConfig(
+    SupervisorConfig::class => DI\factory(
+        fn (): SupervisorConfig => new SupervisorConfig(
             configPath: Env::string('SUPERVISOR_CONFIG_PATH'),
-        );
-    }),
+        ),
+    ),
 
     SentryConfig::class => DI\factory(
         fn (): SentryConfig => new SentryConfig(
