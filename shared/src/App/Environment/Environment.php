@@ -28,6 +28,6 @@ enum Environment: string
 
     public static function load(string $value): self
     {
-        return self::tryFrom($value) ?? self::Production;
+        return self::from($value);
     }
 }
