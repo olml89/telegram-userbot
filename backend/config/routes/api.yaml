@@ -2,3 +2,7 @@ api:
   resource: ../../src/Infrastructure/Symfony/Http/Api/Controller
   type: attribute
   prefix: api
+
+web:
+  resource: ../../src/Infrastructure/Symfony/Http/Web/Controller
+  type: attribute

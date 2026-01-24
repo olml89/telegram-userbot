@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Admin Dashboard{% endblock %}</title>
+
+    {# Link to external CSS file #}
+    <link rel="stylesheet" href="{{ asset('css/admin.css') }}">
+
+    {% block stylesheets %}{% endblock %}
+</head>
+<body>
+<div class="admin-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <h1>🤖 Telegram Bot</h1>
+            <p>Admin Dashboard</p>
+        </div>
+        <nav class="sidebar-menu">
+            <a href="{{ path('dashboard') }}" class="menu-item {% if active_menu == 'dashboard' %}active{% endif %}">
+                <span class="menu-item-icon">📊</span>
+                Dashboard
+            </a>
+            <a href="{{ path('content') }}" class="menu-item {% if active_menu == 'content' %}active{% endif %}">
+                <span class="menu-item-icon">📝</span>
+                Content
+            </a>
+            <a href="{{ path('userbot') }}" class="menu-item {% if active_menu == 'userbot' %}active{% endif %}">
+                <span class="menu-item-icon">👤</span>
+                Userbot
+            </a>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        {% block body %}{% endblock %}
+    </main>
+</div>
+
+{% block javascripts %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,172 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Content Management - Admin Panel{% endblock %}
+
+{% block body %}
+    <div class="content-header">
+        <h2>Content Management</h2>
+        <p>Manage your bot's content, messages, and automated responses.</p>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="action-bar">
+        <button class="btn btn-primary">
+            <span>➕</span> Add New Content
+        </button>
+        <button class="btn btn-secondary">
+            <span>📤</span> Import
+        </button>
+        <button class="btn btn-secondary">
+            <span>📥</span> Export
+        </button>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="dashboard-cards">
+        <div class="card">
+            <div class="card-header">
+                <span class="card-title">Total Content Items</span>
+                <div class="card-icon" style="background: #e3f2fd; color: #2196f3;">📄</div>
+            </div>
+            <div class="card-value">156</div>
+            <div class="card-footer">
+                ↑ 8 new this week
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <span class="card-title">Published</span>
+                <div class="card-icon" style="background: #e8f5e9; color: #4caf50;">✅</div>
+            </div>
+            <div class="card-value">142</div>
+            <div class="card-footer">
+                91% of total
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <span class="card-title">Drafts</span>
+                <div class="card-icon" style="background: #fff3cd; color: #856404;">📝</div>
+            </div>
+            <div class="card-value">14</div>
+            <div class="card-footer">
+                9% of total
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <span class="card-title">Scheduled</span>
+                <div class="card-icon" style="background: #f3e5f5; color: #9c27b0;">⏰</div>
+            </div>
+            <div class="card-value">23</div>
+            <div class="card-footer">
+                Next in 2 hours
+            </div>
+        </div>
+    </div>
+
+    <!-- Content Table -->
+    <div class="table-container">
+        <div class="table-header">
+            <h3>Content Items</h3>
+            <div class="table-filters">
+                <input type="search" placeholder="Search content..." class="search-input">
+                <select class="filter-select">
+                    <option>All Status</option>
+                    <option>Published</option>
+                    <option>Draft</option>
+                    <option>Scheduled</option>
+                </select>
+            </div>
+        </div>
+
+        <table>
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Title</th>
+                <th>Type</th>
+                <th>Status</th>
+                <th>Views</th>
+                <th>Last Updated</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>#C-001</td>
+                <td>Welcome Message</td>
+                <td>Message</td>
+                <td><span class="status-badge status-active">Published</span></td>
+                <td>1,284</td>
+                <td>2 hours ago</td>
+                <td>
+                    <div class="action-buttons">
+                        <button class="btn-icon" title="Edit">✏️</button>
+                        <button class="btn-icon" title="Delete">🗑️</button>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>#C-002</td>
+                <td>Help Command Response</td>
+                <td>Command</td>
+                <td><span class="status-badge status-active">Published</span></td>
+                <td>847</td>
+                <td>1 day ago</td>
+                <td>
+                    <div class="action-buttons">
+                        <button class="btn-icon" title="Edit">✏️</button>
+                        <button class="btn-icon" title="Delete">🗑️</button>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>#C-003</td>
+                <td>Auto Reply Template</td>
+                <td>Template</td>
+                <td><span class="status-badge status-pending">Draft</span></td>
+                <td>0</td>
+                <td>3 days ago</td>
+                <td>
+                    <div class="action-buttons">
+                        <button class="btn-icon" title="Edit">✏️</button>
+                        <button class="btn-icon" title="Delete">🗑️</button>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>#C-004</td>
+                <td>Promotional Message</td>
+                <td>Message</td>
+                <td><span class="status-badge status-pending">Scheduled</span></td>
+                <td>0</td>
+                <td>5 hours ago</td>
+                <td>
+                    <div class="action-buttons">
+                        <button class="btn-icon" title="Edit">✏️</button>
+                        <button class="btn-icon" title="Delete">🗑️</button>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>#C-005</td>
+                <td>FAQ Responses</td>
+                <td>Collection</td>
+                <td><span class="status-badge status-active">Published</span></td>
+                <td>2,156</td>
+                <td>1 week ago</td>
+                <td>
+                    <div class="action-buttons">
+                        <button class="btn-icon" title="Edit">✏️</button>
+                        <button class="btn-icon" title="Delete">🗑️</button>
+                    </div>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+{% endblock %}
