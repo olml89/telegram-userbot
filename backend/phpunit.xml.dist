@@ -24,7 +24,7 @@
 
     <source>
         <include>
-            <file>src/DummyClass.php</file>
+            <directory suffix=".php">src</directory>
         </include>
     </source>
 
