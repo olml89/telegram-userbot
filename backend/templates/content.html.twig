@@ -364,12 +364,12 @@
                 {% endif %}
             </div>
 
-            <div class="form-group {% if form.mediaFile.vars.errors|length > 0 %}has-error{% endif %}">
-                {{ form_label(form.mediaFile) }}
-                {{ form_widget(form.mediaFile) }}
-                {{ form_errors(form.mediaFile) }}
-                {% if form.mediaFile.vars.help %}
-                    <small class="form-help">{{ form.mediaFile.vars.help }}</small>
+            <div class="form-group {% if form.file.vars.errors|length > 0 %}has-error{% endif %}">
+                {{ form_label(form.file) }}
+                {{ form_widget(form.file) }}
+                {{ form_errors(form.file) }}
+                {% if form.file.vars.help %}
+                    <small class="form-help">{{ form.file.vars.help }}</small>
                 {% endif %}
             </div>
 
