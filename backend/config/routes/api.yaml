@@ -1,8 +1,14 @@
-api:
-  resource: ../../src/Infrastructure/Symfony/Http/Api/Controller
+# Shared
+shared_api:
+  resource: ../../src/Shared/Infrastructure/Symfony/Http/Api/Controller
   type: attribute
   prefix: api
 
-web:
-  resource: ../../src/Infrastructure/Symfony/Http/Web/Controller
+shared_web:
+  resource: ../../src/Shared/Infrastructure/Symfony/Http/Web/Controller
+  type: attribute
+
+# Content
+content_web:
+  resource: ../../src/Content/Infrastructure/Symfony/Http/Web/Controller
   type: attribute

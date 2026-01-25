@@ -3,7 +3,7 @@
 
 declare(strict_types=1);
 
-use olml89\TelegramUserbot\Backend\Infrastructure\Symfony\Kernel;
+use olml89\TelegramUserbot\Backend\Shared\Infrastructure\Symfony\Kernel;
 use olml89\TelegramUserbot\Shared\App\Environment\Env;
 use olml89\TelegramUserbot\Shared\App\Environment\Environment;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
