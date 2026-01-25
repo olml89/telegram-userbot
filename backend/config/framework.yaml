@@ -4,3 +4,8 @@ framework:
   handle_all_throwables: true
   php_errors:
     log: true
+
+  session:
+    enabled: true
+    cookie_secure: auto
+    cookie_samesite: lax

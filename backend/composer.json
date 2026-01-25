@@ -22,7 +22,10 @@
         "symfony/console": "^8.0",
         "symfony/monolog-bundle": "^4.0",
         "sentry/sentry-symfony": "^5.8",
-        "symfony/asset": "^8.0"
+        "symfony/asset": "^8.0",
+        "symfony/validator": "^8.0",
+        "symfony/form": "^8.0",
+        "symfony/mime": "^8.0"
     },
     "require-dev": {
         "symfony/web-profiler-bundle": "^8.0",
