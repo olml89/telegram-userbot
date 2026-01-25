@@ -1,0 +1,9 @@
+services:
+
+  olml89\TelegramUserbot\Backend\Infrastructure\Symfony\Exception\ExceptionEventSubscriber:
+    autoconfigure: true # Symfony only processes #[AsEventListener] attributes on autoconfigured services
+    arguments:
+      $exceptionEventHandler: '@olml89\TelegramUserbot\Backend\Infrastructure\Symfony\Exception\ExceptionEventHandler'
+
+  olml89\TelegramUserbot\Backend\Infrastructure\Symfony\Exception\ExceptionEventHandler:
+    alias: olml89\TelegramUserbot\Backend\Infrastructure\Symfony\Exception\NullableExceptionEventHandler

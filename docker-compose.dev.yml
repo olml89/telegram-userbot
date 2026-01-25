@@ -9,8 +9,8 @@ services:
     environment:
       PHP_IDE_CONFIG: "serverName=${PHP_SERVER_NAME}"
     volumes:
-      - ./shared:/telegram-userbot/shared
-      - ./backend:/telegram-userbot/backend
+      - ./shared:/telegram-userbot/shared:cached
+      - ./backend:/telegram-userbot/backend:cached
 
   bot-manager:
     build:
@@ -21,8 +21,8 @@ services:
     environment:
       PHP_IDE_CONFIG: "serverName=${PHP_SERVER_NAME}"
     volumes:
-      - ./shared:/telegram-userbot/shared
-      - ./bot-manager:/telegram-userbot/bot-manager
+      - ./shared:/telegram-userbot/shared:cached
+      - ./bot-manager:/telegram-userbot/bot-manager:cached
 
   bot:
     build:
@@ -33,8 +33,8 @@ services:
     environment:
       PHP_IDE_CONFIG: "serverName=${PHP_SERVER_NAME}"
     volumes:
-      - ./shared:/telegram-userbot/shared
-      - ./bot:/telegram-userbot/bot
+      - ./shared:/telegram-userbot/shared:cached
+      - ./bot:/telegram-userbot/bot:cached
 
   dev:
     depends_on:
@@ -56,9 +56,9 @@ services:
       PHP_IDE_CONFIG: "serverName=${PHP_SERVER_NAME}"
       COMPOSER_PROCESS_TIMEOUT: 0
     volumes:
-      - ./.git:/telegram-userbot/.git
-      - ./dev:/telegram-userbot/dev
-      - ./shared:/telegram-userbot/shared
-      - ./backend:/telegram-userbot/backend
-      - ./bot-manager:/telegram-userbot/bot-manager
-      - ./bot:/telegram-userbot/bot
+      - ./.git:/telegram-userbot/.git:cached
+      - ./dev:/telegram-userbot/dev:cached
+      - ./shared:/telegram-userbot/shared:cached
+      - ./backend:/telegram-userbot/backend:cached
+      - ./bot-manager:/telegram-userbot/bot-manager:cached
+      - ./bot:/telegram-userbot/bot:cached

@@ -19,14 +19,18 @@ run_pint() {
 	SERVICE=$1
 	TEST_FLAG=""
 
+	echo "🔍 Running pint for '$SERVICE' $TEST_FLAG"
+
 	# Dynamic codebase path
 	CODE_PATH="/telegram-userbot/$SERVICE"
+
+	# Dynamic config file
+	CONFIG="$CODE_PATH/pint.json"
+	echo "🔍 Configuration file: $CONFIG"
 
 	if $TEST; then
 		TEST_FLAG="--test"
 	fi
-
-	echo "🔍 Running pint for '$SERVICE' $TEST_FLAG"
 
 	# Enable Opcache
 	#
@@ -34,7 +38,7 @@ run_pint() {
     # (e.g., from within a Git hook). This helps maintain readable output with syntax highlighting.
 	if ! php -n -c "/usr/local/etc/php/docker-php-ext-opcache.ini" ./vendor/bin/pint \
 		--ansi \
-		--config=/telegram-userbot/dev/pint/pint.json \
+		--config="$CONFIG" \
 		"$CODE_PATH" \
 		$TEST_FLAG
 	then

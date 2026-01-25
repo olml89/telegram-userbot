@@ -17,6 +17,7 @@ use olml89\TelegramUserbot\BotManager\Websocket\LogRecord\ClosedConnection;
 use olml89\TelegramUserbot\BotManager\Websocket\LogRecord\Listening;
 use olml89\TelegramUserbot\BotManager\Websocket\LogRecord\OpenedConnection;
 use olml89\TelegramUserbot\Shared\Bot\Command\CompletePhoneLogin\InvalidPhoneCodeException;
+use olml89\TelegramUserbot\Shared\Error\SentryReporter;
 use olml89\TelegramUserbot\Shared\Logger\LogRecord\ErrorLogRecord;
 use olml89\TelegramUserbot\Shared\Logger\LogRecord\LoggableLogger;
 use Ratchet\ConnectionInterface;
@@ -34,22 +35,21 @@ use Throwable;
 final readonly class WebSocketServer implements MessageComponentInterface
 {
     public function __construct(
-        private StatusInitializer $statusInitializer,
-        private WebSocketServerConfig $webSocketServerConfig,
         private WebSocketConnectionPool $socketConnectionPool,
         private StatusManager $statusManager,
         private CommandFactory $commandFactory,
         private CommandRunner $commandRunner,
         private LoggableLogger $loggableLogger,
+        private SentryReporter $sentryReporter,
     ) {
     }
 
-    public function listen(): void
+    public function listen(StatusInitializer $statusInitializer, WebSocketServerConfig $config): void
     {
         /**
          * Initialize Status of the StatusManager
          */
-        $this->statusInitializer->initialize();
+        $statusInitializer->initialize();
 
         /**
          * Listen to WebSocket connections
@@ -61,13 +61,13 @@ final readonly class WebSocketServer implements MessageComponentInterface
                 component: new WsServer($this),
             ),
             socket: new SocketServer(
-                uri: $this->webSocketServerConfig->uri(),
+                uri: $config->uri(),
                 loop: $loop,
             ),
             loop: $loop,
         );
 
-        $this->loggableLogger->log(new Listening($this->webSocketServerConfig));
+        $this->loggableLogger->log(new Listening($config));
         $loop->run();
     }
 
@@ -92,6 +92,9 @@ final readonly class WebSocketServer implements MessageComponentInterface
     {
         // Log the exception
         $this->loggableLogger->log(new ErrorLogRecord('Error on the websocket server loop', $e));
+
+        // Report to Sentry
+        $this->sentryReporter->report($e);
 
         // Emit the current status with the exception message (and stack trace on development)
         $this->statusManager->emit($e);

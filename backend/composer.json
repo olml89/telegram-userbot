@@ -11,7 +11,21 @@
     ],
     "minimum-stability": "stable",
     "require": {
-        "php": "^8.4"
+        "php": "^8.4",
+        "ext-intl": "*",
+        "olml89/telegram-userbot-shared": "*",
+        "symfony/framework-bundle": "^8.0",
+        "symfony/runtime": "^8.0",
+        "symfony/yaml": "^8.0",
+        "symfony/dotenv": "^8.0",
+        "symfony/twig-bundle": "^8.0",
+        "symfony/console": "^8.0",
+        "symfony/monolog-bundle": "^4.0",
+        "sentry/sentry-symfony": "^5.8"
+    },
+    "require-dev": {
+        "symfony/web-profiler-bundle": "^8.0",
+        "symfony/profiler-pack": "^1.0"
     },
     "repositories": [
         {
@@ -26,6 +40,11 @@
         "psr-4": {
             "olml89\\TelegramUserbot\\Backend\\": "src/",
             "Test\\Backend\\Unit\\": "tests/Unit"
+        }
+    },
+    "config": {
+        "allow-plugins": {
+            "symfony/runtime": true
         }
     }
 }

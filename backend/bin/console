@@ -1,0 +1,37 @@
+#!/usr/bin/env php
+<?php
+
+declare(strict_types=1);
+
+use olml89\TelegramUserbot\Backend\Infrastructure\Symfony\Kernel;
+use olml89\TelegramUserbot\Shared\App\Environment\Env;
+use olml89\TelegramUserbot\Shared\App\Environment\Environment;
+use Symfony\Bundle\FrameworkBundle\Console\Application;
+use Symfony\Component\Dotenv\Dotenv;
+
+/**
+ * Load backend autoloader
+ */
+require dirname(__DIR__) . '/vendor/autoload.php';
+
+/**
+ * Load shared env vars
+ */
+new Dotenv()->bootEnv(dirname(__DIR__, 2) . '/shared/.env');
+
+/**
+ * Load backend env vars
+ */
+new Dotenv()->bootEnv(dirname(__DIR__) . '/.env');
+
+/**
+ * Instantiate Kernel
+ */
+$environment = Environment::load(Env::string('APP_ENV'));
+$kernel = new Kernel($environment);
+
+/**
+ * Run Symfony console application
+ */
+$application = new Application($kernel);
+$application->run();

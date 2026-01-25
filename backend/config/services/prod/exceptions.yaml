@@ -1,0 +1,9 @@
+services:
+
+  olml89\TelegramUserbot\Backend\Infrastructure\Symfony\Exception\ExceptionEventHandler:
+    alias: olml89\TelegramUserbot\Backend\Infrastructure\Symfony\Exception\ProductionExceptionEventHandler
+
+  olml89\TelegramUserbot\Backend\Infrastructure\Symfony\Exception\ProductionExceptionEventHandler:
+    arguments:
+      $logger: '@monolog.logger.request' # Getting the logger associated to the request channel
+      $sentry: '@Sentry\State\HubInterface'

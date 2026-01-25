@@ -14,7 +14,8 @@
         "php": "^8.4",
         "vlucas/phpdotenv": "^5.6",
         "php-di/php-di": "^7.0",
-        "monolog/monolog": "^3.9"
+        "monolog/monolog": "^3.9",
+        "sentry/sentry": "^4.19"
     },
     "suggest": {
         "ext-redis": "To use Redis/PhpRedis implementations",

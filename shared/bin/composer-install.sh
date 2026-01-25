@@ -4,11 +4,17 @@ set -e
 echo "🔧 Installing dependencies..."
 echo "🔧 Environment: ${APP_ENV}..."
 
-if [ "$APP_ENV" != "production" ]; then
+if [ "$APP_ENV" != "prod" ]; then
 	for SERVICE in "$@"; do
         case "$SERVICE" in
             dev|shared|backend|bot|bot-manager)
-				COMPOSER_CMD="composer install --no-interaction --no-progress --prefer-dist --optimize-autoloader --working-dir=/telegram-userbot/$SERVICE"
+            	WORKING_DIR="/telegram-userbot/$SERVICE";
+
+				if [ -d "$WORKING_DIR/vendor" ]; then
+					continue;
+				fi
+
+				COMPOSER_CMD="composer install --no-interaction --no-progress --prefer-dist --optimize-autoloader --working-dir=$WORKING_DIR"
 
 				if [ "$APP_ENV" = "ci" ]; then
 					COMPOSER_CMD="$COMPOSER_CMD --ignore-platform-reqs"

@@ -2,26 +2,30 @@
 
 declare(strict_types=1);
 
-use danog\MadelineProto\Settings\AppInfo;
+use olml89\TelegramUserbot\Backend\Infrastructure\Symfony\Kernel;
+use olml89\TelegramUserbot\Shared\App\Environment\Env;
+use olml89\TelegramUserbot\Shared\App\Environment\Environment;
+use Symfony\Component\Dotenv\Dotenv;
 
-require '../vendor/autoload.php';
+/**
+ * Load backend autoloader
+ * (autoload_runtime allows to only return the Kernel, letting Symfony deal with the request/response cycle)
+ */
+require dirname(__DIR__) . '/vendor/autoload_runtime.php';
 
-$settings = new AppInfo()->setApiId(20437490)->setApiHash('e2edfdbfb461cdbfdeb1f059c0eb916e');
+/**
+ * Load shared env vars
+ */
+new Dotenv()->bootEnv(dirname(__DIR__, 2) . '/shared/.env');
 
-\olml89\TelegramUserbot\Backend\BotEventHandler::startAndLoop('bot.session', $settings);
+/**
+ * Load backend env vars
+ */
+new Dotenv()->bootEnv(dirname(__DIR__) . '/.env');
 
-/*
-$requestUri = $_SERVER['REQUEST_URI'];
-$method = $_SERVER['REQUEST_METHOD'];
+/**
+ * Return instantiated Kernel
+ */
+$environment = Environment::load(Env::string('APP_ENV'));
 
-if ($requestUri === '/start') {
-    //$controlManager->start();
-    http_response_code(204);
-} elseif ($requestUri === '/stop') {
-    //$controlManager->stop();
-    http_response_code(204);
-} else {
-    http_response_code(404);
-    echo json_encode(['error' => 'Not Found']);
-}
-*/
+return fn (array $context): Kernel => new Kernel($environment);

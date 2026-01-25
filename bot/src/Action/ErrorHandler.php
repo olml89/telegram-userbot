@@ -8,6 +8,7 @@ use Amp\SignalException;
 use olml89\TelegramUserbot\Bot\Action\LogRecord\ActionFinished;
 use olml89\TelegramUserbot\Bot\Bot\Status\StatusBroadcaster;
 use olml89\TelegramUserbot\Shared\Bot\Status\Status;
+use olml89\TelegramUserbot\Shared\Error\SentryReporter;
 use olml89\TelegramUserbot\Shared\Logger\LogRecord\ErrorLogRecord;
 use olml89\TelegramUserbot\Shared\Logger\LogRecord\LoggableLogger;
 use Throwable;
@@ -24,6 +25,7 @@ final readonly class ErrorHandler
     public function __construct(
         private StatusBroadcaster $statusBroadcaster,
         private LoggableLogger $loggableLogger,
+        private SentryReporter $sentryReporter,
         private CleanupRunner $cleanupRunner,
     ) {
     }
@@ -39,6 +41,7 @@ final readonly class ErrorHandler
 
         $this->statusBroadcaster->emit($currentStatus->withMessage($e->getMessage()));
         $this->loggableLogger->log(new ErrorLogRecord('Error running action', $e));
+        $this->sentryReporter->report($e);
 
         /**
          * Clean-up: at this point, the API object is broken.

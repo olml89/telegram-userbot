@@ -1,0 +1,10 @@
+monolog:
+  handlers:
+
+    # Event logger (event channels exists because WebProfiler is enabled)
+    events:
+      type: stream
+      path: /telegram-userbot/shared/var/log/backend/events.log
+      level: debug
+      channels:
+        - event

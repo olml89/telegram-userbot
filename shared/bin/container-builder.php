@@ -9,15 +9,18 @@ use olml89\TelegramUserbot\Shared\App\AppConfig;
 use olml89\TelegramUserbot\Shared\App\Environment\Env;
 use olml89\TelegramUserbot\Shared\App\Environment\Environment;
 use olml89\TelegramUserbot\Shared\Bot\Process\ProcessManager;
+use olml89\TelegramUserbot\Shared\Error\SentryConfig;
 use olml89\TelegramUserbot\Shared\Logger\LoggerConfig;
 use olml89\TelegramUserbot\Shared\Redis\RedisConfig;
 use olml89\TelegramUserbot\Shared\Supervisor\SupervisorConfig;
 use olml89\TelegramUserbot\Shared\Supervisor\SupervisorCtl;
 
 /**
- * Don't use an autoloader here, since this is not a service that is being run, this is always imported
- * by external services.
- *
+ * Load shared autoloader
+ */
+require dirname(__DIR__) . '/vendor/autoload.php';
+
+/**
  * Configurate the shared PHP-DI ContainerBuilder
  *
  * @var ContainerBuilder<Container> $containerBuilder
@@ -32,32 +35,38 @@ Env::load(dirname(__DIR__));
 
 return $containerBuilder->addDefinitions([
 
-    AppConfig::class => DI\factory(function (): AppConfig {
-        return new AppConfig(
-            environment: Environment::tryFrom(Env::string('APP_ENV')) ?? Environment::Production,
-        );
-    }),
+    AppConfig::class => DI\factory(
+        fn (): AppConfig => new AppConfig(
+            environment: Environment::load(Env::string('APP_ENV')),
+        ),
+    ),
 
-    LoggerConfig::class => DI\factory(function (): LoggerConfig {
-        return new LoggerConfig(
+    LoggerConfig::class => DI\factory(
+        fn (): LoggerConfig => new LoggerConfig(
             logDirectory: Env::string('LOG_DIRECTORY'),
             level: Level::tryFrom(Env::int('LOG_LEVEL')) ?? Level::Debug,
-        );
-    }),
+        ),
+    ),
 
-    RedisConfig::class => DI\factory(function (): RedisConfig {
-        return new RedisConfig(
+    RedisConfig::class => DI\factory(
+        fn (): RedisConfig => new RedisConfig(
             host: 'redis',
             statusChannel: Env::string('REDIS_STATUS_CHANNEL'),
             phoneCodeStorageKey: Env::string('REDIS_PHONE_CODE_STORAGE_KEY'),
-        );
-    }),
+        ),
+    ),
 
-    SupervisorConfig::class => DI\factory(function (): SupervisorConfig {
-        return new SupervisorConfig(
+    SupervisorConfig::class => DI\factory(
+        fn (): SupervisorConfig => new SupervisorConfig(
             configPath: Env::string('SUPERVISOR_CONFIG_PATH'),
-        );
-    }),
+        ),
+    ),
+
+    SentryConfig::class => DI\factory(
+        fn (): SentryConfig => new SentryConfig(
+            dsn: Env::string('SENTRY_DSN'),
+        ),
+    ),
 
     ProcessManager::class => DI\autowire(SupervisorCtl::class)
 

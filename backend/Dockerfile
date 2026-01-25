@@ -5,7 +5,7 @@ WORKDIR /telegram-userbot/backend
 
 # Install PHP extensions
 COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/local/bin/
-RUN install-php-extensions pgsql pdo_pgsql
+RUN install-php-extensions intl pgsql pdo_pgsql
 
 FROM base AS prod
 
@@ -14,6 +14,13 @@ COPY backend/ ./
 
 # Copy shared codebase to the container
 COPY shared/ /telegram-userbot/shared/
+
+# Create writable cache dir for Symfony
+RUN mkdir -p /telegram-userbot/backend/var/cache  &&  \
+    chown -R www-data:www-data /telegram-userbot/backend/var
+
+# Make bin/console executable
+RUN chmod +x /telegram-userbot/backend/bin/console
 
 # Enable Opcache
 RUN docker-php-ext-enable opcache
