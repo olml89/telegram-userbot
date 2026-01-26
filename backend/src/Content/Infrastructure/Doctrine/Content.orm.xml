@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<doctrine-mapping xmlns="https://doctrine-project.org/schemas/orm/doctrine-mapping"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="https://doctrine-project.org/schemas/orm/doctrine-mapping
+                  https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+
+    <entity name="olml89\TelegramUserbot\Backend\Content\Domain\Content"
+            table="contents">
+
+        <id name="id" type="integer" column="id">
+            <generator strategy="IDENTITY"/>
+        </id>
+
+        <field name="publicId"
+               type="uuid"
+               column="public_id"
+               unique="true"
+               nullable="false"/>
+
+        <field name="name"
+               type="string"
+               length="255"
+               nullable="false"/>
+
+        <field name="description"
+               type="text"
+               nullable="true"/>
+
+        <field name="tags"
+               type="json"
+               nullable="false"/>
+
+        <!-- Embedded StoredFile value object -->
+        <embedded name="file"
+                  class="olml89\TelegramUserbot\Backend\Content\Domain\File"
+                  use-column-prefix="true"/>
+
+    </entity>
+
+</doctrine-mapping>

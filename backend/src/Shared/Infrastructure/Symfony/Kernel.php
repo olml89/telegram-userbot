@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace olml89\TelegramUserbot\Backend\Shared\Infrastructure\Symfony;
 
+use Doctrine\Bundle\DoctrineBundle\DoctrineBundle;
+use Doctrine\Bundle\MigrationsBundle\DoctrineMigrationsBundle;
 use olml89\TelegramUserbot\Backend\Shared\Infrastructure\Symfony\Configuration\FrameworkConfigurator;
 use olml89\TelegramUserbot\Backend\Shared\Infrastructure\Symfony\Configuration\PackageConfigurator;
 use olml89\TelegramUserbot\Backend\Shared\Infrastructure\Symfony\Configuration\RouteConfigurator;
@@ -41,6 +43,8 @@ final class Kernel extends BaseKernel
         yield new FrameworkBundle();
         yield new MonologBundle();
         yield new TwigBundle();
+        yield new DoctrineBundle();
+        yield new DoctrineMigrationsBundle();
 
         if ($this->env === Environment::Development) {
             yield new WebProfilerBundle();

@@ -6,7 +6,7 @@ namespace olml89\TelegramUserbot\Backend\Content\Infrastructure\Symfony\Http\Web
 
 use olml89\TelegramUserbot\Backend\Content\Infrastructure\Symfony\Form\ContentType;
 use olml89\TelegramUserbot\Backend\Shared\Infrastructure\Symfony\Http\Web\Request\RequestData;
-use Symfony\Component\HttpFoundation\File\File;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Validator\Constraints as Assert;
 
 final class UploadContentRequestData implements RequestData
@@ -32,7 +32,7 @@ final class UploadContentRequestData implements RequestData
         maxSizeMessage: 'The file is too large (max 2GB)',
         mimeTypesMessage: 'Please upload a valid media file (image or video)',
     )]
-    public ?File $file = null;
+    public ?UploadedFile $file = null;
 
     /** @var string[] */
     #[Assert\Count(

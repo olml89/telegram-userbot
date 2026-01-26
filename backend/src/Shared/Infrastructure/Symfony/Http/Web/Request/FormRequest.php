@@ -11,10 +11,15 @@ use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\FormView;
 use Symfony\Component\HttpFoundation\Request;
 
+/**
+ * @template TData of RequestData
+ */
 abstract readonly class FormRequest
 {
-    protected Request $request;
+    /** @var TData */
     protected RequestData $requestData;
+
+    protected Request $request;
     protected FormInterface $form;
 
     public function __construct(FormFactoryInterface $formFactory, Request $request)
@@ -26,6 +31,9 @@ abstract readonly class FormRequest
 
     abstract protected function initializeRequestData(): RequestData;
 
+    /**
+     * @return TData
+     */
     public function requestData(): RequestData
     {
         return $this->requestData;

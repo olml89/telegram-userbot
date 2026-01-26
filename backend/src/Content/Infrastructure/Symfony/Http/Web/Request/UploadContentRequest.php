@@ -7,6 +7,9 @@ namespace olml89\TelegramUserbot\Backend\Content\Infrastructure\Symfony\Http\Web
 use olml89\TelegramUserbot\Backend\Shared\Infrastructure\Symfony\Http\Web\Request\FormRequest;
 use olml89\TelegramUserbot\Backend\Shared\Infrastructure\Symfony\Http\Web\Request\RequestData;
 
+/**
+ * @extends FormRequest<UploadContentRequestData>
+ */
 final readonly class UploadContentRequest extends FormRequest
 {
     protected function initializeRequestData(): RequestData
