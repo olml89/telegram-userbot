@@ -21,11 +21,12 @@ new Dotenv()->bootEnv(dirname(__DIR__, 2) . '/shared/.env');
 /**
  * Load backend env vars
  */
-new Dotenv()->bootEnv(dirname(__DIR__) . '/.env');
+new Dotenv()->bootEnv(dirname(__DIR__) . '/.env', overrideExistingVars: true);
 
 /**
  * Return instantiated Kernel
  */
 $environment = Environment::load(Env::string('APP_ENV'));
+$debug = Env::nullableBool('APP_DEBUG');
 
-return fn (array $context): Kernel => new Kernel($environment);
+return fn (array $context): Kernel => new Kernel($environment, $debug);

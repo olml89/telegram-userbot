@@ -28,11 +28,11 @@ final class Kernel extends BaseKernel
 
     private readonly Environment $env;
 
-    public function __construct(Environment $env)
+    public function __construct(Environment $env, ?bool $debug = null)
     {
         $this->env = $env;
 
-        parent::__construct(environment: $env->value, debug: $env->isDebuggable());
+        parent::__construct(environment: $env->value, debug: $debug ?? $env->isDebuggable());
     }
 
     /**

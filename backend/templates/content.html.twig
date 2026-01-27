@@ -173,33 +173,6 @@
         .modal-flash-messages {
             margin-bottom: 20px;
         }
-
-        .alert {
-            padding: 15px 20px;
-            border-radius: 8px;
-            margin-bottom: 15px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .alert-success {
-            background: #d4edda;
-            color: #155724;
-            border-left: 4px solid #28a745;
-        }
-
-        .alert-error {
-            background: #f8d7da;
-            color: #721c24;
-            border-left: 4px solid #dc3545;
-        }
-
-        .alert-warning {
-            background: #fff3cd;
-            color: #856404;
-            border-left: 4px solid #ffc107;
-        }
     </style>
 {% endblock %}
 
@@ -213,6 +186,13 @@
     {% for message in app.flashes('success') %}
         <div class="alert alert-success">
             ✅ {{ message }}
+        </div>
+    {% endfor %}
+
+    {# Flash Messages for ERROR only (outside modal) #}
+    {% for message in app.flashes('error') %}
+        <div class="alert alert-error">
+            ❌ {{ message }}
         </div>
     {% endfor %}
 

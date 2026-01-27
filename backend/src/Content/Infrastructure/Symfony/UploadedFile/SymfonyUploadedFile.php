@@ -38,54 +38,29 @@ final class SymfonyUploadedFile implements UploadedFile
         $this->size = $this->file->getSize();
     }
 
-    public function name(): string
-    {
-        return $this->name;
-    }
-
-    public function originalName(): string
-    {
-        return $this->originalName;
-    }
-
-    public function mimeType(): string
-    {
-        return $this->mimeType;
-    }
-
-    public function size(): int
-    {
-        return $this->size;
-    }
-
     /**
      * @throws UploadedFileException
      */
     public function save(string $contentDirectory): File
     {
+        $file = new File(
+            name: $this->name,
+            originalName: $this->originalName,
+            mimeType: $this->mimeType,
+            size: $this->size,
+        );
+
         if ($this->saved) {
-            throw UploadedFileException::alreadySaved($this);
+            throw UploadedFileException::alreadySaved($file);
         }
 
         try {
-            $path = sprintf(
-                '%s/%s/%s',
-                $contentDirectory,
-                substr($this->name, 0, 2),
-                substr($this->name, 2, 2),
-            );
-
-            $this->file->move($path, $this->name);
+            $this->file->move($file->path($contentDirectory), $this->name);
             $this->saved = true;
 
-            return new File(
-                name: $this->name(),
-                originalName: $this->originalName(),
-                mimeType: $this->mimeType(),
-                size: $this->size(),
-            );
+            return $file;
         } catch (Throwable $e) {
-            throw UploadedFileException::errorSaving($this, $path, $e);
+            throw UploadedFileException::errorSaving($file, $contentDirectory, $e);
         }
     }
 }

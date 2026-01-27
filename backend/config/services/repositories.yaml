@@ -1,5 +1,0 @@
-services:
-
-  # Content
-  olml89\TelegramUserbot\Backend\Content\Domain\ContentRepository:
-    alias: olml89\TelegramUserbot\Backend\Content\Infrastructure\Doctrine\DoctrineContentRepository

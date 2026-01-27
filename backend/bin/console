@@ -22,13 +22,14 @@ new Dotenv()->bootEnv(dirname(__DIR__, 2) . '/shared/.env');
 /**
  * Load backend env vars
  */
-new Dotenv()->bootEnv(dirname(__DIR__) . '/.env');
+new Dotenv()->bootEnv(dirname(__DIR__) . '/.env', overrideExistingVars: true);
 
 /**
  * Instantiate Kernel
  */
 $environment = Environment::load(Env::string('APP_ENV'));
-$kernel = new Kernel($environment);
+$debug = Env::nullableBool('APP_DEBUG');
+$kernel = new Kernel($environment, $debug);
 
 /**
  * Run Symfony console application

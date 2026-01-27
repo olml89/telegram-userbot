@@ -1,4 +1,0 @@
-services:
-  olml89\TelegramUserbot\Backend\Content\Infrastructure\Symfony\UploadedFile\SymfonyUploadedFileSaver:
-    arguments:
-      $contentDirectory: '%kernel.project_dir%/var/content'

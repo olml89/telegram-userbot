@@ -28,7 +28,8 @@
         "symfony/mime": "^8.0",
         "symfony/orm-pack": "^2.7",
         "symfony/uid": "^8.0",
-        "doctrine/doctrine-migrations-bundle": "^4.0"
+        "doctrine/doctrine-migrations-bundle": "^4.0",
+        "symfony/filesystem": "^8.0"
     },
     "require-dev": {
         "symfony/web-profiler-bundle": "^8.0",

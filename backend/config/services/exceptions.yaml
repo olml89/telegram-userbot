@@ -1,9 +1,15 @@
 services:
 
-  olml89\TelegramUserbot\Backend\Shared\Infrastructure\Symfony\Exception\ExceptionEventSubscriber:
-    autoconfigure: true # Symfony only processes #[AsEventListener] attributes on autoconfigured services
-    arguments:
-      $exceptionEventHandler: '@olml89\TelegramUserbot\Backend\Shared\Infrastructure\Symfony\Exception\ExceptionEventHandler'
+  # Bind ExceptionHandler to ExceptionHandlerPipeline
+  olml89\TelegramUserbot\Backend\Shared\Domain\ExceptionHandler:
+    alias: olml89\TelegramUserbot\Backend\Shared\Domain\ExceptionHandlerPipeline
 
-  olml89\TelegramUserbot\Backend\Shared\Infrastructure\Symfony\Exception\ExceptionEventHandler:
-    alias: olml89\TelegramUserbot\Backend\Shared\Infrastructure\Symfony\Exception\NullableExceptionEventHandler
+  # Default ExceptionHandlerPipeline: caught exceptions
+  olml89\TelegramUserbot\Backend\Shared\Domain\ExceptionHandlerPipeline:
+    arguments:
+      $exceptionHandlers:
+        - '@olml89\TelegramUserbot\Backend\Shared\Infrastructure\Symfony\Exception\CaughtExceptionLogger'
+
+  # Bind ExceptionEventHandler to NullableExceptionEventHandler (it does nothing)
+  olml89\TelegramUserbot\Backend\Shared\Infrastructure\Symfony\ExceptionEvent\ExceptionEventHandler:
+    alias: olml89\TelegramUserbot\Backend\Shared\Infrastructure\Symfony\ExceptionEvent\NullableExceptionEventHandler

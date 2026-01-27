@@ -19,16 +19,23 @@ final readonly class FormRequestResolver implements ValueResolverInterface
     ) {
     }
 
-    public function supports(Request $request, ArgumentMetadata $argument): bool
-    {
-        return $argument->getType() === FormRequest::class;
-    }
-
     /**
      * @return iterable<FormRequest>
      */
     public function resolve(Request $request, ArgumentMetadata $argument): iterable
     {
+        if (is_null($type = $argument->getType())) {
+            return [];
+        }
+
+        if ($type === Request::class) {
+            return [];
+        }
+
+        if (!is_subclass_of($type, FormRequest::class)) {
+            return [];
+        }
+
         /** @var class-string<FormRequest> $formRequestClass */
         $formRequestClass = $argument->getType();
 

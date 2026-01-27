@@ -13,4 +13,9 @@ final readonly class File
         public int $size,
     ) {
     }
+
+    public function path(string $directory): string
+    {
+        return sprintf('%s/%s', $directory, $this->name);
+    }
 }

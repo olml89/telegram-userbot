@@ -51,18 +51,23 @@ final readonly class Env
         return is_string($value) ? $value : (string)$value;
     }
 
+    public static function nullableBool(string $key, ?bool $default = null): ?bool
+    {
+        $value = self::get($key, $default);
+
+        if (is_null($value)) {
+            return null;
+        }
+
+        return is_bool($value) ? $value : (bool)$value;
+    }
+
     /**
      * @throws MissingEnvironmentVariableException
      */
     public static function bool(string $key, ?bool $default = null): bool
     {
-        $value = self::get($key, $default);
-
-        if (is_null($value)) {
-            throw new MissingEnvironmentVariableException($key);
-        }
-
-        return is_bool($value) ? $value : (bool)$value;
+        return self::nullableBool($key, $default) ?? throw new MissingEnvironmentVariableException($key);
     }
 
     /**

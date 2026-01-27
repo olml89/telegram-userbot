@@ -1,0 +1,15 @@
+services:
+
+  # ContentFileManager
+  olml89\TelegramUserbot\Backend\Content\Domain\ContentFileManager:
+    alias: olml89\TelegramUserbot\Backend\Content\Infrastructure\Symfony\File\SymfonyContentFileManager
+
+  olml89\TelegramUserbot\Backend\Content\Infrastructure\Symfony\File\SymfonyContentFileManager:
+    arguments:
+      $filesystem: '@filesystem'
+      $contentDirectory: '%kernel.project_dir%/var/content'
+
+  # ContentRepository
+  olml89\TelegramUserbot\Backend\Content\Domain\ContentRepository:
+    alias: olml89\TelegramUserbot\Backend\Content\Infrastructure\Doctrine\DoctrineContentRepository
+

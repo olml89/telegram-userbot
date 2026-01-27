@@ -41,8 +41,9 @@ final class UploadContentController extends AbstractController
             tags: $request->requestData()->tags,
         );
 
-        $this->uploadContentCommandHandler->handle($uploadContentCommand);
-        $this->addFlash('success', 'Content uploaded successfully');
+        !is_null($this->uploadContentCommandHandler->handle($uploadContentCommand))
+            ? $this->addFlash('success', 'Content uploaded successfully')
+            : $this->addFlash('error', 'Error uploading content');
 
         return $this->redirectToRoute('content.list');
     }
