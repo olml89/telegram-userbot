@@ -1,0 +1,18 @@
+services:
+
+  # EventEntityRepository
+  olml89\TelegramUserbot\Backend\Shared\Domain\Entity\EventEntityRepository:
+    alias: olml89\TelegramUserbot\Backend\Shared\Infrastructure\Doctrine\DoctrineEventEntityRepository
+
+# Mappings
+doctrine:
+  orm:
+    entity_managers:
+      default:
+        mappings:
+          EventEntity:
+            is_bundle: false
+            type: xml
+            dir: '%kernel.project_dir%/src/Shared/Infrastructure/Doctrine'
+            prefix: olml89\TelegramUserbot\Backend\Shared\Domain\Entity
+            alias: EventEntity

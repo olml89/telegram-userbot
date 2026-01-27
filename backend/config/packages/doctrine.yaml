@@ -1,0 +1,16 @@
+doctrine:
+
+  dbal:
+    driver: pdo_pgsql
+    host: '%env(DB_HOST)%'
+    port: '%env(int:DB_PORT)%'
+    dbname: '%env(DB_NAME)%'
+    user: '%env(DB_USER)%'
+    password: '%env(DB_PASSWORD)%'
+    server_version: '17' # PostgreSQL version in postgres container
+
+  orm:
+    entity_managers:
+      default:
+        auto_mapping: true
+        naming_strategy: doctrine.orm.naming_strategy.underscore_number_aware

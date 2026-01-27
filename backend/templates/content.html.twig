@@ -1,0 +1,418 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Content Management - Admin Panel{% endblock %}
+
+{% block stylesheets %}
+    <style>
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            animation: fadeIn 0.3s;
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: slideIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .modal-header h3 {
+            margin: 0;
+            font-size: 24px;
+            color: #2c3e50;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 28px;
+            cursor: pointer;
+            color: #7f8c8d;
+            line-height: 1;
+        }
+
+        .close-modal:hover {
+            color: #2c3e50;
+        }
+
+        /* Form Styles */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .form-help {
+            display: block;
+            margin-top: 5px;
+            font-size: 13px;
+            color: #7f8c8d;
+        }
+
+        .form-input,
+        .form-textarea,
+        .form-file,
+        .form-select-multiple {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.2s;
+        }
+
+        .form-input:focus,
+        .form-textarea:focus,
+        .form-file:focus,
+        .form-select-multiple:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .form-textarea {
+            resize: vertical;
+            font-family: inherit;
+        }
+
+        .form-select-multiple {
+            cursor: pointer;
+        }
+
+        /* Form Error Styles */
+        .form-error,
+        .invalid-feedback {
+            color: #e74c3c;
+            font-size: 13px;
+            margin-top: 5px;
+            display: block;
+        }
+
+        .form-group.has-error .form-input,
+        .form-group.has-error .form-textarea,
+        .form-group.has-error .form-file,
+        .form-group.has-error .form-select-multiple {
+            border-color: #e74c3c;
+        }
+
+        /* Style Symfony form errors */
+        .form-error-icon,
+        .form-error-message {
+            color: #e74c3c;
+        }
+
+        ul.form-errors {
+            list-style: none;
+            padding: 0;
+            margin: 5px 0 0 0;
+        }
+
+        ul.form-errors li {
+            color: #e74c3c;
+            font-size: 13px;
+            margin-top: 5px;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid #e9ecef;
+        }
+
+        /* Flash Messages in Modal */
+        .modal-flash-messages {
+            margin-bottom: 20px;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="content-header">
+        <h2>Content Management</h2>
+        <p>Manage your bot's content, messages, and automated responses.</p>
+    </div>
+
+    {# Flash Messages for SUCCESS only (outside modal) #}
+    {% for message in app.flashes('success') %}
+        <div class="alert alert-success">
+            ✅ {{ message }}
+        </div>
+    {% endfor %}
+
+    {# Flash Messages for ERROR only (outside modal) #}
+    {% for message in app.flashes('error') %}
+        <div class="alert alert-error">
+            ❌ {{ message }}
+        </div>
+    {% endfor %}
+
+    <!-- Action Buttons -->
+    <div class="action-bar">
+        <button class="btn btn-primary" id="openModalBtn">
+            <span>➕</span> Add New Content
+        </button>
+        <button class="btn btn-secondary">
+            <span>📤</span> Import
+        </button>
+        <button class="btn btn-secondary">
+            <span>📥</span> Export
+        </button>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="dashboard-cards">
+        <div class="card">
+            <div class="card-header">
+                <span class="card-title">Total Content Items</span>
+                <div class="card-icon" style="background: #e3f2fd; color: #2196f3;">📄</div>
+            </div>
+            <div class="card-value">156</div>
+            <div class="card-footer">
+                ↑ 8 new this week
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <span class="card-title">Published</span>
+                <div class="card-icon" style="background: #e8f5e9; color: #4caf50;">✅</div>
+            </div>
+            <div class="card-value">142</div>
+            <div class="card-footer">
+                91% of total
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <span class="card-title">Drafts</span>
+                <div class="card-icon" style="background: #fff3cd; color: #856404;">📝</div>
+            </div>
+            <div class="card-value">14</div>
+            <div class="card-footer">
+                9% of total
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <span class="card-title">Scheduled</span>
+                <div class="card-icon" style="background: #f3e5f5; color: #9c27b0;">⏰</div>
+            </div>
+            <div class="card-value">23</div>
+            <div class="card-footer">
+                Next in 2 hours
+            </div>
+        </div>
+    </div>
+
+    <!-- Content Table -->
+    <div class="table-container">
+        <div class="table-header">
+            <h3>Content Items</h3>
+            <div class="table-filters">
+                <input type="search" placeholder="Search content..." class="search-input">
+                <select class="filter-select">
+                    <option>All Status</option>
+                    <option>Published</option>
+                    <option>Draft</option>
+                    <option>Scheduled</option>
+                </select>
+            </div>
+        </div>
+
+        <table>
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Title</th>
+                <th>Type</th>
+                <th>Status</th>
+                <th>Views</th>
+                <th>Last Updated</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>#C-001</td>
+                <td>Welcome Message</td>
+                <td>Message</td>
+                <td><span class="status-badge status-active">Published</span></td>
+                <td>1,284</td>
+                <td>2 hours ago</td>
+                <td>
+                    <div class="action-buttons">
+                        <button class="btn-icon" title="Edit">✏️</button>
+                        <button class="btn-icon" title="Delete">🗑️</button>
+                    </div>
+                </td>
+            </tr>
+            {# More rows... #}
+            </tbody>
+        </table>
+    </div>
+
+    {# Modal for Add Content Form #}
+    <div id="contentModal" class="modal {% if show_modal %}active{% endif %}">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Add New Content</h3>
+                <button class="close-modal" id="closeModalBtn" type="button">&times;</button>
+            </div>
+
+            {# Flash Messages for ERRORS (inside modal) #}
+            {% if app.flashes('error')|length > 0 %}
+                <div class="modal-flash-messages">
+                    {% for message in app.flashes('error') %}
+                        <div class="alert alert-error">
+                            ❌ {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            {{ form_start(form, {
+                'action': path('content.upload'),
+                'attr': {'id': 'contentForm'}
+            }) }}
+            <div class="form-group {% if form.name.vars.errors|length > 0 %}has-error{% endif %}">
+                {{ form_label(form.name) }}
+                {{ form_widget(form.name) }}
+                {{ form_errors(form.name) }}
+                {% if form.name.vars.help %}
+                    <small class="form-help">{{ form.name.vars.help }}</small>
+                {% endif %}
+            </div>
+
+            <div class="form-group {% if form.description.vars.errors|length > 0 %}has-error{% endif %}">
+                {{ form_label(form.description) }}
+                {{ form_widget(form.description) }}
+                {{ form_errors(form.description) }}
+                {% if form.description.vars.help %}
+                    <small class="form-help">{{ form.description.vars.help }}</small>
+                {% endif %}
+            </div>
+
+            <div class="form-group {% if form.file.vars.errors|length > 0 %}has-error{% endif %}">
+                {{ form_label(form.file) }}
+                {{ form_widget(form.file) }}
+                {{ form_errors(form.file) }}
+                {% if form.file.vars.help %}
+                    <small class="form-help">{{ form.file.vars.help }}</small>
+                {% endif %}
+            </div>
+
+            <div class="form-group {% if form.tags.vars.errors|length > 0 %}has-error{% endif %}">
+                {{ form_label(form.tags) }}
+                {{ form_widget(form.tags) }}
+                {{ form_errors(form.tags) }}
+                {% if form.tags.vars.help %}
+                    <small class="form-help">{{ form.tags.vars.help }}</small>
+                {% endif %}
+            </div>
+
+            <div class="form-actions">
+                <button type="button" class="btn btn-secondary" id="cancelBtn">Cancel</button>
+                <button type="submit" class="btn btn-primary">
+                    <span>💾</span> Save Content
+                </button>
+            </div>
+            {{ form_end(form) }}
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    <script>
+        // Modal functionality
+        const modal = document.getElementById('contentModal');
+        const openBtn = document.getElementById('openModalBtn');
+        const closeBtn = document.getElementById('closeModalBtn');
+        const cancelBtn = document.getElementById('cancelBtn');
+
+        // Open modal
+        openBtn.addEventListener('click', () => {
+            modal.classList.add('active');
+        });
+
+        // Close modal
+        function closeModal() {
+            modal.classList.remove('active');
+        }
+
+        closeBtn.addEventListener('click', closeModal);
+        cancelBtn.addEventListener('click', closeModal);
+
+        // Close modal when clicking outside
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                closeModal();
+            }
+        });
+
+        // Close modal on ESC key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && modal.classList.contains('active')) {
+                closeModal();
+            }
+        });
+
+        // If modal is already open (due to server-side flag), ensure it stays open
+        // This handles the case when form validation fails
+        {% if show_modal %}
+        // Modal is already active via server-side class, no need to do anything
+        console.log('Modal opened due to form errors');
+        {% endif %}
+    </script>
+{% endblock %}

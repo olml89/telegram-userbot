@@ -1,0 +1,208 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Userbot Management - Admin Panel{% endblock %}
+
+{% block body %}
+    <div class="content-header">
+        <h2>Userbot Management</h2>
+        <p>Monitor and control your Telegram userbot instances in real-time.</p>
+    </div>
+
+    <!-- Connection Status -->
+    <div class="status-banner status-banner-success">
+        <div class="status-indicator"></div>
+        <div>
+            <strong>Userbot Connected</strong>
+            <p>Last seen: Just now</p>
+        </div>
+        <button class="btn btn-danger">Disconnect</button>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="dashboard-cards">
+        <div class="card">
+            <div class="card-header">
+                <span class="card-title">Active Sessions</span>
+                <div class="card-icon" style="background: #e8f5e9; color: #4caf50;">🟢</div>
+            </div>
+            <div class="card-value">3</div>
+            <div class="card-footer">
+                All healthy
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <span class="card-title">Messages Sent</span>
+                <div class="card-icon" style="background: #e3f2fd; color: #2196f3;">📨</div>
+            </div>
+            <div class="card-value">8,492</div>
+            <div class="card-footer">
+                ↑ 15% from yesterday
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <span class="card-title">API Calls Today</span>
+                <div class="card-icon" style="background: #f3e5f5; color: #9c27b0;">⚡</div>
+            </div>
+            <div class="card-value">12,847</div>
+            <div class="card-footer">
+                3,214 remaining
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <span class="card-title">Uptime</span>
+                <div class="card-icon" style="background: #fff3cd; color: #856404;">⏱️</div>
+            </div>
+            <div class="card-value">99.8%</div>
+            <div class="card-footer">
+                Last 30 days
+            </div>
+        </div>
+    </div>
+
+    <!-- Bot Configuration -->
+    <div class="grid-2-cols">
+        <div class="table-container">
+            <h3>Bot Configuration</h3>
+            <div class="config-list">
+                <div class="config-item">
+                    <div class="config-label">
+                        <strong>Bot Username</strong>
+                        <span class="config-value">@my_telegram_bot</span>
+                    </div>
+                    <button class="btn-icon" title="Edit">✏️</button>
+                </div>
+                <div class="config-item">
+                    <div class="config-label">
+                        <strong>Phone Number</strong>
+                        <span class="config-value">+1 (555) 123-4567</span>
+                    </div>
+                    <button class="btn-icon" title="Edit">✏️</button>
+                </div>
+                <div class="config-item">
+                    <div class="config-label">
+                        <strong>API ID</strong>
+                        <span class="config-value">••••••••</span>
+                    </div>
+                    <button class="btn-icon" title="Edit">✏️</button>
+                </div>
+                <div class="config-item">
+                    <div class="config-label">
+                        <strong>API Hash</strong>
+                        <span class="config-value">••••••••••••••••</span>
+                    </div>
+                    <button class="btn-icon" title="Edit">✏️</button>
+                </div>
+                <div class="config-item">
+                    <div class="config-label">
+                        <strong>Auto Reply</strong>
+                        <span class="status-badge status-active">Enabled</span>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" checked>
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+                <div class="config-item">
+                    <div class="config-label">
+                        <strong>Flood Wait Protection</strong>
+                        <span class="status-badge status-active">Enabled</span>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" checked>
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <!-- System Logs -->
+        <div class="table-container">
+            <h3>System Logs</h3>
+            <div class="logs-container">
+                <div class="log-entry log-info">
+                    <span class="log-time">14:32:15</span>
+                    <span class="log-message">Userbot connected successfully</span>
+                </div>
+                <div class="log-entry log-success">
+                    <span class="log-time">14:31:48</span>
+                    <span class="log-message">Message sent to @user123</span>
+                </div>
+                <div class="log-entry log-info">
+                    <span class="log-time">14:30:22</span>
+                    <span class="log-message">Auto-reply triggered</span>
+                </div>
+                <div class="log-entry log-warning">
+                    <span class="log-time">14:28:10</span>
+                    <span class="log-message">Rate limit warning: 80% capacity</span>
+                </div>
+                <div class="log-entry log-success">
+                    <span class="log-time">14:25:33</span>
+                    <span class="log-message">Content sync completed</span>
+                </div>
+                <div class="log-entry log-info">
+                    <span class="log-time">14:20:15</span>
+                    <span class="log-message">New session started</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Active Sessions Table -->
+    <div class="table-container">
+        <h3>Active Sessions</h3>
+        <table>
+            <thead>
+            <tr>
+                <th>Session ID</th>
+                <th>Device</th>
+                <th>IP Address</th>
+                <th>Location</th>
+                <th>Started</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>#SES-001</td>
+                <td>Chrome 120 on Windows</td>
+                <td>192.168.1.100</td>
+                <td>New York, US</td>
+                <td>2 hours ago</td>
+                <td><span class="status-badge status-active">Active</span></td>
+                <td>
+                    <button class="btn-sm btn-danger">Terminate</button>
+                </td>
+            </tr>
+            <tr>
+                <td>#SES-002</td>
+                <td>Firefox 121 on Linux</td>
+                <td>192.168.1.105</td>
+                <td>London, UK</td>
+                <td>5 hours ago</td>
+                <td><span class="status-badge status-active">Active</span></td>
+                <td>
+                    <button class="btn-sm btn-danger">Terminate</button>
+                </td>
+            </tr>
+            <tr>
+                <td>#SES-003</td>
+                <td>Safari 17 on macOS</td>
+                <td>192.168.1.120</td>
+                <td>Toronto, CA</td>
+                <td>1 day ago</td>
+                <td><span class="status-badge status-active">Active</span></td>
+                <td>
+                    <button class="btn-sm btn-danger">Terminate</button>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

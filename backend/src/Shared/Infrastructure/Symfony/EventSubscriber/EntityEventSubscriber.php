@@ -1,0 +1,34 @@
+<?php
+
+declare(strict_types=1);
+
+namespace olml89\TelegramUserbot\Backend\Shared\Infrastructure\Symfony\EventSubscriber;
+
+use olml89\TelegramUserbot\Backend\Shared\Domain\Entity\Event;
+use olml89\TelegramUserbot\Backend\Shared\Domain\Entity\EventEntity;
+use olml89\TelegramUserbot\Backend\Shared\Domain\Entity\EventEntityRepository;
+use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
+use Symfony\Component\Uid\Uuid;
+
+#[AsEventListener]
+final readonly class EntityEventSubscriber
+{
+    public function __construct(
+        private EventEntityRepository $eventEntityRepository,
+    ) {
+    }
+
+    public function __invoke(Event $event): void
+    {
+        $eventEntity = new EventEntity(
+            publicId: Uuid::v4(),
+            eventClass: $event::class,
+            entityClass: $event->entity()::class,
+            entityId: $event->entity()->id(),
+            payload: $event->jsonSerialize(),
+            occurredAt: $event->occurredAt(),
+        );
+
+        $this->eventEntityRepository->store($eventEntity);
+    }
+}
