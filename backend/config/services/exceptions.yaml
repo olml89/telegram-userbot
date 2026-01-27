@@ -1,16 +1,17 @@
 services:
 
+  # Don't register ExceptionEventSubscriber
+  olml89\TelegramUserbot\Backend\Shared\Infrastructure\Symfony\EventSubscriber\ExceptionEventSubscriber:
+    autowire: false
+    autoconfigure: false
+    public: false
+
   # Bind ExceptionHandler to ExceptionHandlerPipeline
   olml89\TelegramUserbot\Backend\Shared\Domain\Exception\ExceptionHandler:
     alias: olml89\TelegramUserbot\Backend\Shared\Domain\Exception\ExceptionHandlerPipeline
 
-  # Default ExceptionHandlerPipeline: caught exceptions
+  # ExceptionHandlerPipeline: logs to the app channel
   olml89\TelegramUserbot\Backend\Shared\Domain\Exception\ExceptionHandlerPipeline:
     arguments:
       $exceptionHandlers:
-        - '@olml89\TelegramUserbot\Backend\Shared\Infrastructure\Symfony\Exception\CaughtExceptionLogger'
-        - '@olml89\TelegramUserbot\Backend\Shared\Infrastructure\Symfony\Exception\ExceptionRethrower'
-
-  # Bind ExceptionEventHandler to NullableExceptionEventHandler (it does nothing)
-  olml89\TelegramUserbot\Backend\Shared\Infrastructure\Symfony\ExceptionEvent\ExceptionEventHandler:
-    alias: olml89\TelegramUserbot\Backend\Shared\Infrastructure\Symfony\ExceptionEvent\NullableExceptionEventHandler
+        - '@olml89\TelegramUserbot\Backend\Shared\Infrastructure\Symfony\Exception\ExceptionLogger'

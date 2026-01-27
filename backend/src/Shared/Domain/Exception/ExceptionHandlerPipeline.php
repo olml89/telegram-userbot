@@ -21,17 +21,19 @@ final class ExceptionHandlerPipeline implements ExceptionHandler
     {
         foreach ($exceptionHandlers as $exceptionHandler) {
             if (!$exceptionHandler instanceof ExceptionHandler) {
-                throw new InvalidArgumentException('Instance of %s expected');
+                throw new InvalidArgumentException(
+                    sprintf('Instance of %s expected', ExceptionHandler::class),
+                );
             }
 
             $this->exceptionHandlers[] = $exceptionHandler;
         }
     }
 
-    public function handle(Throwable $exception): void
+    public function handle(Throwable $exception, bool $handled = true): void
     {
         foreach ($this->exceptionHandlers as $exceptionHandler) {
-            $exceptionHandler->handle($exception);
+            $exceptionHandler->handle($exception, $handled);
         }
     }
 }

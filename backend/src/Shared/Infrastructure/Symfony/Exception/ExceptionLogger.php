@@ -8,7 +8,7 @@ use olml89\TelegramUserbot\Backend\Shared\Domain\Exception\ExceptionHandler;
 use Psr\Log\LoggerInterface;
 use Throwable;
 
-abstract readonly class ExceptionLogger implements ExceptionHandler
+final readonly class ExceptionLogger implements ExceptionHandler
 {
     use ItFiltersCriticalExceptions;
 
@@ -17,13 +17,12 @@ abstract readonly class ExceptionLogger implements ExceptionHandler
     ) {
     }
 
-    abstract protected function exceptionName(Throwable $exception): string;
-
-    public function handle(Throwable $exception): void
+    public function handle(Throwable $exception, bool $handled = true): void
     {
         $errorMessage = sprintf(
-            '%s: "%s" at %s line %s',
-            $this->exceptionName($exception),
+            '%s PHP Exception %s: "%s" at %s line %s',
+            $handled ? 'Caught' : 'Uncaught',
+            $exception::class,
             $exception->getMessage(),
             basename($exception->getFile()),
             $exception->getLine(),
