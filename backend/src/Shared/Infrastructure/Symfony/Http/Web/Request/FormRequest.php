@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace olml89\TelegramUserbot\Backend\Shared\Infrastructure\Symfony\Http\Web\Request;
 
+use olml89\TelegramUserbot\Backend\Shared\Application\Command;
 use Symfony\Component\Form\FormError;
 use Symfony\Component\Form\FormErrorIterator;
 use Symfony\Component\Form\FormFactoryInterface;
@@ -12,12 +13,15 @@ use Symfony\Component\Form\FormView;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
- * @template TData of RequestData
+ * @template TCommand of Command
+ * @template TData of FormData<TCommand>
  */
 abstract readonly class FormRequest
 {
-    /** @var TData */
-    protected RequestData $requestData;
+    /**
+     * @var TData
+     */
+    protected FormData $formData;
 
     protected Request $request;
     protected FormInterface $form;
@@ -25,25 +29,27 @@ abstract readonly class FormRequest
     public function __construct(FormFactoryInterface $formFactory, Request $request)
     {
         $this->request = $request;
-        $this->requestData = $this->initializeRequestData();
-        $this->form = $formFactory->create($this->requestData->getType(), $this->requestData);
+        $this->formData = $this->initializeFormData();
+        $this->form = $formFactory->create($this->formData->getType(), $this->formData);
     }
-
-    abstract protected function initializeRequestData(): RequestData;
 
     /**
      * @return TData
      */
-    public function requestData(): RequestData
-    {
-        return $this->requestData;
-    }
+    abstract protected function initializeFormData(): FormData;
 
-    public function isValid(): bool
+    /**
+     * @return ?TCommand
+     */
+    public function command(): ?Command
     {
         $this->form->handleRequest($this->request);
 
-        return $this->form->isSubmitted() && $this->form->isValid();
+        if (!$this->form->isSubmitted() || !$this->form->isValid()) {
+            return null;
+        }
+
+        return $this->formData->validated();
     }
 
     /**

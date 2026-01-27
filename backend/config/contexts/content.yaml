@@ -13,3 +13,15 @@ services:
   olml89\TelegramUserbot\Backend\Content\Domain\ContentRepository:
     alias: olml89\TelegramUserbot\Backend\Content\Infrastructure\Doctrine\DoctrineContentRepository
 
+# Mappings
+doctrine:
+  orm:
+    entity_managers:
+      default:
+        mappings:
+          Content:
+            is_bundle: false
+            type: xml
+            dir: '%kernel.project_dir%/src/Content/Infrastructure/Doctrine'
+            prefix: olml89\TelegramUserbot\Backend\Content\Domain
+            alias: Content

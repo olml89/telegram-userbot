@@ -4,25 +4,22 @@ declare(strict_types=1);
 
 namespace olml89\TelegramUserbot\Backend\Content\Infrastructure\Doctrine;
 
-use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\EntityRepository;
-use Doctrine\ORM\Mapping\ClassMetadata;
 use olml89\TelegramUserbot\Backend\Content\Domain\Content;
 use olml89\TelegramUserbot\Backend\Content\Domain\ContentRepository;
+use olml89\TelegramUserbot\Backend\Shared\Infrastructure\Doctrine\DoctrineRepository;
 
 /**
- * @extends EntityRepository<Content>
+ * @extends DoctrineRepository<Content>
  */
-final class DoctrineContentRepository extends EntityRepository implements ContentRepository
+final class DoctrineContentRepository extends DoctrineRepository implements ContentRepository
 {
-    public function __construct(EntityManagerInterface $em)
+    protected static function entityClass(): string
     {
-        parent::__construct($em, new ClassMetadata(Content::class));
+        return Content::class;
     }
 
     public function store(Content $content): void
     {
-        $this->getEntityManager()->persist($content);
-        $this->getEntityManager()->flush();
+        $this->storeEntity($content);
     }
 }

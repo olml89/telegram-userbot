@@ -29,7 +29,8 @@
         "symfony/orm-pack": "^2.7",
         "symfony/uid": "^8.0",
         "doctrine/doctrine-migrations-bundle": "^4.0",
-        "symfony/filesystem": "^8.0"
+        "symfony/filesystem": "^8.0",
+        "webmozart/assert": "^2.1"
     },
     "require-dev": {
         "symfony/web-profiler-bundle": "^8.0",

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<doctrine-mapping xmlns="https://doctrine-project.org/schemas/orm/doctrine-mapping"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="https://doctrine-project.org/schemas/orm/doctrine-mapping
+                  https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+
+    <entity name="olml89\TelegramUserbot\Backend\Shared\Domain\Entity\EventEntity"
+            table="events">
+
+        <id name="id" type="integer" column="id">
+            <generator strategy="IDENTITY"/>
+        </id>
+
+        <field name="publicId"
+               type="uuid"
+               column="public_id"
+               unique="true"
+               nullable="false"/>
+
+        <field name="eventClass"
+               type="string"
+               column="event_class"
+               length="255"
+               nullable="false"/>
+
+        <field name="entityClass"
+               type="string"
+               column="entity_class"
+               length="255"
+               nullable="false"/>
+
+        <field name="entityId"
+               type="integer"
+               column="entity_id"
+               nullable="false"/>
+
+        <field name="payload"
+               type="json"
+               nullable="false"/>
+
+        <field name="occurredAt"
+               type="datetime_immutable"
+               column="occurred_at"
+               nullable="false"/>
+
+    </entity>
+
+</doctrine-mapping>

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace olml89\TelegramUserbot\Backend\Content\Infrastructure\Symfony\Form;
 
-use olml89\TelegramUserbot\Backend\Content\Infrastructure\Symfony\Http\Web\Request\UploadContentRequestData;
+use olml89\TelegramUserbot\Backend\Content\Infrastructure\Symfony\Http\Web\Request\UploadContentFormData;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
@@ -25,6 +25,8 @@ final class ContentType extends AbstractType
                     'class' => 'form-input',
                 ],
                 'help' => 'A descriptive name for this content item',
+                'getter' => null,
+                'setter' => null,
             ])
             ->add('description', TextareaType::class, [
                 'label' => 'Description',
@@ -69,7 +71,7 @@ final class ContentType extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => UploadContentRequestData::class,
+            'data_class' => UploadContentFormData::class,
         ]);
     }
 }

@@ -1,15 +1,15 @@
 services:
 
   # Default ExceptionHandlerPipeline: caught exceptions, reports to Sentry
-  olml89\TelegramUserbot\Backend\Shared\Domain\ExceptionHandlerPipeline:
+  olml89\TelegramUserbot\Backend\Shared\Domain\Exception\ExceptionHandlerPipeline:
     arguments:
       $exceptionHandlers:
         - '@olml89\TelegramUserbot\Backend\Shared\Infrastructure\Symfony\Exception\CaughtExceptionLogger'
         - '@olml89\TelegramUserbot\Backend\Shared\Infrastructure\Symfony\Exception\ExceptionSentryReporter'
 
   # ExceptionHandlerPipeline.uncaught: uncaught exceptions, reports to Sentry
-  olml89\TelegramUserbot\Backend\Shared\Domain\ExceptionHandlerPipeline.uncaught:
-    class: olml89\TelegramUserbot\Backend\Shared\Domain\ExceptionHandlerPipeline
+  olml89\TelegramUserbot\Backend\Shared\Domain\Exception\ExceptionHandlerPipeline.uncaught:
+    class: olml89\TelegramUserbot\Backend\Shared\Domain\Exception\ExceptionHandlerPipeline
     arguments:
       $exceptionHandlers:
         - '@olml89\TelegramUserbot\Backend\Shared\Infrastructure\Symfony\Exception\UncaughtExceptionLogger'
@@ -27,5 +27,5 @@ services:
   # Inject ExceptionHandlerPipeline.unhandled into ReportableExceptionEventHandler
   olml89\TelegramUserbot\Backend\Shared\Infrastructure\Symfony\ExceptionEvent\ReportableExceptionEventHandler:
     arguments:
-      $exceptionHandler: '@olml89\TelegramUserbot\Backend\Shared\Domain\ExceptionHandlerPipeline.uncaught'
+      $exceptionHandler: '@olml89\TelegramUserbot\Backend\Shared\Domain\Exception\ExceptionHandlerPipeline.uncaught'
       $twig: '@twig'

@@ -7,8 +7,10 @@ namespace olml89\TelegramUserbot\Backend\Content\Application;
 use olml89\TelegramUserbot\Backend\Content\Domain\Content;
 use olml89\TelegramUserbot\Backend\Content\Domain\ContentFileManager;
 use olml89\TelegramUserbot\Backend\Content\Domain\ContentRepository;
+use olml89\TelegramUserbot\Backend\Content\Domain\ContentUploaded;
 use olml89\TelegramUserbot\Backend\Content\Domain\UploadedFile\UploadedFileException;
-use olml89\TelegramUserbot\Backend\Shared\Domain\ExceptionHandler;
+use olml89\TelegramUserbot\Backend\Shared\Domain\Entity\EventDispatcher;
+use olml89\TelegramUserbot\Backend\Shared\Domain\Exception\ExceptionHandler;
 use Symfony\Component\Uid\Uuid;
 use Throwable;
 
@@ -18,6 +20,7 @@ final readonly class UploadContentCommandHandler
         private ContentFileManager $contentFileManager,
         private ExceptionHandler $exceptionHandler,
         private ContentRepository $contentRepository,
+        private EventDispatcher $eventDispatcher,
     ) {
     }
 
@@ -41,6 +44,7 @@ final readonly class UploadContentCommandHandler
             );
 
             $this->contentRepository->store($content);
+            $this->eventDispatcher->dispatch(new ContentUploaded($content));
 
             return $content;
         } catch (Throwable $e) {

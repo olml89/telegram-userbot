@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace olml89\TelegramUserbot\Backend\Shared\Infrastructure\Symfony\Exception;
 
-use olml89\TelegramUserbot\Backend\Shared\Domain\ExceptionHandler;
+use olml89\TelegramUserbot\Backend\Shared\Domain\Exception\ExceptionHandler;
 use Sentry\State\HubInterface;
 use Throwable;
 

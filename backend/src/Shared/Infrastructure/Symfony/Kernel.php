@@ -6,10 +6,8 @@ namespace olml89\TelegramUserbot\Backend\Shared\Infrastructure\Symfony;
 
 use Doctrine\Bundle\DoctrineBundle\DoctrineBundle;
 use Doctrine\Bundle\MigrationsBundle\DoctrineMigrationsBundle;
-use olml89\TelegramUserbot\Backend\Shared\Infrastructure\Symfony\Configuration\FrameworkConfigurator;
-use olml89\TelegramUserbot\Backend\Shared\Infrastructure\Symfony\Configuration\PackageConfigurator;
-use olml89\TelegramUserbot\Backend\Shared\Infrastructure\Symfony\Configuration\RouteConfigurator;
 use olml89\TelegramUserbot\Backend\Shared\Infrastructure\Symfony\Configuration\ServiceConfigurator;
+use olml89\TelegramUserbot\Backend\Shared\Infrastructure\Symfony\Configuration\RouteConfigurator;
 use olml89\TelegramUserbot\Shared\App\Environment\Environment;
 use Sentry\SentryBundle\SentryBundle;
 use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
@@ -70,11 +68,12 @@ final class Kernel extends BaseKernel
             ->autoconfigure();
 
         /**
-         * Load framework, packages and services configuration
+         * Load framework, packages, services and contexts configuration
          */
-        new FrameworkConfigurator($this->getConfigDir())->configure($container);
-        new PackageConfigurator($this->getConfigDir(), $this->env)->configure($container);
-        new ServiceConfigurator($this->getConfigDir(), $this->env)->configure($container);
+        $container->import(resource: $this->getConfigDir() . '/framework.yaml');
+        new ServiceConfigurator($this->getConfigDir() . '/packages', $this->env)->configure($container);
+        new ServiceConfigurator($this->getConfigDir() . '/services', $this->env)->configure($container);
+        new ServiceConfigurator($this->getConfigDir() . '/contexts', $this->env)->configure($container);
     }
 
     protected function configureRoutes(RoutingConfigurator $routes): void

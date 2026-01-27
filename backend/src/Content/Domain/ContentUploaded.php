@@ -4,12 +4,34 @@ declare(strict_types=1);
 
 namespace olml89\TelegramUserbot\Backend\Content\Domain;
 
-use olml89\TelegramUserbot\Backend\Shared\Domain\EntityEvent;
+use DateTimeImmutable;
+use olml89\TelegramUserbot\Backend\Shared\Domain\Entity\Event;
+use olml89\TelegramUserbot\Backend\Shared\Domain\Entity\IsEvent;
 
-final readonly class ContentUploaded extends EntityEvent
+final readonly class ContentUploaded implements Event
 {
+    use IsEvent;
+
     public function __construct(
-        public Content $content,
+        private Content $content,
+        protected DateTimeImmutable $occurredAt = new DateTimeImmutable(),
     ) {
+    }
+
+    public function entity(): Content
+    {
+        return $this->content;
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    public function jsonSerialize(): array
+    {
+        return [
+            'name' => $this->content->name(),
+            'description' => $this->content->description(),
+            'file' => get_object_vars($this->content->file()),
+        ];
     }
 }
