@@ -1,31 +1,15 @@
 services:
 
-  # Default ExceptionHandlerPipeline: caught exceptions, reports to Sentry
+  # Register ExceptionEventSubscriber
+  olml89\TelegramUserbot\Backend\Shared\Infrastructure\Symfony\EventSubscriber\ExceptionEventSubscriber:
+    autowire: true
+    autoconfigure: true
+    arguments:
+      $exceptionSentryReporter: '@olml89\TelegramUserbot\Backend\Shared\Infrastructure\Symfony\Exception\ExceptionSentryReporter'
+
+  # ExceptionHandlerPipeline: logs to the app channel, reports to Sentry
   olml89\TelegramUserbot\Backend\Shared\Domain\Exception\ExceptionHandlerPipeline:
     arguments:
       $exceptionHandlers:
-        - '@olml89\TelegramUserbot\Backend\Shared\Infrastructure\Symfony\Exception\CaughtExceptionLogger'
+        - '@olml89\TelegramUserbot\Backend\Shared\Infrastructure\Symfony\Exception\ExceptionLogger'
         - '@olml89\TelegramUserbot\Backend\Shared\Infrastructure\Symfony\Exception\ExceptionSentryReporter'
-
-  # ExceptionHandlerPipeline.uncaught: uncaught exceptions, reports to Sentry
-  olml89\TelegramUserbot\Backend\Shared\Domain\Exception\ExceptionHandlerPipeline.uncaught:
-    class: olml89\TelegramUserbot\Backend\Shared\Domain\Exception\ExceptionHandlerPipeline
-    arguments:
-      $exceptionHandlers:
-        - '@olml89\TelegramUserbot\Backend\Shared\Infrastructure\Symfony\Exception\UncaughtExceptionLogger'
-        - '@olml89\TelegramUserbot\Backend\Shared\Infrastructure\Symfony\Exception\ExceptionSentryReporter'
-
-  # UncaughtExceptionLogger: writes to the request channel (as it does Symfony with uncaught exceptions on dev)
-  olml89\TelegramUserbot\Backend\Shared\Infrastructure\Symfony\Exception\UncaughtExceptionLogger:
-    arguments:
-      $logger: '@monolog.logger.request'
-
-  # Bind ExceptionEventHandler to ReportableExceptionEventHandler
-  olml89\TelegramUserbot\Backend\Shared\Infrastructure\Symfony\ExceptionEvent\ExceptionEventHandler:
-    alias: olml89\TelegramUserbot\Backend\Shared\Infrastructure\Symfony\ExceptionEvent\ReportableExceptionEventHandler
-
-  # Inject ExceptionHandlerPipeline.unhandled into ReportableExceptionEventHandler
-  olml89\TelegramUserbot\Backend\Shared\Infrastructure\Symfony\ExceptionEvent\ReportableExceptionEventHandler:
-    arguments:
-      $exceptionHandler: '@olml89\TelegramUserbot\Backend\Shared\Domain\Exception\ExceptionHandlerPipeline.uncaught'
-      $twig: '@twig'
