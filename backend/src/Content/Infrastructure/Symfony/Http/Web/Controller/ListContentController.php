@@ -12,14 +12,14 @@ use Symfony\Component\Routing\Attribute\Route;
 
 final class ListContentController extends AbstractController
 {
-    #[Route('/content', name: 'content.list', methods: ['GET'])]
+    #[Route('/library', name: 'library.list', methods: ['GET'])]
     public function __invoke(): Response
     {
         $uploadContentFormData = new UploadContentFormData();
         $form = $this->createForm(ContentType::class, $uploadContentFormData);
 
-        return $this->render('content.html.twig', [
-            'active_menu' => 'content.list',
+        return $this->render('library.html.twig', [
+            'active_menu' => 'library.list',
             'form' => $form->createView(),
             'show_modal' => false,
         ]);

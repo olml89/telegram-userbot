@@ -1,14 +1,14 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Not found - Admin Panel{% endblock %}
+{% block title %}Error - Admin Panel{% endblock %}
 
 {% block body %}
     <div class="content-header">
         <h2>Error</h2>
-        <p>Not found.</p>
+        <p>{{ status }}</p>
     </div>
 
     <div class="alert alert-error">
-        ❌ The requested url was not found.
+        ❌ {{ message }}
     </div>
 {% endblock %}

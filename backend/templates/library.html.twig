@@ -1,0 +1,294 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Library - Admin Panel{% endblock %}
+
+{% block body %}
+    <div class="page-header">
+        <div class="content-header">
+            <h2>Library</h2>
+            <p>Manage your digital content and pricing.</p>
+        </div>
+        <div class="header-actions">
+            <button class="btn btn-secondary btn-outline">$ Automatic price</button>
+            <button class="btn btn-primary" id="openModalBtn">+ Add new content</button>
+        </div>
+    </div>
+
+    {# Flash Messages for SUCCESS only (outside modal) #}
+    {% for message in app.flashes('success') %}
+        <div class="alert alert-success">
+            ✅ {{ message }}
+        </div>
+    {% endfor %}
+
+    {# Flash Messages for ERROR only (outside modal) #}
+    {% for message in app.flashes('error') %}
+        <div class="alert alert-error">
+            ❌ {{ message }}
+        </div>
+    {% endfor %}
+
+    <div class="library-card">
+        <div class="library-card-header">
+            <div>
+                <h3>Content Library</h3>
+                <p class="library-subtitle">Manage your content and pricing</p>
+            </div>
+        </div>
+
+        <div class="library-filters">
+            <label for="contentSearch" class="sr-only">Search content</label>
+            <input
+                type="search"
+                id="contentSearch"
+                placeholder="Search Content..."
+                class="search-input"
+            />
+            <div class="library-filter-group">
+                <div class="custom-select" data-value="All Categories">
+                    <button type="button" class="select-trigger" aria-haspopup="listbox" aria-expanded="false">
+                        <span class="select-value">All Categories</span>
+                    </button>
+                    <div class="select-dropdown" role="listbox">
+                        <button type="button" class="select-option">All Categories</button>
+                        <button type="button" class="select-option">Published</button>
+                        <button type="button" class="select-option">Draft</button>
+                        <button type="button" class="select-option">Scheduled</button>
+                    </div>
+                </div>
+
+                <div class="custom-select" data-value="All Types">
+                    <button type="button" class="select-trigger" aria-haspopup="listbox" aria-expanded="false">
+                        <span class="select-value">All Types</span>
+                    </button>
+                    <div class="select-dropdown" role="listbox">
+                        <button type="button" class="select-option">All Types</button>
+                        <button type="button" class="select-option">Selling</button>
+                        <button type="button" class="select-option">Teasing</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="library-table">
+            <table>
+                <thead>
+                <tr>
+                    <th>Media</th>
+                    <th>Content</th>
+                    <th>Category</th>
+                    <th>Bundle</th>
+                    <th>Price</th>
+                    <th>Sales</th>
+                    <th>Status</th>
+                    <th>Created</th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody>
+                {% set mockItems = [
+                    {
+                        title: 'Single Image',
+                        description: 'One thumbnail only.',
+                        files: [
+                        { thumbnail: 'https://picsum.photos/seed/one/120/120', mimeType: 'image/jpeg' }
+                    ]
+                    },
+                    {
+                        title: 'Two images',
+                        description: 'Two images.',
+                        files: [
+                        { thumbnail: 'https://picsum.photos/seed/one/120/120', mimeType: 'image/jpeg' },
+                        { thumbnail: 'https://picsum.photos/seed/two/120/120', mimeType: 'image/png' }
+                    ]
+                    },
+                    {
+                        title: '3 images',
+                        description: '3 images.',
+                        files: [
+                        { thumbnail: 'https://picsum.photos/seed/two/120/120', mimeType: 'image/jpeg' },
+                        { thumbnail: 'https://picsum.photos/seed/three/120/120', mimeType: 'image/jpeg' },
+                        { thumbnail: 'https://picsum.photos/seed/four/120/120', mimeType: 'image/webp' }
+                    ]
+                    },
+                    {
+                        title: '4 images',
+                        description: '4 images.',
+                        files: [
+                        { thumbnail: 'https://picsum.photos/seed/five/120/120', mimeType: 'image/jpeg' },
+                        { thumbnail: 'https://picsum.photos/seed/six/120/120', mimeType: 'image/jpeg' },
+                        { thumbnail: 'https://picsum.photos/seed/seven/120/120', mimeType: 'image/png' },
+                        { thumbnail: 'https://picsum.photos/seed/eight/120/120', mimeType: 'image/jpeg' }
+                    ]
+                    },
+                    {
+                        title: 'Mixed Media',
+                        description: 'Images + video + audio + docs.',
+                        files: [
+                        { thumbnail: 'https://picsum.photos/seed/nine/120/120', mimeType: 'image/jpeg' },
+                        { thumbnail: 'https://picsum.photos/seed/ten/120/120', mimeType: 'image/jpeg' },
+                        { thumbnail: 'https://picsum.photos/seed/eleven/120/120', mimeType: 'video/mp4' },
+                        { thumbnail: 'https://picsum.photos/seed/twelve/120/120', mimeType: 'audio/mpeg' },
+                        { thumbnail: 'https://picsum.photos/seed/thirteen/120/120', mimeType: 'application/pdf' },
+                        { thumbnail: 'https://picsum.photos/seed/fourteen/120/120', mimeType: 'application/msword' }
+                    ]
+                    }
+                ] %}
+
+                {% for item in mockItems %}
+                    <tr>
+                        <td>
+                            {% set filesCount = item.files|length %}
+                            {% set mediaClass =
+                                filesCount == 1 ? 'media-single' :
+                                filesCount == 2 ? 'media-pair' :
+                                'media-grid'
+                            %}
+                            <div class="media-thumb {{ mediaClass }}">
+                                {% for file in item.files|slice(0, 4) %}
+                                    <img src="{{ file.thumbnail }}" alt="Media thumbnail" class="media-img">
+                                {% endfor %}
+                                {% if filesCount > 4 %}
+                                    <span class="media-more">+{{ filesCount - 4 }}</span>
+                                {% endif %}
+                            </div>
+                        </td>
+                        <td>
+                            <div class="content-info">
+                                <div class="content-title">{{ item.title }}</div>
+                                <div class="content-description">{{ item.description }}</div>
+                                <div class="tag-list">
+                                    <span class="tag">mock</span>
+                                    <span class="tag">preview</span>
+                                </div>
+                            </div>
+                        </td>
+                        <td><span class="pill">Message</span></td>
+                        <td>
+                            {% set images = 0 %}
+                            {% set videos = 0 %}
+                            {% set audios = 0 %}
+                            {% set docs = 0 %}
+
+                            {% for file in item.files %}
+                                {% if file.mimeType starts with 'image/' %}
+                                    {% set images = images + 1 %}
+                                {% elseif file.mimeType starts with 'video/' %}
+                                    {% set videos = videos + 1 %}
+                                {% elseif file.mimeType starts with 'audio/' %}
+                                    {% set audios = audios + 1 %}
+                                {% else %}
+                                    {% set docs = docs + 1 %}
+                                {% endif %}
+                            {% endfor %}
+
+                            Images {{ images }} · Videos {{ videos }} · Audio {{ audios }} · Docs {{ docs }}
+                        </td>
+                        <td>
+                            <div class="price-info">
+                                <div class="price-value">$12.00</div>
+                                <span class="pill pill-muted">Selling</span>
+                            </div>
+                        </td>
+                        <td>42</td>
+                        <td><span class="pill pill-success">Active</span></td>
+                        <td>2026-01-27</td>
+                        <td>
+                            <div class="actions-menu">
+                                <button class="menu-trigger" type="button" aria-label="More actions">⋯</button>
+                                <div class="menu-dropdown">
+                                    <button type="button" class="menu-item">
+                                        <span class="menu-icon">👁️</span>
+                                        Preview
+                                    </button>
+                                    <button type="button" class="menu-item">
+                                        <span class="menu-icon">📝</span>
+                                        Edit
+                                    </button>
+                                    <button type="button" class="menu-item">
+                                        <span class="menu-icon">🗐</span>
+                                        Duplicate
+                                    </button>
+                                    <button type="button" class="menu-item menu-danger">
+                                        <span class="menu-icon">🗑️</span>
+                                        Delete
+                                    </button>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="library-footer">
+            <span class="library-count">Showing 1-10 of 156</span>
+            <div class="library-pagination">
+                <button class="btn btn-secondary btn-sm">Previous</button>
+                <span class="page-indicator">Page 1 of 16</span>
+                <button class="btn btn-secondary btn-sm">Next</button>
+            </div>
+        </div>
+    </div>
+
+    {# Modal for Add Content Form #}
+    <div id="contentModal" class="modal {% if show_modal %}active{% endif %}">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Add New Content</h3>
+                <button class="close-modal" id="closeModalBtn" type="button">&times;</button>
+            </div>
+
+            {# Flash Messages for ERRORS (inside modal) #}
+            {% if app.flashes('error')|length > 0 %}
+                <div class="modal-flash-messages">
+                    {% for message in app.flashes('error') %}
+                        <div class="alert alert-error">
+                            ❌ {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            {{ form_start(form, {
+                'action': path('content.upload'),
+                'attr': {'id': 'contentForm'}
+            }) }}
+            {# form fields stay here #}
+            {{ form_end(form) }}
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    <script>
+        document.querySelectorAll('.custom-select').forEach((select) => {
+            const trigger = select.querySelector('.select-trigger');
+            const value = select.querySelector('.select-value');
+            const options = select.querySelectorAll('.select-option');
+
+            trigger.addEventListener('click', () => {
+                const isOpen = select.classList.contains('open');
+                document.querySelectorAll('.custom-select.open').forEach((el) => el.classList.remove('open'));
+                if (!isOpen) {
+                    select.classList.add('open');
+                }
+            });
+
+            options.forEach((option) => {
+                option.addEventListener('click', () => {
+                    value.textContent = option.textContent;
+                    select.dataset.value = option.textContent;
+                    select.classList.remove('open');
+                });
+            });
+        });
+
+        document.addEventListener('click', (event) => {
+            if (!event.target.closest('.custom-select')) {
+                document.querySelectorAll('.custom-select.open').forEach((el) => el.classList.remove('open'));
+            }
+        });
+    </script>
+{% endblock %}
