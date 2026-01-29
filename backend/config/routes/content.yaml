@@ -1,0 +1,3 @@
+content_web:
+  resource: ../../src/Content/Infrastructure/Symfony/Http/Web/Controller
+  type: attribute

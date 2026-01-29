@@ -1,0 +1,8 @@
+shared_web:
+  resource: ../../src/Shared/Infrastructure/Symfony/Http/Web/Controller
+  type: attribute
+
+shared_api:
+  resource: ../../src/Shared/Infrastructure/Symfony/Http/Api/Controller
+  type: attribute
+  prefix: api
