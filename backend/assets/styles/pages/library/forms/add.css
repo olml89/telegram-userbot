@@ -1,0 +1,200 @@
+/* ===== CONTENT ADDITION MODAL ===== */
+#contentAddModal .modal-content {
+    max-height: 92vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+#contentAddModal .modal-body {
+    flex: 1 1 auto;
+    overflow-y: auto;
+    overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+#contentAddModal .form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+}
+
+#contentAddModal .form-label.full-width {
+    grid-column: 1 / -1;
+    margin-top: 14px;
+}
+
+#contentAddModal .form-label {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    font-size: 12px;
+    color: var(--text);
+}
+
+#contentAddModal .form-label-title {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+#contentAddModal .form-textarea {
+    resize: none;
+}
+
+#contentAddModal .price-input {
+    position: relative;
+}
+
+#contentAddModal .price-prefix {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-muted);
+    font-size: 13px;
+    pointer-events: none;
+}
+
+#contentAddModal .price-input .form-input {
+    padding-left: 28px;
+}
+
+#contentAddModal [data-intensity-range] {
+    cursor: pointer;
+}
+
+#contentAddModal .tag-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+#contentAddModal .tag-group-title {
+    font-size: 11px;
+    color: var(--text-muted);
+}
+
+#contentAddModal .tag-selected {
+    background: var(--accent);
+    color: #ffffff;
+    border-color: var(--accent);
+    cursor: pointer;
+}
+
+#contentAddModal .tag-available {
+    background: #f3f4f6;
+    color: var(--text);
+    border: 1px solid var(--border);
+    cursor: pointer;
+}
+
+#contentAddModal .tag-input {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+#contentAddModal .file-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+#contentAddModal .file-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 14px;
+    display: grid;
+    grid-template-columns: 80px 1.6fr 1fr auto;
+    gap: 14px;
+    align-items: center;
+}
+
+#contentAddModal .file-meta {
+    min-width: 0;
+    overflow: hidden;
+}
+
+#contentAddModal .file-title {
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 6px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+#contentAddModal .file-row {
+    display: flex;
+    gap: 6px;
+    font-size: 12px;
+    color: var(--text-muted);
+}
+
+#contentAddModal .file-label {
+    color: var(--text);
+    font-weight: 600;
+}
+
+#contentAddModal .file-thumb {
+    width: 80px;
+    height: 80px;
+    border-radius: 10px;
+    overflow: hidden;
+    background: var(--accent-weak);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#contentAddModal .file-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 10px;
+}
+
+#contentAddModal .file-upload {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+}
+
+#contentAddModal .file-input {
+    display: none;
+}
+
+#contentAddModal .file-placeholder {
+    width: 72px;
+    height: 72px;
+    border-radius: 10px;
+    background: var(--accent-weak);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#contentAddModal .modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+/* Responsive fallback */
+@media (max-width: 900px) {
+    #contentAddModal .file-item {
+        grid-template-columns: 72px 1fr;
+        grid-auto-rows: auto;
+    }
+
+    #contentAddModal .file-actions {
+        justify-self: start;
+    }
+}

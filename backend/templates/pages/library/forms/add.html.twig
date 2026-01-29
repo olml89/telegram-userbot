@@ -1,0 +1,132 @@
+<div id="contentAddModal" class="modal {% if show_add_modal %}active{% endif %}">
+    <div class="modal-content modal-lg">
+        <div class="modal-header">
+            <div>
+                <h3>Add New Content</h3>
+                <p class="modal-subtitle">Create new content and upload files.</p>
+            </div>
+            <button class="close-modal" type="button" data-add-close aria-label="Close">&times;</button>
+        </div>
+
+        <div class="modal-body">
+            <div class="modal-section form-grid">
+                <label class="form-label full-width">
+                    Title
+                    <input type="text" class="form-input" placeholder="Enter title..." />
+                </label>
+                <label class="form-label full-width">
+                    Description
+                    <textarea class="form-textarea" rows="3" placeholder="Write a short description..."></textarea>
+                </label>
+
+                <label class="form-label">
+                    Category
+                    <div class="custom-select" data-value="Select category">
+                        <button type="button" class="select-trigger" aria-haspopup="listbox" aria-expanded="false">
+                            <span class="select-value">Select category</span>
+                        </button>
+                        <div class="select-dropdown" role="listbox">
+                            {% for category in add_categories %}
+                                <button type="button" class="select-option">{{ category }}</button>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </label>
+
+                <label class="form-label">
+                    Mode
+                    <div class="custom-select" data-value="Selling" data-mode-select>
+                        <button type="button" class="select-trigger" aria-haspopup="listbox" aria-expanded="false">
+                            <span class="select-value">Selling</span>
+                        </button>
+                        <div class="select-dropdown" role="listbox">
+                            <button type="button" class="select-option">Selling</button>
+                            <button type="button" class="select-option">Teasing</button>
+                        </div>
+                    </div>
+                </label>
+
+                <label class="form-label">
+                    Price
+                    <div class="price-input">
+                        <span class="price-prefix">$</span>
+                        <input type="number" class="form-input" placeholder="0.00" min="0" data-price-input />
+                    </div>
+                </label>
+
+                <label class="form-label">
+                    <span class="form-label-title">Intensity (<span data-intensity-value>50</span>)</span>
+                    <input type="range" class="form-input" min="0" max="100" value="50" data-intensity-range />
+                </label>
+
+                <label class="form-label">
+                    Language
+                    <div class="custom-select" data-value="Select language">
+                        <button type="button" class="select-trigger" aria-haspopup="listbox" aria-expanded="false">
+                            <span class="select-value">Select language</span>
+                        </button>
+                        <div class="select-dropdown" role="listbox">
+                            {% for language in add_languages %}
+                                <button type="button" class="select-option">{{ language }}</button>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </label>
+
+                <label class="form-label">
+                    Status
+                    <div class="custom-select" data-value="{{ add_statuses|first }}">
+                        <button type="button" class="select-trigger" aria-haspopup="listbox" aria-expanded="false">
+                            <span class="select-value">{{ add_statuses|first }}</span>
+                        </button>
+                        <div class="select-dropdown" role="listbox">
+                            {% for status in add_statuses %}
+                                <button type="button" class="select-option">{{ status }}</button>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </label>
+            </div>
+
+            <div class="modal-section">
+                <h4>Tags</h4>
+                <div class="tag-input">
+                    <input
+                            type="text"
+                            class="form-input"
+                            placeholder="Type and press Enter..."
+                            data-tags-input
+                    />
+                </div>
+
+                <div class="tag-group">
+                    <div class="tag-group-title">Selected tags</div>
+                    <div class="tag-list" data-tags-selected></div>
+                </div>
+
+                <div class="tag-group">
+                    <div class="tag-group-title">Available tags</div>
+                    <div class="tag-list" data-tags-available>
+                        {% for tag in add_tags %}
+                            <button type="button" class="tag tag-available" data-tag="{{ tag }}">{{ tag }}</button>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-section">
+                <h4>Files</h4>
+                <form class="file-list" data-file-list></form>
+
+                <div class="file-upload">
+                    <input type="file" class="file-input" data-file-input />
+                    <button type="button" class="btn btn-secondary btn-hover-muted" data-upload-btn>Upload file</button>
+                </div>
+            </div>
+
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary btn-hover-muted" data-add-close>Close</button>
+            <button type="button" class="btn btn-primary">Save</button>
+        </div>
+    </div>
+</div>

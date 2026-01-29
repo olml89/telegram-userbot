@@ -1,12 +1,4 @@
 /* ===== CONTENT PREVIEW MODAL ===== */
-#contentPreviewModal .modal-header {
-    margin-top: 0;
-}
-
-#contentPreviewModal .modal-header h3 {
-    margin: 0;
-}
-
 #contentPreviewModal .modal-body {
     flex: 1 1 auto;
     overflow: auto;

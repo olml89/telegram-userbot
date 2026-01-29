@@ -13,7 +13,7 @@ final class DisplayUserbotController extends AbstractController
     #[Route('/userbot', name: 'userbot', methods: ['GET'])]
     public function __invoke(): Response
     {
-        return $this->render('userbot.html.twig', [
+        return $this->render('pages/userbot.html.twig', [
             'active_menu' => 'userbot',
         ]);
     }

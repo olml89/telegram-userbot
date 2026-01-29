@@ -13,7 +13,7 @@ final class DashboardController extends AbstractController
     #[Route('/', name: 'dashboard', methods: ['GET'])]
     public function __invoke(): Response
     {
-        return $this->render('dashboard.html.twig', [
+        return $this->render('pages/dashboard.html.twig', [
             'active_menu' => 'dashboard',
         ]);
     }
