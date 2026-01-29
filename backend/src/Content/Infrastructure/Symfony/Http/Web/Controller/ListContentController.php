@@ -18,7 +18,7 @@ final class ListContentController extends AbstractController
         $uploadContentFormData = new UploadContentFormData();
         $form = $this->createForm(ContentType::class, $uploadContentFormData);
 
-        return $this->render('library.html.twig', [
+        return $this->render('library/list.html.twig', [
             'active_menu' => 'library.list',
             'form' => $form->createView(),
             'show_modal' => false,

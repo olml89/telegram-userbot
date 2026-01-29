@@ -1,0 +1,107 @@
+<div id="contentPreviewModal" class="modal {% if show_preview %}active{% endif %}">
+    <div class="modal-content modal-lg">
+        <div class="modal-header">
+            <div>
+                <h3>Content Preview</h3>
+                <p class="modal-subtitle">Preview of {{ content.title }}</p>
+            </div>
+            <button class="close-modal" type="button" data-preview-close aria-label="Close">&times;</button>
+        </div>
+
+        <div class="modal-body">
+            <div class="modal-section details-grid">
+                <div class="details-panel">
+                    <h4>Content Details</h4>
+                    <div class="detail-row"><strong>Title:</strong> {{ content.title }}</div>
+                    <div class="detail-row"><strong>Category:</strong> {{ content.category }}</div>
+                    <div class="detail-row"><strong>Type:</strong> {{ content.type }}</div>
+                    <div class="detail-row"><strong>Price:</strong> {{ content.price }}</div>
+                    <div class="detail-row"><strong>Intensity:</strong> {{ content.intensity }}</div>
+                    <div class="detail-row"><strong>Language:</strong> {{ content.language }}</div>
+                    <div class="detail-row"><strong>Status:</strong> {{ content.status }}</div>
+                </div>
+
+                <div class="details-panel">
+                    <h4>Library Summary</h4>
+                    <div class="detail-row"><strong>Files:</strong> {{ content.files_count }}</div>
+                    <div class="detail-row"><strong>Total size:</strong> {{ content.total_size_mb }} MB</div>
+                    <div class="detail-row"><strong>Created:</strong> {{ content.created_at }}</div>
+                    <div class="detail-row"><strong>Sales:</strong> {{ content.sales is null ? '-' : content.sales }}</div>
+                </div>
+            </div>
+
+            <div class="modal-section">
+                <h4>Description</h4>
+                <p class="section-subtitle">{{ content.description }}</p>
+            </div>
+
+            <div class="modal-section">
+                <h4>Tags</h4>
+                <div class="tag-list">
+                    {% for tag in content.tags %}
+                        <span class="tag">{{ tag }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="modal-section">
+                <h4>Files</h4>
+
+                <form class="file-list">
+                    {% for file in content.files %}
+                        <div class="file-item">
+                            <div class="file-thumb">
+                                <img src="{{ file.thumbnail }}" alt="{{ file.title }} thumbnail">
+                            </div>
+
+                            <div class="file-meta">
+                                <div class="file-title">{{ file.title }}</div>
+                                <div class="file-row">
+                                    <span class="file-label">Type:</span>
+                                    <span class="file-value file-muted">
+                                        {% if file.mimeType starts with 'video/' %}
+                                            📹 {{ file.mimeType }}
+                                        {% elseif file.mimeType starts with 'image/' %}
+                                            🖼️ {{ file.mimeType }}
+                                        {% elseif file.mimeType starts with 'audio/' %}
+                                            🎵 {{ file.mimeType }}
+                                        {% else %}
+                                            📄 {{ file.mimeType }}
+                                        {% endif %}
+                                    </span>
+                                </div>
+                                {% if file.mimeType starts with 'image/' or file.mimeType starts with 'video/' %}
+                                    <div class="file-row">
+                                        <span class="file-label">Resolution:</span>
+                                        <span class="file-value file-muted">{{ file.resolution }}</span>
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <div class="file-meta">
+                                <div class="file-row">
+                                    <span class="file-label">Size:</span>
+                                    <span class="file-value">{{ file.sizeMb }} MB</span>
+                                </div>
+                                {% if file.mimeType starts with 'video/' %}
+                                    <div class="file-row">
+                                        <span class="file-label">Length:</span>
+                                        <span class="file-value">{{ file.lengthSec }}s</span>
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <div class="file-actions">
+                                <button type="button" class="btn btn-secondary btn-hover-outline btn-sm">🗑️ Remove</button>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </form>
+            </div>
+        </div>
+
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary btn-hover-outline" data-preview-close>Close</button>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,123 @@
+/* ===== CONTENT PREVIEW MODAL ===== */
+#contentPreviewModal .modal-header {
+    margin-top: 0;
+}
+
+#contentPreviewModal .modal-header h3 {
+    margin: 0;
+}
+
+#contentPreviewModal .modal-body {
+    flex: 1 1 auto;
+    overflow: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+#contentPreviewModal .details-grid {
+    display: flex;
+    gap: 18px;
+}
+
+#contentPreviewModal .details-panel {
+    flex: 1 1 0;
+    min-width: 0;
+}
+
+#contentPreviewModal .details-panel h4 {
+    margin-bottom: 10px;
+}
+
+#contentPreviewModal .detail-row {
+    font-size: 12px;
+    margin-bottom: 8px;
+}
+
+#contentPreviewModal .modal-content {
+    background: var(--surface);
+    border-radius: 14px;
+    border: 1px solid var(--border);
+    padding: 22px;
+    box-shadow: 0 12px 40px rgba(17, 17, 17, 0.12);
+    font-family: inherit;
+    width: min(1200px, 96vw);
+    max-height: 92vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+#contentPreviewModal .file-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+/* Force 4-column file layout */
+#contentPreviewModal .file-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 14px;
+    display: grid !important;
+    grid-template-columns: 80px 1.6fr 1fr auto !important;
+    gap: 14px;
+    align-items: center;
+}
+
+#contentPreviewModal .file-thumb {
+    width: 80px;
+}
+
+#contentPreviewModal .file-thumb img {
+    width: 72px;
+    height: 72px;
+    border-radius: 10px;
+    object-fit: cover;
+    background: var(--accent-weak);
+}
+
+#contentPreviewModal .file-meta {
+    min-width: 0;
+}
+
+#contentPreviewModal .file-title {
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 6px;
+}
+
+#contentPreviewModal .file-row {
+    display: flex;
+    gap: 6px;
+    font-size: 12px;
+    color: var(--text-muted);
+}
+
+#contentPreviewModal .file-label {
+    color: var(--text);
+    font-weight: 600;
+}
+
+#contentPreviewModal .modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 12px;
+}
+
+/* Responsive: stack on small screens */
+@media (max-width: 900px) {
+    #contentPreviewModal .details-grid {
+        grid-template-columns: 1fr;
+    }
+
+    #contentPreviewModal .file-item {
+        grid-template-columns: 72px 1fr !important;
+        grid-auto-rows: auto;
+    }
+
+    #contentPreviewModal .file-actions {
+        justify-self: start;
+    }
+}
