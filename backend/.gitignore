@@ -1,4 +1,6 @@
 doc/
+node_modules/
+public/build
 var/
 vendor/
 

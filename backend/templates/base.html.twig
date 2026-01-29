@@ -5,10 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Admin Dashboard{% endblock %}</title>
 
-    {# Link to external CSS file #}
-    <link rel="stylesheet" href="{{ asset('css/admin.css') }}">
-
-    {% block stylesheets %}{% endblock %}
+    {# Vite assets #}
+    {{ vite_entry_link_tags('app') }}
+    {{ vite_entry_script_tags('app') }}
 </head>
 <body>
 <div class="admin-container">

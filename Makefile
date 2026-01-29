@@ -1,6 +1,6 @@
 # Load environment variable safely
 -include .env
-APP_ENV ?= production
+APP_ENV ?= prod
 
 
 # Load database variables safely
@@ -11,13 +11,16 @@ DB_NAME ?= postgres
 
 
 # File args
-DOCKER_COMPOSE := -f docker-compose.prod.yml
+DOCKER_COMPOSE := -f docker-compose.yml
 ENV := --env-file .env --env-file backend/.env
 
 
-# Override of the docker compose on development
-ifneq ($(APP_ENV),production)
-    $(info Using development environment -> adding docker compose.dev.yml)
+# Override of the docker compose depending on the environment
+ifeq ($(APP_ENV),prod)
+    $(info Using production environment -> adding docker-compose.prod.yml)
+    DOCKER_COMPOSE += -f docker-compose.prod.yml
+else
+    $(info Using development environment -> adding docker-compose.dev.yml)
     DOCKER_COMPOSE += -f docker-compose.dev.yml
 endif
 
@@ -47,8 +50,11 @@ stop:
 	)
 
 down:
-	docker compose $(DOCKER_COMPOSE) $(ENV) down
-
+	$(eval SERVICE := $(word 2, $(MAKECMDGOALS)))
+	$(if $(SERVICE), \
+		docker compose $(DOCKER_COMPOSE) $(ENV) down $(SERVICE), \
+		docker compose $(DOCKER_COMPOSE) $(ENV) down \
+	)
 
 # Debug containers
 # Make syntax, to avoid dependence on bash/unix
@@ -66,7 +72,7 @@ debug:
 
 
 # Shell access containers
-.PHONY: alloy backend bot bot-manager dev grafana loki nginx postgres redis
+.PHONY: alloy backend bot bot-manager dev grafana loki nginx postgres redis vite
 
 alloy:
 	docker compose $(DOCKER_COMPOSE) $(ENV) exec alloy /bin/sh
@@ -98,6 +104,8 @@ postgres:
 redis:
 	docker compose $(DOCKER_COMPOSE) $(ENV) exec redis redis-cli
 
+vite:
+	docker compose $(DOCKER_COMPOSE) $(ENV) restart vite
 
 # Development recipes
 # The -T flag disables TTY, required when running from non-interactive environments like Git hooks

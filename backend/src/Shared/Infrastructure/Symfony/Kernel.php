@@ -9,6 +9,7 @@ use Doctrine\Bundle\MigrationsBundle\DoctrineMigrationsBundle;
 use olml89\TelegramUserbot\Backend\Shared\Infrastructure\Symfony\Configuration\ServiceConfigurator;
 use olml89\TelegramUserbot\Backend\Shared\Infrastructure\Symfony\Configuration\RouteConfigurator;
 use olml89\TelegramUserbot\Shared\App\Environment\Environment;
+use Pentatrion\ViteBundle\PentatrionViteBundle;
 use Sentry\SentryBundle\SentryBundle;
 use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
 use Symfony\Bundle\FrameworkBundle\Kernel\MicroKernelTrait;
@@ -41,6 +42,7 @@ final class Kernel extends BaseKernel
         yield new FrameworkBundle();
         yield new MonologBundle();
         yield new TwigBundle();
+        yield new PentatrionViteBundle();
         yield new DoctrineBundle();
         yield new DoctrineMigrationsBundle();
 
@@ -70,10 +72,9 @@ final class Kernel extends BaseKernel
         /**
          * Load framework, packages, services and contexts configuration
          */
-        $container->import(resource: $this->getConfigDir() . '/framework.yaml');
-        new ServiceConfigurator($this->getConfigDir() . '/packages', $this->env)->configure($container);
-        new ServiceConfigurator($this->getConfigDir() . '/services', $this->env)->configure($container);
-        new ServiceConfigurator($this->getConfigDir() . '/contexts', $this->env)->configure($container);
+        new ServiceConfigurator($this->getConfigDir(), '/packages', $this->env)->configure($container);
+        new ServiceConfigurator($this->getConfigDir(), '/services', $this->env)->configure($container);
+        new ServiceConfigurator($this->getConfigDir(), '/contexts', $this->env)->configure($container);
     }
 
     protected function configureRoutes(RoutingConfigurator $routes): void

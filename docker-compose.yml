@@ -1,0 +1,141 @@
+name: telegram-userbot
+
+services:
+
+  nginx:
+    container_name: telegram_userbot_nginx
+    depends_on:
+      backend:
+        condition: service_started
+    image: nginx:stable-alpine
+    ports:
+      - ${BACKEND_PORT}:80
+    networks:
+      - telegram-userbot-network
+
+  backend:
+    container_name: telegram_userbot_backend
+    depends_on:
+      alloy:
+        condition: service_started
+      bot-manager:
+        condition: service_started
+    environment:
+      APP_ENV: ${APP_ENV}
+    entrypoint: [bin/entrypoint.sh]
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
+    networks:
+      - telegram-userbot-network
+
+  bot-manager:
+    container_name: telegram_userbot_bot_manager
+    depends_on:
+      redis:
+        condition: service_started
+      alloy:
+        condition: service_started
+      bot:
+        condition: service_healthy
+    environment:
+      APP_ENV: ${APP_ENV}
+      SUPERVISOR_USER: ${SUPERVISOR_USER}
+      SUPERVISOR_PASSWORD: ${SUPERVISOR_PASSWORD}
+    tty: true
+    entrypoint: [bin/entrypoint.sh]
+    networks:
+      - telegram-userbot-network
+
+  bot:
+    container_name: telegram_userbot_bot
+    depends_on:
+      alloy:
+        condition: service_started
+      redis:
+        condition: service_started
+    healthcheck:
+      # Wait until the 9001 port is responsive, meaning supervisor is already running
+      test: [CMD, nc, -z, 0.0.0.0, '9001']
+      interval: 5s
+      timeout: 10s
+      retries: 50
+    environment:
+      APP_ENV: ${APP_ENV}
+      SUPERVISOR_USER: ${SUPERVISOR_USER}
+      SUPERVISOR_PASSWORD: ${SUPERVISOR_PASSWORD}
+    tty: true
+    entrypoint: [bin/entrypoint.sh]
+    networks:
+      - telegram-userbot-network
+
+  redis:
+    container_name: telegram_userbot_redis
+    image: redis:8-alpine
+    command: [redis-server, /usr/local/etc/redis/redis.conf]
+    user: redis
+    volumes:
+      - ./redis/redis.conf:/usr/local/etc/redis/redis.conf:cached
+      - ./shared/var/log/redis:/var/log/redis:cached
+      - telegram-userbot-redis:/data:cached
+    networks:
+      - telegram-userbot-network
+
+  postgres:
+    container_name: telegram_userbot_postgres
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - telegram-userbot-db:/var/lib/postgresql/data:cached
+    networks:
+      - telegram-userbot-network
+
+  # Centralized logging services
+  loki:
+    container_name: telegram_userbot_loki
+    depends_on:
+      alloy:
+        condition: service_started
+    image: grafana/loki:latest
+    networks:
+      - telegram-userbot-grafana-network
+
+  alloy:
+    container_name: telegram_userbot_alloy
+    image: grafana/alloy:latest
+    entrypoint: [/bin/sh]
+    command: -c "alloy run /etc/alloy/config.alloy > /var/log/alloy.log 2>&1"
+    volumes:
+      - ./alloy/config.alloy:/etc/alloy/config.alloy:cached
+      # Make a reference in the shared var log to the internal alloy log
+      - ./shared/var/log/alloy:/var/log:cached
+      # Mount the whole shared log directory (including the previous alloy log) to the container using a full path,
+      # use full paths inside config.alloy to reference the log files to collect
+      - ./shared/var/log:/telegram-userbot/shared/var/log:cached
+    networks:
+      - telegram-userbot-grafana-network
+
+  grafana:
+    container_name: telegram_userbot_grafana
+    depends_on:
+      loki:
+        condition: service_started
+    image: grafana/grafana:latest
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_SECURITY_ADMIN_PASSWORD}
+    ports:
+      - ${GRAFANA_PORT}:3000
+    volumes:
+      - ./grafana/provisioning:/etc/grafana/provisioning:cached
+    networks:
+      - telegram-userbot-grafana-network
+
+volumes:
+  telegram-userbot-db:
+  telegram-userbot-redis:
+
+networks:
+  telegram-userbot-network:
+  telegram-userbot-grafana-network:

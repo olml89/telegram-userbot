@@ -7,6 +7,22 @@ WORKDIR /telegram-userbot/backend
 COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/local/bin/
 RUN install-php-extensions intl pgsql pdo_pgsql
 
+FROM base as assets
+
+WORKDIR /telegram-userbot/backend
+
+# Install npm
+RUN apk add --no-cache nodejs npm
+
+# Install npm packages (vite)
+COPY backend/package.json backend/package-lock.json ./
+RUN npm ci --include=dev
+
+# Copy the assets and the vite config and run build to generate the assets in public/build
+COPY backend/assets ./assets
+COPY backend/vite.config.js ./
+RUN npm run build
+
 FROM base AS prod
 
 # Copy the backend codebase to the container
@@ -14,6 +30,9 @@ COPY backend/ ./
 
 # Copy shared codebase to the container
 COPY shared/ /telegram-userbot/shared/
+
+# Copy built assets from assets stage
+COPY --from=assets /telegram-userbot/backend/public/build /telegram-userbot/backend/public/build
 
 # Create writable cache dir for Symfony
 RUN mkdir -p /telegram-userbot/backend/var/cache  &&  \
@@ -43,6 +62,9 @@ FROM base AS dev
 
 # Install composer and xdebug and clear extensions installer
 RUN install-php-extensions xdebug @composer && rm /usr/local/bin/install-php-extensions;
+
+# Add Node.js + npm fot Vite (to bundle assets on dev environment)
+RUN apk add --no-cache nodejs npm
 
 # Copy xdebug configuration file
 COPY docker-php-ext-xdebug.ini /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini

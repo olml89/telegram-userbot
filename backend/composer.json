@@ -30,7 +30,8 @@
         "symfony/uid": "^8.0",
         "doctrine/doctrine-migrations-bundle": "^4.0",
         "symfony/filesystem": "^8.0",
-        "webmozart/assert": "^2.1"
+        "webmozart/assert": "^2.1",
+        "pentatrion/vite-bundle": "^8.2"
     },
     "require-dev": {
         "symfony/web-profiler-bundle": "^8.0",
