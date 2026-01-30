@@ -2,9 +2,11 @@
 
 declare(strict_types=1);
 
-namespace olml89\TelegramUserbot\Backend\Shared\Domain\Entity;
+namespace olml89\TelegramUserbot\Backend\Shared\Domain\Entity\Event;
 
 use DateTimeImmutable;
+use olml89\TelegramUserbot\Backend\Shared\Domain\Entity\Entity;
+use olml89\TelegramUserbot\Backend\Shared\Domain\Entity\IsEntity;
 use Symfony\Component\Uid\Uuid;
 
 final class EventEntity implements Entity

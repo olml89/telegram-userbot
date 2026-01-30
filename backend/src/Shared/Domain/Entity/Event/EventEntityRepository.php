@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace olml89\TelegramUserbot\Backend\Shared\Domain\Entity;
+namespace olml89\TelegramUserbot\Backend\Shared\Domain\Entity\Event;
 
 interface EventEntityRepository
 {

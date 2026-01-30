@@ -9,7 +9,7 @@ use olml89\TelegramUserbot\Backend\Content\Domain\ContentFileManager;
 use olml89\TelegramUserbot\Backend\Content\Domain\ContentRepository;
 use olml89\TelegramUserbot\Backend\Content\Domain\ContentUploaded;
 use olml89\TelegramUserbot\Backend\Content\Domain\UploadedFile\UploadedFileException;
-use olml89\TelegramUserbot\Backend\Shared\Domain\Entity\EventDispatcher;
+use olml89\TelegramUserbot\Backend\Shared\Domain\Entity\Event\EventDispatcher;
 use olml89\TelegramUserbot\Backend\Shared\Domain\Exception\ExceptionHandler;
 use Symfony\Component\Uid\Uuid;
 use Throwable;

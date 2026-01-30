@@ -13,6 +13,6 @@ doctrine:
           EventEntity:
             is_bundle: false
             type: xml
-            dir: '%kernel.project_dir%/src/Shared/Infrastructure/Doctrine'
-            prefix: olml89\TelegramUserbot\Backend\Shared\Domain\Entity
+            dir: '%kernel.project_dir%/src/Shared/Infrastructure/Doctrine/Event'
+            prefix: olml89\TelegramUserbot\Backend\Shared\Domain\Entity\Event
             alias: EventEntity
