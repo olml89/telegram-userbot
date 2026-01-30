@@ -1,21 +1,23 @@
 export const initPreviewModal = () => {
     const previewModal = document.getElementById('contentPreviewModal');
-    if (!previewModal) {
+    const previewOpenBtn = document.querySelector('[data-preview-open]');
+    const previewCloseBtn = document.querySelector('[data-preview-close]');
+
+    if (!previewModal || !previewOpenBtn || !previewCloseBtn) {
         return;
     }
 
-    document.querySelectorAll('[data-preview-open]').forEach((button) => {
-        button.addEventListener('click', () => {
-            previewModal.classList.add('active');
-        });
+    previewOpenBtn.addEventListener('click', () => {
+        previewModal.classList.add('active');
     });
 
-    document.querySelectorAll('[data-preview-close]').forEach((button) => {
-        button.addEventListener('click', () => {
-            previewModal.classList.remove('active');
-        });
+    previewCloseBtn.addEventListener('click', () => {
+        previewModal.classList.remove('active');
     });
 
+    /**
+     * Automatically close modal if we click the backdrop
+     */
     previewModal.addEventListener('click', (event) => {
         if (event.target === previewModal) {
             previewModal.classList.remove('active');

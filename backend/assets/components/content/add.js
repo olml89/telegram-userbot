@@ -1,8 +1,9 @@
 export const initAddModal = () => {
     const addModal = document.getElementById('contentAddModal');
-    const addOpenBtn = document.getElementById('openModalBtn');
+    const addOpenBtn = document.querySelector('[data-add-open]');
+    const addCloseBtn = document.querySelector('[data-add-close]');
 
-    if (!addModal || !addOpenBtn) {
+    if (!addModal || !addOpenBtn || !addCloseBtn) {
         return;
     }
 
@@ -10,12 +11,13 @@ export const initAddModal = () => {
         addModal.classList.add('active');
     });
 
-    document.querySelectorAll('[data-add-close]').forEach((button) => {
-        button.addEventListener('click', () => {
-            addModal.classList.remove('active');
-        });
-    });
+    addCloseBtn.addEventListener('click', () => {
+        addModal.classList.remove('active');
+    })
 
+    /**
+     * Automatically close modal if we click the backdrop
+     */
     addModal.addEventListener('click', (event) => {
         if (event.target === addModal) {
             addModal.classList.remove('active');
