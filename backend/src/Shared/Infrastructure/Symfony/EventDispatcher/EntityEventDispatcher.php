@@ -15,8 +15,10 @@ final readonly class EntityEventDispatcher implements EventDispatcher
     ) {
     }
 
-    public function dispatch(Event $event): void
+    public function dispatch(Event ...$events): void
     {
-        $this->eventDispatcher->dispatch($event, eventName: Event::class);
+        foreach ($events as $event) {
+            $this->eventDispatcher->dispatch($event, eventName: Event::class);
+        }
     }
 }

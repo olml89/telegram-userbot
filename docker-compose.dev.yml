@@ -1,6 +1,10 @@
 services:
 
-  # Override telegram-userbot-backend-public volume with the mounted backend/public directory from host
+  tusd:
+    volumes:
+      - ./shared/var/uploads:/var/uploads:cached
+      - ./shared/var/log/tusd:/var/log/tusd:cached
+
   nginx:
     volumes:
       - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:cached

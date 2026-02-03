@@ -116,18 +116,32 @@
 
             <div class="modal-section">
                 <h4>Files</h4>
-                <form class="file-list" data-file-list></form>
 
-                <div class="file-upload">
-                    <input type="file" class="file-input" data-file-input />
-                    <button type="button" class="btn btn-secondary btn-hover-muted" data-upload-btn>Upload file</button>
+                <div class="file-upload-card" data-upload-card>
+                    <div class="file-upload-content">
+                        <div class="file-upload-icon" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" role="img" aria-hidden="true">
+                                <path d="M12 3a1 1 0 0 1 1 1v8.59l2.3-2.3a1 1 0 1 1 1.4 1.42l-4.01 4.01a1 1 0 0 1-1.4 0L7.28 11.7a1 1 0 1 1 1.41-1.41L11 12.59V4a1 1 0 0 1 1-1z"/>
+                                <path d="M5 14a1 1 0 0 1 1 1v2h12v-2a1 1 0 1 1 2 0v3a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1z"/>
+                            </svg>
+                        </div>
+                        <div class="file-upload-count" data-upload-count>0 files uploaded</div>
+                        <div class="file-upload-subtext">Click browse or drag and drop</div>
+                        <div class="file-upload-hint">Images - Videos - Audio - Documents</div>
+                        <div class="file-upload-hint">Up to 2 GB per file</div>
+                    </div>
                 </div>
+
+                <form class="file-list" data-file-list></form>
+                <div class="file-total-size" data-total-size>Total size: 0 KB</div>
+
+                <input type="file" class="file-input" data-file-input multiple/>
             </div>
         </div>
 
         <div class="modal-footer">
-            <button type="button" class="btn btn-secondary btn-hover-muted" data-add-close>Close</button>
-            <button type="button" class="btn btn-primary">Save</button>
+            <button type="button" class="btn btn-secondary btn-hover-outline" data-add-close>Close</button>
+            <button type="button" class="btn btn-primary" data-content-add>Add content</button>
         </div>
     </div>
 </div>

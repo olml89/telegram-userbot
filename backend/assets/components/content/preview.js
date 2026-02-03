@@ -1,9 +1,8 @@
 export const initPreviewModal = () => {
     const previewModal = document.getElementById('contentPreviewModal');
     const previewOpenBtn = document.querySelector('[data-preview-open]');
-    const previewCloseBtn = document.querySelector('[data-preview-close]');
 
-    if (!previewModal || !previewOpenBtn || !previewCloseBtn) {
+    if (!previewModal || !previewOpenBtn) {
         return;
     }
 
@@ -11,8 +10,13 @@ export const initPreviewModal = () => {
         previewModal.classList.add('active');
     });
 
-    previewCloseBtn.addEventListener('click', () => {
-        previewModal.classList.remove('active');
+    /**
+     * Support all close buttons
+     */
+    document.querySelectorAll('[data-preview-close]').forEach((button) => {
+        button.addEventListener('click', () => {
+            previewModal.classList.remove('active');
+        });
     });
 
     /**

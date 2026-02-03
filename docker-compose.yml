@@ -2,6 +2,17 @@ name: telegram-userbot
 
 services:
 
+  tusd:
+    container_name: telegram_userbot_tusd
+    build:
+      dockerfile: tusd/Dockerfile
+    environment:
+      TUSD_BASE_PATH: /tus/uploads
+      TUSD_UPLOAD_DIR: /var/uploads
+    entrypoint: [/entrypoint.sh]
+    networks:
+      - telegram-userbot-network
+
   nginx:
     container_name: telegram_userbot_nginx
     depends_on:

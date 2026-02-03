@@ -14,7 +14,8 @@ import { initAddModal } from './components/content/add.js';
 import { initModePrice } from './components/content/price.js';
 import { initIntensity } from './components/content/intensity.js';
 import { initTags } from './components/content/tags.js';
-import { initFileUpload } from './components/content/upload-file.js';
+import { initFileUpload } from './components/content/upload-file/upload-file.js';
+import { initContentSave } from './components/content/save-content.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     initCustomSelects();
@@ -23,5 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initModePrice();
     initIntensity();
     initTags();
-    initFileUpload();
+
+    const uploadFileState = initFileUpload();
+    initContentSave(uploadFileState?.getFileIds());
 });

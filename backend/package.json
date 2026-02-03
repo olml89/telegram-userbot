@@ -6,6 +6,9 @@
         "dev": "vite",
         "build": "vite build"
     },
+    "dependencies": {
+        "tus-js-client": "^4.3.1"
+    },
     "devDependencies": {
         "vite": "^5.4.0",
         "vite-plugin-symfony": "^8.2.3"

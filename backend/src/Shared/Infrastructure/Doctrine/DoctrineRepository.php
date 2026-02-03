@@ -25,6 +25,12 @@ abstract class DoctrineRepository extends EntityRepository
      */
     abstract protected static function entityClass(): string;
 
+    protected function removeEntity(Entity $entity): void
+    {
+        $this->getEntityManager()->remove($entity);
+        $this->getEntityManager()->flush();
+    }
+
     protected function storeEntity(Entity $entity): void
     {
         $this->getEntityManager()->persist($entity);
