@@ -75,7 +75,7 @@ debug:
 
 
 # Shell access containers
-.PHONY: alloy backend bot bot-manager dev grafana loki nginx tusd postgres redis vite
+.PHONY: alloy backend bot bot-manager dev grafana loki nginx tusd postgres postgres-psql redis vite
 
 alloy:
 	docker compose $(DOCKER_COMPOSE) $(ENV) exec alloy /bin/sh
@@ -105,6 +105,9 @@ tusd:
 	docker compose $(DOCKER_COMPOSE) $(ENV) exec tusd /bin/sh
 
 postgres:
+	docker compose $(DOCKER_COMPOSE) $(ENV) exec postgres /bin/sh
+
+postgres-psql:
 	docker compose $(DOCKER_COMPOSE) $(ENV) exec -e PGPASSWORD=$(DB_PASSWORD) postgres psql -U $(DB_USER) -d $(DB_NAME)
 
 redis:

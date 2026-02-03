@@ -13,6 +13,21 @@ loki.source.file "alloy" {
 	legacy_positions_file = "/tmp/positions.yaml"
 }
 
+local.file_match "tusd" {
+	path_targets = [{
+		__address__ = "localhost",
+		__path__    = "/telegram-userbot/shared/var/log/tusd/tusd.log",
+		job         = "tusd",
+		service     = "tusd",
+	}]
+}
+
+loki.source.file "tusd" {
+	targets               = local.file_match.tusd.targets
+	forward_to            = [loki.write.default.receiver]
+	legacy_positions_file = "/tmp/positions.yaml"
+}
+
 local.file_match "nginx_access" {
 	path_targets = [{
 		__address__ = "localhost",
@@ -54,6 +69,21 @@ local.file_match "redis" {
 
 loki.source.file "redis" {
 	targets               = local.file_match.redis.targets
+	forward_to            = [loki.write.default.receiver]
+	legacy_positions_file = "/tmp/positions.yaml"
+}
+
+local.file_match "postgres" {
+	path_targets = [{
+		__address__ = "localhost",
+		__path__    = "/telegram-userbot/shared/var/log/postgres/postgresql-*.log",
+		job         = "postgres",
+		service     = "postgres",
+	}]
+}
+
+loki.source.file "postgres" {
+	targets               = local.file_match.postgres.targets
 	forward_to            = [loki.write.default.receiver]
 	legacy_positions_file = "/tmp/positions.yaml"
 }

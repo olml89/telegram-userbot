@@ -6,17 +6,13 @@ services:
       - ./shared/var/log/tusd:/var/log/tusd:cached
 
   nginx:
+    build:
+      dockerfile: nginx/Dockerfile
+      target: dev
     volumes:
       - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:cached
-      - ./backend/public:/telegram-userbot/backend/public:cached
       - ./shared/var/log/nginx:/var/log/nginx:cached
 
-  # Expose the database port to the outside: only during development
-  postgres:
-    ports:
-      - ${POSTGRES_PORT}:${DB_PORT}
-
-  # Provide xdebug support, mount shared and backend directories from the host
   backend:
     build:
       dockerfile: ./backend/Dockerfile
@@ -29,7 +25,6 @@ services:
       - ./shared:/telegram-userbot/shared:cached
       - ./backend:/telegram-userbot/backend:cached
 
-  # Provide xdebug support, mount shared and backend directories from the host
   bot-manager:
     build:
       dockerfile: bot-manager/Dockerfile
@@ -42,7 +37,6 @@ services:
       - ./shared:/telegram-userbot/shared:cached
       - ./bot-manager:/telegram-userbot/bot-manager:cached
 
-  # Provide xdebug support, mount shared and bot directories from the host
   bot:
     build:
       dockerfile: bot/Dockerfile
@@ -54,6 +48,31 @@ services:
     volumes:
       - ./shared:/telegram-userbot/shared:cached
       - ./bot:/telegram-userbot/bot:cached
+
+  redis:
+    volumes:
+      - telegram-userbot-redis:/data:cached
+      - ./redis/redis.conf:/usr/local/etc/redis/redis.conf:cached
+      - ./shared/var/log/redis:/var/log/redis:cached
+
+  # Expose the database port to the outside: only during development
+  postgres:
+    ports:
+      - ${POSTGRES_PORT}:${DB_PORT}
+    volumes:
+      - telegram-userbot-db:/var/lib/postgresql/data:cached
+      - ./postgres/postgresql.conf:/etc/postgresql/postgresql.conf:cached
+      - ./shared/var/log/postgres:/var/log/postgres:cached
+
+  alloy:
+    volumes:
+      - ./alloy/config.alloy:/etc/alloy/config.alloy:cached
+      - ./shared/var/log/alloy:/var/log:cached
+      - ./shared/var/log:/telegram-userbot/shared/var/log:cached
+
+  grafana:
+    volumes:
+      - ./grafana/provisioning:/etc/grafana/provisioning:cached
 
   # Vite server for Hot Module Replacement
   vite:
