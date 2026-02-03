@@ -17,7 +17,7 @@ final class EventEntity implements Entity
         protected readonly Uuid $publicId,
         private readonly string $eventClass,
         private readonly string $entityClass,
-        private readonly int $entityId,
+        private readonly Uuid $entityId,
         /** @var array<string, mixed> */
         private readonly array $payload,
         private readonly DateTimeImmutable $occurredAt,
@@ -34,7 +34,7 @@ final class EventEntity implements Entity
         return $this->entityClass;
     }
 
-    public function entityId(): int
+    public function entityId(): Uuid
     {
         return $this->entityId;
     }

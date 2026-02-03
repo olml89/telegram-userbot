@@ -28,10 +28,13 @@ endif
 # Build containers
 .PHONY: build upd stop down restart debug
 
+# Guarantee build order: backend and nginx first (backend builds assets), then the rest
 build:
 	$(eval SERVICE := $(word 2, $(MAKECMDGOALS)))
 	$(if $(SERVICE), \
 		docker compose $(DOCKER_COMPOSE) $(ENV) build --no-cache $(SERVICE), \
+		docker compose $(DOCKER_COMPOSE) $(ENV) build --no-cache backend && \
+		docker compose $(DOCKER_COMPOSE) $(ENV) build --no-cache nginx && \
 		docker compose $(DOCKER_COMPOSE) $(ENV) build --no-cache \
 	)
 
@@ -72,7 +75,7 @@ debug:
 
 
 # Shell access containers
-.PHONY: alloy backend bot bot-manager dev grafana loki nginx postgres redis vite
+.PHONY: alloy backend bot bot-manager dev grafana loki nginx tusd postgres redis vite
 
 alloy:
 	docker compose $(DOCKER_COMPOSE) $(ENV) exec alloy /bin/sh
@@ -97,6 +100,9 @@ loki:
 
 nginx:
 	docker compose $(DOCKER_COMPOSE) $(ENV) exec nginx /bin/sh
+
+tusd:
+	docker compose $(DOCKER_COMPOSE) $(ENV) exec tusd /bin/sh
 
 postgres:
 	docker compose $(DOCKER_COMPOSE) $(ENV) exec -e PGPASSWORD=$(DB_PASSWORD) postgres psql -U $(DB_USER) -d $(DB_NAME)

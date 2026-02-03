@@ -2,7 +2,11 @@ name: telegram-userbot
 
 services:
 
-  # Load backend/public from the telegram-userbot-backend-public volume
+  tusd:
+    volumes:
+      - telegram-userbot-uploads:/var/uploads:cached
+      - telegram-userbot-logs:/telegram-userbot/shared/var/log:cached
+
   nginx:
     volumes:
       - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:cached

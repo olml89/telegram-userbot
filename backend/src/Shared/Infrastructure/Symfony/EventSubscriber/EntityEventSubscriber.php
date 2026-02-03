@@ -24,7 +24,7 @@ final readonly class EntityEventSubscriber
             publicId: Uuid::v4(),
             eventClass: $event::class,
             entityClass: $event->entity()::class,
-            entityId: $event->entity()->id(),
+            entityId: $event->entity()->publicId(),
             payload: $event->jsonSerialize(),
             occurredAt: $event->occurredAt(),
         );

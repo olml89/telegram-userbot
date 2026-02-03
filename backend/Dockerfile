@@ -7,7 +7,7 @@ WORKDIR /telegram-userbot/backend
 COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/local/bin/
 RUN install-php-extensions intl pgsql pdo_pgsql
 
-FROM base as assets
+FROM base AS assets
 
 WORKDIR /telegram-userbot/backend
 
@@ -21,6 +21,7 @@ RUN npm ci --include=dev
 # Copy the assets and the vite config and run build to generate the assets in public/build
 COPY backend/assets ./assets
 COPY backend/vite.config.js ./
+COPY backend/public ./public
 RUN npm run build
 
 FROM base AS prod

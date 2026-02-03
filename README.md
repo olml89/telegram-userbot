@@ -27,6 +27,10 @@ monorepo. The microservices include:
 - **nginx**: the application’s entry point, acting as a reverse proxy that exposes the **backend** 
 and **bot-manager** services and protects against CORS attacks.
 
+- **tusd**: a file upload service that handles user uploads based on 
+[https://github.com/tus/tusd](https://github.com/tus/tusd), the official reference implementation
+of tus, a protocol based on HTTP for resumable file uploads.
+
 - **redis** and **postgres**: data storage infrastructure. **postgres** serves as the primary 
 persistence layer, while **redis** enables real-time communication between **bot-manager** 
 and **bot** services through pub/sub.
@@ -71,6 +75,9 @@ Each of the core business logic services has its own Dockerfile using a multi-st
 - **Production stage**: copies service-specific code and shared code inside the container and runs `composer install` 
 to install dependencies. Composer is then removed to keep the image lean. This produces an immutable image with 
 all dependencies pre-installed, ensuring reproducible deployments.
+
+- **Assets**: frontend assets are built once during the **backend** image build and then copied into the **nginx**
+image. This avoids double builds and guarantees consistency.
 
 - **Development stage**: installs `xdebug` and `composer` inside the container. Instead of copying code, volumes 
 mount the local codebases via Docker Compose. On container start, `composer install` runs dynamically to allow 
