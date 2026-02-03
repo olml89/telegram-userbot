@@ -32,8 +32,8 @@ COPY backend/ ./
 # Copy shared codebase to the container
 COPY shared/ /telegram-userbot/shared/
 
-# Copy built assets from assets stage
-COPY --from=assets /telegram-userbot/backend/public/build /telegram-userbot/backend/public/build
+# Copy built assets from assets stage to a compiled intermediate directory
+COPY --from=assets /telegram-userbot/backend/public/build /telegram-userbot/backend/var/build
 
 # Create writable cache dir for Symfony
 RUN mkdir -p /telegram-userbot/backend/var/cache  &&  \

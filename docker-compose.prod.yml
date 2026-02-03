@@ -10,8 +10,8 @@ services:
   nginx:
     build:
       dockerfile: nginx/Dockerfile
-      target: prod
     volumes:
+      - telegram-userbot-assets:/telegram-userbot/backend/public/build:ro
       - telegram-userbot-logs:/telegram-userbot/shared/var/log:cached
 
   backend:
@@ -19,6 +19,7 @@ services:
       dockerfile: backend/Dockerfile
       target: prod
     volumes:
+      - telegram-userbot-assets:/telegram-userbot/backend/public/build:cached
       - telegram-userbot-uploads:/telegram-userbot/shared/var/uploads:cached
       - telegram-userbot-content:/telegram-userbot/shared/var/content:cached
       - telegram-userbot-logs:/telegram-userbot/shared/var/log:cached
@@ -53,5 +54,6 @@ services:
 
 volumes:
   telegram-userbot-logs:
+  telegram-userbot-assets:
   telegram-userbot-uploads:
   telegram-userbot-content:
