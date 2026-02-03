@@ -8,35 +8,50 @@ services:
       - telegram-userbot-logs:/telegram-userbot/shared/var/log:cached
 
   nginx:
+    build:
+      dockerfile: nginx/Dockerfile
+      target: prod
     volumes:
-      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:cached
-      - telegram-userbot-backend-public:/telegram-userbot/backend/public:cached
-      - ./shared/var/log/nginx:/var/log/nginx:cached
+      - telegram-userbot-logs:/telegram-userbot/shared/var/log:cached
 
-  # Load backend/public from the telegram-userbot-backend-public volume
   backend:
     build:
       dockerfile: backend/Dockerfile
       target: prod
     volumes:
-      - telegram-userbot-backend-public:/telegram-userbot/backend/public:cached
-      - ./shared/var/log:/telegram-userbot/shared/var/log:cached
+      - telegram-userbot-uploads:/telegram-userbot/shared/var/uploads:cached
+      - telegram-userbot-content:/telegram-userbot/shared/var/content:cached
+      - telegram-userbot-logs:/telegram-userbot/shared/var/log:cached
 
-  # Mount shared/var/log from the host
   bot-manager:
     build:
       dockerfile: bot-manager/Dockerfile
       target: prod
     volumes:
-      - ./shared/var/log:/telegram-userbot/shared/var/log:cached
+      - telegram-userbot-logs:/telegram-userbot/shared/var/log:cached
 
-  # Mount shared/var/log from the host
   bot:
     build:
       dockerfile: bot/Dockerfile
       target: prod
     volumes:
-      - ./shared/var/log:/telegram-userbot/shared/var/log:cached
+      - telegram-userbot-logs:/telegram-userbot/shared/var/log:cached
+
+  redis:
+    volumes:
+      - telegram-userbot-redis:/data:cached
+      - telegram-userbot-logs:/telegram-userbot/shared/var/log:cached
+
+  postgres:
+    volumes:
+      - telegram-userbot-db:/var/lib/postgresql/data:cached
+      - telegram-userbot-logs:/telegram-userbot/shared/var/log:cached
+
+  alloy:
+    volumes:
+      - telegram-userbot-logs:/telegram-userbot/shared/var/log:cached
 
 volumes:
-  telegram-userbot-backend-public:
+  telegram-userbot-logs:
+  telegram-userbot-uploads:
+  telegram-userbot-content:
