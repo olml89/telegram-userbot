@@ -1,8 +1,9 @@
 #!/bin/sh
 set -e
 
-echo "🔧 Creating /telegram-userbot/shared/var/log/nginx..."
-mkdir -p /telegram-userbot/shared/var/log/nginx
+LOG="/telegram-userbot/shared/var/log/nginx"
+echo "🔧 Creating ${LOG}..."
+mkdir -p ${LOG}
 
 echo "✅ Container up [nginx]."
 exec nginx -g 'daemon off;'
