@@ -1,4 +1,4 @@
 file_api:
-  resource: ../../src/File/Infrastructure/Symfony/Http/Api/Controller
+  resource: ../../src/File/Infrastructure/Symfony/Http/Api
   type: attribute
   prefix: api

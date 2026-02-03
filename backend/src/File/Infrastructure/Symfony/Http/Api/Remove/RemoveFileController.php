@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace olml89\TelegramUserbot\Backend\File\Infrastructure\Symfony\Http\Api\Controller;
+namespace olml89\TelegramUserbot\Backend\File\Infrastructure\Symfony\Http\Api\Remove;
 
 use olml89\TelegramUserbot\Backend\File\Application\Remove\RemoveFileCommand;
 use olml89\TelegramUserbot\Backend\File\Application\Remove\RemoveFileCommandHandler;

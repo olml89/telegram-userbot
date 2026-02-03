@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace olml89\TelegramUserbot\Backend\File\Infrastructure\Symfony\Http\Api\Request;
+namespace olml89\TelegramUserbot\Backend\File\Infrastructure\Symfony\Http\Api\Upload;
 
 use olml89\TelegramUserbot\Backend\File\Application\Upload\UploadFileCommand;
 use Symfony\Component\Validator\Constraints as Assert;

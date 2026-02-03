@@ -2,13 +2,12 @@
 
 declare(strict_types=1);
 
-namespace olml89\TelegramUserbot\Backend\File\Infrastructure\Symfony\Http\Api\Controller;
+namespace olml89\TelegramUserbot\Backend\File\Infrastructure\Symfony\Http\Api\Upload;
 
 use olml89\TelegramUserbot\Backend\File\Application\Upload\UploadFileCommandHandler;
 use olml89\TelegramUserbot\Backend\File\Domain\FileStorageException;
 use olml89\TelegramUserbot\Backend\File\Domain\Upload\UploadConsumptionException;
 use olml89\TelegramUserbot\Backend\File\Domain\Upload\UploadNotFoundException;
-use olml89\TelegramUserbot\Backend\File\Infrastructure\Symfony\Http\Api\Request\UploadFileRequest;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
