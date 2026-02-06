@@ -1,5 +1,8 @@
 {
     "preset": "psr12",
+    "rules": {
+        "method_argument_space": false
+    },
     "exclude": [
         "var"
     ]

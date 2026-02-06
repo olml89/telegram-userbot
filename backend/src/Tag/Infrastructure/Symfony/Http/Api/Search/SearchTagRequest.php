@@ -10,9 +10,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 final readonly class SearchTagRequest
 {
     public function __construct(
-        #[Assert\Length(
-            min: 1,
-        )]
+        #[Assert\NotBlank(allowNull: true)]
         public ?string $query,
     ) {
     }
