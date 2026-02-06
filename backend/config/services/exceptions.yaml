@@ -1,10 +1,12 @@
 services:
 
-  # Don't register ExceptionEventSubscriber
-  olml89\TelegramUserbot\Backend\Shared\Infrastructure\Symfony\EventSubscriber\ExceptionEventSubscriber:
+  # Don't register SentryExceptionReportingSubscriber
+  olml89\TelegramUserbot\Backend\Shared\Infrastructure\Symfony\EventSubscriber\SentryExceptionReportingSubscriber:
     autowire: false
     autoconfigure: false
     public: false
+
+  # ApiExceptionResponseSubscriber: registered through automatic bindings
 
   # Bind ExceptionHandler to ExceptionHandlerPipeline
   olml89\TelegramUserbot\Backend\Shared\Domain\Exception\ExceptionHandler:
@@ -15,3 +17,8 @@ services:
     arguments:
       $exceptionHandlers:
         - '@olml89\TelegramUserbot\Backend\Shared\Infrastructure\Symfony\Exception\ExceptionLogger'
+
+  # ApiExceptionResponseMapper
+  olml89\TelegramUserbot\Backend\Shared\Infrastructure\Symfony\Exception\ApiExceptionResponseMapper:
+    arguments:
+      $debug: '%kernel.debug%'
