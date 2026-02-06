@@ -1,0 +1,6 @@
+pentatrion_vite:
+  default_build: build
+  public_directory: public
+  builds:
+    build:
+      build_directory: build/.vite

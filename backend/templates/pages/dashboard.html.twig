@@ -1,0 +1,104 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Home - Admin Panel{% endblock %}
+
+{% block body %}
+    <div class="content-header">
+        <h2>Home</h2>
+        <p>Welcome back! Here's what's happening with your Telegram bot today.</p>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="dashboard-cards">
+        <div class="card">
+            <div class="card-header">
+                <span class="card-title">Total Users</span>
+                <div class="card-icon" style="background: #e3f2fd; color: #2196f3;">👥</div>
+            </div>
+            <div class="card-value">1,284</div>
+            <div class="card-footer">
+                ↑ 12% from last month
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <span class="card-title">Active Sessions</span>
+                <div class="card-icon" style="background: #f3e5f5; color: #9c27b0;">⚡</div>
+            </div>
+            <div class="card-value">47</div>
+            <div class="card-footer">
+                ↑ 8% from last week
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <span class="card-title">Messages Today</span>
+                <div class="card-icon" style="background: #e8f5e9; color: #4caf50;">💬</div>
+            </div>
+            <div class="card-value">3,429</div>
+            <div class="card-footer">
+                ↑ 23% from yesterday
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <span class="card-title">Error Rate</span>
+                <div class="card-icon" style="background: #ffebee; color: #f44336;">⚠️</div>
+            </div>
+            <div class="card-value">2.3%</div>
+            <div class="card-footer class-negative">
+                ↓ 1.2% from last week
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Activity Table -->
+    <div class="table-container">
+        <h3>Recent Activity</h3>
+        <table>
+            <thead>
+            <tr>
+                <th>User ID</th>
+                <th>Action</th>
+                <th>Status</th>
+                <th>Timestamp</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>#12849</td>
+                <td>New message sent</td>
+                <td><span class="status-badge status-active">Active</span></td>
+                <td>2 minutes ago</td>
+            </tr>
+            <tr>
+                <td>#12847</td>
+                <td>Content updated</td>
+                <td><span class="status-badge status-active">Active</span></td>
+                <td>15 minutes ago</td>
+            </tr>
+            <tr>
+                <td>#12845</td>
+                <td>Userbot connected</td>
+                <td><span class="status-badge status-pending">Pending</span></td>
+                <td>1 hour ago</td>
+            </tr>
+            <tr>
+                <td>#12842</td>
+                <td>Session expired</td>
+                <td><span class="status-badge status-inactive">Inactive</span></td>
+                <td>3 hours ago</td>
+            </tr>
+            <tr>
+                <td>#12839</td>
+                <td>New user registered</td>
+                <td><span class="status-badge status-active">Active</span></td>
+                <td>5 hours ago</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

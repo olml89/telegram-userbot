@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace olml89\TelegramUserbot\Backend\Shared\Infrastructure\Symfony\EventDispatcher;
 
-use olml89\TelegramUserbot\Backend\Shared\Domain\Entity\Event;
-use olml89\TelegramUserbot\Backend\Shared\Domain\Entity\EventDispatcher;
+use olml89\TelegramUserbot\Backend\Shared\Domain\Entity\Event\Event;
+use olml89\TelegramUserbot\Backend\Shared\Domain\Entity\Event\EventDispatcher;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 final readonly class EntityEventDispatcher implements EventDispatcher
@@ -15,8 +15,10 @@ final readonly class EntityEventDispatcher implements EventDispatcher
     ) {
     }
 
-    public function dispatch(Event $event): void
+    public function dispatch(Event ...$events): void
     {
-        $this->eventDispatcher->dispatch($event, eventName: Event::class);
+        foreach ($events as $event) {
+            $this->eventDispatcher->dispatch($event, eventName: Event::class);
+        }
     }
 }

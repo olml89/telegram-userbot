@@ -1,0 +1,4 @@
+tag_api:
+  resource: ../../src/Tag/Infrastructure/Symfony/Http/Api
+  type: attribute
+  prefix: api

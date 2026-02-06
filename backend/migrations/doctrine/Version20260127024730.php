@@ -7,9 +7,6 @@ namespace olml89\TelegramUserbot\Backend\Infrastructure\Doctrine\Migrations;
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\Migrations\AbstractMigration;
 
-/**
- * Auto-generated Migration: Please modify to your needs!
- */
 final class Version20260127024730 extends AbstractMigration
 {
     public function getDescription(): string
@@ -25,14 +22,15 @@ final class Version20260127024730 extends AbstractMigration
                 public_id UUID NOT NULL, 
                 event_class VARCHAR(255) NOT NULL, 
                 entity_class VARCHAR(255) NOT NULL, 
-                entity_id INT NOT NULL, 
+                entity_id UUID NOT NULL, 
                 payload JSON NOT NULL, 
                 occurred_at TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL, 
                 PRIMARY KEY (id)
             )
         ');
         $this->addSql('
-            CREATE UNIQUE INDEX UNIQ_5387574AB5B48B91 ON events (public_id)
+            CREATE UNIQUE INDEX UNIQ_5387574AB5B48B91 
+            ON events (public_id)
         ');
     }
 

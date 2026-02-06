@@ -10,6 +10,7 @@ use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigura
 final readonly class ServiceConfigurator
 {
     public function __construct(
+        private string $configDirectory,
         private string $directory,
         private Environment $environment,
     ) {
@@ -17,10 +18,11 @@ final readonly class ServiceConfigurator
 
     public function configure(ContainerConfigurator $containerConfigurator): void
     {
-        $containerConfigurator->import(resource: $this->directory . '/*.yaml');
+        $directory = $this->configDirectory . '/' . $this->directory;
+        $containerConfigurator->import(resource: $directory . '/*.yaml');
 
         $containerConfigurator->import(
-            resource: $this->directory . '/' . $this->environment->value . '/*.yaml',
+            resource: $directory . '/' . $this->environment->value . '/*.yaml',
             ignoreErrors: true,
         );
     }

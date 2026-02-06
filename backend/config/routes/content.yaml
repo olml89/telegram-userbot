@@ -1,0 +1,8 @@
+content_web:
+  resource: ../../src/Content/Infrastructure/Symfony/Http/Web
+  type: attribute
+
+content_api:
+  resource: ../../src/Content/Infrastructure/Symfony/Http/Api
+  type: attribute
+  prefix: api

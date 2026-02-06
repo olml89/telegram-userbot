@@ -1,0 +1,18 @@
+services:
+
+  # CategoryRepository
+  olml89\TelegramUserbot\Backend\Category\Domain\CategoryRepository:
+    alias: olml89\TelegramUserbot\Backend\Category\Infrastructure\Doctrine\DoctrineCategoryRepository
+
+# Mappings
+doctrine:
+  orm:
+    entity_managers:
+      default:
+        mappings:
+          Category:
+            is_bundle: false
+            type: xml
+            dir: '%kernel.project_dir%/src/Category/Infrastructure/Doctrine'
+            prefix: olml89\TelegramUserbot\Backend\Category\Domain
+            alias: Category

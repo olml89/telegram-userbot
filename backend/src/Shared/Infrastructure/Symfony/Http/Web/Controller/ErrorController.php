@@ -18,13 +18,22 @@ final class ErrorController extends AbstractController
             ? $exception->getStatusCode()
             : Response::HTTP_INTERNAL_SERVER_ERROR;
 
-        $errorTemplate = match($statusCode) {
-            Response::HTTP_NOT_FOUND => 'error/404.html.twig',
-            default => 'error/500.html.twig',
+        $statusMessage = match (true) {
+            $statusCode >= 500 => 'Unexpected',
+            default => Response::$statusTexts[$statusCode],
         };
 
-        return $this->render($errorTemplate, [
+        $errorMessage = match (true) {
+            $statusCode === Response::HTTP_FORBIDDEN => 'You do not have permission to access this page.',
+            $statusCode === Response::HTTP_NOT_FOUND => 'The page you are looking for could not be found.',
+            $statusCode === Response::HTTP_METHOD_NOT_ALLOWED => 'This action is not allowed on this page',
+            default => 'Something went wrong. Check out the application logs.',
+        };
+
+        return $this->render('error/error.html.twig', [
             'active_menu' => null,
+            'status' => $statusMessage,
+            'message' => $errorMessage,
         ]);
     }
 }

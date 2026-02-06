@@ -1,0 +1,14 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Error - Admin Panel{% endblock %}
+
+{% block body %}
+    <div class="content-header">
+        <h2>Error</h2>
+        <p>{{ status }}</p>
+    </div>
+
+    <div class="alert alert-error">
+        ❌ {{ message }}
+    </div>
+{% endblock %}

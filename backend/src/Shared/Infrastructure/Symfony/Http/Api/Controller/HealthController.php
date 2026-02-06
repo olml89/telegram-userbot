@@ -7,9 +7,14 @@ namespace olml89\TelegramUserbot\Backend\Shared\Infrastructure\Symfony\Http\Api\
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Attribute\Route;
 
+#[Route(
+    path:'/health',
+    name: 'api.health',
+    defaults: ['_api' => true],
+    methods: ['GET'],
+)]
 final readonly class HealthController
 {
-    #[Route('/health', name: 'health', methods: ['GET'])]
     public function __invoke(): JsonResponse
     {
         return new JsonResponse([
