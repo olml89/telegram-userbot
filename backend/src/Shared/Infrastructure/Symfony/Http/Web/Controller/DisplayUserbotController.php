@@ -8,9 +8,13 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
+#[Route(
+    path: '/userbot',
+    name: 'userbot',
+    methods: ['GET'],
+)]
 final class DisplayUserbotController extends AbstractController
 {
-    #[Route('/userbot', name: 'userbot', methods: ['GET'])]
     public function __invoke(): Response
     {
         return $this->render('pages/userbot.html.twig', [
