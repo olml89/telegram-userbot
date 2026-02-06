@@ -6,5 +6,6 @@ namespace olml89\TelegramUserbot\Backend\Content\Domain;
 
 interface ContentRepository
 {
+    public function getByTitle(string $title): ?Content;
     public function store(Content $content): void;
 }

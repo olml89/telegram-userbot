@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace olml89\TelegramUserbot\Backend\Shared\Infrastructure\Symfony\Exception;
 
 use olml89\TelegramUserbot\Backend\Shared\Domain\Exception\NotFoundException;
+use olml89\TelegramUserbot\Backend\Shared\Domain\Exception\ValidationError;
+use olml89\TelegramUserbot\Backend\Shared\Domain\Exception\ValidationException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -12,6 +14,8 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
+use Symfony\Component\Validator\ConstraintViolation;
+use Symfony\Component\Validator\ConstraintViolationList;
 use Symfony\Component\Validator\Exception\ValidationFailedException;
 use Throwable;
 
@@ -49,6 +53,25 @@ final readonly class ApiExceptionResponseMapper
             $exception instanceof NotFoundException => new NotFoundHttpException(
                 message: $exception->getMessage(),
                 previous: $exception,
+            ),
+            $exception instanceof ValidationException => new UnprocessableEntityHttpException(
+                message: $exception->getMessage(),
+                previous: new ValidationFailedException(
+                    value: $exception->entity(),
+                    violations: new ConstraintViolationList(
+                        array_map(
+                            fn (ValidationError $error): ConstraintViolation => new ConstraintViolation(
+                                message: $error->errorMessage,
+                                messageTemplate: null,
+                                parameters: [],
+                                root: '',
+                                propertyPath: $error->field,
+                                invalidValue: null,
+                            ),
+                            $exception->errors(),
+                        ),
+                    ),
+                ),
             ),
             default => new HttpException(
                 statusCode: Response::HTTP_INTERNAL_SERVER_ERROR,
