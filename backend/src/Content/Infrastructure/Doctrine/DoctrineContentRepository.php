@@ -18,6 +18,13 @@ final class DoctrineContentRepository extends DoctrineRepository implements Cont
         return Content::class;
     }
 
+    public function getByTitle(string $title): ?Content
+    {
+        return $this->findOneBy([
+            'title' => $title,
+        ]);
+    }
+
     public function store(Content $content): void
     {
         $this->storeEntity($content);
