@@ -25,12 +25,41 @@ abstract class DoctrineRepository extends EntityRepository
      */
     abstract protected static function entityClass(): string;
 
+    /**
+     * @param array<string, string> $criteria
+     *
+     * @return T[]
+     */
+    protected function searchEntity(array $criteria, int $limit): array
+    {
+        $queryBuilder = $this
+            ->createQueryBuilder('entity')
+            ->setMaxResults($limit);
+
+        foreach ($criteria as $field => $query) {
+            $queryBuilder
+                ->where(sprintf('entity.%s LIKE :%s', $field, $field))
+                ->setParameter($field, '%' . $query . '%');
+        }
+
+        /** @var T[] $foundItems */
+        $foundItems = $queryBuilder->getQuery()->getResult();
+
+        return $foundItems;
+    }
+
+    /**
+     * @param T $entity
+     */
     protected function removeEntity(Entity $entity): void
     {
         $this->getEntityManager()->remove($entity);
         $this->getEntityManager()->flush();
     }
 
+    /**
+     * @param T $entity
+     */
     protected function storeEntity(Entity $entity): void
     {
         $this->getEntityManager()->persist($entity);

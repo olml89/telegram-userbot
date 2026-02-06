@@ -17,23 +17,77 @@
                unique="true"
                nullable="false"/>
 
-        <field name="name"
+        <field name="title"
                type="string"
                length="255"
+               unique="true"
                nullable="false"/>
 
         <field name="description"
                type="text"
-               nullable="true"/>
-
-        <field name="tags"
-               type="json"
                nullable="false"/>
 
-        <!-- Embedded StoredFile value object -->
-        <embedded name="file"
-                  class="olml89\TelegramUserbot\Backend\Content\Domain\File"
-                  use-column-prefix="true"/>
+        <field name="intensity"
+               type="integer"
+               nullable="false"/>
+
+        <field name="price"
+               type="float"
+               nullable="false"/>
+
+        <field name="sales"
+               type="integer"
+               nullable="false"/>
+
+        <field name="language"
+               type="string"
+               enum-type="olml89\TelegramUserbot\Backend\Content\Domain\Language"
+               length="2"
+               nullable="false"/>
+
+        <field name="mode"
+               type="string"
+               enum-type="olml89\TelegramUserbot\Backend\Content\Domain\Mode"
+               length="20"
+               nullable="false"/>
+
+        <field name="status"
+               type="string"
+               enum-type="olml89\TelegramUserbot\Backend\Content\Domain\Status"
+               length="20"
+               nullable="false"/>
+
+        <!-- Relationships -->
+        <many-to-one field="category"
+                     target-entity="olml89\TelegramUserbot\Backend\Category\Domain\Category"
+                     inversed-by="contents"
+                     cascade="persist"
+                     fetch="LAZY">
+            <join-column name="category_id"
+                         referenced-column-name="id"
+                         nullable="false"/>
+        </many-to-one>
+
+        <many-to-many field="tags"
+                      target-entity="olml89\TelegramUserbot\Backend\Tag\Domain\Tag"
+                      cascade="persist"
+                      fetch="LAZY">
+            <join-table name="content_tag">
+                <join-columns>
+                    <join-column name="content_id" referenced-column-name="id"/>
+                </join-columns>
+                <inverse-join-columns>
+                    <join-column name="tag_id" referenced-column-name="id"/>
+                </inverse-join-columns>
+            </join-table>
+        </many-to-many>
+
+        <one-to-many field="files"
+                     target-entity="olml89\TelegramUserbot\Backend\File\Domain\File"
+                     mapped-by="content"
+                     cascade="persist,remove"
+                     orphan-removal="true"
+                     fetch="LAZY"/>
 
     </entity>
 

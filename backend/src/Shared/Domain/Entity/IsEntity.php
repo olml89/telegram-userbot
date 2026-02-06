@@ -35,7 +35,7 @@ trait IsEntity
         return $this->publicId;
     }
 
-    public function record(Event $event): static
+    protected function record(Event $event): static
     {
         $this->events[] = $event;
 

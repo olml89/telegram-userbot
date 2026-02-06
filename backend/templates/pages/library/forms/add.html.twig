@@ -12,38 +12,53 @@
             <div class="modal-section form-grid">
                 <label class="form-label full-width">
                     Title
-                    <input type="text" class="form-input" placeholder="Enter title..." />
+                    <input type="text" class="form-input" placeholder="Enter title..." data-content-title />
+                    <div class="field-error" data-error-for="title" hidden></div>
                 </label>
                 <label class="form-label full-width">
                     Description
-                    <textarea class="form-textarea" rows="3" placeholder="Write a short description..."></textarea>
+                    <textarea class="form-textarea" rows="3" placeholder="Write a short description..." data-content-description></textarea>
+                    <div class="field-error" data-error-for="description" hidden></div>
                 </label>
 
                 <label class="form-label">
                     Category
-                    <div class="custom-select" data-value="Select category">
+                    <div class="custom-select" data-value="Select category" data-content-category>
                         <button type="button" class="select-trigger" aria-haspopup="listbox" aria-expanded="false">
                             <span class="select-value">Select category</span>
                         </button>
                         <div class="select-dropdown" role="listbox">
-                            {% for category in add_categories %}
-                                <button type="button" class="select-option">{{ category }}</button>
+                            {% for category in categories %}
+                                <button
+                                        type="button"
+                                        class="select-option"
+                                        data-option-id="{{ category.publicId }}"
+                                        data-option-name="{{ category.name }}"
+                                >{{ category.name }}</button>
                             {% endfor %}
                         </div>
                     </div>
+                    <div class="field-error" data-error-for="categoryId" hidden></div>
                 </label>
 
                 <label class="form-label">
                     Mode
-                    <div class="custom-select" data-value="Selling" data-mode-select>
+                    <div class="custom-select" data-value="" data-mode-select>
                         <button type="button" class="select-trigger" aria-haspopup="listbox" aria-expanded="false">
-                            <span class="select-value">Selling</span>
+                            <span class="select-value">Select mode</span>
                         </button>
                         <div class="select-dropdown" role="listbox">
-                            <button type="button" class="select-option">Selling</button>
-                            <button type="button" class="select-option">Teasing</button>
+                            {% for mode in modes %}
+                                <button
+                                        type="button"
+                                        class="select-option"
+                                        data-option-value="{{ mode.value }}"
+                                        data-option-label="{{ mode.label() }}"
+                                >{{ mode.label() }}</button>
+                            {% endfor %}
                         </div>
                     </div>
+                    <div class="field-error" data-error-for="mode" hidden></div>
                 </label>
 
                 <label class="form-label">
@@ -52,39 +67,53 @@
                         <span class="price-prefix">$</span>
                         <input type="number" class="form-input" placeholder="0.00" min="0" data-price-input />
                     </div>
+                    <div class="field-error" data-error-for="price" hidden></div>
                 </label>
 
                 <label class="form-label">
                     <span class="form-label-title">Intensity (<span data-intensity-value>50</span>)</span>
                     <input type="range" class="form-input" min="0" max="100" value="50" data-intensity-range />
+                    <div class="field-error" data-error-for="intensity" hidden></div>
                 </label>
 
                 <label class="form-label">
                     Language
-                    <div class="custom-select" data-value="Select language">
+                    <div class="custom-select" data-value="" data-content-language>
                         <button type="button" class="select-trigger" aria-haspopup="listbox" aria-expanded="false">
                             <span class="select-value">Select language</span>
                         </button>
                         <div class="select-dropdown" role="listbox">
-                            {% for language in add_languages %}
-                                <button type="button" class="select-option">{{ language }}</button>
+                            {% for language in languages %}
+                                <button
+                                        type="button"
+                                        class="select-option"
+                                        data-option-value="{{ language.value }}"
+                                        data-option-label="{{ language.label() }}"
+                                >{{ language.label() }}</button>
                             {% endfor %}
                         </div>
                     </div>
+                    <div class="field-error" data-error-for="language" hidden></div>
                 </label>
 
                 <label class="form-label">
                     Status
-                    <div class="custom-select" data-value="{{ add_statuses|first }}">
+                    <div class="custom-select" data-value="" data-content-status>
                         <button type="button" class="select-trigger" aria-haspopup="listbox" aria-expanded="false">
-                            <span class="select-value">{{ add_statuses|first }}</span>
+                            <span class="select-value">Select status</span>
                         </button>
                         <div class="select-dropdown" role="listbox">
-                            {% for status in add_statuses %}
-                                <button type="button" class="select-option">{{ status }}</button>
+                            {% for status in statuses %}
+                                <button
+                                        type="button"
+                                        class="select-option"
+                                        data-option-value="{{ status.value }}"
+                                        data-option-label="{{ status.label() }}"
+                                >{{ status.label() }}</button>
                             {% endfor %}
                         </div>
                     </div>
+                    <div class="field-error" data-error-for="status" hidden></div>
                 </label>
             </div>
 
@@ -97,20 +126,13 @@
                             placeholder="Type and press Enter..."
                             data-tags-input
                     />
+                    <div class="tag-dropdown" data-tags-dropdown hidden></div>
                 </div>
 
                 <div class="tag-group">
                     <div class="tag-group-title">Selected tags</div>
                     <div class="tag-list" data-tags-selected></div>
-                </div>
-
-                <div class="tag-group">
-                    <div class="tag-group-title">Available tags</div>
-                    <div class="tag-list" data-tags-available>
-                        {% for tag in add_tags %}
-                            <button type="button" class="tag tag-available" data-tag="{{ tag }}">{{ tag }}</button>
-                        {% endfor %}
-                    </div>
+                    <div class="field-error" data-error-for="tagIds" hidden></div>
                 </div>
             </div>
 
@@ -134,6 +156,7 @@
 
                 <form class="file-list" data-file-list></form>
                 <div class="file-total-size" data-total-size>Total size: 0 KB</div>
+                <div class="field-error" data-error-for="fileIds" hidden></div>
 
                 <input type="file" class="file-input" data-file-input multiple/>
             </div>

@@ -1,0 +1,18 @@
+services:
+
+  # TagRepository
+  olml89\TelegramUserbot\Backend\Tag\Domain\TagRepository:
+    alias: olml89\TelegramUserbot\Backend\Tag\Infrastructure\Doctrine\DoctrineTagRepository
+
+# Mappings
+doctrine:
+  orm:
+    entity_managers:
+      default:
+        mappings:
+          Tag:
+            is_bundle: false
+            type: xml
+            dir: '%kernel.project_dir%/src/Tag/Infrastructure/Doctrine'
+            prefix: olml89\TelegramUserbot\Backend\Tag\Domain
+            alias: Tag

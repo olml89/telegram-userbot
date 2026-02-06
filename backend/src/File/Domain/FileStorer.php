@@ -17,12 +17,11 @@ final readonly class FileStorer
     /**
      * @throws FileStorageException
      */
-    public function store(File $file): File
+    public function store(File $file): void
     {
         try {
             $this->fileRepository->store($file);
-
-            return $file->record(new FileStored($file));
+            $file->stored();
         } catch (Throwable $e) {
             /**
              * Rollback: delete File data if there's an error while trying to store File

@@ -1,14 +1,5 @@
 services:
 
-  # FileRepository
-  olml89\TelegramUserbot\Backend\File\Domain\FileRepository:
-    alias: olml89\TelegramUserbot\Backend\File\Infrastructure\Doctrine\DoctrineFileRepository
-
-  # UploadConsumer
-  olml89\TelegramUserbot\Backend\File\Domain\Upload\UploadConsumer:
-    arguments:
-      $contentDirectory: '/telegram-userbot/shared/var/content'
-
   # UploadFinder
   olml89\TelegramUserbot\Backend\File\Domain\Upload\UploadFinder:
     alias: olml89\TelegramUserbot\Backend\File\Infrastructure\Symfony\File\TusdUploadFinder
@@ -16,6 +7,15 @@ services:
   olml89\TelegramUserbot\Backend\File\Infrastructure\Symfony\File\TusdUploadFinder:
     arguments:
       $uploadDirectory: '/telegram-userbot/shared/var/uploads'
+
+  # UploadConsumer
+  olml89\TelegramUserbot\Backend\File\Domain\Upload\UploadConsumer:
+    arguments:
+      $contentDirectory: '/telegram-userbot/shared/var/content'
+
+  # FileRepository
+  olml89\TelegramUserbot\Backend\File\Domain\FileRepository:
+    alias: olml89\TelegramUserbot\Backend\File\Infrastructure\Doctrine\DoctrineFileRepository
 
   # FileManager
   olml89\TelegramUserbot\Backend\File\Domain\FileManager:

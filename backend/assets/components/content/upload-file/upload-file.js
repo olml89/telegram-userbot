@@ -39,6 +39,7 @@ export const initFileUpload = () => {
             .reduce((a, b) => a + b, 0);
 
         totalSizeEl.textContent = `Total size: ${formatSize(totalBytes)}`;
+        window.dispatchEvent(new CustomEvent('uploads:changed', { detail: { count: uploadedCount } }));
     };
 
     const setLabelContrast = (progress, pct) => {

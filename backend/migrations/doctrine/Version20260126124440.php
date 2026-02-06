@@ -7,9 +7,6 @@ namespace olml89\TelegramUserbot\Backend\Infrastructure\Doctrine\Migrations;
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\Migrations\AbstractMigration;
 
-/**
- * Auto-generated Migration: Please modify to your needs!
- */
 final class Version20260126124440 extends AbstractMigration
 {
     public function getDescription(): string
@@ -34,7 +31,8 @@ final class Version20260126124440 extends AbstractMigration
             )
         ');
         $this->addSql('
-            CREATE UNIQUE INDEX UNIQ_B4FA1177B5B48B91 ON contents (public_id)
+            CREATE UNIQUE INDEX UNIQ_B4FA1177B5B48B91 
+            ON contents (public_id)
         ');
     }
 

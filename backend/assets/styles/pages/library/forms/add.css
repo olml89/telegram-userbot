@@ -44,6 +44,20 @@
     resize: none;
 }
 
+#contentAddModal .form-input::placeholder {
+    font-family: inherit;
+}
+
+#contentAddModal .field-error {
+    font-size: 11px;
+    color: #b91c1c;
+    margin-top: 4px;
+}
+
+#contentAddModal .field-error[hidden] {
+    display: none;
+}
+
 #contentAddModal .price-input {
     position: relative;
 }
@@ -86,17 +100,83 @@
     cursor: pointer;
 }
 
-#contentAddModal .tag-available {
-    background: #f3f4f6;
-    color: var(--text);
-    border: 1px solid var(--border);
-    cursor: pointer;
-}
-
 #contentAddModal .tag-input {
     display: flex;
     flex-direction: column;
     gap: 10px;
+    position: relative;
+}
+
+#contentAddModal .tag-dropdown {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    right: 0;
+    background: #ffffff;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 6px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    z-index: 20;
+    max-height: 180px;
+    overflow-y: auto;
+}
+
+#contentAddModal .tag-dropdown[hidden] {
+    display: none;
+}
+
+#contentAddModal .tag-dropdown .tag-loading {
+    color: var(--text-muted);
+    cursor: default;
+}
+
+#contentAddModal .tag-dropdown .tag-error {
+    color: #b91c1c;
+    cursor: default;
+}
+
+#contentAddModal .tag-dropdown .tag-option {
+    width: 100%;
+    text-align: left;
+    padding: 8px 10px;
+    border: none;
+    background: transparent;
+    font-size: 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    color: var(--text);
+}
+
+#contentAddModal .tag-dropdown .tag-option.tag-error {
+    color: #b91c1c;
+    cursor: default;
+}
+
+#contentAddModal .tag-dropdown .tag-option:hover {
+    background: #f3f4f6;
+}
+
+#contentAddModal .tag-dropdown .tag-option.is-active {
+    background: #eef2f7;
+}
+
+#contentAddModal .form-input:disabled {
+    cursor: not-allowed;
+}
+
+#contentAddModal .form-input:focus,
+#contentAddModal .form-input.is-focused {
+    border-width: 2px;
+    border-color: #000000;
+    outline: none;
+}
+
+#contentAddModal .tag-dropdown .tag-loading {
+    color: var(--text-muted);
+    cursor: default;
 }
 
 #contentAddModal .file-actions {

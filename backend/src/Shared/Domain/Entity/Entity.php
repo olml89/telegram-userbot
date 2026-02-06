@@ -11,7 +11,6 @@ interface Entity
 {
     public function id(): int;
     public function publicId(): Uuid;
-    public function record(Event $event): static;
 
     /** @return Event[] */
     public function events(): array;

@@ -28,11 +28,6 @@ final readonly class FileStored implements Event
      */
     public function jsonSerialize(): array
     {
-        return [
-            'name' => $this->file->name(),
-            'originalName' => $this->file->originalName(),
-            'mimeType' => $this->file->mimeType(),
-            'bytes' => $this->file->bytes(),
-        ];
+        return [];
     }
 }

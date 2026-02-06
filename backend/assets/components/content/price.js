@@ -8,8 +8,11 @@ export const initModePrice = () => {
 
     modeSelect.querySelectorAll('.select-option').forEach((option) => {
         option.addEventListener('click', () => {
-            const isTeasing = option.textContent.trim() === 'Teasing';
+            const modeValue = (option.dataset.optionValue || '').toLowerCase();
+            const isTeasing = modeValue === 'teasing';
+
             priceInput.disabled = isTeasing;
+
             if (isTeasing) {
                 priceInput.value = '';
             }

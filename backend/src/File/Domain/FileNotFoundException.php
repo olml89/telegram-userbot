@@ -11,6 +11,6 @@ final class FileNotFoundException extends NotFoundException
 {
     public function __construct(Uuid $publicId)
     {
-        parent::__construct("File {$publicId->toRfc4122()} not found.");
+        parent::__construct(sprintf('File %s not found', $publicId->toRfc4122()));
     }
 }

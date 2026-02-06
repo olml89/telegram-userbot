@@ -45,7 +45,7 @@ final class File implements Entity
 
         $upload->move($destinationDirectory, $file);
 
-        return $file->record(new UploadConsumed($file, $upload));
+        return $file->attached($upload);
     }
 
     public function name(): string
@@ -66,5 +66,20 @@ final class File implements Entity
     public function bytes(): int
     {
         return $this->bytes;
+    }
+
+    public function attached(Upload $upload): self
+    {
+        return $this->record(new UploadConsumed($this, $upload));
+    }
+
+    public function stored(): self
+    {
+        return $this->record(new FileStored($this));
+    }
+
+    public function removed(): self
+    {
+        return $this->record(new FileRemoved($this));
     }
 }

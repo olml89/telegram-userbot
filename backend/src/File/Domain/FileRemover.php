@@ -23,7 +23,7 @@ final readonly class FileRemover
             $snapshot = clone $file;
             $this->fileRepository->remove($file);
             $this->fileManager->remove($file);
-            $file->record(new FileRemoved($snapshot));
+            $snapshot->removed();
         } catch (Throwable $e) {
             throw FileStorageException::remove($file, $e);
         }

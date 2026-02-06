@@ -85,7 +85,7 @@
                     <th></th>
                 </tr>
                 </thead>
-                <tbody>
+                <tbody data-library-table-body>
                 {% set mockItems = [
                     {
                         title: 'Single Image',
@@ -232,18 +232,12 @@
         </div>
     </div>
 
-    {% set add_categories = ['Message', 'Bundle', 'Gallery', 'Video', 'Audio'] %}
-    {% set add_statuses = ['Active', 'Inactive'] %}
-    {% set add_languages = ['English', 'Spanish', 'French', 'Italian'] %}
-    {% set add_tags = ['featured', 'premium', 'new', 'home', 'homestay', 'homeowners', 'bundle', 'exclusive'] %}
-    {% set show_add_modal = false %}
-
     {% include 'pages/library/forms/add.html.twig' with {
-        add_categories: add_categories,
-        add_languages: add_languages,
-        add_statuses: add_statuses,
-        add_tags: add_tags,
-        show_add_modal: show_add_modal
+        categories: categories,
+        languages: languages,
+        statuses: statuses,
+        modes: modes,
+        show_add_modal: false,
     } %}
 
     {% set previewContent = {
@@ -369,7 +363,9 @@
             }
         ]
     } %}
-    {% set show_preview = false %}
 
-    {% include 'pages/library/forms/preview.html.twig' with { content: previewContent, show_preview: show_preview } %}
+    {% include 'pages/library/forms/preview.html.twig' with {
+        content: previewContent,
+        show_preview_modal: false,
+    } %}
 {% endblock %}

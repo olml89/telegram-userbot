@@ -26,5 +26,5 @@ document.addEventListener('DOMContentLoaded', () => {
     initTags();
 
     const uploadFileState = initFileUpload();
-    initContentSave(uploadFileState?.getFileIds());
+    initContentSave(uploadFileState?.getFileIds);
 });

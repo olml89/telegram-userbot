@@ -7,9 +7,6 @@ namespace olml89\TelegramUserbot\Backend\Infrastructure\Doctrine\Migrations;
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\Migrations\AbstractMigration;
 
-/**
- * Auto-generated Migration: Please modify to your needs!
- */
 final class Version20260202105520 extends AbstractMigration
 {
     public function getDescription(): string
@@ -31,19 +28,24 @@ final class Version20260202105520 extends AbstractMigration
             )
         ');
         $this->addSql('
-            CREATE UNIQUE INDEX UNIQ_6354059B5B48B91 ON files (public_id)
+            CREATE UNIQUE INDEX UNIQ_6354059B5B48B91 
+            ON files (public_id)
         ');
         $this->addSql('
-            ALTER TABLE contents DROP file_name
+            ALTER TABLE contents 
+            DROP file_name
         ');
         $this->addSql('
-            ALTER TABLE contents DROP file_original_name
+            ALTER TABLE contents 
+            DROP file_original_name
         ');
         $this->addSql('
-            ALTER TABLE contents DROP file_mime_type
+            ALTER TABLE contents 
+            DROP file_mime_type
         ');
         $this->addSql('
-            ALTER TABLE contents DROP file_size
+            ALTER TABLE contents 
+            DROP file_size
         ');
     }
 
@@ -53,16 +55,20 @@ final class Version20260202105520 extends AbstractMigration
             DROP TABLE files
         ');
         $this->addSql('
-            ALTER TABLE contents ADD file_name VARCHAR(50) NOT NULL
+            ALTER TABLE contents 
+            ADD file_name VARCHAR(50) NOT NULL
         ');
         $this->addSql('
-            ALTER TABLE contents ADD file_original_name VARCHAR(255) NOT NULL
+            ALTER TABLE contents 
+            ADD file_original_name VARCHAR(255) NOT NULL
         ');
         $this->addSql('
-            ALTER TABLE contents ADD file_mime_type VARCHAR(100) NOT NULL
+            ALTER TABLE contents 
+            ADD file_mime_type VARCHAR(100) NOT NULL
         ');
         $this->addSql('
-            ALTER TABLE contents ADD file_size INT NOT NULL
+            ALTER TABLE contents 
+            ADD file_size INT NOT NULL
         ');
     }
 }
