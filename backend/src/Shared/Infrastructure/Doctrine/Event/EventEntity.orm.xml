@@ -32,7 +32,6 @@
         <field name="entityId"
                type="uuid"
                column="entity_id"
-               unique="true"
                nullable="false"/>
 
         <field name="payload"
