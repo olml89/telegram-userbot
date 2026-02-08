@@ -18,6 +18,6 @@ final readonly class UploadConsumer
      */
     public function consume(Upload $upload): File
     {
-        return File::attach($upload, $this->contentDirectory);
+        return File::fromUpload($upload, $this->contentDirectory);
     }
 }

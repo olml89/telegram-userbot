@@ -13,6 +13,7 @@ use olml89\TelegramUserbot\Backend\Content\Domain\ContentNotFoundException;
 use olml89\TelegramUserbot\Backend\Content\Domain\ContentStorageException;
 use olml89\TelegramUserbot\Backend\Content\Domain\ContentStorer;
 use olml89\TelegramUserbot\Backend\File\Domain\File;
+use olml89\TelegramUserbot\Backend\File\Domain\FileAlreadyAttachedException;
 use olml89\TelegramUserbot\Backend\File\Domain\FileFinder;
 use olml89\TelegramUserbot\Backend\File\Domain\FileNotFoundException;
 use olml89\TelegramUserbot\Backend\Shared\Domain\Entity\Event\EventDispatcher;
@@ -36,10 +37,10 @@ final readonly class StoreContentCommandHandler
     }
 
     /**
-     * @throws ValidationException
      * @throws CategoryNotFoundException
      * @throws TagNotFoundException
      * @throws FileNotFoundException
+     * @throws ValidationException
      * @throws ContentStorageException
      */
     public function handle(StoreContentCommand $command): ContentResult
@@ -65,6 +66,7 @@ final readonly class StoreContentCommandHandler
      * @throws CategoryNotFoundException
      * @throws TagNotFoundException
      * @throws FileNotFoundException
+     * @throws FileAlreadyAttachedException
     */
     private function instantiateContent(StoreContentCommand $command): Content
     {

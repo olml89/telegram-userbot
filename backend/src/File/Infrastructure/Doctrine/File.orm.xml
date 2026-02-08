@@ -40,6 +40,17 @@
                column="bytes"
                nullable="false"/>
 
+        <!-- Relationships -->
+        <many-to-one field="content"
+                     target-entity="olml89\TelegramUserbot\Backend\Content\Domain\Content"
+                     inversed-by="files"
+                     fetch="LAZY">
+            <join-column name="content_id"
+                         referenced-column-name="id"
+                         nullable="true"
+                         on-delete="CASCADE"/>
+        </many-to-one>
+
     </entity>
 
 </doctrine-mapping>
