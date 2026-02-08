@@ -6,6 +6,8 @@ namespace olml89\TelegramUserbot\Backend\Content\Domain;
 
 use olml89\TelegramUserbot\Backend\Category\Domain\Category;
 use olml89\TelegramUserbot\Backend\File\Domain\File;
+use olml89\TelegramUserbot\Backend\File\Domain\FileAlreadyAttachedException;
+use olml89\TelegramUserbot\Backend\File\Domain\FileAttached;
 use olml89\TelegramUserbot\Backend\Shared\Domain\Entity\Entity;
 use olml89\TelegramUserbot\Backend\Shared\Domain\Entity\IsEntity;
 use olml89\TelegramUserbot\Backend\Tag\Domain\Tag;
@@ -17,6 +19,9 @@ final class Content implements Entity
 
     private int $sales = 0;
 
+    /**
+     * @throws FileAlreadyAttachedException
+     */
     public function __construct(
         protected readonly Uuid $publicId,
         private string $title,
@@ -34,6 +39,10 @@ final class Content implements Entity
         /** @var File[] */
         private iterable $files,
     ) {
+        foreach ($files as $file) {
+            $file->attach($this);
+            $this->record(new FileAttached($this, $file));
+        }
     }
 
     public function title(): string

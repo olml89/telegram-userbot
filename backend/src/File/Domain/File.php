@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace olml89\TelegramUserbot\Backend\File\Domain;
 
+use olml89\TelegramUserbot\Backend\Content\Domain\Content;
 use olml89\TelegramUserbot\Backend\File\Domain\Upload\Upload;
 use olml89\TelegramUserbot\Backend\File\Domain\Upload\UploadConsumed;
 use olml89\TelegramUserbot\Backend\File\Domain\Upload\UploadConsumptionException;
@@ -14,6 +15,8 @@ use Symfony\Component\Uid\Uuid;
 final class File implements Entity
 {
     use IsEntity;
+
+    private ?Content $content = null;
 
     public function __construct(
         protected readonly Uuid $publicId,
@@ -27,7 +30,7 @@ final class File implements Entity
     /**
      * @throws UploadConsumptionException
      */
-    public static function attach(Upload $upload, string $destinationDirectory): self
+    public static function fromUpload(Upload $upload, string $destinationDirectory): self
     {
         $publicId = Uuid::v4();
 
@@ -45,7 +48,7 @@ final class File implements Entity
 
         $upload->move($destinationDirectory, $file);
 
-        return $file->attached($upload);
+        return $file->uploadConsumed($upload);
     }
 
     public function name(): string
@@ -68,7 +71,31 @@ final class File implements Entity
         return $this->bytes;
     }
 
-    public function attached(Upload $upload): self
+    public function isAttached(): bool
+    {
+        return !is_null($this->content);
+    }
+
+    /**
+     * @throws FileAlreadyAttachedException
+     */
+    public function attach(Content $content): self
+    {
+        if ($this->isAttached()) {
+            throw new FileAlreadyAttachedException($this);
+        }
+
+        $this->content = $content;
+
+        return $this;
+    }
+
+    public function content(): ?Content
+    {
+        return $this->content;
+    }
+
+    public function uploadConsumed(Upload $upload): self
     {
         return $this->record(new UploadConsumed($this, $upload));
     }
