@@ -16,9 +16,8 @@ use olml89\TelegramUserbot\Backend\File\Domain\File;
 use olml89\TelegramUserbot\Backend\File\Domain\FileAlreadyAttachedException;
 use olml89\TelegramUserbot\Backend\File\Domain\FileFinder;
 use olml89\TelegramUserbot\Backend\File\Domain\FileNotFoundException;
+use olml89\TelegramUserbot\Backend\Shared\Application\Validation\ValidationException;
 use olml89\TelegramUserbot\Backend\Shared\Domain\Entity\Event\EventDispatcher;
-use olml89\TelegramUserbot\Backend\Shared\Domain\Exception\ValidationError;
-use olml89\TelegramUserbot\Backend\Shared\Domain\Exception\ValidationException;
 use olml89\TelegramUserbot\Backend\Tag\Domain\Tag;
 use olml89\TelegramUserbot\Backend\Tag\Domain\TagFinder;
 use olml89\TelegramUserbot\Backend\Tag\Domain\TagNotFoundException;
@@ -40,6 +39,7 @@ final readonly class StoreContentCommandHandler
      * @throws CategoryNotFoundException
      * @throws TagNotFoundException
      * @throws FileNotFoundException
+     * @throws FileAlreadyAttachedException
      * @throws ValidationException
      * @throws ContentStorageException
      */
@@ -50,10 +50,7 @@ final readonly class StoreContentCommandHandler
         try {
             $this->contentFinder->findByTitle($command->title);
 
-            throw new ValidationException(
-                $content,
-                errors: new ValidationError('title', 'Title already exists.'),
-            );
+            throw new ValidationException()->addError('title', 'Title already exists.');
         } catch (ContentNotFoundException) {
             $this->contentStorer->store($content);
             $this->eventDispatcher->dispatch(...$content->events());
