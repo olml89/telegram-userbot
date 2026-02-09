@@ -4,10 +4,8 @@ services:
   olml89\TelegramUserbot\Backend\Tag\Domain\TagRepository:
     alias: olml89\TelegramUserbot\Backend\Tag\Infrastructure\Doctrine\DoctrineTagRepository
 
+# Mappings
 doctrine:
-  dbal:
-    types:
-      tagName: olml89\TelegramUserbot\Backend\Tag\Infrastructure\Doctrine\NameType
   orm:
     entity_managers:
       default:

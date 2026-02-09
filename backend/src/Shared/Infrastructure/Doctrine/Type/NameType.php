@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace olml89\TelegramUserbot\Backend\Tag\Infrastructure\Doctrine;
+namespace olml89\TelegramUserbot\Backend\Shared\Infrastructure\Doctrine\Type;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Exception\InvalidFormat;
@@ -13,7 +13,7 @@ use olml89\TelegramUserbot\Backend\Shared\Domain\ValueObject\Name\NameLengthExce
 
 final class NameType extends Type
 {
-    public const string NAME = 'tagName';
+    public const string NAME = 'name';
 
     public function getName(): string
     {
@@ -59,11 +59,11 @@ final class NameType extends Type
 
         try {
             return new Name($value);
-        } catch (NameLengthException) {
+        } catch (NameLengthException $e) {
             throw InvalidFormat::new(
                 value: $value,
                 toType: self::NAME,
-                expectedFormat: 'string between 1 and 50 characters long',
+                expectedFormat: $e->getMessage(),
             );
         }
     }

@@ -22,7 +22,7 @@ final readonly class CategoryResult implements Result
     {
         return new self(
             publicId: $category->publicId()->toRfc4122(),
-            name: $category->name(),
+            name: $category->name()->value,
         );
     }
 }
