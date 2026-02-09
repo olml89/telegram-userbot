@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace olml89\TelegramUserbot\Backend\Shared\Domain;
+namespace olml89\TelegramUserbot\Backend\Shared\Domain\Enum;
 
 /**
  * @mixin SerializableStringBackedEnum

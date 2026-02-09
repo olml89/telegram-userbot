@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace olml89\TelegramUserbot\Backend\File\Application;
 
 use olml89\TelegramUserbot\Backend\File\Domain\File;
-use olml89\TelegramUserbot\Backend\Shared\Application\IsResult;
-use olml89\TelegramUserbot\Backend\Shared\Application\Result;
+use olml89\TelegramUserbot\Backend\Shared\Application\Result\IsResult;
+use olml89\TelegramUserbot\Backend\Shared\Application\Result\Result;
 
 final readonly class FileResult implements Result
 {
