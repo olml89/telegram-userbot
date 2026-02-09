@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace olml89\TelegramUserbot\Backend\Shared\Infrastructure\Symfony\Exception;
 
+use olml89\TelegramUserbot\Backend\Shared\Application\Validation\ValidationErrorBag;
+use olml89\TelegramUserbot\Backend\Shared\Application\Validation\ValidationException;
 use olml89\TelegramUserbot\Backend\Shared\Domain\Exception\NotFoundException;
-use olml89\TelegramUserbot\Backend\Shared\Domain\Exception\ValidationError;
-use olml89\TelegramUserbot\Backend\Shared\Domain\Exception\ValidationException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -57,18 +57,19 @@ final readonly class ApiExceptionResponseMapper
             $exception instanceof ValidationException => new UnprocessableEntityHttpException(
                 message: $exception->getMessage(),
                 previous: new ValidationFailedException(
-                    value: $exception->entity(),
+                    value: null,
                     violations: new ConstraintViolationList(
                         array_map(
-                            fn (ValidationError $error): ConstraintViolation => new ConstraintViolation(
-                                message: $error->errorMessage,
+                            fn (ValidationErrorBag $errorBag, string $field): ConstraintViolation => new ConstraintViolation(
+                                message: $errorBag->formatErrorMessages(),
                                 messageTemplate: null,
                                 parameters: [],
                                 root: '',
-                                propertyPath: $error->field,
+                                propertyPath: $field,
                                 invalidValue: null,
                             ),
                             $exception->errors(),
+                            array_keys($exception->errors()),
                         ),
                     ),
                 ),

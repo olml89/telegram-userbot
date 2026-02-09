@@ -18,7 +18,7 @@
                nullable="false"/>
 
         <field name="name"
-               type="string"
+               type="tagName"
                column="name"
                length="50"
                unique="true"

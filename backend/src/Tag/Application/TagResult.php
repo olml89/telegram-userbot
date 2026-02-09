@@ -22,7 +22,7 @@ readonly class TagResult implements Result
     {
         return new self(
             id: $tag->publicId()->toRfc4122(),
-            name: $tag->name(),
+            name: $tag->name()->value,
         );
     }
 }

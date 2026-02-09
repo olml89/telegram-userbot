@@ -31,7 +31,7 @@ final readonly class StoreTagResult implements Result
 
     public static function created(Tag $tag): self
     {
-        return self::tag($tag, created: false);
+        return self::tag($tag, created: true);
     }
 
     /**

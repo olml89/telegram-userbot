@@ -18,14 +18,6 @@ final readonly class TagFinder
      */
     public function find(Uuid $publicId): Tag
     {
-        return $this->tagRepository->get($publicId) ?? throw TagNotFoundException::publicId($publicId);
-    }
-
-    /**
-     * @throws TagNotFoundException
-     */
-    public function findByName(string $name): Tag
-    {
-        return $this->tagRepository->getByName($name) ?? throw TagNotFoundException::name($name);
+        return $this->tagRepository->get($publicId) ?? throw new TagNotFoundException($publicId);
     }
 }

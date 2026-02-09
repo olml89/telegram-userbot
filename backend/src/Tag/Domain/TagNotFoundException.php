@@ -9,27 +9,12 @@ use Symfony\Component\Uid\Uuid;
 
 final class TagNotFoundException extends NotFoundException
 {
-    private function __construct(string $message)
+    public function __construct(Uuid $publicId)
     {
-        parent::__construct($message);
-    }
-
-    public static function publicId(Uuid $publicId): self
-    {
-        return new self(
+        parent::__construct(
             sprintf(
                 'Tag %s not found',
                 $publicId->toRfc4122(),
-            ),
-        );
-    }
-
-    public static function name(string $name): self
-    {
-        return new self(
-            sprintf(
-                'Tag with name %s not found',
-                $name,
             ),
         );
     }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace olml89\TelegramUserbot\Backend\Tag\Infrastructure\Doctrine;
 
+use olml89\TelegramUserbot\Backend\Shared\Domain\ValueObject\Name\Name;
 use olml89\TelegramUserbot\Backend\Shared\Infrastructure\Doctrine\DoctrineRepository;
 use olml89\TelegramUserbot\Backend\Tag\Domain\Tag;
 use olml89\TelegramUserbot\Backend\Tag\Domain\TagRepository;
@@ -26,7 +27,7 @@ final class DoctrineTagRepository extends DoctrineRepository implements TagRepos
         ]);
     }
 
-    public function getByName(string $name): ?Tag
+    public function getByName(Name $name): ?Tag
     {
         return $this->findOneBy([
             'name' => $name,

@@ -12,10 +12,6 @@ final readonly class StoreTagRequest
 {
     public function __construct(
         #[Validation\NotBlank]
-        #[Validation\Length(
-            max: 50,
-            maxMessage: 'The tag cannot be longer than 50 characters',
-        )]
         public ?string $name,
     ) {
     }
