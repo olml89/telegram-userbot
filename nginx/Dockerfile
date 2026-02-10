@@ -1,8 +1,11 @@
-FROM nginx:stable-alpine
+FROM nginx:stable-alpine AS base
+
+FROM base AS prod
 
 # Copy redis configuration
 COPY nginx/default.conf /etc/nginx/conf.d/default.conf
 
-# Copy entrypoint and change its permissions to be executable
+# Copy entrypoint.sh
 COPY nginx/entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
+
+FROM base AS dev

@@ -1,6 +1,10 @@
-FROM tusproject/tusd:latest
-
-# Copy entrypoint and change its permissions to be executable
-COPY --chmod=0755 tusd/entrypoint.sh /entrypoint.sh
+FROM tusproject/tusd:latest AS base
 
 USER root
+
+FROM base AS prod
+
+# Copy entrypoint.sh
+COPY tusd/entrypoint.sh /entrypoint.sh
+
+FROM base AS dev
