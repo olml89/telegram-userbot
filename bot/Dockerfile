@@ -40,14 +40,6 @@ RUN apk add --no-cache  \
 COPY --from=build /tmp/PrimeModule-ext/libprimemodule.so /usr/lib/
 COPY --from=build /tmp/PrimeModule-ext/src/primemodule-ffi.h /usr/include/
 
-# Copy entrypoint.sh during the build phase, before the docker volume is mounted, and make it executable
-COPY bot/bin/entrypoint.sh bin/entrypoint.sh
-RUN chmod +x bin/entrypoint.sh
-
-# Copy supervisord config files during the build phase, before the docker volume is mounted
-COPY bot/supervisor/supervisord.conf /etc/supervisor/supervisord.conf
-COPY bot/supervisor/conf.d/*.conf /etc/supervisor/conf.d/
-
 # Install additional PHP extensions
 COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/local/bin/
 RUN install-php-extensions pcntl posix ffi
@@ -59,6 +51,10 @@ COPY bot/ ./
 
 # Copy the shared codebase to the container
 COPY shared/ /telegram-userbot/shared/
+
+# Copy supervisord config files during the build phase, before the docker volume is mounted
+COPY bot/supervisor/supervisord.conf /etc/supervisor/supervisord.conf
+COPY bot/supervisor/conf.d/*.conf /etc/supervisor/conf.d/
 
 # Enable Opcache
 RUN docker-php-ext-enable opcache

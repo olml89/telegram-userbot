@@ -5,7 +5,7 @@ VAR="/telegram-userbot/bot/var"
 echo "🔧 Creating ${VAR} directory for the supervisord.pid file..."
 mkdir -p ${VAR}
 
-LOG="/telegram-userbot/shared/var/log/bot"
+LOG="/var/log/bot"
 echo "🔧 Creating ${LOG} directory for the supervisord.log in the shared container..."
 mkdir -p ${LOG}
 

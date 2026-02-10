@@ -7,9 +7,6 @@ WORKDIR /telegram-userbot/bot-manager
 # - supervisor: supervisord to manage bot container
 RUN apk add --no-cache supervisor
 
-# Copy supervisord config files
-COPY bot-manager/supervisor/supervisord.conf /etc/supervisor/supervisord.conf
-
 # Install additional PHP extensions
 COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/local/bin/
 RUN install-php-extensions redis;
@@ -21,6 +18,9 @@ COPY bot-manager/ ./
 
 # Copy the shared codebase to the container
 COPY shared/ /telegram-userbot/shared/
+
+# Copy supervisord config files
+COPY bot-manager/supervisor/supervisord.conf /etc/supervisor/supervisord.conf
 
 # Enable Opcache
 RUN docker-php-ext-enable opcache

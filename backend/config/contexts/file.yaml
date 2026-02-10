@@ -6,12 +6,12 @@ services:
 
   olml89\TelegramUserbot\Backend\File\Infrastructure\Symfony\File\TusdUploadFinder:
     arguments:
-      $uploadDirectory: '/telegram-userbot/shared/var/uploads'
+      $uploadDirectory: '/var/uploads'
 
   # UploadConsumer
   olml89\TelegramUserbot\Backend\File\Domain\Upload\UploadConsumer:
     arguments:
-      $contentDirectory: '/telegram-userbot/shared/var/content'
+      $contentDirectory: '/var/content'
 
   # FileRepository
   olml89\TelegramUserbot\Backend\File\Domain\FileRepository:
@@ -24,7 +24,7 @@ services:
   olml89\TelegramUserbot\Backend\File\Infrastructure\Symfony\File\SymfonyFileManager:
     arguments:
       $filesystem: '@filesystem'
-      $contentDirectory: '/telegram-userbot/shared/var/content'
+      $contentDirectory: '/var/content'
 
 # Mappings
 doctrine:

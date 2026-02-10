@@ -1,7 +1,7 @@
 #!/bin/sh
 set -e
 
-LOG="/telegram-userbot/shared/var/log/nginx"
+LOG="/var/log/nginx"
 echo "🔧 Creating ${LOG}..."
 mkdir -p ${LOG}
 

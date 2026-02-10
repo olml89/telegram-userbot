@@ -9,7 +9,7 @@ services:
     environment:
       TUSD_BASE_PATH: /tus/uploads
       TUSD_UPLOAD_DIR: /var/uploads
-    entrypoint: [/entrypoint.sh]
+    entrypoint: [sh, /entrypoint.sh]
     networks:
       - telegram-userbot-network
 
@@ -20,7 +20,7 @@ services:
         condition: service_started
       backend:
         condition: service_started
-    entrypoint: [/entrypoint.sh]
+    entrypoint: [sh, /entrypoint.sh]
     ports:
       - ${BACKEND_PORT}:80
     networks:
@@ -35,7 +35,7 @@ services:
         condition: service_started
     environment:
       APP_ENV: ${APP_ENV}
-    entrypoint: [bin/entrypoint.sh]
+    entrypoint: [sh, bin/entrypoint.sh]
     extra_hosts:
       - 'host.docker.internal:host-gateway'
     networks:
@@ -55,7 +55,7 @@ services:
       SUPERVISOR_USER: ${SUPERVISOR_USER}
       SUPERVISOR_PASSWORD: ${SUPERVISOR_PASSWORD}
     tty: true
-    entrypoint: [bin/entrypoint.sh]
+    entrypoint: [sh, bin/entrypoint.sh]
     networks:
       - telegram-userbot-network
 
@@ -77,7 +77,7 @@ services:
       SUPERVISOR_USER: ${SUPERVISOR_USER}
       SUPERVISOR_PASSWORD: ${SUPERVISOR_PASSWORD}
     tty: true
-    entrypoint: [bin/entrypoint.sh]
+    entrypoint: [sh, bin/entrypoint.sh]
     networks:
       - telegram-userbot-network
 
@@ -85,7 +85,7 @@ services:
     container_name: telegram_userbot_redis
     build:
       dockerfile: redis/Dockerfile
-    entrypoint: [/usr/local/bin/entrypoint.sh]
+    entrypoint: [sh, /usr/local/bin/entrypoint.sh]
     networks:
       - telegram-userbot-network
 
@@ -97,7 +97,7 @@ services:
       POSTGRES_DB: ${DB_NAME}
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
-    entrypoint: [/usr/local/bin/entrypoint.sh]
+    entrypoint: [sh, /usr/local/bin/entrypoint.sh]
     command: [-c, config_file=/etc/postgresql/postgresql.conf]
     networks:
       - telegram-userbot-network
@@ -116,8 +116,7 @@ services:
     container_name: telegram_userbot_alloy
     build:
       dockerfile: alloy/Dockerfile
-    entrypoint: [/bin/sh]
-    command: -c "alloy run /etc/alloy/config.alloy > /var/log/alloy.log 2>&1"
+    entrypoint: [sh, /entrypoint.sh]
     networks:
       - telegram-userbot-grafana-network
 
