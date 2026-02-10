@@ -83,7 +83,7 @@ final readonly class TusdUpload implements Upload
             /**
              * Move the uploaded file to the content directory with the correct name and extension
              */
-            $this->file->move($destinationDirectory, $file->name());
+            $this->file->move($destinationDirectory, $file->name()->value);
 
             /**
              * Delete the .info tusd file
@@ -95,7 +95,7 @@ final readonly class TusdUpload implements Upload
                 destinationPath: sprintf(
                     '%s/%s',
                     $destinationDirectory,
-                    $file->name(),
+                    $file->name()->value,
                 ),
                 e: $e,
             );

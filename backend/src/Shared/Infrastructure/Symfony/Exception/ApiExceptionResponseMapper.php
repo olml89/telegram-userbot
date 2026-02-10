@@ -6,6 +6,7 @@ namespace olml89\TelegramUserbot\Backend\Shared\Infrastructure\Symfony\Exception
 
 use olml89\TelegramUserbot\Backend\Shared\Application\Validation\ValidationErrorBag;
 use olml89\TelegramUserbot\Backend\Shared\Application\Validation\ValidationException;
+use olml89\TelegramUserbot\Backend\Shared\Domain\Exception\InvalidResourceException;
 use olml89\TelegramUserbot\Backend\Shared\Domain\Exception\NotFoundException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -14,6 +15,7 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
+use Symfony\Component\HttpKernel\Exception\UnsupportedMediaTypeHttpException;
 use Symfony\Component\Validator\ConstraintViolation;
 use Symfony\Component\Validator\ConstraintViolationList;
 use Symfony\Component\Validator\Exception\ValidationFailedException;
@@ -51,6 +53,10 @@ final readonly class ApiExceptionResponseMapper
         return match (true) {
             $exception instanceof HttpExceptionInterface => $exception,
             $exception instanceof NotFoundException => new NotFoundHttpException(
+                message: $exception->getMessage(),
+                previous: $exception,
+            ),
+            $exception instanceof InvalidResourceException => new UnsupportedMediaTypeHttpException(
                 message: $exception->getMessage(),
                 previous: $exception,
             ),

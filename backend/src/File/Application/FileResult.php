@@ -25,10 +25,10 @@ final readonly class FileResult implements Result
     {
         return new self(
             publicId: $file->publicId()->toRfc4122(),
-            name: $file->name(),
-            originalName: $file->originalName(),
-            mimeType: $file->mimeType(),
-            bytes: $file->bytes(),
+            name: $file->name()->value,
+            originalName: $file->originalName()->value,
+            mimeType: $file->mimeType()->value,
+            bytes: $file->bytes()->value,
         );
     }
 }

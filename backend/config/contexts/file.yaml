@@ -8,11 +8,6 @@ services:
     arguments:
       $uploadDirectory: '/var/uploads'
 
-  # UploadConsumer
-  olml89\TelegramUserbot\Backend\File\Domain\Upload\UploadConsumer:
-    arguments:
-      $contentDirectory: '/var/content'
-
   # FileRepository
   olml89\TelegramUserbot\Backend\File\Domain\FileRepository:
     alias: olml89\TelegramUserbot\Backend\File\Infrastructure\Doctrine\DoctrineFileRepository
@@ -26,8 +21,13 @@ services:
       $filesystem: '@filesystem'
       $contentDirectory: '/var/content'
 
-# Mappings
 doctrine:
+  # Types
+  dbal:
+    types:
+      fileOriginalName: olml89\TelegramUserbot\Backend\File\Infrastructure\Doctrine\OriginalNameType
+      fileSize: olml89\TelegramUserbot\Backend\File\Infrastructure\Doctrine\SizeType
+  # Mappings
   orm:
     entity_managers:
       default:
