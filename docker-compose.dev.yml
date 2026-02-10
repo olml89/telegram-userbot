@@ -91,7 +91,7 @@ services:
     volumes:
       - ./alloy/config.alloy:/etc/alloy/config.alloy:cached
       - ./alloy/entrypoint.sh:/entrypoint.sh:cached
-      - ./.runtime/log/alloy:/var/log/alloy:cached
+      - ./.runtime/log:/var/log:cached
 
   grafana:
     volumes:
