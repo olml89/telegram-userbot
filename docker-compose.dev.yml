@@ -1,16 +1,22 @@
 services:
 
   tusd:
+    build:
+      dockerfile: tusd/Dockerfile
+      target: dev
     volumes:
-      - ./shared/var/uploads:/var/uploads:cached
-      - ./shared/var/log/tusd:/var/log/tusd:cached
+      - ./tusd/entrypoint.sh:/entrypoint.sh:cached
+      - ./.runtime/uploads:/var/uploads:cached
+      - ./.runtime/log/tusd:/var/log/tusd:cached
 
   nginx:
     build:
       dockerfile: nginx/Dockerfile
+      target: dev
     volumes:
       - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:cached
-      - ./shared/var/log/nginx:/var/log/nginx:cached
+      - ./nginx/entrypoint.sh:/entrypoint.sh:cached
+      - ./.runtime/log/nginx:/var/log/nginx:cached
 
   backend:
     build:
@@ -23,6 +29,9 @@ services:
     volumes:
       - ./shared:/telegram-userbot/shared:cached
       - ./backend:/telegram-userbot/backend:cached
+      - ./.runtime/uploads:/var/uploads:cached
+      - ./.runtime/content:/var/content:cached
+      - ./.runtime/log/backend:/var/log/backend:cached
 
   bot-manager:
     build:
@@ -35,6 +44,8 @@ services:
     volumes:
       - ./shared:/telegram-userbot/shared:cached
       - ./bot-manager:/telegram-userbot/bot-manager:cached
+      - ./bot-manager/supervisor:/etc/supervisor:cached
+      - ./.runtime/log/bot-manager:/var/log/bot-manager:cached
 
   bot:
     build:
@@ -47,27 +58,40 @@ services:
     volumes:
       - ./shared:/telegram-userbot/shared:cached
       - ./bot:/telegram-userbot/bot:cached
+      - ./bot/supervisor:/etc/supervisor:cached
+      - ./.runtime/log/bot:/var/log/bot:cached
 
   redis:
+    build:
+      dockerfile: redis/Dockerfile
+      target: dev
     volumes:
       - telegram-userbot-redis:/data:cached
       - ./redis/redis.conf:/usr/local/etc/redis/redis.conf:cached
-      - ./shared/var/log/redis:/var/log/redis:cached
+      - ./redis/entrypoint.sh:/entrypoint.sh:cached
+      - ./.runtime/log/redis:/var/log/redis:cached
 
   # Expose the database port to the outside: only during development
   postgres:
+    build:
+      dockerfile: postgres/Dockerfile
+      target: dev
     ports:
       - ${POSTGRES_PORT}:${DB_PORT}
     volumes:
       - telegram-userbot-db:/var/lib/postgresql/data:cached
       - ./postgres/postgresql.conf:/etc/postgresql/postgresql.conf:cached
-      - ./shared/var/log/postgres:/var/log/postgres:cached
+      - ./postgres/entrypoint.sh:/usr/local/bin/entrypoint.sh:cached
+      - ./.runtime/log/postgres:/var/log/postgres:cached
 
   alloy:
+    build:
+      dockerfile: alloy/Dockerfile
+      target: dev
     volumes:
       - ./alloy/config.alloy:/etc/alloy/config.alloy:cached
-      - ./shared/var/log/alloy:/var/log:cached
-      - ./shared/var/log:/telegram-userbot/shared/var/log:cached
+      - ./alloy/entrypoint.sh:/entrypoint.sh:cached
+      - ./.runtime/log:/var/log:cached
 
   grafana:
     volumes:

@@ -1,7 +1,7 @@
 #!/usr/bin/env sh
 set -eu
 
-LOG="/telegram-userbot/shared/var/log/redis"
+LOG="/var/log/redis"
 echo "🔧 Creating ${LOG}..."
 mkdir -p ${LOG}
 chown -R redis:redis ${LOG}

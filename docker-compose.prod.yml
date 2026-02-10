@@ -3,16 +3,20 @@ name: telegram-userbot
 services:
 
   tusd:
+    build:
+      dockerfile: tusd/Dockerfile
+      target: prod
     volumes:
       - telegram-userbot-uploads:/var/uploads:cached
-      - telegram-userbot-logs:/telegram-userbot/shared/var/log:cached
+      - telegram-userbot-logs:/var/log:cached
 
   nginx:
     build:
       dockerfile: nginx/Dockerfile
+      target: prod
     volumes:
       - telegram-userbot-assets:/telegram-userbot/backend/public/build:ro
-      - telegram-userbot-logs:/telegram-userbot/shared/var/log:cached
+      - telegram-userbot-logs:/var/log:cached
 
   backend:
     build:
@@ -20,37 +24,46 @@ services:
       target: prod
     volumes:
       - telegram-userbot-assets:/telegram-userbot/backend/public/build:cached
-      - telegram-userbot-uploads:/telegram-userbot/shared/var/uploads:cached
-      - telegram-userbot-content:/telegram-userbot/shared/var/content:cached
-      - telegram-userbot-logs:/telegram-userbot/shared/var/log:cached
+      - telegram-userbot-uploads:/var/uploads:cached
+      - telegram-userbot-content:/var/content:cached
+      - telegram-userbot-logs:/var/log:cached
 
   bot-manager:
     build:
       dockerfile: bot-manager/Dockerfile
       target: prod
     volumes:
-      - telegram-userbot-logs:/telegram-userbot/shared/var/log:cached
+      - telegram-userbot-logs:/var/log:cached
 
   bot:
     build:
       dockerfile: bot/Dockerfile
       target: prod
     volumes:
-      - telegram-userbot-logs:/telegram-userbot/shared/var/log:cached
+      - telegram-userbot-logs:/var/log:cached
 
   redis:
+    build:
+      dockerfile: redis/Dockerfile
+      target: prod
     volumes:
       - telegram-userbot-redis:/data:cached
-      - telegram-userbot-logs:/telegram-userbot/shared/var/log:cached
+      - telegram-userbot-logs:/var/log:cached
 
   postgres:
+    build:
+      dockerfile: postgres/Dockerfile
+      target: prod
     volumes:
       - telegram-userbot-db:/var/lib/postgresql/data:cached
-      - telegram-userbot-logs:/telegram-userbot/shared/var/log:cached
+      - telegram-userbot-logs:/var/log:cached
 
   alloy:
+    build:
+      dockerfile: alloy/Dockerfile
+      target: prod
     volumes:
-      - telegram-userbot-logs:/telegram-userbot/shared/var/log:cached
+      - telegram-userbot-logs:/var/log:cached
 
 volumes:
   telegram-userbot-logs:
