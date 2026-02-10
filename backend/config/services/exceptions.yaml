@@ -9,11 +9,11 @@ services:
   # ApiExceptionResponseSubscriber: registered through automatic bindings
 
   # Bind ExceptionHandler to ExceptionHandlerPipeline
-  olml89\TelegramUserbot\Backend\Shared\Domain\Exception\ExceptionHandler:
-    alias: olml89\TelegramUserbot\Backend\Shared\Domain\Exception\ExceptionHandlerPipeline
+  olml89\TelegramUserbot\Backend\Shared\Domain\Exception\Handler\ExceptionHandler:
+    alias: olml89\TelegramUserbot\Backend\Shared\Domain\Exception\Handler\ExceptionHandlerPipeline
 
   # ExceptionHandlerPipeline: logs to the app channel
-  olml89\TelegramUserbot\Backend\Shared\Domain\Exception\ExceptionHandlerPipeline:
+  olml89\TelegramUserbot\Backend\Shared\Domain\Exception\Handler\ExceptionHandlerPipeline:
     arguments:
       $exceptionHandlers:
         - '@olml89\TelegramUserbot\Backend\Shared\Infrastructure\Symfony\Exception\ExceptionLogger'
