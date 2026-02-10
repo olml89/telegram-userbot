@@ -1,7 +1,7 @@
 local.file_match "alloy" {
 	path_targets = [{
 		__address__ = "localhost",
-		__path__    = "/telegram-userbot/shared/var/log/alloy/alloy.log",
+		__path__    = "/var/log/alloy/alloy.log",
 		job         = "alloy",
 		service     = "alloy",
 	}]
@@ -16,7 +16,7 @@ loki.source.file "alloy" {
 local.file_match "tusd" {
 	path_targets = [{
 		__address__ = "localhost",
-		__path__    = "/telegram-userbot/shared/var/log/tusd/tusd.log",
+		__path__    = "/var/log/tusd/tusd.log",
 		job         = "tusd",
 		service     = "tusd",
 	}]
@@ -31,7 +31,7 @@ loki.source.file "tusd" {
 local.file_match "nginx_access" {
 	path_targets = [{
 		__address__ = "localhost",
-		__path__    = "/telegram-userbot/shared/var/log/nginx/access.log",
+		__path__    = "/var/log/nginx/access.log",
 		job         = "nginx-access",
 		service     = "nginx",
 	}]
@@ -46,7 +46,7 @@ loki.source.file "nginx_access" {
 local.file_match "nginx_error" {
 	path_targets = [{
 		__address__ = "localhost",
-		__path__    = "/telegram-userbot/shared/var/log/nginx/error.log",
+		__path__    = "/var/log/nginx/error.log",
 		job         = "nginx-error",
 		service     = "nginx",
 	}]
@@ -61,7 +61,7 @@ loki.source.file "nginx_error" {
 local.file_match "redis" {
 	path_targets = [{
 		__address__ = "localhost",
-		__path__    = "/telegram-userbot/shared/var/log/redis/redis-server.log",
+		__path__    = "/var/log/redis/redis-server.log",
 		job         = "redis",
 		service     = "redis",
 	}]
@@ -76,7 +76,7 @@ loki.source.file "redis" {
 local.file_match "postgres" {
 	path_targets = [{
 		__address__ = "localhost",
-		__path__    = "/telegram-userbot/shared/var/log/postgres/postgresql-*.log",
+		__path__    = "/var/log/postgres/postgresql-*.log",
 		job         = "postgres",
 		service     = "postgres",
 	}]
@@ -91,7 +91,7 @@ loki.source.file "postgres" {
 local.file_match "monolog" {
 	path_targets = [{
 		__address__ = "localhost",
-		__path__    = "/telegram-userbot/shared/var/log/monolog.log",
+		__path__    = "/var/log/monolog.log",
 		job         = "monolog",
 		service     = "monolog",
 	}]
@@ -106,7 +106,7 @@ loki.source.file "monolog" {
 local.file_match "websocket_server" {
 	path_targets = [{
 		__address__ = "localhost",
-		__path__    = "/telegram-userbot/shared/var/log/bot-manager/websocket-server.log",
+		__path__    = "/var/log/bot-manager/websocket-server.log",
 		job         = "websocket-server",
 		service     = "bot-manager",
 	}]
@@ -121,7 +121,7 @@ loki.source.file "websocket_server" {
 local.file_match "status" {
 	path_targets = [{
 		__address__ = "localhost",
-		__path__    = "/telegram-userbot/shared/var/log/bot-manager/status.log",
+		__path__    = "/var/log/bot-manager/status.log",
 		job         = "status",
 		service     = "bot-manager",
 	}]
@@ -136,7 +136,7 @@ loki.source.file "status" {
 local.file_match "command" {
 	path_targets = [{
 		__address__ = "localhost",
-		__path__    = "/telegram-userbot/shared/var/log/bot-manager/command.log",
+		__path__    = "/var/log/bot-manager/command.log",
 		job         = "command",
 		service     = "bot-manager",
 	}]
@@ -151,7 +151,7 @@ loki.source.file "command" {
 local.file_match "supervisord" {
 	path_targets = [{
 		__address__  = "localhost",
-		__path__     = "/telegram-userbot/shared/var/log/bot/supervisord.log",
+		__path__     = "/var/log/bot/supervisord.log",
 		job          = "supervisord",
 		service      = "bot",
 	}]
@@ -166,7 +166,7 @@ loki.source.file "supervisord" {
 local.file_match "request_status" {
 	path_targets = [{
 		__address__  = "localhost",
-		__path__     = "/telegram-userbot/shared/var/log/bot/request-status.log",
+		__path__     = "/var/log/bot/request-status.log",
 		job          = "request-status",
 		service      = "bot",
 	}]
@@ -181,7 +181,7 @@ loki.source.file "request_status" {
 local.file_match "phone_login" {
 	path_targets = [{
 		__address__  = "localhost",
-		__path__     = "/telegram-userbot/shared/var/log/bot/phone-login.log",
+		__path__     = "/var/log/bot/phone-login.log",
 		job          = "phone-login",
 		service      = "bot",
 	}]
@@ -196,7 +196,7 @@ loki.source.file "phone_login" {
 local.file_match "complete_phone_login" {
 	path_targets = [{
 		__address__  = "localhost",
-		__path__     = "/telegram-userbot/shared/var/log/bot/complete-phone-login.log",
+		__path__     = "/var/log/bot/complete-phone-login.log",
 		job          = "complete-phone-login",
 		service      = "bot",
 	}]
@@ -211,7 +211,7 @@ loki.source.file "complete_phone_login" {
 local.file_match "logout" {
 	path_targets = [{
 		__address__  = "localhost",
-		__path__     = "/telegram-userbot/shared/var/log/bot/logout.log",
+		__path__     = "/var/log/bot/logout.log",
 		job          = "logout",
 		service      = "bot",
 	}]
@@ -226,7 +226,7 @@ loki.source.file "logout" {
 local.file_match "runner" {
 	path_targets = [{
 		__address__  = "localhost",
-		__path__     = "/telegram-userbot/shared/var/log/bot/runner.log",
+		__path__     = "/var/log/bot/runner.log",
 		job          = "runner",
 		service      = "bot",
 	}]

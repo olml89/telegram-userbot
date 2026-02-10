@@ -12,7 +12,7 @@ monolog:
 
     app_stream:
       type: stream
-      path: /telegram-userbot/shared/var/log/backend/app.log
+      path: /var/log/backend/app.log
 
     # Error logger (error, critical, alert, emergency)
     error:
@@ -25,4 +25,4 @@ monolog:
 
     error_stream:
       type: stream
-      path: /telegram-userbot/shared/var/log/backend/error.log
+      path: /var/log/backend/error.log

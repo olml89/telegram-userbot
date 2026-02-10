@@ -10,18 +10,17 @@ echo "🔧 Creating ${CACHE}..."
 mkdir -p "${CACHE}"
 chown -R www-data:www-data "${CACHE}"
 
-LOG="/telegram-userbot/shared/var/log/backend"
+LOG="/var/log/backend"
 echo "🔧 Creating ${LOG}..."
 mkdir -p ${LOG}
 chown -R www-data:www-data ${LOG}
 
-# It might have been created by tusd, we try to create it and make it readable/movable by www-data
-UPLOADS="/telegram-userbot/shared/var/uploads"
+UPLOADS="/var/uploads"
 echo "🔧 Creating ${UPLOADS}..."
 mkdir -p ${UPLOADS}
 chown -R www-data:www-data ${UPLOADS}
 
-CONTENT="/telegram-userbot/shared/var/content"
+CONTENT="/var/content"
 echo "🔧 Creating ${CONTENT}..."
 mkdir -p ${CONTENT}
 chown -R www-data:www-data ${CONTENT}
