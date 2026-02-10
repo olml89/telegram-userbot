@@ -20,7 +20,7 @@
         <field name="name"
                type="name"
                column="name"
-               length="50"
+               unique="true"
                nullable="false"/>
 
     </entity>
