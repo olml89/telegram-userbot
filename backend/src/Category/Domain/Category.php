@@ -23,4 +23,9 @@ final class Category implements Entity
     {
         return $this->name;
     }
+
+    public function stored(): self
+    {
+        return $this->record(new CategoryStored($this));
+    }
 }
