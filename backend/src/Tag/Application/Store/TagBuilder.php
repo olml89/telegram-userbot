@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace olml89\TelegramUserbot\Backend\Tag\Application\Store;
 
 use olml89\TelegramUserbot\Backend\Shared\Application\Validation\ValidationException;
+use olml89\TelegramUserbot\Backend\Shared\Domain\Exception\Invariant\StringLengthException;
 use olml89\TelegramUserbot\Backend\Shared\Domain\ValueObject\Name\Name;
-use olml89\TelegramUserbot\Backend\Shared\Domain\ValueObject\Name\NameLengthException;
 use olml89\TelegramUserbot\Backend\Tag\Domain\Tag;
 use Symfony\Component\Uid\Uuid;
 
@@ -37,7 +37,7 @@ final readonly class TagBuilder
     {
         try {
             return new Name($command->name);
-        } catch (NameLengthException $e) {
+        } catch (StringLengthException $e) {
             $validationException->addError('name', $e->getMessage());
 
             return null;

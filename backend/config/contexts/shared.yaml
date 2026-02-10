@@ -9,6 +9,7 @@ doctrine:
   dbal:
     types:
       name: olml89\TelegramUserbot\Backend\Shared\Infrastructure\Doctrine\Type\NameType
+      percentage: olml89\TelegramUserbot\Backend\Shared\Infrastructure\Doctrine\Type\PercentageType
   # Mappings
   orm:
     entity_managers:

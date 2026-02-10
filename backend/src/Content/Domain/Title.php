@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace olml89\TelegramUserbot\Backend\Shared\Domain\ValueObject\Name;
+namespace olml89\TelegramUserbot\Backend\Content\Domain;
 
 use olml89\TelegramUserbot\Backend\Shared\Domain\Exception\Invariant\StringLengthException;
 use olml89\TelegramUserbot\Backend\Shared\Domain\ValueObject\StringValueObject;
 
-final readonly class Name extends StringValueObject
+final readonly class Title extends StringValueObject
 {
     private const int MIN_LENGTH = 1;
-    private const int MAX_LENGTH = 50;
+    private const int MAX_LENGTH = 255;
 
     public static function maxLength(): int
     {

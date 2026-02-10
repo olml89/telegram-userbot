@@ -2,18 +2,18 @@
 
 declare(strict_types=1);
 
-namespace olml89\TelegramUserbot\Backend\Shared\Infrastructure\Doctrine\Type;
+namespace olml89\TelegramUserbot\Backend\Content\Infrastructure\Doctrine;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Exception\InvalidFormat;
 use Doctrine\DBAL\Types\Exception\InvalidType;
 use Doctrine\DBAL\Types\Type;
+use olml89\TelegramUserbot\Backend\Content\Domain\Title;
 use olml89\TelegramUserbot\Backend\Shared\Domain\Exception\Invariant\StringLengthException;
-use olml89\TelegramUserbot\Backend\Shared\Domain\ValueObject\Name\Name;
 
-final class NameType extends Type
+final class TitleType extends Type
 {
-    private const string NAME = 'name';
+    private const string NAME = 'contentTitle';
 
     public function getName(): string
     {
@@ -23,7 +23,7 @@ final class NameType extends Type
     public function getSQLDeclaration(array $column, AbstractPlatform $platform): string
     {
         return $platform->getStringTypeDeclarationSQL([
-            'length' => Name::maxLength(),
+            'length' => Title::maxLength(),
         ]);
     }
 
@@ -36,14 +36,14 @@ final class NameType extends Type
             return $value;
         }
 
-        if ($value instanceof Name) {
+        if ($value instanceof Title) {
             return $value->value;
         }
 
         throw InvalidType::new(
             value: $value,
             toType: self::NAME,
-            possibleTypes: ['string', Name::class],
+            possibleTypes: ['string', Title::class],
         );
     }
 
@@ -51,9 +51,9 @@ final class NameType extends Type
      * @throws InvalidType
      * @throws InvalidFormat
      */
-    public function convertToPHPValue(mixed $value, AbstractPlatform $platform): Name
+    public function convertToPHPValue(mixed $value, AbstractPlatform $platform): Title
     {
-        if ($value instanceof Name) {
+        if ($value instanceof Title) {
             return $value;
         }
 
@@ -61,12 +61,12 @@ final class NameType extends Type
             throw InvalidType::new(
                 value: $value,
                 toType: self::NAME,
-                possibleTypes: ['string', Name::class],
+                possibleTypes: ['string', Title::class],
             );
         }
 
         try {
-            return new Name($value);
+            return new Title($value);
         } catch (StringLengthException $e) {
             throw InvalidFormat::new(
                 value: $value,

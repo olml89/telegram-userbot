@@ -11,7 +11,7 @@ use Webmozart\Assert\Assert;
 final readonly class StoreTagRequest
 {
     public function __construct(
-        #[Validation\NotBlank]
+        #[Validation\NotNull(message: 'The name is required')]
         public ?string $name,
     ) {
     }
