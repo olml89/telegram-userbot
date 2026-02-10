@@ -58,6 +58,51 @@ loki.source.file "nginx_error" {
 	legacy_positions_file = "/tmp/positions.yaml"
 }
 
+local.file_match "backend_app" {
+	path_targets = [{
+		__address__ = "localhost",
+		__path__    = "/var/log/backend/app.log",
+		job         = "backend-app",
+		service     = "backend",
+	}]
+}
+
+loki.source.file "backend_app" {
+	targets               = local.file_match.backend_app.targets
+	forward_to            = [loki.write.default.receiver]
+	legacy_positions_file = "/tmp/positions.yaml"
+}
+
+local.file_match "backend_error" {
+	path_targets = [{
+		__address__ = "localhost",
+		__path__    = "/var/log/backend/error.log",
+		job         = "backend-error",
+		service     = "backend",
+	}]
+}
+
+loki.source.file "backend_error" {
+	targets               = local.file_match.backend_error.targets
+	forward_to            = [loki.write.default.receiver]
+	legacy_positions_file = "/tmp/positions.yaml"
+}
+
+local.file_match "backend_events" {
+	path_targets = [{
+		__address__ = "localhost",
+		__path__    = "/var/log/backend/events.log",
+		job         = "backend-events",
+		service     = "backend",
+	}]
+}
+
+loki.source.file "backend_events" {
+	targets               = local.file_match.backend_events.targets
+	forward_to            = [loki.write.default.receiver]
+	legacy_positions_file = "/tmp/positions.yaml"
+}
+
 local.file_match "redis" {
 	path_targets = [{
 		__address__ = "localhost",
