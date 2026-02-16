@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace olml89\TelegramUserbot\Backend\Shared\Infrastructure\Symfony\Exception;
 
-use olml89\TelegramUserbot\Backend\Shared\Application\Validation\ValidationErrorBag;
 use olml89\TelegramUserbot\Backend\Shared\Application\Validation\ValidationException;
+use olml89\TelegramUserbot\Backend\Shared\Domain\Exception\ExceptionAggregator;
+use olml89\TelegramUserbot\Backend\Shared\Domain\Exception\ExceptionChainBuilder;
 use olml89\TelegramUserbot\Backend\Shared\Domain\Exception\InvalidResourceException;
 use olml89\TelegramUserbot\Backend\Shared\Domain\Exception\NotFoundException;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -25,6 +26,7 @@ final readonly class ApiExceptionResponseMapper
 {
     public function __construct(
         private bool $debug,
+        private ExceptionChainBuilder $exceptionChainBuilder,
     ) {
     }
 
@@ -38,7 +40,15 @@ final readonly class ApiExceptionResponseMapper
         $data = $this->getResponseData($exception);
 
         if ($this->debug && !is_null($previous = $exception->getPrevious())) {
-            $data['debug'] = $this->getExceptionChain($previous);
+            $data['debug'] = $this->exceptionChainBuilder->build($previous);
+
+            if ($previous instanceof ExceptionAggregator && count($previous->getAggregatedExceptions()) > 0) {
+                $data['aggregatedExceptions'] = [];
+
+                foreach ($previous->getAggregatedExceptions() as $aggregatedException) {
+                    $data['aggregatedExceptions'][] = $this->exceptionChainBuilder->build($aggregatedException);
+                }
+            }
         }
 
         return new JsonResponse(
@@ -64,20 +74,7 @@ final readonly class ApiExceptionResponseMapper
                 message: $exception->getMessage(),
                 previous: new ValidationFailedException(
                     value: null,
-                    violations: new ConstraintViolationList(
-                        array_map(
-                            fn (ValidationErrorBag $errorBag, string $field): ConstraintViolation => new ConstraintViolation(
-                                message: $errorBag->formatErrorMessages(),
-                                messageTemplate: null,
-                                parameters: [],
-                                root: '',
-                                propertyPath: $field,
-                                invalidValue: null,
-                            ),
-                            $exception->errors(),
-                            array_keys($exception->errors()),
-                        ),
-                    ),
+                    violations: $this->buildConstraintViolationList($exception),
                 ),
             ),
             default => new HttpException(
@@ -86,6 +83,28 @@ final readonly class ApiExceptionResponseMapper
                 previous: $exception,
             ),
         };
+    }
+
+    private function buildConstraintViolationList(ValidationException $exception): ConstraintViolationList
+    {
+        $constraintViolationList = new ConstraintViolationList();
+
+        foreach ($exception->errors() as $field => $validationErrorBag) {
+            foreach ($validationErrorBag as $errorMessage) {
+                $constraintViolationList->add(
+                    new ConstraintViolation(
+                        message: $errorMessage,
+                        messageTemplate: null,
+                        parameters: [],
+                        root: '',
+                        propertyPath: $field,
+                        invalidValue: null,
+                    ),
+                );
+            }
+        }
+
+        return $constraintViolationList;
     }
 
     /**
@@ -106,7 +125,7 @@ final readonly class ApiExceptionResponseMapper
         $errors = [];
 
         foreach ($validationException->getViolations() as $violation) {
-            $errors[$violation->getPropertyPath()] = $violation->getMessage();
+            $errors[$violation->getPropertyPath()][] = $violation->getMessage();
         }
 
         return [
@@ -123,25 +142,5 @@ final readonly class ApiExceptionResponseMapper
         return [
             'message' => $exception->getMessage(),
         ];
-    }
-
-    /**
-     * @return array<int, array{class: string, message: string, trace: array<int, array<string, mixed>>}>
-     */
-    private function getExceptionChain(Throwable $exception): array
-    {
-        $chain = [];
-
-        while (!is_null($exception)) {
-            $chain[] = [
-                'class' => $exception::class,
-                'message' => $exception->getMessage(),
-                'trace' => $exception->getTrace(),
-            ];
-
-            $exception = $exception->getPrevious();
-        }
-
-        return $chain;
     }
 }

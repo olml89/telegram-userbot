@@ -4,20 +4,30 @@ declare(strict_types=1);
 
 namespace olml89\TelegramUserbot\Backend\Shared\Application\Validation;
 
-final class ValidationErrorBag
+use ArrayIterator;
+use IteratorAggregate;
+use Traversable;
+
+/**
+ * @implements IteratorAggregate<int, string>
+ */
+final class ValidationErrorBag implements IteratorAggregate
 {
     /**
      * @var string[]
      */
-    public array $errorMessages = [];
+    private array $errorMessages = [];
 
     public function add(string $errorMessage): void
     {
         $this->errorMessages[] = $errorMessage;
     }
 
-    public function formatErrorMessages(): string
+    /**
+     * @return Traversable<string>
+     */
+    public function getIterator(): Traversable
     {
-        return implode(', ', $this->errorMessages);
+        return new ArrayIterator($this->errorMessages);
     }
 }
