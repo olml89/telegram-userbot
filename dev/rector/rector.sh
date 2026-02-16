@@ -1,12 +1,12 @@
 #!/bin/sh
 
 SERVICE=""
-TEST=false
+DRY_RUN=false
 
 while [ "$1" != "" ]; do
 	case $1 in
 		--service=*) SERVICE="${1#*=}" ;;
-		--test) TEST=true ;;
+		--dry-run) DRY_RUN=true ;;
 		*)
 			echo "❌ Unknown option: $1"
 			exit 1
@@ -15,48 +15,43 @@ while [ "$1" != "" ]; do
 	shift
 done
 
-run_pint() {
+run_rector() {
 	SERVICE=$1
-	TEST_FLAG=""
+	DRY_RUN_FLAG=""
 
-	if $TEST; then
-		TEST_FLAG="--test"
+	if $DRY_RUN; then
+		DRY_RUN_FLAG="--dry-run"
 	fi
 
-	echo "🔍 Running pint for '$SERVICE' $TEST_FLAG"
-
-	# Dynamic codebase path
-	CODE_PATH="/telegram-userbot/$SERVICE"
+	echo "🔍 Running rector for '$SERVICE' $DRY_RUN_FLAG"
 
 	# Dynamic config file
-	CONFIG="$CODE_PATH/pint.json"
+	CONFIG="/telegram-userbot/$SERVICE/rector.php"
 	echo "🔍 Configuration file: $CONFIG"
 
 	# Enable Opcache
 	#
 	# The --ansi flag forces colored output, even when the command is run in a non-interactive shell
     # (e.g., from within a Git hook). This helps maintain readable output with syntax highlighting.
-	if ! php -n -c "/usr/local/etc/php/docker-php-ext-opcache.ini" ./vendor/bin/pint \
-		--ansi \
+	if ! php -n -c "/usr/local/etc/php/docker-php-ext-opcache.ini" ./vendor/bin/rector \
 		--config="$CONFIG" \
-		"$CODE_PATH" \
-		$TEST_FLAG
+		$DRY_RUN_FLAG
 	then
-		echo "❌ pint found errors in '$SERVICE'"
+		echo "❌ rector found errors in '$SERVICE'"
 		exit 1
 	fi
 }
 
 if [ -z "$SERVICE" ]; then
 	# Format all services
-	run_pint "shared"
-	run_pint "backend"
-	run_pint "bot"
-	run_pint "bot-manager"
+	run_rector "shared"
+	run_rector "backend"
+	run_rector "bot"
+	run_rector "bot-manager"
 else
 	case "$SERVICE" in
 		backend|bot-manager|bot|shared)
-			run_pint "$SERVICE"
+			run_rector "$SERVICE"
 			;;
 		*)
 			echo "❌ Unknown service: $SERVICE"

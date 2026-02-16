@@ -1,4 +1,4 @@
-FROM php:8.4-alpine AS base
+FROM php:8.5-alpine AS base
 
 # Set the container working directory
 WORKDIR /telegram-userbot/bot-manager

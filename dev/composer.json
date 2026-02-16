@@ -17,9 +17,11 @@
         "phpstan/phpstan-phpunit": "^2.0",
         "phpstan/phpstan-mockery": "^2.0",
         "phpunit/phpunit": "^12.2",
-        "mockery/mockery": "^1.6"
+        "mockery/mockery": "^1.6",
+        "rector/rector": "^2.1"
     },
     "scripts": {
+        "rector": "rector/rector.sh",
         "pint": "pint/pint.sh",
         "phpstan": "phpstan/phpstan.sh",
         "phpunit": "phpunit/phpunit.sh",
