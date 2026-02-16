@@ -68,7 +68,7 @@ services:
     volumes:
       - telegram-userbot-redis:/data:cached
       - ./redis/redis.conf:/usr/local/etc/redis/redis.conf:cached
-      - ./redis/entrypoint.sh:/entrypoint.sh:cached
+      - ./redis/entrypoint.sh:/usr/local/bin/entrypoint.sh:cached
       - ./.runtime/log/redis:/var/log/redis:cached
 
   # Expose the database port to the outside: only during development
