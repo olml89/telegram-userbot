@@ -24,7 +24,6 @@
         "sentry/sentry-symfony": "^5.8",
         "symfony/asset": "^8.0",
         "symfony/validator": "^8.0",
-        "symfony/form": "^8.0",
         "symfony/mime": "^8.0",
         "symfony/orm-pack": "^2.7",
         "symfony/uid": "^8.0",
