@@ -1,0 +1,55 @@
+name: Rector
+
+# Automated refactoring
+# Runs on push and waits for GHCR workflow if needed
+#
+# on.push: triggered if there's a push on main or dev
+# on.workflow_run: triggered if dev/Dockerfile is changed
+#
+# If there's a push and dev/Dockerfile does not change: it runs immediately
+# If there's a push and dev/Dockerfile changes: publish.yml runs first, it waits until it finishes, and then it runs
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_run:
+    workflows:
+      - GHCR
+    types:
+      - completed
+
+jobs:
+  pint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Login to GHCR
+        run: echo "${{ secrets.GHCR_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+      - name: Install all dependencies
+        run: |
+          docker run --rm \
+            -v ${{ github.workspace }}:/telegram-userbot \
+            -w /telegram-userbot/dev \
+            ghcr.io/olml89/telegram-userbot-dev:ci \
+            composer install --no-interaction --prefer-dist --optimize-autoloader
+
+      - name: Run automated refactoring (rector) in the dev container
+        run: |
+          docker run --rm \
+            -e APP_ENV=ci \
+            -v ${{ github.workspace }}:/telegram-userbot \
+            -w /telegram-userbot/dev \
+            ghcr.io/olml89/telegram-userbot-dev:ci \
+            sh -c "
+              chmod +x /telegram-userbot/shared/bin/composer-install.sh &&
+              /telegram-userbot/shared/bin/composer-install.sh dev &&
+              chmod +x rector/rector.sh &&
+              rector/rector.sh --dry-run
+            "
