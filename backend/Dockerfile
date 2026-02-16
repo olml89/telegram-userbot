@@ -1,4 +1,4 @@
-FROM php:8.4-fpm-alpine AS base
+FROM php:8.5-fpm-alpine AS base
 
 # Set the container working directory
 WORKDIR /telegram-userbot/backend
