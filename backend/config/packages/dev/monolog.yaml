@@ -1,10 +1,11 @@
 monolog:
   handlers:
 
-    # Event logger (event channels exists because WebProfiler is enabled)
+    # Event logger (event channels exist because WebProfiler is enabled)
     events:
       type: stream
       path: /var/log/backend/events.log
       level: debug
+      formatter: monolog.formatter.json
       channels:
         - event

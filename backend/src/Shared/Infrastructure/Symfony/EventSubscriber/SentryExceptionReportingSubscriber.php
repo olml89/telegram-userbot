@@ -16,7 +16,7 @@ final readonly class SentryExceptionReportingSubscriber
     ) {
     }
 
-    #[AsEventListener(event: KernelEvents::EXCEPTION, priority: -10)]
+    #[AsEventListener(event: KernelEvents::EXCEPTION, priority: 0)]
     public function onKernelException(ExceptionEvent $event): void
     {
         $this->exceptionSentryReporter->handle($event->getThrowable(), handled: false);
