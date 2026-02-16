@@ -11,15 +11,17 @@ use olml89\TelegramUserbot\Backend\Content\Domain\Content;
 use olml89\TelegramUserbot\Backend\Content\Domain\ContentFinder;
 use olml89\TelegramUserbot\Backend\Content\Domain\ContentNotFoundException;
 use olml89\TelegramUserbot\Backend\Content\Domain\Description;
-use olml89\TelegramUserbot\Backend\Content\Domain\FileCollection;
+use olml89\TelegramUserbot\Backend\Content\Domain\File\FileCollection;
+use olml89\TelegramUserbot\Backend\Content\Domain\File\FileCollectionCountException;
 use olml89\TelegramUserbot\Backend\Content\Domain\Price;
-use olml89\TelegramUserbot\Backend\Content\Domain\TagCollection;
+use olml89\TelegramUserbot\Backend\Content\Domain\Tag\TagCollection;
+use olml89\TelegramUserbot\Backend\Content\Domain\Tag\TagCollectionCountException;
 use olml89\TelegramUserbot\Backend\Content\Domain\Title;
 use olml89\TelegramUserbot\Backend\File\Domain\File;
+use olml89\TelegramUserbot\Backend\File\Domain\FileAlreadyAttachedException;
 use olml89\TelegramUserbot\Backend\File\Domain\FileFinder;
 use olml89\TelegramUserbot\Backend\File\Domain\FileNotFoundException;
 use olml89\TelegramUserbot\Backend\Shared\Application\Validation\ValidationException;
-use olml89\TelegramUserbot\Backend\Shared\Domain\Exception\Invariant\CollectionCountException;
 use olml89\TelegramUserbot\Backend\Shared\Domain\Exception\Invariant\OutOfRangeException;
 use olml89\TelegramUserbot\Backend\Shared\Domain\Exception\Invariant\StringLengthException;
 use olml89\TelegramUserbot\Backend\Shared\Domain\ValueObject\Percentage\Percentage;
@@ -156,7 +158,7 @@ final readonly class ContentBuilder
             }
 
             return new TagCollection(...$tags);
-        } catch (CollectionCountException $e) {
+        } catch (TagCollectionCountException $e) {
             $validationException->addError('tagIds', $e->getMessage());
 
             return null;
@@ -186,7 +188,7 @@ final readonly class ContentBuilder
             }
 
             return new FileCollection(...$files);
-        } catch (CollectionCountException $e) {
+        } catch (FileCollectionCountException $e) {
             $validationException->addError('fileIds', $e->getMessage());
 
             return null;
@@ -196,19 +198,8 @@ final readonly class ContentBuilder
     private function buildFile(ValidationException $validationException, Uuid $fileId): ?File
     {
         try {
-            $file = $this->fileFinder->find($fileId);
-
-            if (!$file->isAttached()) {
-                return $file;
-            }
-
-            $validationException->addError(
-                'fileIds',
-                sprintf('File %s is already attached', $file->originalName()),
-            );
-
-            return null;
-        } catch (FileNotFoundException $e) {
+            return $this->fileFinder->find($fileId)->assertNotAttached();
+        } catch (FileNotFoundException|FileAlreadyAttachedException $e) {
             $validationException->addError('fileIds', $e->getMessage());
 
             return null;
