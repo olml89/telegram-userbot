@@ -4,8 +4,13 @@ declare(strict_types=1);
 
 namespace olml89\TelegramUserbot\Backend\File\Domain\MimeType;
 
-enum MimeType: string
+use olml89\TelegramUserbot\Backend\Shared\Domain\Enum\IsValidatableStringBackedEnum;
+use olml89\TelegramUserbot\Backend\Shared\Domain\Enum\ValidatableStringBackedEnum;
+
+enum MimeType: string implements ValidatableStringBackedEnum
 {
+    use IsValidatableStringBackedEnum;
+
     // Image
     case jpeg = 'image/jpeg';
     case png = 'image/png';
