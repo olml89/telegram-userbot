@@ -118,6 +118,58 @@ export const initContentSave = (getFileIds) => {
         });
     };
 
+    const clearTagItemErrors = () => {
+        tagsSelected.querySelectorAll('[data-tag-id].is-error').forEach((el) => {
+            el.classList.remove('is-error');
+            el.removeAttribute('title');
+        });
+    };
+
+    const clearFileItemErrors = () => {
+        document.querySelectorAll('[data-file-id].file-item-error').forEach((item) => {
+            item.classList.remove('file-item-error');
+            const status = item.querySelector('.file-progress-status');
+
+            if (status) {
+                status.classList.remove('is-error');
+                status.textContent = '';
+            }
+            item.classList.remove('is-status-visible');
+        });
+    };
+
+    const setTagItemError = (tagId, message) => {
+        const tag = tagsSelected.querySelector(`[data-tag-id="${tagId}"]`);
+
+        if (!tag) {
+            return;
+        }
+
+        tag.classList.add('is-error');
+
+        if (message) {
+            tag.setAttribute('title', message);
+        }
+    };
+
+    const setFileItemError = (fileId, message) => {
+        const file = document.querySelector(`[data-file-id="${fileId}"]`);
+
+        if (!file) {
+            return;
+        }
+
+        file.classList.add('file-item-error');
+        file.classList.add('is-status-visible');
+
+        const status = file.querySelector('.file-progress-status');
+
+        if (status) {
+            status.classList.add('is-error');
+            status.textContent = message || 'File error';
+        }
+    };
+
     const setFieldError = (key, message) => {
         const el = fieldErrors[key];
 
@@ -133,12 +185,55 @@ export const initContentSave = (getFileIds) => {
 
     const setErrors = (errors) => {
         clearFieldErrors();
+        clearTagItemErrors();
+        clearFileItemErrors();
+
+        const tagItemErrors = [];
+        const fileItemErrors = [];
+        const fieldErrorsList = [];
 
         Object.entries(errors || {}).forEach(([key, value]) => {
             const normalized = key.replace(/\[\d+]/g, '');
             const list = Array.isArray(value) ? value : [value];
-            list.forEach((message) => setFieldError(normalized, message));
+
+            list.forEach((message) => {
+                const text = String(message || '');
+
+                if (normalized === 'tagIds') {
+                    const match = text.match(/^Tag\s+([0-9a-f-]{36})\b/i);
+
+                    if (match) {
+                        const cleaned = text
+                            .replace(match[1], '')
+                            .replace(/\s+/g, ' ')
+                            .trim();
+                        tagItemErrors.push({ id: match[1], message: cleaned });
+
+                        return;
+                    }
+                }
+
+                if (normalized === 'fileIds') {
+                    const match = text.match(/^File\s+([0-9a-f-]{36})\b/i);
+
+                    if (match) {
+                        const cleaned = text
+                            .replace(match[1], '')
+                            .replace(/\s+/g, ' ')
+                            .trim();
+                        fileItemErrors.push({ id: match[1], message: cleaned });
+
+                        return;
+                    }
+                }
+
+                fieldErrorsList.push({ key: normalized, message: text });
+            });
         });
+
+        fieldErrorsList.forEach(({ key, message }) => setFieldError(key, message));
+        tagItemErrors.forEach(({ id, message }) => setTagItemError(id, message));
+        fileItemErrors.forEach(({ id, message }) => setFileItemError(id, message));
     };
 
     const setSaveDisabled = () => {

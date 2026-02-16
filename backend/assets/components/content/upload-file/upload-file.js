@@ -55,7 +55,58 @@ export const initFileUpload = () => {
         }
     };
 
-    const fileUpload = async ({ uploadId, file }) => {
+    const parseApiError = async (response, prefix) => {
+        let message = '';
+        let uiMessage = '';
+
+        const humanizeField = (field) => field
+            .replace(/([a-z0-9])([A-Z])/g, '$1 $2')
+            .replace(/[_-]+/g, ' ')
+            .replace(/\s+/g, ' ')
+            .trim()
+            .toLowerCase()
+            .replace(/^\w/, (c) => c.toUpperCase());
+
+        const lowerFirst = (text) => text
+            ? text.replace(/^\w/, (c) => c.toLowerCase())
+            : text;
+
+        try {
+            const data = await response.json();
+            message = data?.message;
+
+            if (response.status === 422 && data?.errors) {
+                const errors = Object.entries(data.errors)
+                    .map(([field, msg]) => `${humanizeField(field)}: ${lowerFirst(String(msg))}`)
+                    .join(' · ');
+                if (errors) {
+                    message = errors;
+                }
+            }
+
+            uiMessage = message.replace(/\s*\(\d{3}\)\s*$/, '');
+
+            if (response.status === 404) {
+                uiMessage = 'Upload not found';
+            }
+        } catch (e) {
+            //Ignore JSON parsing errors
+        }
+
+        if (message) {
+            return {
+                uiMessage,
+                consoleMessage: `${prefix} (${response.status}): ${message}`,
+            };
+        }
+
+        return {
+            uiMessage: `${prefix.replace(/^\w/, (c) => c.toUpperCase())} (${response.status})`,
+            consoleMessage: `${prefix} (${response.status})`,
+        };
+    };
+
+    const fileUpload = async ({ uploadId }) => {
         const response = await fetch('/api/files', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -65,10 +116,36 @@ export const initFileUpload = () => {
         });
 
         if (!response.ok) {
-            throw new Error(`Failed to save file ${file.name} (${response.status})`);
+            const { uiMessage, consoleMessage } = await parseApiError(
+                response,
+                'Failed to save file',
+            );
+
+            const err = new Error(uiMessage);
+            err.uiMessage = uiMessage;
+            err.consoleMessage = consoleMessage;
+            throw err;
         }
 
         return response.json();
+    };
+
+    const fileDelete = async ({ fileId }) => {
+        const response = await fetch(`/api/files/${fileId}`, {
+            method: 'DELETE',
+        });
+
+        if (!response.ok) {
+            const { uiMessage, consoleMessage } = await parseApiError(
+                response,
+                'Failed to delete file',
+            );
+
+            const err = new Error(uiMessage);
+            err.uiMessage = uiMessage;
+            err.consoleMessage = consoleMessage;
+            throw err;
+        }
     };
 
     const handleFile = (file) => {
@@ -107,14 +184,14 @@ export const initFileUpload = () => {
             setUploadsActive();
         };
 
-        const cancelUploadAndRemove = ({cancelUpload = true} = {}) => {
+        const cancelUploadAndRemove = () => {
             isCanceled = true;
 
             if (uploader) {
                 uploader.abort(true);
             }
 
-            if (cancelUpload && uploadUrl) {
+            if (uploadUrl && !element.dataset.fileId) {
                 void fetch(uploadUrl, {
                     method: 'DELETE',
                     headers: {
@@ -253,7 +330,7 @@ export const initFileUpload = () => {
                     }
 
                     try {
-                        const result = await fileUpload({ uploadId: uploader.getId(), file });
+                        const result = await fileUpload({ uploadId: uploader.getId() });
                         element.dataset.fileId = result.publicId;
                         uploadedFileIds.add(result.publicId);
                         clearError();
@@ -262,8 +339,19 @@ export const initFileUpload = () => {
                         finalizeUpload();
                         updateTotals();
                     } catch (e) {
-                        console.error(e);
-                        setError('Failed to save file. Please retry.');
+                        const fallback = 'Failed to save file. Please retry';
+
+                        const consoleMessage = (e?.consoleMessage && String(e.consoleMessage).trim() !== '')
+                            ? e.consoleMessage
+                            : fallback;
+
+                        console.error(consoleMessage);
+
+                        const uiMessage = (e?.uiMessage && String(e.uiMessage).trim() !== '')
+                            ? e.uiMessage
+                            : fallback;
+
+                        setError(uiMessage);
                         setUploadingState(false);
                         finalizeUpload();
 
@@ -305,10 +393,11 @@ export const initFileUpload = () => {
                 }
 
                 /**
-                 * Files that have not been successfully uploaded to tusd
+                 * If the API file doesn't exist, just remove the file element in the UI and DO NOT touch tusd
                  */
                 if (!fileId) {
-                    cancelUploadAndRemove({ cancelUpload: false });
+                    finalizeUpload();
+                    removeItem();
 
                     return;
                 }
@@ -317,21 +406,21 @@ export const initFileUpload = () => {
                 setUploadsActive();
 
                 try {
-                    const response = await fetch(`/api/files/${fileId}`, {
-                        method: 'DELETE',
-                    });
-
-                    if (!response.ok) {
-                        console.error(`Failed to delete file ${fileId}`);
-                        handleDeleteError('Failed to delete file. Please retry.');
-
-                        return;
-                    }
-
+                    await fileDelete({fileId});
                     removeItem();
                 } catch (e) {
-                    console.error(e);
-                    handleDeleteError('Failed to delete file. Please try again.');
+                    const fallback = 'Failed to delete file. Please retry.';
+
+                    const consoleMessage = (e?.consoleMessage && String(e.consoleMessage).trim() !== '')
+                        ? e.consoleMessage
+                        : fallback;
+
+                    const uiMessage = (e?.uiMessage && String(e.uiMessage).trim() !== '')
+                        ? e.uiMessage
+                        : fallback;
+
+                    console.error(consoleMessage);
+                    handleDeleteError(uiMessage);
                 } finally {
                     pendingDeletes = Math.max(0, pendingDeletes - 1);
                     setUploadsActive();
