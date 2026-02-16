@@ -67,8 +67,8 @@ This shared code is not a standalone service but is installed inside the contain
 depend on it.
 
 Each of the core business logic services has its own Dockerfile using a multi-stage build process.
-**bot-manager** and **bot** are based on the `php:8.4-alpine` image, while **backend** is based on the
-`php:8.4-fpm-alpine` image.
+**bot-manager** and **bot** are based on the `php:8.5-alpine` image, while **backend** is based on the
+`php:8.5-fpm-alpine` image.
 
 - **Base stage**: installs runtime dependencies and required PHP extensions.
 
