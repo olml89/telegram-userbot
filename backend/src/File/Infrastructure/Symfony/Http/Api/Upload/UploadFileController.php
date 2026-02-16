@@ -6,9 +6,11 @@ namespace olml89\TelegramUserbot\Backend\File\Infrastructure\Symfony\Http\Api\Up
 
 use olml89\TelegramUserbot\Backend\File\Application\Upload\UploadFileCommandHandler;
 use olml89\TelegramUserbot\Backend\File\Domain\FileStorageException;
-use olml89\TelegramUserbot\Backend\File\Domain\MimeType\InvalidMimeTypeException;
+use olml89\TelegramUserbot\Backend\File\Domain\MimeType\UnsupportedMimeTypeException;
 use olml89\TelegramUserbot\Backend\File\Domain\Upload\UploadConsumptionException;
 use olml89\TelegramUserbot\Backend\File\Domain\Upload\UploadNotFoundException;
+use olml89\TelegramUserbot\Backend\File\Domain\Upload\UploadReadingException;
+use olml89\TelegramUserbot\Backend\File\Domain\Upload\UploadRemovalException;
 use olml89\TelegramUserbot\Backend\Shared\Application\Validation\ValidationException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -30,9 +32,11 @@ final readonly class UploadFileController
 
     /**
      * @throws UploadNotFoundException
-     * @throws InvalidMimeTypeException
+     * @throws UploadReadingException
+     * @throws UnsupportedMimeTypeException
      * @throws ValidationException
      * @throws UploadConsumptionException
+     * @throws UploadRemovalException
      * @throws FileStorageException
      */
     public function __invoke(#[MapRequestPayload] UploadFileRequest $request): JsonResponse

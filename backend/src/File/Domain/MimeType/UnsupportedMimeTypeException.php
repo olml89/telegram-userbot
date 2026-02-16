@@ -6,7 +6,7 @@ namespace olml89\TelegramUserbot\Backend\File\Domain\MimeType;
 
 use olml89\TelegramUserbot\Backend\Shared\Domain\Exception\InvalidResourceException;
 
-final class InvalidMimeTypeException extends InvalidResourceException
+final class UnsupportedMimeTypeException extends InvalidResourceException
 {
     public function __construct(string $mimeType)
     {

@@ -18,21 +18,27 @@ final readonly class SymfonyFileManager implements FileManager
     ) {
     }
 
+    private function path(File $file): string
+    {
+        return sprintf('%s/%s', $this->contentDirectory, $file->name()->value);
+    }
+
     /**
      * @throws UploadConsumptionException
      */
-    public function consume(File $file, Upload $upload): File
+    public function consume(File $file, Upload $upload): void
     {
-        return $file->consume($upload, $this->contentDirectory);
+        $upload->move($this->contentDirectory, $file);
+        $file->uploadConsumed($upload);
     }
 
     public function exists(File $file): bool
     {
-        return $this->filesystem->exists(sprintf('%s/%s', $this->contentDirectory, $file->name()));
+        return $this->filesystem->exists($this->path($file));
     }
 
     public function remove(File $file): void
     {
-        $this->filesystem->remove(sprintf('%s/%s', $this->contentDirectory, $file->name()));
+        $this->filesystem->remove($this->path($file));
     }
 }

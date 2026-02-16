@@ -9,7 +9,6 @@ use olml89\TelegramUserbot\Backend\File\Domain\MimeType\MimeType;
 use olml89\TelegramUserbot\Backend\File\Domain\Size\Size;
 use olml89\TelegramUserbot\Backend\File\Domain\Upload\Upload;
 use olml89\TelegramUserbot\Backend\File\Domain\Upload\UploadConsumed;
-use olml89\TelegramUserbot\Backend\File\Domain\Upload\UploadConsumptionException;
 use olml89\TelegramUserbot\Backend\Shared\Domain\Entity\Entity;
 use olml89\TelegramUserbot\Backend\Shared\Domain\Entity\IsEntity;
 use olml89\TelegramUserbot\Backend\Shared\Domain\ValueObject\Name\Name;
@@ -55,19 +54,18 @@ final class File implements Entity
         return $this->content;
     }
 
-    /**
-     * @throws UploadConsumptionException
-     */
-    public function consume(Upload $upload, string $destinationDirectory): self
+    public function path(string $directory): string
     {
-        $upload->move($destinationDirectory, $this);
-
-        return $this->uploadConsumed($upload);
+        return sprintf('%s/%s', $directory, $this->name()->value);
     }
 
-    public function isAttached(): bool
+    public function assertNotAttached(): self
     {
-        return !is_null($this->content);
+        if (!is_null($this->content)) {
+            throw new FileAlreadyAttachedException($this);
+        }
+
+        return $this;
     }
 
     /**
@@ -75,10 +73,7 @@ final class File implements Entity
      */
     public function attach(Content $content): self
     {
-        if ($this->isAttached()) {
-            throw new FileAlreadyAttachedException($this);
-        }
-
+        $this->assertNotAttached();
         $this->content = $content;
 
         return $this;

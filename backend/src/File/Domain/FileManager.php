@@ -10,7 +10,7 @@ use olml89\TelegramUserbot\Backend\File\Domain\Upload\UploadConsumptionException
 interface FileManager
 {
     /** @throws UploadConsumptionException */
-    public function consume(File $file, Upload $upload): File;
+    public function consume(File $file, Upload $upload): void;
 
     public function exists(File $file): bool;
     public function remove(File $file): void;
