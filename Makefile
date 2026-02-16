@@ -118,7 +118,7 @@ vite:
 
 # Development recipes
 # The -T flag disables TTY, required when running from non-interactive environments like Git hooks
-.PHONY: phpstan pint phpunit
+.PHONY: phpstan pint rector phpunit
 
 # 1) Converts (bot, bot-manager, backend, shared) to --service=(bot, bot-manager, backend, shared)
 # 2) Converts ci to --ci (it runs phpstan without showing progress)
@@ -141,6 +141,16 @@ pint:
 			$(eval TEST := --test)))
 	$(eval SERVICE := $(filter-out test,$(ARGS)))
 	docker compose $(DOCKER_COMPOSE) $(ENV) exec -T dev composer pint -- $(if $(SERVICE),--service=$(SERVICE)) $(TEST)
+
+# 1) Converts (bot, bot-manager, backend, shared) to --service=(bot, bot-manager, backend, shared)
+rector:
+	$(eval ARGS := $(wordlist 2, $(words $(MAKECMDGOALS)), $(MAKECMDGOALS)))
+	$(eval DRY-RUN :=)
+	$(foreach arg,$(ARGS),\
+		$(if $(filter dry-run,$(arg)),\
+			$(eval DRY-RUN := --dry-run)))
+	$(eval SERVICE := $(filter-out dry-run,$(ARGS)))
+	docker compose $(DOCKER_COMPOSE) $(ENV) exec -T dev composer rector -- $(if $(SERVICE),--service=$(SERVICE)) $(DRY-RUN)
 
 # 1) Converts (bot, bot-manager, backend, shared) to --service=(bot, bot-manager, backend, shared)
 # 2) Converts ci to --ci
