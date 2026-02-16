@@ -143,6 +143,7 @@ pint:
 	docker compose $(DOCKER_COMPOSE) $(ENV) exec -T dev composer pint -- $(if $(SERVICE),--service=$(SERVICE)) $(TEST)
 
 # 1) Converts (bot, bot-manager, backend, shared) to --service=(bot, bot-manager, backend, shared)
+# 2) Converts dry-run to --dry-run (it runs checks without applying refactoring)
 rector:
 	$(eval ARGS := $(wordlist 2, $(words $(MAKECMDGOALS)), $(MAKECMDGOALS)))
 	$(eval DRY-RUN :=)
