@@ -20,8 +20,7 @@ final readonly class SearchTagController
 {
     public function __construct(
         private SearchTagCommandHandler $searchTagCommandHandler,
-    ) {
-    }
+    ) {}
 
     public function __invoke(#[MapQueryString] SearchTagRequest $request): JsonResponse
     {

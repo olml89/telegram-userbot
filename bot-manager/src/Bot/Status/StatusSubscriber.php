@@ -23,14 +23,13 @@ final readonly class StatusSubscriber
         private RedisSubscriber $subscriber,
         private StatusFactory $statusFactory,
         private LoggableLogger $loggableLogger,
-    ) {
-    }
+    ) {}
 
     public function subscribe(StatusManager $statusManager): void
     {
         $this->subscriber->subscribe(
             $this->config->statusChannel,
-            fn (string $message) => $this->processMessage($message, $statusManager),
+            fn(string $message) => $this->processMessage($message, $statusManager),
         );
 
         $this->loggableLogger->log(new SubscribedToChannel($this->config->statusChannel));

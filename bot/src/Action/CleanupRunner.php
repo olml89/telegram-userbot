@@ -19,8 +19,7 @@ final readonly class CleanupRunner
     public function __construct(
         private LoggableLogger $loggableLogger,
         private ProcessManager $processManager,
-    ) {
-    }
+    ) {}
 
     public function run(): void
     {

@@ -23,7 +23,7 @@ final class SizeException extends InvariantException
         return new self(
             sprintf(
                 'File size cannot exceed %d bytes',
-                $maxBytes
+                $maxBytes,
             ),
         );
     }

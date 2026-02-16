@@ -29,21 +29,20 @@ final readonly class ContentResult
 
         /** @var FileResult[] */
         public array $files,
-    ) {
-    }
+    ) {}
 
     public static function content(Content $content): self
     {
         /** @var TagResult[] $tags */
         $tags = $content
             ->tags()
-            ->map(fn (Tag $tag): TagResult => TagResult::tag($tag))
+            ->map(fn(Tag $tag): TagResult => TagResult::tag($tag))
             ->toArray();
 
         /** @var FileResult[] $files */
         $files = $content
             ->files()
-            ->map(fn (File $file): FileResult => FileResult::file($file))
+            ->map(fn(File $file): FileResult => FileResult::file($file))
             ->toArray();
 
         return new self(

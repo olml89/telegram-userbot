@@ -11,6 +11,5 @@ final readonly class RedisConfig
         public string $statusChannel,
         public string $phoneCodeStorageKey,
         public int $port = 6379,
-    ) {
-    }
+    ) {}
 }

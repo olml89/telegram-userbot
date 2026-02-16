@@ -11,8 +11,7 @@ final readonly class WebSocketConnectionWrapper
 {
     public function __construct(
         private ConnectionInterface $connection,
-    ) {
-    }
+    ) {}
 
     public function resourceId(): ?int
     {
@@ -30,6 +29,6 @@ final readonly class WebSocketConnectionWrapper
 
     public function send(Status $status): void
     {
-        $this->connection->send((string)$status);
+        $this->connection->send((string) $status);
     }
 }

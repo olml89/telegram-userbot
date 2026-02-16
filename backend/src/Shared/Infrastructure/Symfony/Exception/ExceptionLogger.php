@@ -14,8 +14,7 @@ final readonly class ExceptionLogger implements ExceptionHandler
 
     public function __construct(
         private LoggerInterface $logger,
-    ) {
-    }
+    ) {}
 
     public function handle(Throwable $exception, bool $handled = true): void
     {

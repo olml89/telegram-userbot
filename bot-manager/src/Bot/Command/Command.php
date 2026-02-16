@@ -7,6 +7,4 @@ namespace olml89\TelegramUserbot\BotManager\Bot\Command;
 use JsonSerializable;
 use Stringable;
 
-interface Command extends JsonSerializable, Stringable
-{
-}
+interface Command extends JsonSerializable, Stringable {}

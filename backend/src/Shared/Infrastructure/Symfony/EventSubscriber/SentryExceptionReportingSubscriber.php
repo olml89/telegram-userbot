@@ -13,8 +13,7 @@ final readonly class SentryExceptionReportingSubscriber
 {
     public function __construct(
         private ExceptionSentryReporter $exceptionSentryReporter,
-    ) {
-    }
+    ) {}
 
     #[AsEventListener(event: KernelEvents::EXCEPTION, priority: 0)]
     public function onKernelException(ExceptionEvent $event): void

@@ -14,8 +14,7 @@ final readonly class ApiStatusCalculator
 {
     public function __construct(
         private ProcessManager $processManager,
-    ) {
-    }
+    ) {}
 
     public function calculate(?API $api): Status
     {

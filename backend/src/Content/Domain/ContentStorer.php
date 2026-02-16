@@ -10,8 +10,7 @@ final readonly class ContentStorer
 {
     public function __construct(
         private ContentRepository $contentRepository,
-    ) {
-    }
+    ) {}
 
     /**
      * @throws ContentStorageException

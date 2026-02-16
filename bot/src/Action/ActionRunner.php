@@ -21,8 +21,7 @@ final readonly class ActionRunner
         private ApiInitializer $apiInitializer,
         private LoggableLogger $loggableLogger,
         private ErrorHandler $errorHandler,
-    ) {
-    }
+    ) {}
 
     public function run(Action $action): void
     {

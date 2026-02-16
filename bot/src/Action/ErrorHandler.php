@@ -27,8 +27,7 @@ final readonly class ErrorHandler
         private LoggableLogger $loggableLogger,
         private SentryReporter $sentryReporter,
         private CleanupRunner $cleanupRunner,
-    ) {
-    }
+    ) {}
 
     public function handle(Action $action, Status $currentStatus, Throwable $e): void
     {

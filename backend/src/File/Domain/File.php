@@ -26,8 +26,7 @@ final class File implements Entity
         private readonly OriginalName $originalName,
         private readonly MimeType $mimeType,
         private readonly Size $bytes,
-    ) {
-    }
+    ) {}
 
     public function name(): Name
     {

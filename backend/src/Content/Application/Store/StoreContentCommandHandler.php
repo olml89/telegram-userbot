@@ -16,8 +16,7 @@ final readonly class StoreContentCommandHandler
         private ContentBuilder $contentBuilder,
         private ContentStorer $contentStorer,
         private EventDispatcher $eventDispatcher,
-    ) {
-    }
+    ) {}
 
     /**
      * @throws ValidationException

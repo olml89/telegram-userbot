@@ -12,7 +12,7 @@ use olml89\TelegramUserbot\Shared\Logger\LogRecordLogger;
 use olml89\TelegramUserbot\Shared\Logger\LogRecordLoggerFactory;
 
 /** @var ContainerBuilder<Container> $containerBuilder */
-$containerBuilder = require dirname(__DIR__).'/container-builder.php';
+$containerBuilder = require dirname(__DIR__) . '/container-builder.php';
 
 $containerBuilder->addDefinitions([
 

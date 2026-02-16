@@ -17,8 +17,7 @@ final readonly class StoreTagCommandHandler
         private TagRepository $tagRepository,
         private TagStorer $tagStorer,
         private EventDispatcher $eventDispatcher,
-    ) {
-    }
+    ) {}
 
     /**
      * @throws ValidationException

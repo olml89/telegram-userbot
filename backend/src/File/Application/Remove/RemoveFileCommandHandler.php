@@ -16,8 +16,7 @@ final readonly class RemoveFileCommandHandler
         private FileFinder $fileFinder,
         private FileRemover $fileRemover,
         private EventDispatcher $eventDispatcher,
-    ) {
-    }
+    ) {}
 
     /**
      * @throws FileNotFoundException

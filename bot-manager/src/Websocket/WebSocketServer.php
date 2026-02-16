@@ -41,8 +41,7 @@ final readonly class WebSocketServer implements MessageComponentInterface
         private CommandRunner $commandRunner,
         private LoggableLogger $loggableLogger,
         private SentryReporter $sentryReporter,
-    ) {
-    }
+    ) {}
 
     public function listen(StatusInitializer $statusInitializer, WebSocketServerConfig $config): void
     {

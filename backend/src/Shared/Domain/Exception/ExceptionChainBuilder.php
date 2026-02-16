@@ -42,9 +42,9 @@ final readonly class ExceptionChainBuilder
     private function getTrace(Throwable $exception, bool $includeTraceArgs): array
     {
         return array_map(
-            fn (array $traceItem): array => array_diff_key(
+            fn(array $traceItem): array => array_diff_key(
                 $traceItem,
-                $includeTraceArgs ? [] : array_flip(['args', 'type'])
+                $includeTraceArgs ? [] : array_flip(['args', 'type']),
             ),
             $exception->getTrace(),
         );

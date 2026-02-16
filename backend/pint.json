@@ -1,5 +1,5 @@
 {
-    "preset": "psr12",
+    "preset": "per",
     "rules": {
         "method_argument_space": false
     },

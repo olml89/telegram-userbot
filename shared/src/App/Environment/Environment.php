@@ -13,7 +13,7 @@ enum Environment: string
 
     public function label(): string
     {
-        return match($this) {
+        return match ($this) {
             self::Development => 'development',
             self::Production => 'production',
             self::Testing => 'testing',

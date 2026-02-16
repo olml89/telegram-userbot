@@ -8,8 +8,7 @@ final readonly class BotLogFile
 {
     public function __construct(
         private string $path,
-    ) {
-    }
+    ) {}
 
     public function path(): string
     {

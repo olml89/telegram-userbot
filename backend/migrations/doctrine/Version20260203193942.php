@@ -23,7 +23,7 @@ final class Version20260203193942 extends AbstractMigration
                 public_id UUID NOT NULL, 
                 name VARCHAR(50) NOT NULL, 
                 PRIMARY KEY (id)
-            )'
+            )',
         );
         $this->addSql('
             CREATE UNIQUE INDEX UNIQ_3AF34668B5B48B91 

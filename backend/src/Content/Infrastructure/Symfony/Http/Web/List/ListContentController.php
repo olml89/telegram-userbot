@@ -18,8 +18,7 @@ final class ListContentController extends AbstractController
 {
     public function __construct(
         private readonly ListContentCommandHandler $listContentCommandHandler,
-    ) {
-    }
+    ) {}
 
     public function __invoke(): Response
     {

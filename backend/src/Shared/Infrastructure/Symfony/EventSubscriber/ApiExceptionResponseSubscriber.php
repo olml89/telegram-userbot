@@ -13,8 +13,7 @@ final readonly class ApiExceptionResponseSubscriber
 {
     public function __construct(
         private ApiExceptionResponseMapper $exceptionJsonResponseMapper,
-    ) {
-    }
+    ) {}
 
     /**
      * Priority: -10

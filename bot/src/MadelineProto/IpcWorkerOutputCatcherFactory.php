@@ -15,8 +15,7 @@ final readonly class IpcWorkerOutputCatcherFactory
         private BotLogFile $logFile,
         private StatusBroadcaster $statusBroadcaster,
         private LoggableLogger $loggableLogger,
-    ) {
-    }
+    ) {}
 
     public function create(ApiWrapper $apiWrapper, Closure $ipcWorkerProcess): IpcWorkerOutputCatcher
     {

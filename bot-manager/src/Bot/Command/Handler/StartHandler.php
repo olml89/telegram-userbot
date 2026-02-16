@@ -21,8 +21,7 @@ final readonly class StartHandler implements CommandHandler
     public function __construct(
         private StatusManager $statusManager,
         private ProcessManager $processManager,
-    ) {
-    }
+    ) {}
 
     /**
      * @throws InvalidCommandException

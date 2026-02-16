@@ -29,4 +29,4 @@ new Dotenv()->bootEnv(dirname(__DIR__) . '/.env', overrideExistingVars: true);
 $environment = Environment::load(Env::string('APP_ENV'));
 $debug = Env::nullableBool('APP_DEBUG');
 
-return fn (array $context): Kernel => new Kernel($environment, $debug);
+return fn(array $context): Kernel => new Kernel($environment, $debug);

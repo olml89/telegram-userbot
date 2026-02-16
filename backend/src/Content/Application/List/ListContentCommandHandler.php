@@ -15,13 +15,12 @@ final readonly class ListContentCommandHandler
 {
     public function __construct(
         private CategoryRepository $categoryRepository,
-    ) {
-    }
+    ) {}
 
     public function handle(): ListContentResult
     {
         $categories = array_map(
-            fn (Category $category): CategoryResult => CategoryResult::category($category),
+            fn(Category $category): CategoryResult => CategoryResult::category($category),
             $this->categoryRepository->all(),
         );
 

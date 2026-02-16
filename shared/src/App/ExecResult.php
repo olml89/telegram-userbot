@@ -19,8 +19,7 @@ final readonly class ExecResult implements Stringable
          */
         public array $output,
         public int $code,
-    ) {
-    }
+    ) {}
 
     public function hasProcessResult(ProcessResult $processResult): bool
     {

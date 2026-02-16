@@ -21,8 +21,7 @@ final readonly class PhoneCodeStorage
         private RedisConfig $config,
         private RedisStorage $storage,
         private LoggableLogger $loggableLogger,
-    ) {
-    }
+    ) {}
 
     /**
      * @throws RedisStorageException

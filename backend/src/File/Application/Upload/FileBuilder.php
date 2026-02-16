@@ -27,8 +27,7 @@ final readonly class FileBuilder
     public function __construct(
         private UploadFinder $uploadFinder,
         private FileManager $fileManager,
-    ) {
-    }
+    ) {}
 
     /**
      * @throws UploadNotFoundException

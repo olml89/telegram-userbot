@@ -12,8 +12,7 @@ final readonly class LogRecordLogger implements LoggableLogger
 {
     public function __construct(
         private LoggerInterface $logger,
-    ) {
-    }
+    ) {}
 
     public function log(Loggable $loggable): void
     {

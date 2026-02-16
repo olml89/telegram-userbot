@@ -13,8 +13,7 @@ final readonly class ServiceConfigurator
         private string $configDirectory,
         private string $directory,
         private Environment $environment,
-    ) {
-    }
+    ) {}
 
     public function configure(ContainerConfigurator $containerConfigurator): void
     {

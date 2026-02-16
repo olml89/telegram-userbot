@@ -18,8 +18,7 @@ final readonly class CommandRunner
     public function __construct(
         private CommandBus $commandBus,
         private LoggableLogger $loggableLogger,
-    ) {
-    }
+    ) {}
 
     /**
      * @throws Throwable

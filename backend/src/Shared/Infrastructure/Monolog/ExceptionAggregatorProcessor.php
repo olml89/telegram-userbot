@@ -15,8 +15,7 @@ final readonly class ExceptionAggregatorProcessor
 {
     public function __construct(
         private ExceptionChainBuilder $exceptionChainBuilder,
-    ) {
-    }
+    ) {}
 
     public function __invoke(LogRecord $record): LogRecord
     {
@@ -24,7 +23,7 @@ final readonly class ExceptionAggregatorProcessor
 
         if ($exception instanceof ExceptionAggregator) {
             $aggregatedExceptions = array_map(
-                fn (Throwable $aggregatedException): array => $this->exceptionChainBuilder->build($aggregatedException),
+                fn(Throwable $aggregatedException): array => $this->exceptionChainBuilder->build($aggregatedException),
                 $exception->getAggregatedExceptions(),
             );
 

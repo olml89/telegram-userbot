@@ -17,8 +17,7 @@ final readonly class UploadConsumed implements Event
         private File $file,
         private Upload $upload,
         protected DateTimeImmutable $occurredAt = new DateTimeImmutable(),
-    ) {
-    }
+    ) {}
 
     public function entity(): File
     {

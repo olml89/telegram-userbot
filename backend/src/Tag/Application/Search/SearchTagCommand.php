@@ -9,6 +9,5 @@ final readonly class SearchTagCommand
     public function __construct(
         public ?string $query,
         public int $limit = 20,
-    ) {
-    }
+    ) {}
 }

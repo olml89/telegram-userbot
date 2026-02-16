@@ -19,13 +19,13 @@ final readonly class HandlesCommand
     {
         if (!class_exists($class)) {
             throw new InvalidArgumentException(
-                sprintf('Command class %s does not exist', $class)
+                sprintf('Command class %s does not exist', $class),
             );
         }
 
         if (!is_subclass_of($class, Command::class)) {
             throw new InvalidArgumentException(
-                sprintf('Command class %s must extend %s', $class, Command::class)
+                sprintf('Command class %s must extend %s', $class, Command::class),
             );
         }
 

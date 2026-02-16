@@ -68,8 +68,7 @@ final readonly class StoreContentRequest
             ],
         )]
         public ?array $fileIds,
-    ) {
-    }
+    ) {}
 
     public function command(): StoreContentCommand
     {
@@ -92,13 +91,13 @@ final readonly class StoreContentRequest
 
         Assert::notNull($this->tagIds);
         $tagIds = array_map(
-            fn (string $tagId): Uuid => Uuid::fromString($tagId),
+            fn(string $tagId): Uuid => Uuid::fromString($tagId),
             $this->tagIds,
         );
 
         Assert::notNull($this->fileIds);
         $fileIds = array_map(
-            fn (string $fileId): Uuid => Uuid::fromString($fileId),
+            fn(string $fileId): Uuid => Uuid::fromString($fileId),
             $this->fileIds,
         );
 

@@ -10,8 +10,7 @@ final readonly class TagStorer
 {
     public function __construct(
         private TagRepository $tagRepository,
-    ) {
-    }
+    ) {}
 
     /**
      * @throws TagStorageException

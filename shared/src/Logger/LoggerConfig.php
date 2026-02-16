@@ -11,6 +11,5 @@ final readonly class LoggerConfig
     public function __construct(
         public string $logDirectory,
         public Level $level,
-    ) {
-    }
+    ) {}
 }

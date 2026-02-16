@@ -13,8 +13,7 @@ final readonly class UploadFileRequest
     public function __construct(
         #[Validation\NotBlank]
         public ?string $uploadId,
-    ) {
-    }
+    ) {}
 
     public function command(): UploadFileCommand
     {

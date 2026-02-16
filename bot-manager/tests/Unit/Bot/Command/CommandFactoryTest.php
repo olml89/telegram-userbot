@@ -74,7 +74,7 @@ final class CommandFactoryTest extends TestCase
     public static function provideDisallowedCommandTypes(): array
     {
         return [
-            [CommandType::RequestStatus]
+            [CommandType::RequestStatus],
         ];
     }
 

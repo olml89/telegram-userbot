@@ -16,8 +16,7 @@ final readonly class StatusPublisher
     public function __construct(
         private RedisConfig $config,
         private RedisPublisher $publisher,
-    ) {
-    }
+    ) {}
 
     public function publish(Status $status): void
     {

@@ -12,8 +12,7 @@ final readonly class TusdUploadFinder implements UploadFinder
 {
     public function __construct(
         private string $uploadDirectory,
-    ) {
-    }
+    ) {}
 
     /**
      * @throws UploadNotFoundException

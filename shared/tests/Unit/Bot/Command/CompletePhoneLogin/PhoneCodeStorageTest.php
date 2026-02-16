@@ -140,7 +140,7 @@ final class PhoneCodeStorageTest extends TestCase
             ->once()
             ->ordered()
             ->with(
-                $this->expectedArgument(new DeletedPhoneCode($phoneCode, $this->redisConfig->phoneCodeStorageKey))
+                $this->expectedArgument(new DeletedPhoneCode($phoneCode, $this->redisConfig->phoneCodeStorageKey)),
             );
 
         $phoneCodeStorage = $this->createPhoneCodeStorage($redisStorage, $loggableLogger);

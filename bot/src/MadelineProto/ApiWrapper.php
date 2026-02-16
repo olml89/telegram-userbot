@@ -15,8 +15,7 @@ final class ApiWrapper
 
     public function __construct(
         private readonly ApiStatusCalculator $apiStatusCalculator,
-    ) {
-    }
+    ) {}
 
     public function status(): Status
     {
@@ -60,7 +59,7 @@ final class ApiWrapper
      */
     public function completePhoneLogin(PhoneCode $phoneCode): void
     {
-        $this->api()->completePhoneLogin((string)$phoneCode);
+        $this->api()->completePhoneLogin((string) $phoneCode);
     }
 
     /**

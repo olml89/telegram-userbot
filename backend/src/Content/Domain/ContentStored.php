@@ -15,9 +15,8 @@ final readonly class ContentStored implements Event
 
     public function __construct(
         private Content $content,
-        protected DateTimeImmutable $occurredAt = new DateTimeImmutable()
-    ) {
-    }
+        protected DateTimeImmutable $occurredAt = new DateTimeImmutable(),
+    ) {}
 
     public function entity(): Content
     {

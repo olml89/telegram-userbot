@@ -15,7 +15,7 @@ trait IsSerializableStringBackedEnum
     public static function values(): array
     {
         return array_map(
-            fn (self $enum): string => $enum->value,
+            fn(self $enum): string => $enum->value,
             self::cases(),
         );
     }

@@ -22,8 +22,7 @@ final readonly class StoreTagController
 {
     public function __construct(
         private StoreTagCommandHandler $storeTagCommandHandler,
-    ) {
-    }
+    ) {}
 
     /**
      * @throws ValidationException

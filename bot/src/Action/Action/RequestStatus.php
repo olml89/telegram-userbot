@@ -9,7 +9,5 @@ use olml89\TelegramUserbot\Bot\MadelineProto\ApiWrapper;
 
 final readonly class RequestStatus implements Action
 {
-    public function run(ApiWrapper $apiWrapper): void
-    {
-    }
+    public function run(ApiWrapper $apiWrapper): void {}
 }

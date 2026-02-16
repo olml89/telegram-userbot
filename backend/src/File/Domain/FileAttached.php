@@ -18,8 +18,7 @@ final readonly class FileAttached implements Event
         public Content $content,
         public File $file,
         protected DateTimeImmutable $occurredAt = new DateTimeImmutable(),
-    ) {
-    }
+    ) {}
 
     public function entity(): Entity
     {

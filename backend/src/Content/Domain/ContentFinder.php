@@ -7,9 +7,8 @@ namespace olml89\TelegramUserbot\Backend\Content\Domain;
 final readonly class ContentFinder
 {
     public function __construct(
-        private ContentRepository $contentRepository
-    ) {
-    }
+        private ContentRepository $contentRepository,
+    ) {}
 
     /**
      * @throws ContentNotFoundException

@@ -22,8 +22,7 @@ final readonly class StatusBroadcaster implements StatusEmitter
     public function __construct(
         private StatusPublisher $statusPublisher,
         private LoggableLogger $loggableLogger,
-    ) {
-    }
+    ) {}
 
     public function emit(Status $status): void
     {

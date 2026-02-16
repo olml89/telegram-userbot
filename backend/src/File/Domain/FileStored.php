@@ -15,8 +15,7 @@ final readonly class FileStored implements Event
     public function __construct(
         private File $file,
         protected DateTimeImmutable $occurredAt = new DateTimeImmutable(),
-    ) {
-    }
+    ) {}
 
     public function entity(): File
     {

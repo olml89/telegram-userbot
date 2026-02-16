@@ -13,8 +13,7 @@ final readonly class StoreTagRequest
     public function __construct(
         #[Validation\NotNull(message: 'The name is required')]
         public ?string $name,
-    ) {
-    }
+    ) {}
 
     public function command(): StoreTagCommand
     {

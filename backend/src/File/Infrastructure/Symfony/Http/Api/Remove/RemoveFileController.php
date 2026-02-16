@@ -23,8 +23,7 @@ final readonly class RemoveFileController
 {
     public function __construct(
         private RemoveFileCommandHandler $removeFileCommandHandler,
-    ) {
-    }
+    ) {}
 
     /**
      * @throws FileNotFoundException

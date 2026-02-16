@@ -33,7 +33,7 @@ Env::load(dirname(__DIR__));
 return $containerBuilder->addDefinitions([
 
     BotConfig::class => DI\factory(
-        fn (): BotConfig => new BotConfig(
+        fn(): BotConfig => new BotConfig(
             apiId: Env::int('TELEGRAM_API_ID'),
             apiHash: Env::string('TELEGRAM_API_HASH'),
             phoneNumber: Env::string('TELEGRAM_PHONE_NUMBER'),
@@ -42,13 +42,13 @@ return $containerBuilder->addDefinitions([
     ),
 
     BotSession::class => DI\factory(
-        fn (): BotSession => new BotSession(
+        fn(): BotSession => new BotSession(
             path: '/telegram-userbot/bot/var/madeline.session',
         ),
     ),
 
     BotLogFile::class => DI\factory(
-        fn (): BotLogFile => new BotLogFile(
+        fn(): BotLogFile => new BotLogFile(
             path: '/telegram-userbot/bot/MadelineProto.log',
         ),
     ),

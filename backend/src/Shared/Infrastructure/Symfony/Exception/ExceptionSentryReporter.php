@@ -17,8 +17,7 @@ final readonly class ExceptionSentryReporter implements ExceptionHandler
 
     public function __construct(
         private HubInterface $sentry,
-    ) {
-    }
+    ) {}
 
     public function handle(Throwable $exception, bool $handled = true): void
     {

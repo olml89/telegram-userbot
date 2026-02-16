@@ -10,6 +10,5 @@ final readonly class RemoveFileCommand
 {
     public function __construct(
         public Uuid $publicId,
-    ) {
-    }
+    ) {}
 }

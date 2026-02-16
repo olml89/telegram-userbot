@@ -31,7 +31,7 @@ final class InvalidStatusTypeException extends Exception
             implode(
                 separator: ', ',
                 array: array_map(
-                    fn (StatusType $type): string => $type->value,
+                    fn(StatusType $type): string => $type->value,
                     StatusType::cases(),
                 ),
             ),
