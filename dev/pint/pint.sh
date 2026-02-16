@@ -19,6 +19,10 @@ run_pint() {
 	SERVICE=$1
 	TEST_FLAG=""
 
+	if $TEST; then
+		TEST_FLAG="--test"
+	fi
+
 	echo "🔍 Running pint for '$SERVICE' $TEST_FLAG"
 
 	# Dynamic codebase path
@@ -27,10 +31,6 @@ run_pint() {
 	# Dynamic config file
 	CONFIG="$CODE_PATH/pint.json"
 	echo "🔍 Configuration file: $CONFIG"
-
-	if $TEST; then
-		TEST_FLAG="--test"
-	fi
 
 	# Enable Opcache
 	#
