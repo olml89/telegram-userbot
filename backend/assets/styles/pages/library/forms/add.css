@@ -100,6 +100,17 @@
     cursor: pointer;
 }
 
+#contentAddModal .tag.tag-selected.is-error {
+    background: #fff1f2;
+    border-color: #fecaca;
+    color: #991b1b;
+}
+
+#contentAddModal .tag.tag-selected.is-error:focus-visible {
+    outline: 2px solid #fecaca;
+    outline-offset: 2px;
+}
+
 #contentAddModal .tag-input {
     display: flex;
     flex-direction: column;
@@ -235,7 +246,7 @@
 }
 
 #contentAddModal .file-progress-status.is-error {
-    color: #ef4444;
+    color: #b91c1c;
 }
 
 #contentAddModal .file-progress-status.is-warning {

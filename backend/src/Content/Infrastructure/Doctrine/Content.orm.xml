@@ -18,21 +18,20 @@
                nullable="false"/>
 
         <field name="title"
-               type="string"
-               length="255"
+               type="contentTitle"
                unique="true"
                nullable="false"/>
 
         <field name="description"
-               type="text"
+               type="contentDescription"
                nullable="false"/>
 
         <field name="intensity"
-               type="integer"
+               type="percentage"
                nullable="false"/>
 
         <field name="price"
-               type="float"
+               type="contentPrice"
                nullable="false"/>
 
         <field name="sales"

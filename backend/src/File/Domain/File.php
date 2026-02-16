@@ -5,11 +5,13 @@ declare(strict_types=1);
 namespace olml89\TelegramUserbot\Backend\File\Domain;
 
 use olml89\TelegramUserbot\Backend\Content\Domain\Content;
+use olml89\TelegramUserbot\Backend\File\Domain\MimeType\MimeType;
+use olml89\TelegramUserbot\Backend\File\Domain\Size\Size;
 use olml89\TelegramUserbot\Backend\File\Domain\Upload\Upload;
 use olml89\TelegramUserbot\Backend\File\Domain\Upload\UploadConsumed;
-use olml89\TelegramUserbot\Backend\File\Domain\Upload\UploadConsumptionException;
 use olml89\TelegramUserbot\Backend\Shared\Domain\Entity\Entity;
 use olml89\TelegramUserbot\Backend\Shared\Domain\Entity\IsEntity;
+use olml89\TelegramUserbot\Backend\Shared\Domain\ValueObject\Name\Name;
 use Symfony\Component\Uid\Uuid;
 
 final class File implements Entity
@@ -20,60 +22,50 @@ final class File implements Entity
 
     public function __construct(
         protected readonly Uuid $publicId,
-        private readonly string $name,
-        private readonly string $originalName,
-        private readonly string $mimeType,
-        private readonly int $bytes,
+        private readonly Name $name,
+        private readonly OriginalName $originalName,
+        private readonly MimeType $mimeType,
+        private readonly Size $bytes,
     ) {
     }
 
-    /**
-     * @throws UploadConsumptionException
-     */
-    public static function fromUpload(Upload $upload, string $destinationDirectory): self
-    {
-        $publicId = Uuid::v4();
-
-        $file = new self(
-            publicId: $publicId,
-            name: sprintf(
-                '%s.%s',
-                $publicId->toRfc4122(),
-                $upload->extension(),
-            ),
-            originalName: $upload->originalName(),
-            mimeType: $upload->mimeType(),
-            bytes: $upload->bytes(),
-        );
-
-        $upload->move($destinationDirectory, $file);
-
-        return $file->uploadConsumed($upload);
-    }
-
-    public function name(): string
+    public function name(): Name
     {
         return $this->name;
     }
 
-    public function originalName(): string
+    public function originalName(): OriginalName
     {
         return $this->originalName;
     }
 
-    public function mimeType(): string
+    public function mimeType(): MimeType
     {
         return $this->mimeType;
     }
 
-    public function bytes(): int
+    public function bytes(): Size
     {
         return $this->bytes;
     }
 
-    public function isAttached(): bool
+    public function content(): ?Content
     {
-        return !is_null($this->content);
+        return $this->content;
+    }
+
+    public function path(string $directory): string
+    {
+        return sprintf('%s/%s', $directory, $this->name()->value);
+    }
+
+    public function assertNotAttached(): self
+    {
+        if (!is_null($this->content)) {
+            throw new FileAlreadyAttachedException($this);
+        }
+
+        return $this;
     }
 
     /**
@@ -81,18 +73,10 @@ final class File implements Entity
      */
     public function attach(Content $content): self
     {
-        if ($this->isAttached()) {
-            throw new FileAlreadyAttachedException($this);
-        }
-
+        $this->assertNotAttached();
         $this->content = $content;
 
         return $this;
-    }
-
-    public function content(): ?Content
-    {
-        return $this->content;
     }
 
     public function uploadConsumed(Upload $upload): self

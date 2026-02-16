@@ -109,7 +109,9 @@ export const createFileItem = (file) => {
         }
 
         setProgressBarVisible(isUploading);
-        setStatusVisible(isUploading);
+
+        const hasError = item.classList.contains('file-item-error') || item.classList.contains('file-item-warning');
+        setStatusVisible(isUploading || hasError);
     };
 
     const setProgressMessage = (message) => {
@@ -123,12 +125,14 @@ export const createFileItem = (file) => {
         item.classList.add('file-item-error');
         progress.status.textContent = message;
         progress.status.classList.add('is-error');
+        setStatusVisible(true);
     };
 
     const setWarning = (message) => {
         item.classList.add('file-item-warning');
         progress.status.textContent = message;
         progress.status.classList.add('is-warning');
+        setStatusVisible(true);
     };
 
     const clearError = () => {

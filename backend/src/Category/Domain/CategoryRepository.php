@@ -10,5 +10,7 @@ interface CategoryRepository
 {
     /** @return Category[] */
     public function all(): array;
+
     public function get(Uuid $publicId): ?Category;
+    public function store(Category $category): void;
 }

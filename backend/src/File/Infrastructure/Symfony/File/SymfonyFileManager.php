@@ -6,6 +6,8 @@ namespace olml89\TelegramUserbot\Backend\File\Infrastructure\Symfony\File;
 
 use olml89\TelegramUserbot\Backend\File\Domain\File;
 use olml89\TelegramUserbot\Backend\File\Domain\FileManager;
+use olml89\TelegramUserbot\Backend\File\Domain\Upload\Upload;
+use olml89\TelegramUserbot\Backend\File\Domain\Upload\UploadConsumptionException;
 use Symfony\Component\Filesystem\Filesystem;
 
 final readonly class SymfonyFileManager implements FileManager
@@ -16,13 +18,27 @@ final readonly class SymfonyFileManager implements FileManager
     ) {
     }
 
+    private function path(File $file): string
+    {
+        return sprintf('%s/%s', $this->contentDirectory, $file->name()->value);
+    }
+
+    /**
+     * @throws UploadConsumptionException
+     */
+    public function consume(File $file, Upload $upload): void
+    {
+        $upload->move($this->contentDirectory, $file);
+        $file->uploadConsumed($upload);
+    }
+
     public function exists(File $file): bool
     {
-        return $this->filesystem->exists(sprintf('%s/%s', $this->contentDirectory, $file->name()));
+        return $this->filesystem->exists($this->path($file));
     }
 
     public function remove(File $file): void
     {
-        $this->filesystem->remove(sprintf('%s/%s', $this->contentDirectory, $file->name()));
+        $this->filesystem->remove($this->path($file));
     }
 }

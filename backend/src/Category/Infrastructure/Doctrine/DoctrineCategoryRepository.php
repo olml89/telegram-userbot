@@ -33,4 +33,9 @@ final class DoctrineCategoryRepository extends DoctrineRepository implements Cat
             'publicId' => $publicId,
         ]);
     }
+
+    public function store(Category $category): void
+    {
+        $this->storeEntity($category);
+    }
 }

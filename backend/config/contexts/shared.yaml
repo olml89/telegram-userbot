@@ -4,8 +4,13 @@ services:
   olml89\TelegramUserbot\Backend\Shared\Domain\Entity\EventEntityRepository:
     alias: olml89\TelegramUserbot\Backend\Shared\Infrastructure\Doctrine\DoctrineEventEntityRepository
 
-# Mappings
 doctrine:
+  # Types
+  dbal:
+    types:
+      name: olml89\TelegramUserbot\Backend\Shared\Infrastructure\Doctrine\Type\NameType
+      percentage: olml89\TelegramUserbot\Backend\Shared\Infrastructure\Doctrine\Type\PercentageType
+  # Mappings
   orm:
     entity_managers:
       default:

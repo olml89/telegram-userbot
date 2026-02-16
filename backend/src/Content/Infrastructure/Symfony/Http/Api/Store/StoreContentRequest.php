@@ -16,26 +16,16 @@ final readonly class StoreContentRequest
 {
     public function __construct(
 
-        #[Validation\NotBlank(message: 'The title is required')]
-        #[Validation\Length(
-            max: 255,
-            maxMessage: 'The title cannot be longer than 255 characters',
-        )]
+        #[Validation\NotNull(message: 'The title is required')]
         public ?string $title,
 
-        #[Validation\NotBlank(message: 'The description is required')]
+        #[Validation\NotNull(message: 'The description is required')]
         public ?string $description,
 
         #[Validation\NotNull(message: 'The intensity is required')]
-        #[Validation\Range(
-            notInRangeMessage: 'The intensity must be between {{ min }} and {{ max }}',
-            min: 0,
-            max: 100,
-        )]
         public ?int $intensity,
 
         #[Validation\NotNull(message: 'The price is required')]
-        #[Validation\PositiveOrZero(message: 'The price cannot be negative')]
         public ?float $price,
 
         #[Validation\NotNull(message: 'The language is required')]
@@ -64,12 +54,6 @@ final readonly class StoreContentRequest
         public ?string $categoryId,
 
         /** @var string[] */
-        #[Validation\Count(
-            min: 1,
-            max: 10,
-            minMessage: 'At least one tagId is required',
-            maxMessage: 'You cannot add more than 10 tagIds',
-        )]
         #[Validation\All(
             constraints: [
                 new Validation\Uuid(message: 'Each tagId must be a valid UUID'),
@@ -78,12 +62,6 @@ final readonly class StoreContentRequest
         public ?array $tagIds,
 
         /** @var string[] */
-        #[Validation\Count(
-            min: 1,
-            max: 10,
-            minMessage: 'At least one fileId is required',
-            maxMessage: 'You cannot add more than 10 fileIds',
-        )]
         #[Validation\All(
             constraints: [
                 new Validation\Uuid(message: 'Each fileId must be a valid UUID'),

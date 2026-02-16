@@ -7,7 +7,9 @@ namespace olml89\TelegramUserbot\Backend\Content\Infrastructure\Symfony\Http\Api
 use olml89\TelegramUserbot\Backend\Category\Domain\CategoryNotFoundException;
 use olml89\TelegramUserbot\Backend\Content\Application\Store\StoreContentCommandHandler;
 use olml89\TelegramUserbot\Backend\Content\Domain\ContentStorageException;
+use olml89\TelegramUserbot\Backend\File\Domain\FileAlreadyAttachedException;
 use olml89\TelegramUserbot\Backend\File\Domain\FileNotFoundException;
+use olml89\TelegramUserbot\Backend\Shared\Application\Validation\ValidationException;
 use olml89\TelegramUserbot\Backend\Tag\Domain\TagNotFoundException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -31,6 +33,8 @@ final readonly class StoreContentController
      * @throws CategoryNotFoundException
      * @throws TagNotFoundException
      * @throws FileNotFoundException
+     * @throws FileAlreadyAttachedException
+     * @throws ValidationException
      * @throws ContentStorageException
      */
     public function __invoke(#[MapRequestPayload] StoreContentRequest $request): JsonResponse

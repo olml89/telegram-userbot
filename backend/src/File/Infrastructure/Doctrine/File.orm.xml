@@ -12,32 +12,30 @@
         </id>
 
         <field name="publicId"
-               type="uuid"
                column="public_id"
+               type="uuid"
                unique="true"
                nullable="false"/>
 
         <field name="name"
-               type="string"
-               column="name"
+               type="name"
                length="50"
                nullable="false"/>
 
         <field name="originalName"
-               type="string"
                column="original_name"
+               type="fileOriginalName"
                length="255"
                nullable="false"/>
 
         <field name="mimeType"
-               type="string"
                column="mime_type"
+               enum-type="olml89\TelegramUserbot\Backend\File\Domain\MimeType"
                length="100"
                nullable="false"/>
 
         <field name="bytes"
-               type="bigint"
-               column="bytes"
+               type="fileSize"
                nullable="false"/>
 
         <!-- Relationships -->

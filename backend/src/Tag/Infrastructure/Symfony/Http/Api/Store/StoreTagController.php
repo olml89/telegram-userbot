@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace olml89\TelegramUserbot\Backend\Tag\Infrastructure\Symfony\Http\Api\Store;
 
+use olml89\TelegramUserbot\Backend\Shared\Application\Validation\ValidationException;
 use olml89\TelegramUserbot\Backend\Tag\Application\Store\StoreTagCommandHandler;
 use olml89\TelegramUserbot\Backend\Tag\Domain\TagStorageException;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -25,6 +26,7 @@ final readonly class StoreTagController
     }
 
     /**
+     * @throws ValidationException
      * @throws TagStorageException
      */
     public function __invoke(#[MapRequestPayload] StoreTagRequest $request): JsonResponse

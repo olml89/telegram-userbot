@@ -34,20 +34,22 @@ final readonly class ContentResult
 
     public static function content(Content $content): self
     {
-        $tags = array_map(
-            fn (Tag $tag): TagResult => TagResult::tag($tag),
-            iterator_to_array($content->tags()),
-        );
+        /** @var TagResult[] $tags */
+        $tags = $content
+            ->tags()
+            ->map(fn (Tag $tag): TagResult => TagResult::tag($tag))
+            ->toArray();
 
-        $files = array_map(
-            fn (File $file): FileResult => FileResult::file($file),
-            iterator_to_array($content->files()),
-        );
+        /** @var FileResult[] $files */
+        $files = $content
+            ->files()
+            ->map(fn (File $file): FileResult => FileResult::file($file))
+            ->toArray();
 
         return new self(
-            title: $content->title(),
-            description: $content->description(),
-            price: $content->price(),
+            title: $content->title()->value,
+            description: $content->description()->value,
+            price: $content->price()->value,
             sales: $content->sales(),
             mode: $content->mode(),
             status: $content->status(),

@@ -18,9 +18,9 @@
                nullable="false"/>
 
         <field name="name"
-               type="string"
+               type="name"
                column="name"
-               length="50"
+               unique="true"
                nullable="false"/>
 
     </entity>

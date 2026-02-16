@@ -4,8 +4,14 @@ services:
   olml89\TelegramUserbot\Backend\Content\Domain\ContentRepository:
     alias: olml89\TelegramUserbot\Backend\Content\Infrastructure\Doctrine\DoctrineContentRepository
 
-# Mappings
 doctrine:
+  # Types
+  dbal:
+    types:
+      contentTitle: olml89\TelegramUserbot\Backend\Content\Infrastructure\Doctrine\TitleType
+      contentDescription: olml89\TelegramUserbot\Backend\Content\Infrastructure\Doctrine\DescriptionType
+      contentPrice: olml89\TelegramUserbot\Backend\Content\Infrastructure\Doctrine\PriceType
+  # Mappings
   orm:
     entity_managers:
       default:

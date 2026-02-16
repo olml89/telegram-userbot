@@ -6,6 +6,7 @@ namespace olml89\TelegramUserbot\Backend\Category\Domain;
 
 use olml89\TelegramUserbot\Backend\Shared\Domain\Entity\Entity;
 use olml89\TelegramUserbot\Backend\Shared\Domain\Entity\IsEntity;
+use olml89\TelegramUserbot\Backend\Shared\Domain\ValueObject\Name\Name;
 use Symfony\Component\Uid\Uuid;
 
 final class Category implements Entity
@@ -14,12 +15,17 @@ final class Category implements Entity
 
     public function __construct(
         protected readonly Uuid $publicId,
-        private readonly string $name,
+        private Name $name,
     ) {
     }
 
-    public function name(): string
+    public function name(): Name
     {
         return $this->name;
+    }
+
+    public function stored(): self
+    {
+        return $this->record(new CategoryStored($this));
     }
 }

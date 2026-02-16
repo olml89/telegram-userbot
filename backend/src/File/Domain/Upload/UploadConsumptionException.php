@@ -5,11 +5,15 @@ declare(strict_types=1);
 namespace olml89\TelegramUserbot\Backend\File\Domain\Upload;
 
 use Exception;
+use olml89\TelegramUserbot\Backend\Shared\Domain\Exception\ExceptionAggregator;
+use olml89\TelegramUserbot\Backend\Shared\Domain\Exception\IsExceptionAggregator;
 use Throwable;
 
-final class UploadConsumptionException extends Exception
+final class UploadConsumptionException extends Exception implements ExceptionAggregator
 {
-    public function __construct(string $originPath, string $destinationPath, ?Throwable $e)
+    use IsExceptionAggregator;
+
+    public function __construct(string $originPath, string $destinationPath, Throwable $previous)
     {
         parent::__construct(
             message: sprintf(
@@ -17,7 +21,7 @@ final class UploadConsumptionException extends Exception
                 $originPath,
                 $destinationPath,
             ),
-            previous: $e,
+            previous: $previous,
         );
     }
 }
