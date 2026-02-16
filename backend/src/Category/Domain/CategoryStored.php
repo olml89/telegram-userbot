@@ -15,8 +15,7 @@ final readonly class CategoryStored implements Event
     public function __construct(
         private Category $category,
         protected DateTimeImmutable $occurredAt = new DateTimeImmutable(),
-    ) {
-    }
+    ) {}
 
     public function entity(): Category
     {

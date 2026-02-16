@@ -18,7 +18,7 @@ trait IsJsonSerializable
     {
         return array_filter(
             get_object_vars($this),
-            fn (mixed $property): bool => !is_null($property),
+            fn(mixed $property): bool => !is_null($property),
         );
     }
 }

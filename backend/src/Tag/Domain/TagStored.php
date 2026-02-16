@@ -15,8 +15,7 @@ final readonly class TagStored implements Event
     public function __construct(
         private Tag $tag,
         protected DateTimeImmutable $occurredAt = new DateTimeImmutable(),
-    ) {
-    }
+    ) {}
 
     public function entity(): Tag
     {

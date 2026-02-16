@@ -18,8 +18,7 @@ final readonly class RequestStatusHandler implements CommandHandler
 {
     public function __construct(
         private ProcessManager $processManager,
-    ) {
-    }
+    ) {}
 
     /**
      * @throws InvalidCommandException

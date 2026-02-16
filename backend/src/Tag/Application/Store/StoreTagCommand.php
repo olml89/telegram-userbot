@@ -8,6 +8,5 @@ final readonly class StoreTagCommand
 {
     public function __construct(
         public string $name,
-    ) {
-    }
+    ) {}
 }

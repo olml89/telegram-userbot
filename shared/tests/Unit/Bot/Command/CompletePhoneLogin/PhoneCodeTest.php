@@ -47,6 +47,6 @@ final class PhoneCodeTest extends TestCase
         $code = '12345';
         $phoneCode = new PhoneCode($code);
 
-        self::assertEquals($code, (string)$phoneCode);
+        self::assertEquals($code, (string) $phoneCode);
     }
 }

@@ -15,8 +15,7 @@ final readonly class CategoryResult implements Result
     public function __construct(
         public string $publicId,
         public string $name,
-    ) {
-    }
+    ) {}
 
     public static function category(Category $category): self
     {

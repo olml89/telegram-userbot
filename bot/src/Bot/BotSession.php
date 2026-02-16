@@ -8,8 +8,7 @@ final readonly class BotSession
 {
     public function __construct(
         private string $path,
-    ) {
-    }
+    ) {}
 
     public function path(): string
     {

@@ -11,6 +11,5 @@ final readonly class BotConfig
         public string $apiHash,
         public string $phoneNumber,
         public string $username,
-    ) {
-    }
+    ) {}
 }

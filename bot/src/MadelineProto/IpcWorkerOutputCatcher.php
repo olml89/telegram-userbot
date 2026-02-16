@@ -33,8 +33,7 @@ final readonly class IpcWorkerOutputCatcher
         private StatusBroadcaster $statusBroadcaster,
         private LoggableLogger $loggableLogger,
         private Closure $ipcWorkerProcess,
-    ) {
-    }
+    ) {}
 
     public function run(mixed ...$arguments): void
     {
@@ -123,10 +122,10 @@ final readonly class IpcWorkerOutputCatcher
 
         $childrenPids = array_filter(
             array_map(
-                fn (string $pid): int => intval($pid),
+                fn(string $pid): int => intval($pid),
                 $childrenPids,
             ),
-            fn (int $pid): bool => $pid > 0,
+            fn(int $pid): bool => $pid > 0,
         );
 
         foreach ($childrenPids as $pid) {

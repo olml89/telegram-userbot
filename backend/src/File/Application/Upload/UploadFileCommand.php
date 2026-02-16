@@ -8,6 +8,5 @@ final readonly class UploadFileCommand
 {
     public function __construct(
         public string $uploadId,
-    ) {
-    }
+    ) {}
 }

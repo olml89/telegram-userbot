@@ -14,8 +14,7 @@ final readonly class Logout implements Action
     public function __construct(
         private BotSession $botSession,
         private IpcWorkerOutputCatcherFactory $ipcWorkerOutputCatcherFactory,
-    ) {
-    }
+    ) {}
 
     public function run(ApiWrapper $apiWrapper): void
     {

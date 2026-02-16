@@ -21,7 +21,7 @@ final readonly class Status implements JsonSerializable, Stringable
     public function __construct(StatusType $type, null|string|Stringable $message = null, ?int $time = null)
     {
         $this->type = $type;
-        $this->message = is_null($message) ? $message : (string)$message;
+        $this->message = is_null($message) ? $message : (string) $message;
         $this->time = $time ?? time();
     }
 

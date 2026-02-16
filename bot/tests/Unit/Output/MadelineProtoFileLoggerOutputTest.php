@@ -66,7 +66,7 @@ final class MadelineProtoFileLoggerOutputTest extends TestCase
         $line = 'Line without tabs';
         $madelineProtoFileLoggerOutput = new MadelineProtoFileLoggerOutput($line);
 
-        self::assertEquals($line, (string)$madelineProtoFileLoggerOutput);
+        self::assertEquals($line, (string) $madelineProtoFileLoggerOutput);
     }
 
     public function testItStringifiesTheWholeLineIfItTabCharacterCountIsBiggerThanOne(): void
@@ -74,7 +74,7 @@ final class MadelineProtoFileLoggerOutputTest extends TestCase
         $line = "Channel:\tLine\twith\tmultiple\ttabs";
         $madelineProtoFileLoggerOutput = new MadelineProtoFileLoggerOutput($line);
 
-        self::assertEquals($line, (string)$madelineProtoFileLoggerOutput);
+        self::assertEquals($line, (string) $madelineProtoFileLoggerOutput);
     }
 
     public function testItStringifiesStrippingTabCharacterIfItHasASingleTabCharacter(): void
@@ -82,7 +82,7 @@ final class MadelineProtoFileLoggerOutputTest extends TestCase
         $line = "Channel:\tLine with a single tab";
         $madelineProtoFileLoggerOutput = new MadelineProtoFileLoggerOutput($line);
 
-        self::assertEquals('Line with a single tab', (string)$madelineProtoFileLoggerOutput);
+        self::assertEquals('Line with a single tab', (string) $madelineProtoFileLoggerOutput);
     }
 
     /**
@@ -103,8 +103,7 @@ final class MadelineProtoFileLoggerOutputTest extends TestCase
                 new readonly class ($line) implements Stringable {
                     public function __construct(
                         private string $value,
-                    ) {
-                    }
+                    ) {}
 
                     public function __toString(): string
                     {
@@ -120,6 +119,6 @@ final class MadelineProtoFileLoggerOutputTest extends TestCase
     {
         $madelineProtoFileLoggerOutput = new MadelineProtoFileLoggerOutput($line);
 
-        self::assertEquals($expected, (string)$madelineProtoFileLoggerOutput);
+        self::assertEquals($expected, (string) $madelineProtoFileLoggerOutput);
     }
 }

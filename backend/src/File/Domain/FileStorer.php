@@ -11,8 +11,7 @@ final readonly class FileStorer
     public function __construct(
         private FileRepository $fileRepository,
         private FileManager $fileManager,
-    ) {
-    }
+    ) {}
 
     /**
      * @throws FileStorageException

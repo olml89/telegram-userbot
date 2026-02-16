@@ -14,8 +14,8 @@ abstract readonly class InfoLogRecord extends LogRecord implements Loggable
             $this->message,
             array_filter(
                 $this->context(),
-                fn (mixed $value): bool => !is_null($value),
-            )
+                fn(mixed $value): bool => !is_null($value),
+            ),
         );
     }
 }

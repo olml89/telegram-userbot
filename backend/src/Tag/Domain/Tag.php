@@ -16,8 +16,7 @@ final class Tag implements Entity
     public function __construct(
         protected readonly Uuid $publicId,
         private Name $name,
-    ) {
-    }
+    ) {}
 
     public function name(): Name
     {

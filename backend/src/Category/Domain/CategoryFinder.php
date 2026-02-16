@@ -10,8 +10,7 @@ final readonly class CategoryFinder
 {
     public function __construct(
         private CategoryRepository $categoryRepository,
-    ) {
-    }
+    ) {}
 
     /**
      * @throws CategoryNotFoundException

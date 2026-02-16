@@ -21,8 +21,7 @@ final class EventEntity implements Entity
         /** @var array<string, mixed> */
         private readonly array $payload,
         private readonly DateTimeImmutable $occurredAt,
-    ) {
-    }
+    ) {}
 
     public function eventClass(): string
     {

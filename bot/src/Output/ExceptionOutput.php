@@ -10,8 +10,7 @@ final readonly class ExceptionOutput implements Output
 {
     public function __construct(
         private Throwable $throwable,
-    ) {
-    }
+    ) {}
 
     public function isBroadcastable(): bool
     {
@@ -20,6 +19,6 @@ final readonly class ExceptionOutput implements Output
 
     public function __toString(): string
     {
-        return (string)$this->throwable;
+        return (string) $this->throwable;
     }
 }

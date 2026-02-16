@@ -12,8 +12,7 @@ final readonly class RouteConfigurator
     public function __construct(
         private string $configDirectory,
         private Environment $environment,
-    ) {
-    }
+    ) {}
 
     public function configure(RoutingConfigurator $routingConfigurator): void
     {

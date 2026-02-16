@@ -16,8 +16,7 @@ final readonly class BroadcastStatusHandler implements CommandHandler
 {
     public function __construct(
         private StatusManager $statusManager,
-    ) {
-    }
+    ) {}
 
     /**
      * @throws InvalidCommandException

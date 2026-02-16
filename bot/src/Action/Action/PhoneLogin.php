@@ -14,8 +14,7 @@ final readonly class PhoneLogin implements Action
     public function __construct(
         private BotConfig $botConfig,
         private IpcWorkerOutputCatcherFactory $ipcWorkerOutputCatcherFactory,
-    ) {
-    }
+    ) {}
 
     public function run(ApiWrapper $apiWrapper): void
     {

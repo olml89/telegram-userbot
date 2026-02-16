@@ -10,8 +10,7 @@ final readonly class TagFinder
 {
     public function __construct(
         private TagRepository $tagRepository,
-    ) {
-    }
+    ) {}
 
     /**
      * @throws TagNotFoundException

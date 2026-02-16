@@ -27,7 +27,7 @@ abstract readonly class PhoneCodeLogRecord extends InfoLogRecord
     {
         return [
             'storage-key' => $this->storageKey,
-            'phone-code' => (string)$this->phoneCode,
+            'phone-code' => (string) $this->phoneCode,
         ];
     }
 }

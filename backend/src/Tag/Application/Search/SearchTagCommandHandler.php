@@ -12,8 +12,7 @@ final readonly class SearchTagCommandHandler
 {
     public function __construct(
         private TagRepository $tagRepository,
-    ) {
-    }
+    ) {}
 
     /**
      * @return TagResult[]
@@ -21,7 +20,7 @@ final readonly class SearchTagCommandHandler
     public function handle(SearchTagCommand $command): array
     {
         return array_map(
-            fn (Tag $tag): TagResult => TagResult::tag($tag),
+            fn(Tag $tag): TagResult => TagResult::tag($tag),
             $this->tagRepository->search($command->query, $command->limit),
         );
     }

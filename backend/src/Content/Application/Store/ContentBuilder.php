@@ -37,8 +37,7 @@ final readonly class ContentBuilder
         private CategoryFinder $categoryFinder,
         private TagFinder $tagFinder,
         private FileFinder $fileFinder,
-    ) {
-    }
+    ) {}
 
     /**
      * @throws ValidationException

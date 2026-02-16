@@ -9,8 +9,7 @@ final readonly class WebSocketServerConfig
     public function __construct(
         public string $host,
         public int $port,
-    ) {
-    }
+    ) {}
 
     public function uri(): string
     {

@@ -12,8 +12,7 @@ final readonly class SearchTagRequest
     public function __construct(
         #[Assert\NotBlank(allowNull: true)]
         public ?string $query,
-    ) {
-    }
+    ) {}
 
     public function command(): SearchTagCommand
     {

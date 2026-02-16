@@ -32,7 +32,7 @@ final readonly class PhpRedisStorage implements RedisStorage
      */
     public function set(string $key, string|Stringable $value): void
     {
-        $value = is_string($value) ? $value : (string)$value;
+        $value = is_string($value) ? $value : (string) $value;
         $result = $this->redis->set($key, $value);
 
         if ($result !== true) {

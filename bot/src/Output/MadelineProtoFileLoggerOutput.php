@@ -35,7 +35,7 @@ final readonly class MadelineProtoFileLoggerOutput implements Output
             return false;
         }
 
-        if (array_any(self::UNDESIRED_LOG_CHANNELS, fn (string $channel): bool => $this->isFromChannel($channel))) {
+        if (array_any(self::UNDESIRED_LOG_CHANNELS, fn(string $channel): bool => $this->isFromChannel($channel))) {
             return false;
         }
 

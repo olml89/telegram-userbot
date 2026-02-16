@@ -27,6 +27,5 @@ final readonly class ListContentResult implements Result
 
         /** @var Language[] */
         public array $languages,
-    ) {
-    }
+    ) {}
 }

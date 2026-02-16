@@ -31,7 +31,7 @@ final class CommandBus
 
         if (count($attributes) === 0) {
             throw new RuntimeException(
-                sprintf('CommandHandler %s must have a HandlesCommand attribute', $reflection->getName())
+                sprintf('CommandHandler %s must have a HandlesCommand attribute', $reflection->getName()),
             );
         }
 
@@ -42,7 +42,7 @@ final class CommandBus
 
             if (array_key_exists($commandClass, $this->commandHandlers)) {
                 throw new RuntimeException(
-                    sprintf('Multiple handlers registered for command %s', $commandClass)
+                    sprintf('Multiple handlers registered for command %s', $commandClass),
                 );
             }
 
@@ -53,7 +53,7 @@ final class CommandBus
     public function dispatch(Command $command): void
     {
         $commandHandler = $this->commandHandlers[$command::class] ?? throw new RuntimeException(
-            sprintf('No handler registered for Command %s', $command::class)
+            sprintf('No handler registered for Command %s', $command::class),
         );
 
         $commandHandler->handle($command);

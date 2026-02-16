@@ -27,8 +27,7 @@ final readonly class UploadFileController
 {
     public function __construct(
         private UploadFileCommandHandler $uploadFileCommandHandler,
-    ) {
-    }
+    ) {}
 
     /**
      * @throws UploadNotFoundException

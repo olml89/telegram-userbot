@@ -30,8 +30,7 @@ final readonly class ApiInitializer
         private BotSession $botSession,
         private StatusBroadcaster $statusBroadcaster,
         private LoggableLogger $loggableLogger,
-    ) {
-    }
+    ) {}
 
     public function initialize(ApiWrapper $apiWrapper): bool
     {

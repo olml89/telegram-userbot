@@ -53,7 +53,7 @@ Env::load(dirname(__DIR__));
 $containerBuilder->addDefinitions([
 
     WebSocketServerConfig::class => DI\factory(
-        fn (): WebSocketServerConfig => new WebSocketServerConfig(
+        fn(): WebSocketServerConfig => new WebSocketServerConfig(
             host: '0.0.0.0',
             port: 8080,
         ),

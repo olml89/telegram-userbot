@@ -22,8 +22,7 @@ final readonly class SupervisorCtl implements ProcessManager
     public function __construct(
         private SupervisorConfig $supervisorConfig,
         private LoggableLogger $loggableLogger,
-    ) {
-    }
+    ) {}
 
     private function execute(SupervisorCommand $supervisorCommand, Process $process): ExecResult
     {

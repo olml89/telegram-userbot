@@ -48,7 +48,7 @@ final readonly class Env
             throw new MissingEnvironmentVariableException($key);
         }
 
-        return is_string($value) ? $value : (string)$value;
+        return is_string($value) ? $value : (string) $value;
     }
 
     public static function nullableBool(string $key, ?bool $default = null): ?bool
@@ -59,7 +59,7 @@ final readonly class Env
             return null;
         }
 
-        return is_bool($value) ? $value : (bool)$value;
+        return is_bool($value) ? $value : (bool) $value;
     }
 
     /**
@@ -81,7 +81,7 @@ final readonly class Env
             throw new MissingEnvironmentVariableException($key);
         }
 
-        return is_int($value) ? $value : (int)$value;
+        return is_int($value) ? $value : (int) $value;
     }
 
     /**
@@ -95,6 +95,6 @@ final readonly class Env
             throw new MissingEnvironmentVariableException($key);
         }
 
-        return is_float($value) ? $value : (float)$value;
+        return is_float($value) ? $value : (float) $value;
     }
 }

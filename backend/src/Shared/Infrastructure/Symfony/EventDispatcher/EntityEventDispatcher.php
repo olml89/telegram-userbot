@@ -12,8 +12,7 @@ final readonly class EntityEventDispatcher implements EventDispatcher
 {
     public function __construct(
         private EventDispatcherInterface $eventDispatcher,
-    ) {
-    }
+    ) {}
 
     public function dispatch(Event ...$events): void
     {

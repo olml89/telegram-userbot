@@ -9,6 +9,5 @@ final readonly class SeedDatabaseCommand
     public function __construct(
         /** @var string[] */
         public array $categoryNames,
-    ) {
-    }
+    ) {}
 }

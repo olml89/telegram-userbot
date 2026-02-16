@@ -47,7 +47,7 @@ abstract class Collection implements IteratorAggregate, Countable
     public function filter(?callable $callback = null): Collection
     {
         /** @param T $item */
-        $callback ??= static fn (mixed $item): bool => !is_null($item);
+        $callback ??= static fn(mixed $item): bool => !is_null($item);
 
         /** @var T[] $filtered */
         $filtered = array_filter($this->items, $callback);

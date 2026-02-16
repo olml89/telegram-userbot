@@ -26,6 +26,5 @@ final readonly class StoreContentCommand
 
         /** @var Uuid[] */
         public array $fileIds,
-    ) {
-    }
+    ) {}
 }

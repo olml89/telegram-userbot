@@ -21,8 +21,7 @@ final readonly class StatusInitializer
     public function __construct(
         private CommandBus $commandBus,
         private LoggableLogger $loggableLogger,
-    ) {
-    }
+    ) {}
 
     public function initialize(): void
     {

@@ -25,7 +25,7 @@ trait UsesMockery
     private function expectedArgument(object $expected): Closure
     {
         return Mockery::on(
-            fn (object $actual): bool => new IsEqual($expected)->evaluate($actual, '', true),
+            fn(object $actual): bool => new IsEqual($expected)->evaluate($actual, '', true),
         );
     }
 }

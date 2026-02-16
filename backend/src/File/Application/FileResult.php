@@ -18,8 +18,7 @@ final readonly class FileResult implements Result
         public string $originalName,
         public string $mimeType,
         public int $bytes,
-    ) {
-    }
+    ) {}
 
     public static function file(File $file): self
     {

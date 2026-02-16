@@ -10,8 +10,7 @@ final readonly class FileFinder
 {
     public function __construct(
         private FileRepository $fileRepository,
-    ) {
-    }
+    ) {}
 
     /**
      * @throws FileNotFoundException

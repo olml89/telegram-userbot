@@ -6,6 +6,4 @@ namespace olml89\TelegramUserbot\Backend\Shared\Domain\Exception;
 
 use RuntimeException;
 
-abstract class InvariantException extends RuntimeException
-{
-}
+abstract class InvariantException extends RuntimeException {}

@@ -8,7 +8,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Attribute\Route;
 
 #[Route(
-    path:'/health',
+    path: '/health',
     name: 'api.health',
     defaults: ['_api' => true],
     methods: ['GET'],

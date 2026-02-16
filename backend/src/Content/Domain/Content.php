@@ -51,7 +51,7 @@ final class Content implements Entity
         $this->tags = $tags->toArray();
 
         $this->files = $files
-            ->each(fn (File $file) => $this->attachFile($file))
+            ->each(fn(File $file) => $this->attachFile($file))
             ->toArray();
     }
 

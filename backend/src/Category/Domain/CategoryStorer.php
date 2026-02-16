@@ -10,8 +10,7 @@ final readonly class CategoryStorer
 {
     public function __construct(
         private CategoryRepository $categoryRepository,
-    ) {
-    }
+    ) {}
 
     /**
      * @throws CategoryStorageException

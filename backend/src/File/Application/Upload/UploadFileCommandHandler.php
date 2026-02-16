@@ -21,8 +21,7 @@ final readonly class UploadFileCommandHandler
         private FileBuilder $fileBuilder,
         private FileStorer $fileStorer,
         private EventDispatcher $eventDispatcher,
-    ) {
-    }
+    ) {}
 
     /**
      * @throws UploadNotFoundException

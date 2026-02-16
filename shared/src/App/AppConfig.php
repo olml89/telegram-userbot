@@ -10,6 +10,5 @@ final readonly class AppConfig
 {
     public function __construct(
         public Environment $environment,
-    ) {
-    }
+    ) {}
 }

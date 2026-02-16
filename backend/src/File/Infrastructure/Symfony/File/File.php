@@ -19,8 +19,7 @@ final readonly class File
 
     public function __construct(
         private SymfonyFile $file,
-    ) {
-    }
+    ) {}
 
     /**
      * @throws FileNotFoundException

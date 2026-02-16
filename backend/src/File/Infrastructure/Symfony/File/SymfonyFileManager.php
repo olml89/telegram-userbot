@@ -14,9 +14,8 @@ final readonly class SymfonyFileManager implements FileManager
 {
     public function __construct(
         private Filesystem $filesystem,
-        private string $contentDirectory
-    ) {
-    }
+        private string $contentDirectory,
+    ) {}
 
     private function path(File $file): string
     {

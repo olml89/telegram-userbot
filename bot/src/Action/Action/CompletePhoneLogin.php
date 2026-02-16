@@ -16,8 +16,7 @@ final readonly class CompletePhoneLogin implements Action
     public function __construct(
         private PhoneCodeStorage $phoneCodeStorage,
         private IpcWorkerOutputCatcherFactory $ipcWorkerOutputCatcherFactory,
-    ) {
-    }
+    ) {}
 
     /**
      * @throws RedisStorageException

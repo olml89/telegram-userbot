@@ -17,8 +17,7 @@ final readonly class SeedDatabaseCommandHandler
 {
     public function __construct(
         private CategoryStorer $categoryStorer,
-    ) {
-    }
+    ) {}
 
     /**
      * @return Generator<CategoryResult>

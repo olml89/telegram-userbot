@@ -27,8 +27,7 @@ final readonly class ApiExceptionResponseMapper
     public function __construct(
         private bool $debug,
         private ExceptionChainBuilder $exceptionChainBuilder,
-    ) {
-    }
+    ) {}
 
     public function map(Request $request, Throwable $exception): ?JsonResponse
     {

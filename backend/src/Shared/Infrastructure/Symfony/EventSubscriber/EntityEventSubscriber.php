@@ -15,8 +15,7 @@ final readonly class EntityEventSubscriber
 {
     public function __construct(
         private EventEntityRepository $eventEntityRepository,
-    ) {
-    }
+    ) {}
 
     public function __invoke(Event $event): void
     {

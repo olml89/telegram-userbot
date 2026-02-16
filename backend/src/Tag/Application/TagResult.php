@@ -15,8 +15,7 @@ readonly class TagResult implements Result
     public function __construct(
         public string $id,
         public string $name,
-    ) {
-    }
+    ) {}
 
     public static function tag(Tag $tag): self
     {

@@ -16,8 +16,7 @@ final readonly class StoreTagResult implements Result
     public function __construct(
         public TagResult $tag,
         public bool $created,
-    ) {
-    }
+    ) {}
 
     public static function tag(Tag $tag, bool $created): self
     {

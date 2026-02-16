@@ -31,7 +31,7 @@ final class InvalidCommandTypeException extends Exception
             implode(
                 separator: ', ',
                 array: array_map(
-                    fn (CommandType $type): string => $type->value,
+                    fn(CommandType $type): string => $type->value,
                     CommandType::cases(),
                 ),
             ),

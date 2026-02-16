@@ -36,20 +36,20 @@ Env::load(dirname(__DIR__));
 return $containerBuilder->addDefinitions([
 
     AppConfig::class => DI\factory(
-        fn (): AppConfig => new AppConfig(
+        fn(): AppConfig => new AppConfig(
             environment: Environment::load(Env::string('APP_ENV')),
         ),
     ),
 
     LoggerConfig::class => DI\factory(
-        fn (): LoggerConfig => new LoggerConfig(
+        fn(): LoggerConfig => new LoggerConfig(
             logDirectory: Env::string('LOG_DIRECTORY'),
             level: Level::tryFrom(Env::int('LOG_LEVEL')) ?? Level::Debug,
         ),
     ),
 
     RedisConfig::class => DI\factory(
-        fn (): RedisConfig => new RedisConfig(
+        fn(): RedisConfig => new RedisConfig(
             host: 'redis',
             statusChannel: Env::string('REDIS_STATUS_CHANNEL'),
             phoneCodeStorageKey: Env::string('REDIS_PHONE_CODE_STORAGE_KEY'),
@@ -57,17 +57,17 @@ return $containerBuilder->addDefinitions([
     ),
 
     SupervisorConfig::class => DI\factory(
-        fn (): SupervisorConfig => new SupervisorConfig(
+        fn(): SupervisorConfig => new SupervisorConfig(
             configPath: Env::string('SUPERVISOR_CONFIG_PATH'),
         ),
     ),
 
     SentryConfig::class => DI\factory(
-        fn (): SentryConfig => new SentryConfig(
+        fn(): SentryConfig => new SentryConfig(
             dsn: Env::string('SENTRY_DSN'),
         ),
     ),
 
-    ProcessManager::class => DI\autowire(SupervisorCtl::class)
+    ProcessManager::class => DI\autowire(SupervisorCtl::class),
 
 ]);

@@ -24,8 +24,7 @@ final readonly class CompletePhoneLoginHandler implements CommandHandler
         private StatusManager $statusManager,
         private PhoneCodeStorage $phoneCodeStorage,
         private ProcessManager $processManager,
-    ) {
-    }
+    ) {}
 
     /**
      * @throws InvalidCommandException
