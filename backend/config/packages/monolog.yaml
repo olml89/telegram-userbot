@@ -7,6 +7,7 @@ monolog:
       handler: app_stream
       min_level: debug
       max_level: notice
+      formatter: monolog.formatter.json
       channels:
         - '!event'
 
@@ -20,6 +21,7 @@ monolog:
       handler: error_stream
       min_level: error
       max_level: emergency
+      formatter: monolog.formatter.json
       channels:
         - '!event'
 
