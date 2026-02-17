@@ -19,14 +19,14 @@ class File implements Entity
 {
     use IsEntity;
 
-    private ?Content $content = null;
+    protected ?Content $content = null;
 
     public function __construct(
         protected readonly Uuid $publicId,
-        private readonly Name $name,
-        private readonly OriginalName $originalName,
-        private readonly MimeType $mimeType,
-        private readonly Size $bytes,
+        protected readonly Name $name,
+        protected readonly OriginalName $originalName,
+        protected readonly MimeType $mimeType,
+        protected readonly Size $bytes,
     ) {}
 
     public function name(): Name

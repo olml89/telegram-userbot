@@ -5,7 +5,15 @@
                   https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
 
     <entity name="olml89\TelegramUserbot\Backend\File\Domain\File"
-            table="files">
+            table="files"
+            inheritance-type="JOINED">
+
+        <discriminator-column name="type"
+                              type="string"/>
+
+        <discriminator-map>
+            <discriminator-mapping value="audio" class="olml89\TelegramUserbot\Backend\File\Domain\Audio"/>
+        </discriminator-map>
 
         <id name="id" type="integer" column="id">
             <generator strategy="IDENTITY"/>

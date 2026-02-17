@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace olml89\TelegramUserbot\Backend\File\Application\Upload;
 
-use olml89\TelegramUserbot\Backend\File\Domain\Factory\FileFactory;
 use olml89\TelegramUserbot\Backend\File\Domain\File;
 use olml89\TelegramUserbot\Backend\File\Domain\FileManager;
+use olml89\TelegramUserbot\Backend\File\Domain\FileSpecializer\FileSpecializationException;
+use olml89\TelegramUserbot\Backend\File\Domain\FileSpecializer\FileSpecializer;
 use olml89\TelegramUserbot\Backend\File\Domain\MimeType\MimeType;
 use olml89\TelegramUserbot\Backend\File\Domain\MimeType\UnsupportedMimeTypeException;
 use olml89\TelegramUserbot\Backend\File\Domain\OriginalName\OriginalName;
@@ -29,8 +30,8 @@ final readonly class FileBuilder
 {
     public function __construct(
         private UploadFinder $uploadFinder,
-        private FileFactory $fileFactory,
         private FileManager $fileManager,
+        private FileSpecializer $fileSpecializer,
     ) {}
 
     /**
@@ -40,11 +41,25 @@ final readonly class FileBuilder
      * @throws ValidationException
      * @throws UploadConsumptionException
      * @throws UploadRemovalException
+     * @throws FileSpecializationException
      */
     public function build(UploadFileCommand $command): File
     {
         $upload = $this->uploadFinder->find($command->uploadId);
+        $file = $this->buildFileAndConsumeUpload($upload);
 
+        return $this->specializeFile($file);
+    }
+
+    /**
+     * @throws UploadReadingException
+     * @throws UnsupportedResourceException
+     * @throws ValidationException
+     * @throws UploadConsumptionException
+     * @throws UploadRemovalException
+     */
+    private function buildFileAndConsumeUpload(Upload $upload): File
+    {
         try {
             $file = $this->buildFile($upload);
             $this->fileManager->consume($file, $upload);
@@ -84,7 +99,13 @@ final readonly class FileBuilder
          * @var OriginalName $originalName
          * @var Size $size
          */
-        return $this->fileFactory->create($fileId, $name, $originalName, $mimeType, $size);
+        return new File(
+            publicId: $fileId,
+            name: $name,
+            originalName: $originalName,
+            mimeType: $mimeType,
+            bytes: $size,
+        );
     }
 
     /**
@@ -147,6 +168,23 @@ final readonly class FileBuilder
             $validationException->addError('size', $e->getMessage());
 
             return null;
+        }
+    }
+
+    /**
+     * @throws FileSpecializationException
+     */
+    private function specializeFile(File $file): File
+    {
+        try {
+            return $this->fileSpecializer->specialize($file);
+        } catch (FileSpecializationException $e) {
+            /**
+             * Rollback: delete File mediaFile if there's an error while trying to specialize File
+             */
+            $this->fileManager->remove($file);
+
+            throw $e;
         }
     }
 }

@@ -8,6 +8,7 @@ use olml89\TelegramUserbot\Backend\File\Domain\File;
 use olml89\TelegramUserbot\Backend\File\Domain\FileManager;
 use olml89\TelegramUserbot\Backend\File\Domain\Upload\Upload;
 use olml89\TelegramUserbot\Backend\File\Domain\Upload\UploadConsumptionException;
+use SplFileObject;
 use Symfony\Component\Filesystem\Filesystem;
 
 final readonly class SymfonyFileManager implements FileManager
@@ -19,7 +20,7 @@ final readonly class SymfonyFileManager implements FileManager
 
     private function path(File $file): string
     {
-        return sprintf('%s/%s', $this->contentDirectory, $file->name()->value);
+        return $file->path($this->contentDirectory);
     }
 
     /**
@@ -34,6 +35,11 @@ final readonly class SymfonyFileManager implements FileManager
     public function exists(File $file): bool
     {
         return $this->filesystem->exists($this->path($file));
+    }
+
+    public function mediaFile(File $file): SplFileObject
+    {
+        return new SplFileObject($this->path($file));
     }
 
     public function remove(File $file): void

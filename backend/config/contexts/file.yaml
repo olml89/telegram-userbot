@@ -21,12 +21,25 @@ services:
       $filesystem: '@filesystem'
       $contentDirectory: '/var/content'
 
+  # AudioFactory
+  olml89\TelegramUserbot\Backend\File\Domain\Factory\AudioSpecializer:
+    alias: olml89\TelegramUserbot\Backend\File\Infrastructure\GetId3\GetId3AudioSpecializer
+
+  getID3:
+    class: getID3
+
+  olml89\TelegramUserbot\Backend\File\Infrastructure\GetId3\GetId3AudioSpecializer:
+    arguments:
+      $fileManager: '@olml89\TelegramUserbot\Backend\File\Domain\FileManager'
+      $getID3: '@getID3'
+
 doctrine:
   # Types
   dbal:
     types:
       fileOriginalName: olml89\TelegramUserbot\Backend\File\Infrastructure\Doctrine\OriginalNameType
       fileSize: olml89\TelegramUserbot\Backend\File\Infrastructure\Doctrine\SizeType
+      fileDuration: olml89\TelegramUserbot\Backend\File\Infrastructure\Doctrine\DurationType
   # Mappings
   orm:
     entity_managers:

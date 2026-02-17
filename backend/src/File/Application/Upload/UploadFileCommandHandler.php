@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace olml89\TelegramUserbot\Backend\File\Application\Upload;
 
 use olml89\TelegramUserbot\Backend\File\Application\FileResult;
+use olml89\TelegramUserbot\Backend\File\Domain\FileSpecializer\FileSpecializationException;
 use olml89\TelegramUserbot\Backend\File\Domain\FileStorageException;
 use olml89\TelegramUserbot\Backend\File\Domain\FileStorer;
 use olml89\TelegramUserbot\Backend\File\Domain\Upload\UploadConsumptionException;
@@ -30,6 +31,7 @@ final readonly class UploadFileCommandHandler
      * @throws ValidationException
      * @throws UploadConsumptionException
      * @throws UploadRemovalException
+     * @throws FileSpecializationException
      * @throws FileStorageException
      */
     public function handle(UploadFileCommand $command): FileResult

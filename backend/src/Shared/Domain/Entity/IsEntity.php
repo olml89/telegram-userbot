@@ -42,6 +42,15 @@ trait IsEntity
         return $this;
     }
 
+    public function copyEvents(Entity $entity): static
+    {
+        foreach ($entity->events() as $event) {
+            $this->record($event);
+        }
+
+        return $this;
+    }
+
     /**
      * @return Event[]
      */
