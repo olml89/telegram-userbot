@@ -22,3 +22,4 @@ services:
   olml89\TelegramUserbot\Backend\Shared\Infrastructure\Symfony\Exception\ApiExceptionResponseMapper:
     arguments:
       $debug: '%kernel.debug%'
+      $exceptionChainBuilder: '@olml89\TelegramUserbot\Backend\Shared\Domain\Exception\ExceptionChainBuilder'
