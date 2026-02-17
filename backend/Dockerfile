@@ -42,8 +42,7 @@ RUN mkdir -p /telegram-userbot/backend/var/cache  &&  \
 # Make bin/console executable
 RUN chmod +x /telegram-userbot/backend/bin/console
 
-# Enable Opcache
-RUN docker-php-ext-enable opcache
+# In PHP 8.5 Opcache is already integrated into the core. Copy the Opcache configuration
 COPY docker-php-ext-opcache.ini /usr/local/etc/php/docker-php-ext-opcache.ini
 
 # Install composer

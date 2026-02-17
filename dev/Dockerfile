@@ -7,8 +7,7 @@ WORKDIR /telegram-userbot/dev
 COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/local/bin/
 RUN install-php-extensions xdebug @composer && rm /usr/local/bin/install-php-extensions;
 
-# Enable Opcache
-RUN docker-php-ext-enable opcache
+# In PHP 8.5 Opcache is already integrated into the core. Copy the Opcache configuration
 COPY docker-php-ext-opcache.ini /usr/local/etc/php/docker-php-ext-opcache.ini
 
 FROM base AS dev
