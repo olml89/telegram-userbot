@@ -22,8 +22,7 @@ COPY shared/ /telegram-userbot/shared/
 # Copy supervisord config files
 COPY bot-manager/supervisor/supervisord.conf /etc/supervisor/supervisord.conf
 
-# Enable Opcache
-RUN docker-php-ext-enable opcache
+# In PHP 8.5 Opcache is already integrated into the core. Copy the Opcache configuration
 COPY docker-php-ext-opcache.ini /usr/local/etc/php/docker-php-ext-opcache.ini
 
 # Install composer
