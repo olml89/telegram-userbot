@@ -4,10 +4,14 @@ declare(strict_types=1);
 
 namespace olml89\TelegramUserbot\Backend\File\Infrastructure\Symfony\Denormalizer;
 
+use olml89\TelegramUserbot\Backend\File\Infrastructure\Symfony\Http\Api\Validate\TusdValidateFileRequest;
 use olml89\TelegramUserbot\Backend\File\Infrastructure\Symfony\Http\Api\Validate\ValidateFileRequest;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 
-final readonly class ValidateFileRequestDenormalizer implements DenormalizerInterface
+/**
+ * This denormalizer is used to map the tusd pre-create event to the ValidateFileRequest.
+ */
+final readonly class TusdValidateFileRequestDenormalizer implements DenormalizerInterface
 {
     /**
      * @return array<class-string, bool>
@@ -24,7 +28,20 @@ final readonly class ValidateFileRequestDenormalizer implements DenormalizerInte
 
     public function supportsDenormalization(mixed $data, string $type, ?string $format = null, array $context = []): bool
     {
-        return $type === ValidateFileRequest::class && is_array($data);
+        if ($type !== ValidateFileRequest::class || !is_array($data)) {
+            return false;
+        }
+
+        return array_key_exists('Type', $data)
+            && array_key_exists('Event', $data)
+            && is_array($data['Event'])
+            && array_key_exists('Upload', $data['Event'])
+            && is_array($data['Event']['Upload'])
+            && array_key_exists('MetaData', $data['Event']['Upload'])
+            && is_array($data['Event']['Upload']['MetaData'])
+            && array_key_exists('filename', $data['Event']['Upload']['MetaData'])
+            && array_key_exists('filetype', $data['Event']['Upload']['MetaData'])
+            && array_key_exists('Size', $data['Event']['Upload']);
     }
 
     public function denormalize(mixed $data, string $type, ?string $format = null, array $context = []): mixed
@@ -50,6 +67,6 @@ final readonly class ValidateFileRequestDenormalizer implements DenormalizerInte
         $mimeType = $data['Event']['Upload']['MetaData']['filetype'] ?? null;
         $size = $data['Event']['Upload']['Size'] ?? null;
 
-        return new ValidateFileRequest($eventType, $originalName, $mimeType, $size);
+        return new TusdValidateFileRequest($eventType, $originalName, $mimeType, $size);
     }
 }

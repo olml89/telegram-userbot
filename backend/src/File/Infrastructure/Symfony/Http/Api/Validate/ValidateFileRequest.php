@@ -8,27 +8,17 @@ use olml89\TelegramUserbot\Backend\File\Application\Validate\ValidateFileCommand
 use Symfony\Component\Validator\Constraints as Validation;
 use Webmozart\Assert\Assert;
 
-final readonly class ValidateFileRequest
+readonly class ValidateFileRequest
 {
     public function __construct(
-        /**
-         * Use the Choice validation here as event type is related to the tusd infrastructure, not to the domain.
-         */
-        #[Validation\NotNull(message: 'The eventType is required')]
-        #[Validation\Choice(
-            callback: [EventType::class, 'values'],
-            message: 'The eventType is invalid',
-        )]
-        public ?string $eventType = null,
-
         #[Validation\NotNull(message: 'The originalName is required')]
-        public ?string $originalName = null,
+        public ?string $originalName,
 
         #[Validation\NotNull(message: 'The mimeType is required')]
-        public ?string $mimeType = null,
+        public ?string $mimeType,
 
         #[Validation\NotNull(message: 'The size is required')]
-        public ?int $size = null,
+        public ?int $size,
     ) {}
 
     public function command(): ValidateFileCommand

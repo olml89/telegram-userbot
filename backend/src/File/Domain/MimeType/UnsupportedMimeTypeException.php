@@ -10,6 +10,6 @@ final class UnsupportedMimeTypeException extends InvalidResourceException
 {
     public function __construct(string $mimeType)
     {
-        parent::__construct(sprintf('Invalid mime type: %s', $mimeType));
+        parent::__construct(sprintf('Unsupported mime type (%s)', $mimeType));
     }
 }
