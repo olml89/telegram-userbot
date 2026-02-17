@@ -11,12 +11,12 @@
     ],
     "minimum-stability": "stable",
     "require-dev": {
-        "laravel/pint": "^1.24",
+        "laravel/pint": "^1.27",
         "phpstan/phpstan": "^2.1",
         "phpstan/phpstan-strict-rules": "^2.0",
         "phpstan/phpstan-phpunit": "^2.0",
         "phpstan/phpstan-mockery": "^2.0",
-        "phpunit/phpunit": "^12.2",
+        "phpunit/phpunit": "^13.0",
         "mockery/mockery": "^1.6",
         "rector/rector": "^2.1"
     },
