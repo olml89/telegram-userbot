@@ -5,9 +5,6 @@ declare(strict_types=1);
 namespace olml89\TelegramUserbot\Backend\Content\Infrastructure\Symfony\Http\Api\Store;
 
 use olml89\TelegramUserbot\Backend\Content\Application\Store\StoreContentCommand;
-use olml89\TelegramUserbot\Backend\Content\Domain\Language;
-use olml89\TelegramUserbot\Backend\Content\Domain\Mode;
-use olml89\TelegramUserbot\Backend\Content\Domain\Status;
 use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Validator\Constraints as Validation;
 use Webmozart\Assert\Assert;
@@ -29,24 +26,12 @@ final readonly class StoreContentRequest
         public ?float $price,
 
         #[Validation\NotNull(message: 'The language is required')]
-        #[Validation\Choice(
-            callback: [Language::class, 'values'],
-            message: 'The language is invalid',
-        )]
         public ?string $language,
 
         #[Validation\NotNull(message: 'The mode is required')]
-        #[Validation\Choice(
-            callback: [Mode::class, 'values'],
-            message: 'The mode is invalid',
-        )]
         public ?string $mode,
 
         #[Validation\NotNull(message: 'The status is required')]
-        #[Validation\Choice(
-            callback: [Status::class, 'values'],
-            message: 'The status is invalid',
-        )]
         public ?string $status,
 
         #[Validation\NotBlank(message: 'The categoryId is required')]
@@ -76,15 +61,9 @@ final readonly class StoreContentRequest
         Assert::notNull($this->description);
         Assert::notNull($this->intensity);
         Assert::notNull($this->price);
-
         Assert::notNull($this->language);
-        $language = Language::from($this->language);
-
         Assert::notNull($this->mode);
-        $mode = Mode::from($this->mode);
-
         Assert::notNull($this->status);
-        $status = Status::from($this->status);
 
         Assert::notNull($this->categoryId);
         $categoryId = Uuid::fromString($this->categoryId);
@@ -106,9 +85,9 @@ final readonly class StoreContentRequest
             description: $this->description,
             intensity: $this->intensity,
             price: $this->price,
-            language: $language,
-            mode: $mode,
-            status: $status,
+            language: $this->language,
+            mode: $this->mode,
+            status: $this->status,
             categoryId: $categoryId,
             tagIds: $tagIds,
             fileIds: $fileIds,

@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace olml89\TelegramUserbot\Backend\File\Domain;
 
 use olml89\TelegramUserbot\Backend\Content\Domain\Content;
-use olml89\TelegramUserbot\Backend\File\Domain\MimeType\MimeType;
 use olml89\TelegramUserbot\Backend\File\Domain\Size\Size;
 use olml89\TelegramUserbot\Backend\File\Domain\Upload\Upload;
 use olml89\TelegramUserbot\Backend\File\Domain\Upload\UploadConsumed;

@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace olml89\TelegramUserbot\Backend\File\Application\Validate;
 
-use olml89\TelegramUserbot\Backend\File\Domain\MimeType\MimeType;
-use olml89\TelegramUserbot\Backend\File\Domain\MimeType\UnsupportedMimeTypeException;
+use olml89\TelegramUserbot\Backend\File\Domain\MimeType;
 use olml89\TelegramUserbot\Backend\File\Domain\OriginalName;
 use olml89\TelegramUserbot\Backend\File\Domain\Size\Size;
 use olml89\TelegramUserbot\Backend\File\Domain\Size\SizeException;
 use olml89\TelegramUserbot\Backend\Shared\Application\Validation\ValidationException;
 use olml89\TelegramUserbot\Backend\Shared\Domain\Exception\Invariant\StringLengthException;
+use olml89\TelegramUserbot\Backend\Shared\Domain\Exception\UnsupportedStringValue;
 
 final readonly class ValidateFileCommandHandler
 {
@@ -32,8 +32,8 @@ final readonly class ValidateFileCommandHandler
     private function buildMimeType(ValidationException $validationException, ValidateFileCommand $command): void
     {
         try {
-            MimeType::tryFrom($command->mimeType) ?? throw new UnsupportedMimeTypeException($command->mimeType);
-        } catch (UnsupportedMimeTypeException $e) {
+            MimeType::create($command->mimeType);
+        } catch (UnsupportedStringValue $e) {
             $validationException->addError('mimeType', $e->getMessage());
         }
     }

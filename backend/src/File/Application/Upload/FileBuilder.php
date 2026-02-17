@@ -6,19 +6,20 @@ namespace olml89\TelegramUserbot\Backend\File\Application\Upload;
 
 use olml89\TelegramUserbot\Backend\File\Domain\File;
 use olml89\TelegramUserbot\Backend\File\Domain\FileManager;
-use olml89\TelegramUserbot\Backend\File\Domain\MimeType\UnsupportedMimeTypeException;
-use olml89\TelegramUserbot\Backend\File\Domain\MimeType\MimeType;
+use olml89\TelegramUserbot\Backend\File\Domain\MimeType;
 use olml89\TelegramUserbot\Backend\File\Domain\OriginalName;
 use olml89\TelegramUserbot\Backend\File\Domain\Size\Size;
 use olml89\TelegramUserbot\Backend\File\Domain\Size\SizeException;
 use olml89\TelegramUserbot\Backend\File\Domain\Upload\Upload;
 use olml89\TelegramUserbot\Backend\File\Domain\Upload\UploadConsumptionException;
 use olml89\TelegramUserbot\Backend\File\Domain\Upload\UploadFinder;
-use olml89\TelegramUserbot\Backend\File\Domain\Upload\UploadReadingException;
 use olml89\TelegramUserbot\Backend\File\Domain\Upload\UploadNotFoundException;
+use olml89\TelegramUserbot\Backend\File\Domain\Upload\UploadReadingException;
 use olml89\TelegramUserbot\Backend\File\Domain\Upload\UploadRemovalException;
 use olml89\TelegramUserbot\Backend\Shared\Application\Validation\ValidationException;
 use olml89\TelegramUserbot\Backend\Shared\Domain\Exception\Invariant\StringLengthException;
+use olml89\TelegramUserbot\Backend\Shared\Domain\Exception\UnsupportedResourceException;
+use olml89\TelegramUserbot\Backend\Shared\Domain\Exception\UnsupportedStringValue;
 use olml89\TelegramUserbot\Backend\Shared\Domain\ValueObject\Name\Name;
 use Symfony\Component\Uid\Uuid;
 
@@ -32,7 +33,7 @@ final readonly class FileBuilder
     /**
      * @throws UploadNotFoundException
      * @throws UploadReadingException
-     * @throws UnsupportedMimeTypeException
+     * @throws UnsupportedResourceException
      * @throws ValidationException
      * @throws UploadConsumptionException
      * @throws UploadRemovalException
@@ -46,7 +47,7 @@ final readonly class FileBuilder
             $this->fileManager->consume($file, $upload);
 
             return $file;
-        } catch (UploadReadingException|UnsupportedMimeTypeException|ValidationException $e) {
+        } catch (UploadReadingException|UnsupportedResourceException|ValidationException $e) {
             /**
              * Rollback: delete Upload data if there's an error while trying to build File
              */
@@ -58,7 +59,7 @@ final readonly class FileBuilder
 
     /**
      * @throws UploadReadingException
-     * @throws UnsupportedMimeTypeException
+     * @throws UnsupportedResourceException
      * @throws ValidationException
      */
     private function buildFile(Upload $upload): File
@@ -91,13 +92,17 @@ final readonly class FileBuilder
 
     /**
      * @throws UploadReadingException
-     * @throws UnsupportedMimeTypeException
+     * @throws UnsupportedResourceException
      */
     private function buildMimeType(Upload $upload): MimeType
     {
         $mimeType = $upload->mimeType();
 
-        return MimeType::tryFrom($mimeType) ?? throw new UnsupportedMimeTypeException($mimeType);
+        try {
+            return MimeType::create($mimeType);
+        } catch (UnsupportedStringValue $e) {
+            throw new UnsupportedResourceException($e);
+        }
     }
 
     /**

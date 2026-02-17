@@ -7,7 +7,7 @@ namespace olml89\TelegramUserbot\Backend\Shared\Infrastructure\Symfony\Exception
 use olml89\TelegramUserbot\Backend\Shared\Application\Validation\ValidationException;
 use olml89\TelegramUserbot\Backend\Shared\Domain\Exception\ExceptionAggregator;
 use olml89\TelegramUserbot\Backend\Shared\Domain\Exception\ExceptionChainBuilder;
-use olml89\TelegramUserbot\Backend\Shared\Domain\Exception\InvalidResourceException;
+use olml89\TelegramUserbot\Backend\Shared\Domain\Exception\UnsupportedResourceException;
 use olml89\TelegramUserbot\Backend\Shared\Domain\Exception\NotFoundException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -65,7 +65,7 @@ final readonly class ApiExceptionResponseMapper
                 message: $exception->getMessage(),
                 previous: $exception,
             ),
-            $exception instanceof InvalidResourceException => new UnsupportedMediaTypeHttpException(
+            $exception instanceof UnsupportedResourceException => new UnsupportedMediaTypeHttpException(
                 message: $exception->getMessage(),
                 previous: $exception,
             ),
