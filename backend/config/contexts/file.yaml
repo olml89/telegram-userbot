@@ -21,17 +21,13 @@ services:
       $filesystem: '@filesystem'
       $contentDirectory: '/var/content'
 
-  # AudioFactory
-  olml89\TelegramUserbot\Backend\File\Domain\Factory\AudioSpecializer:
-    alias: olml89\TelegramUserbot\Backend\File\Infrastructure\GetId3\GetId3AudioSpecializer
+  # AudioSpecializer
+  olml89\TelegramUserbot\Backend\File\Domain\FileSpecializer\AudioSpecializer:
+    alias: olml89\TelegramUserbot\Backend\File\Infrastructure\Ffmpeg\FfmpegAudioSpecializer
 
-  getID3:
-    class: getID3
-
-  olml89\TelegramUserbot\Backend\File\Infrastructure\GetId3\GetId3AudioSpecializer:
+  olml89\TelegramUserbot\Backend\File\Infrastructure\Ffmpeg\FfmpegAudioSpecializer:
     arguments:
       $fileManager: '@olml89\TelegramUserbot\Backend\File\Domain\FileManager'
-      $getID3: '@getID3'
 
 doctrine:
   # Types

@@ -10,5 +10,5 @@ use olml89\TelegramUserbot\Backend\File\Domain\File;
 interface AudioSpecializer
 {
     /** @throws FileSpecializationException */
-    public function create(File $file): Audio;
+    public function specialize(File $file): Audio;
 }
