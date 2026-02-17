@@ -4,22 +4,20 @@ declare(strict_types=1);
 
 namespace olml89\TelegramUserbot\Backend\Shared\Domain\Exception;
 
-use BackedEnum;
 use Exception;
 
-final class UnsupportedStringValue extends Exception
+abstract class UnsupportedStringValueException extends Exception
 {
-    /**
-     * @param class-string<BackedEnum> $enumClass
-     */
-    public function __construct(string $enumClass, string $value)
+    public function __construct(string $value)
     {
         parent::__construct(
             sprintf(
                 'Unsupported %s (%s)',
-                $enumClass,
+                static::enumName(),
                 $value,
             ),
         );
     }
+
+    abstract protected static function enumName(): string;
 }

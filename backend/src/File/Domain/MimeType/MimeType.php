@@ -2,16 +2,15 @@
 
 declare(strict_types=1);
 
-namespace olml89\TelegramUserbot\Backend\File\Domain;
+namespace olml89\TelegramUserbot\Backend\File\Domain\MimeType;
 
-use olml89\TelegramUserbot\Backend\Shared\Domain\Enum\IsSafeEnum;
 use olml89\TelegramUserbot\Backend\Shared\Domain\Enum\IsValidatableStringBackedEnum;
+use olml89\TelegramUserbot\Backend\Shared\Domain\Enum\SafeStringBackedEnum;
 use olml89\TelegramUserbot\Backend\Shared\Domain\Enum\ValidatableStringBackedEnum;
 
-enum MimeType: string implements ValidatableStringBackedEnum
+enum MimeType: string implements ValidatableStringBackedEnum, SafeStringBackedEnum
 {
     use IsValidatableStringBackedEnum;
-    use IsSafeEnum;
 
     // Image
     case jpeg = 'image/jpeg';
@@ -45,4 +44,12 @@ enum MimeType: string implements ValidatableStringBackedEnum
     // Document
     case pdf = 'application/pdf';
     case txt = 'text/plain';
+
+    /**
+     * @throws UnsupportedMimeTypeException
+     */
+    public static function create(string $value): self
+    {
+        return self::tryFrom($value) ?? throw new UnsupportedMimeTypeException($value);
+    }
 }

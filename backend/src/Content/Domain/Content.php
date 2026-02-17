@@ -5,8 +5,14 @@ declare(strict_types=1);
 namespace olml89\TelegramUserbot\Backend\Content\Domain;
 
 use olml89\TelegramUserbot\Backend\Category\Domain\Category;
+use olml89\TelegramUserbot\Backend\Content\Domain\Description\Description;
 use olml89\TelegramUserbot\Backend\Content\Domain\File\FileCollection;
+use olml89\TelegramUserbot\Backend\Content\Domain\Language\Language;
+use olml89\TelegramUserbot\Backend\Content\Domain\Mode\Mode;
+use olml89\TelegramUserbot\Backend\Content\Domain\Price\Price;
+use olml89\TelegramUserbot\Backend\Content\Domain\Status\Status;
 use olml89\TelegramUserbot\Backend\Content\Domain\Tag\TagCollection;
+use olml89\TelegramUserbot\Backend\Content\Domain\Title\Title;
 use olml89\TelegramUserbot\Backend\File\Domain\File;
 use olml89\TelegramUserbot\Backend\File\Domain\FileAlreadyAttachedException;
 use olml89\TelegramUserbot\Backend\File\Domain\FileAttached;

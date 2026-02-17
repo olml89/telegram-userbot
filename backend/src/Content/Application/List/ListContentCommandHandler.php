@@ -7,9 +7,9 @@ namespace olml89\TelegramUserbot\Backend\Content\Application\List;
 use olml89\TelegramUserbot\Backend\Category\Application\CategoryResult;
 use olml89\TelegramUserbot\Backend\Category\Domain\Category;
 use olml89\TelegramUserbot\Backend\Category\Domain\CategoryRepository;
-use olml89\TelegramUserbot\Backend\Content\Domain\Language;
-use olml89\TelegramUserbot\Backend\Content\Domain\Mode;
-use olml89\TelegramUserbot\Backend\Content\Domain\Status;
+use olml89\TelegramUserbot\Backend\Content\Domain\Language\Language;
+use olml89\TelegramUserbot\Backend\Content\Domain\Mode\Mode;
+use olml89\TelegramUserbot\Backend\Content\Domain\Status\Status;
 
 final readonly class ListContentCommandHandler
 {

@@ -40,19 +40,19 @@
 
         <field name="language"
                type="string"
-               enum-type="olml89\TelegramUserbot\Backend\Content\Domain\Language"
+               enum-type="olml89\TelegramUserbot\Backend\Content\Domain\Language\Language"
                length="2"
                nullable="false"/>
 
         <field name="mode"
                type="string"
-               enum-type="olml89\TelegramUserbot\Backend\Content\Domain\Mode"
+               enum-type="olml89\TelegramUserbot\Backend\Content\Domain\Mode\Mode"
                length="20"
                nullable="false"/>
 
         <field name="status"
                type="string"
-               enum-type="olml89\TelegramUserbot\Backend\Content\Domain\Status"
+               enum-type="olml89\TelegramUserbot\Backend\Content\Domain\Status\Status"
                length="20"
                nullable="false"/>
 

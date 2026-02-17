@@ -10,25 +10,29 @@ use olml89\TelegramUserbot\Backend\Category\Domain\CategoryNotFoundException;
 use olml89\TelegramUserbot\Backend\Content\Domain\Content;
 use olml89\TelegramUserbot\Backend\Content\Domain\ContentFinder;
 use olml89\TelegramUserbot\Backend\Content\Domain\ContentNotFoundException;
-use olml89\TelegramUserbot\Backend\Content\Domain\Description;
+use olml89\TelegramUserbot\Backend\Content\Domain\Description\Description;
+use olml89\TelegramUserbot\Backend\Content\Domain\Description\DescriptionLengthException;
 use olml89\TelegramUserbot\Backend\Content\Domain\File\FileCollection;
 use olml89\TelegramUserbot\Backend\Content\Domain\File\FileCollectionCountException;
-use olml89\TelegramUserbot\Backend\Content\Domain\Language;
-use olml89\TelegramUserbot\Backend\Content\Domain\Mode;
-use olml89\TelegramUserbot\Backend\Content\Domain\Price;
-use olml89\TelegramUserbot\Backend\Content\Domain\Status;
+use olml89\TelegramUserbot\Backend\Content\Domain\Language\Language;
+use olml89\TelegramUserbot\Backend\Content\Domain\Language\UnsupportedLanguageException;
+use olml89\TelegramUserbot\Backend\Content\Domain\Mode\Mode;
+use olml89\TelegramUserbot\Backend\Content\Domain\Mode\UnsupportedModeException;
+use olml89\TelegramUserbot\Backend\Content\Domain\Price\Price;
+use olml89\TelegramUserbot\Backend\Content\Domain\Price\PriceException;
+use olml89\TelegramUserbot\Backend\Content\Domain\Status\Status;
+use olml89\TelegramUserbot\Backend\Content\Domain\Status\UnsupportedStatusException;
 use olml89\TelegramUserbot\Backend\Content\Domain\Tag\TagCollection;
 use olml89\TelegramUserbot\Backend\Content\Domain\Tag\TagCollectionCountException;
-use olml89\TelegramUserbot\Backend\Content\Domain\Title;
+use olml89\TelegramUserbot\Backend\Content\Domain\Title\Title;
+use olml89\TelegramUserbot\Backend\Content\Domain\Title\TitleLengthException;
 use olml89\TelegramUserbot\Backend\File\Domain\File;
 use olml89\TelegramUserbot\Backend\File\Domain\FileAlreadyAttachedException;
 use olml89\TelegramUserbot\Backend\File\Domain\FileFinder;
 use olml89\TelegramUserbot\Backend\File\Domain\FileNotFoundException;
 use olml89\TelegramUserbot\Backend\Shared\Application\Validation\ValidationException;
-use olml89\TelegramUserbot\Backend\Shared\Domain\Exception\UnsupportedStringValue;
-use olml89\TelegramUserbot\Backend\Shared\Domain\Exception\Invariant\OutOfRangeException;
-use olml89\TelegramUserbot\Backend\Shared\Domain\Exception\Invariant\StringLengthException;
 use olml89\TelegramUserbot\Backend\Shared\Domain\ValueObject\Percentage\Percentage;
+use olml89\TelegramUserbot\Backend\Shared\Domain\ValueObject\Percentage\PercentageException;
 use olml89\TelegramUserbot\Backend\Tag\Domain\Tag;
 use olml89\TelegramUserbot\Backend\Tag\Domain\TagFinder;
 use olml89\TelegramUserbot\Backend\Tag\Domain\TagNotFoundException;
@@ -104,7 +108,7 @@ final readonly class ContentBuilder
             } catch (ContentNotFoundException) {
                 return $title;
             }
-        } catch (StringLengthException $e) {
+        } catch (TitleLengthException $e) {
             $validationException->addError('title', $e->getMessage());
 
             return null;
@@ -115,7 +119,7 @@ final readonly class ContentBuilder
     {
         try {
             return new Description($command->description);
-        } catch (StringLengthException $e) {
+        } catch (DescriptionLengthException $e) {
             $validationException->addError('description', $e->getMessage());
 
             return null;
@@ -126,7 +130,7 @@ final readonly class ContentBuilder
     {
         try {
             return new Percentage($command->intensity);
-        } catch (OutOfRangeException $e) {
+        } catch (PercentageException $e) {
             $validationException->addError('intensity', $e->getMessage());
 
             return null;
@@ -137,7 +141,7 @@ final readonly class ContentBuilder
     {
         try {
             return new Price($command->price);
-        } catch (OutOfRangeException $e) {
+        } catch (PriceException $e) {
             $validationException->addError('price', $e->getMessage());
 
             return null;
@@ -148,7 +152,7 @@ final readonly class ContentBuilder
     {
         try {
             return Language::create($command->language);
-        } catch (UnsupportedStringValue $e) {
+        } catch (UnsupportedLanguageException $e) {
             $validationException->addError('language', $e->getMessage());
 
             return null;
@@ -159,7 +163,7 @@ final readonly class ContentBuilder
     {
         try {
             return Mode::create($command->mode);
-        } catch (UnsupportedStringValue $e) {
+        } catch (UnsupportedModeException $e) {
             $validationException->addError('mode', $e->getMessage());
 
             return null;
@@ -170,7 +174,7 @@ final readonly class ContentBuilder
     {
         try {
             return Status::create($command->status);
-        } catch (UnsupportedStringValue $e) {
+        } catch (UnsupportedStatusException $e) {
             $validationException->addError('status', $e->getMessage());
 
             return null;

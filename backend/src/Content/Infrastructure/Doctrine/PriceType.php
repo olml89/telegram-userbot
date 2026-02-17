@@ -8,8 +8,8 @@ use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Exception\InvalidFormat;
 use Doctrine\DBAL\Types\Exception\InvalidType;
 use Doctrine\DBAL\Types\Type;
-use olml89\TelegramUserbot\Backend\Content\Domain\Price;
-use olml89\TelegramUserbot\Backend\Shared\Domain\Exception\Invariant\OutOfRangeException;
+use olml89\TelegramUserbot\Backend\Content\Domain\Price\Price;
+use olml89\TelegramUserbot\Backend\Content\Domain\Price\PriceException;
 
 final class PriceType extends Type
 {
@@ -72,7 +72,7 @@ final class PriceType extends Type
 
         try {
             return new Price($value);
-        } catch (OutOfRangeException $e) {
+        } catch (PriceException $e) {
             throw InvalidFormat::new(
                 value: (string) $value,
                 toType: self::NAME,

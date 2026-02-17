@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace olml89\TelegramUserbot\Backend\File\Application\Validate;
 
-use olml89\TelegramUserbot\Backend\File\Domain\MimeType;
-use olml89\TelegramUserbot\Backend\File\Domain\OriginalName;
+use olml89\TelegramUserbot\Backend\File\Domain\MimeType\MimeType;
+use olml89\TelegramUserbot\Backend\File\Domain\MimeType\UnsupportedMimeTypeException;
+use olml89\TelegramUserbot\Backend\File\Domain\OriginalName\OriginalName;
+use olml89\TelegramUserbot\Backend\File\Domain\OriginalName\OriginalNameLengthException;
 use olml89\TelegramUserbot\Backend\File\Domain\Size\Size;
 use olml89\TelegramUserbot\Backend\File\Domain\Size\SizeException;
 use olml89\TelegramUserbot\Backend\Shared\Application\Validation\ValidationException;
-use olml89\TelegramUserbot\Backend\Shared\Domain\Exception\Invariant\StringLengthException;
-use olml89\TelegramUserbot\Backend\Shared\Domain\Exception\UnsupportedStringValue;
 
 final readonly class ValidateFileCommandHandler
 {
@@ -33,7 +33,7 @@ final readonly class ValidateFileCommandHandler
     {
         try {
             MimeType::create($command->mimeType);
-        } catch (UnsupportedStringValue $e) {
+        } catch (UnsupportedMimeTypeException $e) {
             $validationException->addError('mimeType', $e->getMessage());
         }
     }
@@ -42,7 +42,7 @@ final readonly class ValidateFileCommandHandler
     {
         try {
             new OriginalName($command->originalName);
-        } catch (StringLengthException $e) {
+        } catch (OriginalNameLengthException $e) {
             $validationException->addError('originalName', $e->getMessage());
         }
     }
