@@ -267,7 +267,7 @@ export const initFileUpload = () => {
             isFinalized = false;
             uploadUrl = null;
             setUploadingState(true);
-
+            setProgressBarVisible(false);
             setProgressMessage('Validating file...');
 
             try {
@@ -287,6 +287,7 @@ export const initFileUpload = () => {
                 return;
             }
 
+            setProgressBarVisible(true);
             setProgressMessage(`${formatProgress()}`);
             ++activeUploads;
             setUploadsActive();
@@ -305,7 +306,7 @@ export const initFileUpload = () => {
                 retryDelays: [],
                 metadata: {
                     filename: file.name,
-                    filetype: file.type || 'application/octet-stream',
+                    filetype: file.type || null,
                 },
                 onAfterResponse: () => {
                     uploadUrl = uploader?.url || uploadUrl;
