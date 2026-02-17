@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace olml89\TelegramUserbot\Backend\File\Domain\MimeType;
 
-use olml89\TelegramUserbot\Backend\Shared\Domain\Exception\InvalidResourceException;
+use olml89\TelegramUserbot\Backend\Shared\Domain\Exception\UnsupportedStringValueException;
 
-final class UnsupportedMimeTypeException extends InvalidResourceException
+final class UnsupportedMimeTypeException extends UnsupportedStringValueException
 {
-    public function __construct(string $mimeType)
+    protected static function enumName(): string
     {
-        parent::__construct(sprintf('Invalid mime type: %s', $mimeType));
+        return 'mimeType';
     }
 }

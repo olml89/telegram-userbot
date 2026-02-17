@@ -9,7 +9,4 @@ use JsonSerializable;
 interface SerializableStringBackedEnum extends JsonSerializable
 {
     public function label(): string;
-
-    /** @return string[] */
-    public static function values(): array;
 }

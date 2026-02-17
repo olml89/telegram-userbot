@@ -9,8 +9,8 @@ use olml89\TelegramUserbot\Backend\Category\Application\CategoryResult;
 use olml89\TelegramUserbot\Backend\Category\Domain\Category;
 use olml89\TelegramUserbot\Backend\Category\Domain\CategoryStorageException;
 use olml89\TelegramUserbot\Backend\Category\Domain\CategoryStorer;
-use olml89\TelegramUserbot\Backend\Shared\Domain\Exception\Invariant\StringLengthException;
 use olml89\TelegramUserbot\Backend\Shared\Domain\ValueObject\Name\Name;
+use olml89\TelegramUserbot\Backend\Shared\Domain\ValueObject\Name\NameLengthException;
 use Symfony\Component\Uid\Uuid;
 
 final readonly class SeedDatabaseCommandHandler
@@ -22,7 +22,7 @@ final readonly class SeedDatabaseCommandHandler
     /**
      * @return Generator<CategoryResult>
      *
-     * @throws StringLengthException
+     * @throws NameLengthException
      * @throws CategoryStorageException
      */
     public function handle(SeedDatabaseCommand $command): Generator

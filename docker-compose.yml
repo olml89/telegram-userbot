@@ -7,8 +7,9 @@ services:
     build:
       dockerfile: tusd/Dockerfile
     environment:
-      TUSD_BASE_PATH: /tus/uploads
+      TUSD_UPLOAD_ENDPOINT: /tus/uploads
       TUSD_UPLOAD_DIR: /var/uploads
+      API_VALIDATION_ENDPOINT: /api/files/validation
     entrypoint: [sh, /entrypoint.sh]
     networks:
       - telegram-userbot-network

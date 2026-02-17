@@ -30,7 +30,7 @@
 
         <field name="mimeType"
                column="mime_type"
-               enum-type="olml89\TelegramUserbot\Backend\File\Domain\MimeType"
+               enum-type="olml89\TelegramUserbot\Backend\File\Domain\MimeType\MimeType"
                length="100"
                nullable="false"/>
 

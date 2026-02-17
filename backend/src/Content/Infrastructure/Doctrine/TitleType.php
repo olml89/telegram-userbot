@@ -8,8 +8,8 @@ use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Exception\InvalidFormat;
 use Doctrine\DBAL\Types\Exception\InvalidType;
 use Doctrine\DBAL\Types\Type;
-use olml89\TelegramUserbot\Backend\Content\Domain\Title;
-use olml89\TelegramUserbot\Backend\Shared\Domain\Exception\Invariant\StringLengthException;
+use olml89\TelegramUserbot\Backend\Content\Domain\Title\Title;
+use olml89\TelegramUserbot\Backend\Content\Domain\Title\TitleLengthException;
 
 final class TitleType extends Type
 {
@@ -67,7 +67,7 @@ final class TitleType extends Type
 
         try {
             return new Title($value);
-        } catch (StringLengthException $e) {
+        } catch (TitleLengthException $e) {
             throw InvalidFormat::new(
                 value: $value,
                 toType: self::NAME,

@@ -8,8 +8,8 @@ use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Exception\InvalidFormat;
 use Doctrine\DBAL\Types\Exception\InvalidType;
 use Doctrine\DBAL\Types\Type;
-use olml89\TelegramUserbot\Backend\Shared\Domain\Exception\Invariant\StringLengthException;
 use olml89\TelegramUserbot\Backend\Shared\Domain\ValueObject\Name\Name;
+use olml89\TelegramUserbot\Backend\Shared\Domain\ValueObject\Name\NameLengthException;
 
 final class NameType extends Type
 {
@@ -67,7 +67,7 @@ final class NameType extends Type
 
         try {
             return new Name($value);
-        } catch (StringLengthException $e) {
+        } catch (NameLengthException $e) {
             throw InvalidFormat::new(
                 value: $value,
                 toType: self::NAME,

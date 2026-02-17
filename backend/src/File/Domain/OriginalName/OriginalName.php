@@ -2,9 +2,8 @@
 
 declare(strict_types=1);
 
-namespace olml89\TelegramUserbot\Backend\File\Domain;
+namespace olml89\TelegramUserbot\Backend\File\Domain\OriginalName;
 
-use olml89\TelegramUserbot\Backend\Shared\Domain\Exception\Invariant\StringLengthException;
 use olml89\TelegramUserbot\Backend\Shared\Domain\ValueObject\StringValueObject;
 
 final readonly class OriginalName extends StringValueObject
@@ -18,12 +17,12 @@ final readonly class OriginalName extends StringValueObject
     }
 
     /**
-     * @throws StringLengthException
+     * @throws OriginalNameLengthException
      */
     protected static function validate(string $value): void
     {
         if (mb_strlen($value) < self::MIN_LENGTH || mb_strlen($value) > self::MAX_LENGTH) {
-            throw StringLengthException::between(self::MIN_LENGTH, self::MAX_LENGTH);
+            throw new OriginalNameLengthException(self::MIN_LENGTH, self::MAX_LENGTH);
         }
     }
 }

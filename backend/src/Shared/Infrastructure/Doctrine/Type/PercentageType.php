@@ -8,8 +8,8 @@ use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Exception\InvalidFormat;
 use Doctrine\DBAL\Types\Exception\InvalidType;
 use Doctrine\DBAL\Types\Type;
-use olml89\TelegramUserbot\Backend\Shared\Domain\Exception\Invariant\OutOfRangeException;
 use olml89\TelegramUserbot\Backend\Shared\Domain\ValueObject\Percentage\Percentage;
+use olml89\TelegramUserbot\Backend\Shared\Domain\ValueObject\Percentage\PercentageException;
 
 final class PercentageType extends Type
 {
@@ -69,7 +69,7 @@ final class PercentageType extends Type
 
         try {
             return new Percentage($value);
-        } catch (OutOfRangeException $e) {
+        } catch (PercentageException $e) {
             throw InvalidFormat::new(
                 value: (string) $value,
                 toType: self::NAME,

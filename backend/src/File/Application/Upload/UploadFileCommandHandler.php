@@ -7,13 +7,13 @@ namespace olml89\TelegramUserbot\Backend\File\Application\Upload;
 use olml89\TelegramUserbot\Backend\File\Application\FileResult;
 use olml89\TelegramUserbot\Backend\File\Domain\FileStorageException;
 use olml89\TelegramUserbot\Backend\File\Domain\FileStorer;
-use olml89\TelegramUserbot\Backend\File\Domain\MimeType\UnsupportedMimeTypeException;
 use olml89\TelegramUserbot\Backend\File\Domain\Upload\UploadConsumptionException;
 use olml89\TelegramUserbot\Backend\File\Domain\Upload\UploadNotFoundException;
 use olml89\TelegramUserbot\Backend\File\Domain\Upload\UploadReadingException;
 use olml89\TelegramUserbot\Backend\File\Domain\Upload\UploadRemovalException;
 use olml89\TelegramUserbot\Backend\Shared\Application\Validation\ValidationException;
 use olml89\TelegramUserbot\Backend\Shared\Domain\Entity\Event\EventDispatcher;
+use olml89\TelegramUserbot\Backend\Shared\Domain\Exception\UnsupportedResourceException;
 
 final readonly class UploadFileCommandHandler
 {
@@ -26,7 +26,7 @@ final readonly class UploadFileCommandHandler
     /**
      * @throws UploadNotFoundException
      * @throws UploadReadingException
-     * @throws UnsupportedMimeTypeException
+     * @throws UnsupportedResourceException
      * @throws ValidationException
      * @throws UploadConsumptionException
      * @throws UploadRemovalException
