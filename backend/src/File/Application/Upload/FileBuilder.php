@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace olml89\TelegramUserbot\Backend\File\Application\Upload;
 
+use olml89\TelegramUserbot\Backend\File\Domain\Factory\FileFactory;
 use olml89\TelegramUserbot\Backend\File\Domain\File;
 use olml89\TelegramUserbot\Backend\File\Domain\FileManager;
 use olml89\TelegramUserbot\Backend\File\Domain\MimeType\MimeType;
@@ -28,6 +29,7 @@ final readonly class FileBuilder
 {
     public function __construct(
         private UploadFinder $uploadFinder,
+        private FileFactory $fileFactory,
         private FileManager $fileManager,
     ) {}
 
@@ -82,13 +84,7 @@ final readonly class FileBuilder
          * @var OriginalName $originalName
          * @var Size $size
          */
-        return new File(
-            publicId: $fileId,
-            name: $name,
-            originalName: $originalName,
-            mimeType: $mimeType,
-            bytes: $size,
-        );
+        return $this->fileFactory->create($fileId, $name, $originalName, $mimeType, $size);
     }
 
     /**

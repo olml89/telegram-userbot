@@ -15,7 +15,7 @@ use olml89\TelegramUserbot\Backend\Shared\Domain\Entity\IsEntity;
 use olml89\TelegramUserbot\Backend\Shared\Domain\ValueObject\Name\Name;
 use Symfony\Component\Uid\Uuid;
 
-final class File implements Entity
+class File implements Entity
 {
     use IsEntity;
 
