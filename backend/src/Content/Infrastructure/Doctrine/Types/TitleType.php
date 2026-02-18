@@ -2,18 +2,18 @@
 
 declare(strict_types=1);
 
-namespace olml89\TelegramUserbot\Backend\Content\Infrastructure\Doctrine;
+namespace olml89\TelegramUserbot\Backend\Content\Infrastructure\Doctrine\Types;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Exception\InvalidFormat;
 use Doctrine\DBAL\Types\Exception\InvalidType;
 use Doctrine\DBAL\Types\Type;
-use olml89\TelegramUserbot\Backend\Content\Domain\Description\Description;
-use olml89\TelegramUserbot\Backend\Content\Domain\Description\DescriptionLengthException;
+use olml89\TelegramUserbot\Backend\Content\Domain\Title\Title;
+use olml89\TelegramUserbot\Backend\Content\Domain\Title\TitleLengthException;
 
-final class DescriptionType extends Type
+final class TitleType extends Type
 {
-    private const string NAME = 'contentDescription';
+    private const string NAME = 'contentTitle';
 
     public function getName(): string
     {
@@ -22,7 +22,9 @@ final class DescriptionType extends Type
 
     public function getSQLDeclaration(array $column, AbstractPlatform $platform): string
     {
-        return $platform->getClobTypeDeclarationSQL($column);
+        return $platform->getStringTypeDeclarationSQL([
+            'length' => Title::maxLength(),
+        ]);
     }
 
     /**
@@ -34,14 +36,14 @@ final class DescriptionType extends Type
             return $value;
         }
 
-        if ($value instanceof Description) {
+        if ($value instanceof Title) {
             return $value->value;
         }
 
         throw InvalidType::new(
             value: $value,
             toType: self::NAME,
-            possibleTypes: ['string', Description::class],
+            possibleTypes: ['string', Title::class],
         );
     }
 
@@ -49,9 +51,9 @@ final class DescriptionType extends Type
      * @throws InvalidType
      * @throws InvalidFormat
      */
-    public function convertToPHPValue(mixed $value, AbstractPlatform $platform): Description
+    public function convertToPHPValue(mixed $value, AbstractPlatform $platform): Title
     {
-        if ($value instanceof Description) {
+        if ($value instanceof Title) {
             return $value;
         }
 
@@ -59,13 +61,13 @@ final class DescriptionType extends Type
             throw InvalidType::new(
                 value: $value,
                 toType: self::NAME,
-                possibleTypes: ['string', Description::class],
+                possibleTypes: ['string', Title::class],
             );
         }
 
         try {
-            return new Description($value);
-        } catch (DescriptionLengthException $e) {
+            return new Title($value);
+        } catch (TitleLengthException $e) {
             throw InvalidFormat::new(
                 value: $value,
                 toType: self::NAME,
