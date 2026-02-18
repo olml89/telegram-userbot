@@ -47,8 +47,6 @@ final readonly class TusdValidateFileRequestDenormalizer implements Denormalizer
     public function denormalize(mixed $data, string $type, ?string $format = null, array $context = []): mixed
     {
         /**
-         * @var class-string<ValidateFileRequest> $type
-         *
          * @var array{
          *     Type?: null|string,
          *     Event?: array{

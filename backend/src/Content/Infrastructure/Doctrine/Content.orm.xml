@@ -12,8 +12,8 @@
         </id>
 
         <field name="publicId"
-               type="uuid"
                column="public_id"
+               type="uuid"
                unique="true"
                nullable="false"/>
 

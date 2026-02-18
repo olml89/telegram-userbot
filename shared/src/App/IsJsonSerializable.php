@@ -16,9 +16,12 @@ trait IsJsonSerializable
      */
     public function jsonSerialize(): array
     {
-        return array_filter(
+        /** @var array<string, mixed> $filtered */
+        $filtered = array_filter(
             get_object_vars($this),
             fn(mixed $property): bool => !is_null($property),
         );
+
+        return $filtered;
     }
 }

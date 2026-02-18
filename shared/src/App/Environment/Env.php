@@ -22,7 +22,7 @@ final readonly class Env
         $dotEnv->load();
     }
 
-    public static function get(string $key, null|bool|int|float|string $default): null|bool|int|float|string
+    public static function get(string $key, bool|int|float|string|null $default): bool|int|float|string|null
     {
         /** @var ?string $value */
         $value = $_ENV[$key] ?? null;
