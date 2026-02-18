@@ -12,6 +12,7 @@
                               type="string"/>
 
         <discriminator-map>
+            <discriminator-mapping value="image" class="olml89\TelegramUserbot\Backend\File\Domain\Image"/>
             <discriminator-mapping value="audio" class="olml89\TelegramUserbot\Backend\File\Domain\Audio"/>
         </discriminator-map>
 

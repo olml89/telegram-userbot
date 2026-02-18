@@ -21,11 +21,19 @@ services:
       $filesystem: '@filesystem'
       $contentDirectory: '/var/content'
 
+  # ImageSpecializer
+  olml89\TelegramUserbot\Backend\File\Domain\FileSpecializer\ImageSpecializer:
+    alias: olml89\TelegramUserbot\Backend\File\Infrastructure\FileSpecializer\PhpImageSpecializer
+
+  olml89\TelegramUserbot\Backend\File\Infrastructure\FileSpecializer\PhpImageSpecializer:
+    arguments:
+      $fileManager: '@olml89\TelegramUserbot\Backend\File\Domain\FileManager'
+
   # AudioSpecializer
   olml89\TelegramUserbot\Backend\File\Domain\FileSpecializer\AudioSpecializer:
-    alias: olml89\TelegramUserbot\Backend\File\Infrastructure\Ffmpeg\FfmpegAudioSpecializer
+    alias: olml89\TelegramUserbot\Backend\File\Infrastructure\FileSpecializer\FfmpegAudioSpecializer
 
-  olml89\TelegramUserbot\Backend\File\Infrastructure\Ffmpeg\FfmpegAudioSpecializer:
+  olml89\TelegramUserbot\Backend\File\Infrastructure\FileSpecializer\FfmpegAudioSpecializer:
     arguments:
       $fileManager: '@olml89\TelegramUserbot\Backend\File\Domain\FileManager'
 
@@ -44,6 +52,6 @@ doctrine:
           File:
             is_bundle: false
             type: xml
-            dir: '%kernel.project_dir%/src/File/Infrastructure/Doctrine'
+            dir: '%kernel.project_dir%/src/File/Infrastructure/Doctrine/Mappings'
             prefix: olml89\TelegramUserbot\Backend\File\Domain
             alias: File
