@@ -13,6 +13,6 @@ doctrine:
           Tag:
             is_bundle: false
             type: xml
-            dir: '%kernel.project_dir%/src/Tag/Infrastructure/Doctrine'
+            dir: '%kernel.project_dir%/src/Tag/Infrastructure/Doctrine/Mappings'
             prefix: olml89\TelegramUserbot\Backend\Tag\Domain
             alias: Tag
