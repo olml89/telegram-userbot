@@ -72,36 +72,46 @@ final readonly class WebSocketServer implements MessageComponentInterface
 
     public function onOpen(ConnectionInterface $conn): void
     {
-        // Add new connection to the pool
+        /**
+         * Add a new connection to the pool
+         */
         $webSocketConnection = $this->socketConnectionPool->add($conn);
         $this->loggableLogger->log(new OpenedConnection($webSocketConnection));
 
-        // Emit current status to the connections
+        /**
+         * Emit the current status to the connections
+         */
         $this->statusManager->emit();
     }
 
     public function onClose(ConnectionInterface $conn): void
     {
-        // Remove connection from the pool
+        /**
+         * Remove the connection from the pool
+         */
         $webSocketConnection = $this->socketConnectionPool->remove($conn);
         $this->loggableLogger->log(new ClosedConnection($webSocketConnection));
     }
 
     public function onError(ConnectionInterface $conn, Exception $e): void
     {
-        // Log the exception
+        /**
+         * Log the exception
+         */
         $this->loggableLogger->log(new ErrorLogRecord('Error on the websocket server loop', $e));
 
-        // Report to Sentry
+        /**
+         * Report to Sentry
+         */
         $this->sentryReporter->report($e);
 
-        // Emit the current status with the exception message (and stack trace on development)
+        /**
+         * Emit the current status with the exception message (and stack trace on development)
+         */
         $this->statusManager->emit($e);
     }
 
     /**
-     * @param string $msg
-     *
      * @throws JsonException
      * @throws InvalidCommandTypeException
      * @throws InvalidPhoneCodeException
@@ -110,11 +120,15 @@ final readonly class WebSocketServer implements MessageComponentInterface
      */
     public function onMessage(ConnectionInterface $from, $msg): void
     {
-        // Create a command from an incoming message
+        /**
+         * Create a command from an incoming message
+         */
         $command = $this->commandFactory->fromJson($msg);
         $this->loggableLogger->log(new IncomingCommand($command));
 
-        // Run the command (catching the exceptions to log them on the command channel, then they are rethrown
+        /**
+         * Run the command (catching the exceptions to log them on the command channel; then they are rethrown
+         */
         $this->commandRunner->run($command);
     }
 }

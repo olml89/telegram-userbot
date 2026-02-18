@@ -23,7 +23,7 @@ abstract readonly class PhoneCodeLogRecord extends InfoLogRecord
     /**
      * @return array<string, mixed>
      */
-    public function context(): array
+    protected function context(): array
     {
         return [
             'storage-key' => $this->storageKey,
