@@ -19,6 +19,8 @@ final class Audio extends File
             $file->mimeType(),
             $file->bytes(),
         );
+
+        $this->copyEvents($file);
     }
 
     public function duration(): Duration

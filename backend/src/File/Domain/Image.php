@@ -21,6 +21,8 @@ final class Image extends File implements ThumbnailDisplayer
             $file->mimeType(),
             $file->bytes(),
         );
+
+        $this->copyEvents($file);
     }
 
     public function thumbnail(): FileName

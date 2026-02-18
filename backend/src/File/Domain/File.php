@@ -29,6 +29,15 @@ class File implements Entity
         protected readonly Size $bytes,
     ) {}
 
+    final protected function copyEvents(File $file): static
+    {
+        foreach ($file->events() as $event) {
+            $this->record($event);
+        }
+
+        return $this;
+    }
+
     public function fileName(): FileName
     {
         return $this->fileName;
