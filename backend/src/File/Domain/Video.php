@@ -7,6 +7,7 @@ namespace olml89\TelegramUserbot\Backend\File\Domain;
 use olml89\TelegramUserbot\Backend\File\Domain\Duration\Duration;
 use olml89\TelegramUserbot\Backend\File\Domain\FileName\FileName;
 use olml89\TelegramUserbot\Backend\File\Domain\Resolution\Resolution;
+use olml89\TelegramUserbot\Backend\File\Domain\Thumbnail\ThumbnailDisplayer;
 
 final class Video extends File implements ThumbnailDisplayer
 {
