@@ -13,6 +13,6 @@ doctrine:
           Category:
             is_bundle: false
             type: xml
-            dir: '%kernel.project_dir%/src/Category/Infrastructure/Doctrine'
+            dir: '%kernel.project_dir%/src/Category/Infrastructure/Doctrine/Mappings'
             prefix: olml89\TelegramUserbot\Backend\Category\Domain
             alias: Category
