@@ -47,10 +47,10 @@ doctrine:
   # Types
   dbal:
     types:
-      fileName: olml89\TelegramUserbot\Backend\File\Infrastructure\Doctrine\Type\FileNameType
-      fileOriginalName: olml89\TelegramUserbot\Backend\File\Infrastructure\Doctrine\Type\OriginalNameType
-      fileSize: olml89\TelegramUserbot\Backend\File\Infrastructure\Doctrine\Type\SizeType
-      fileDuration: olml89\TelegramUserbot\Backend\File\Infrastructure\Doctrine\Type\DurationType
+      fileName: olml89\TelegramUserbot\Backend\File\Infrastructure\Doctrine\Types\FileNameType
+      fileOriginalName: olml89\TelegramUserbot\Backend\File\Infrastructure\Doctrine\Types\OriginalNameType
+      fileSize: olml89\TelegramUserbot\Backend\File\Infrastructure\Doctrine\Types\SizeType
+      fileDuration: olml89\TelegramUserbot\Backend\File\Infrastructure\Doctrine\Types\DurationType
   # Mappings
   orm:
     entity_managers:
