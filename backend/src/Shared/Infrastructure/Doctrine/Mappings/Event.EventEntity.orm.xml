@@ -7,6 +7,7 @@
     <entity name="olml89\TelegramUserbot\Backend\Shared\Domain\Entity\Event\EventEntity"
             table="events">
 
+        <!-- Identity -->
         <id name="id" type="integer" column="id">
             <generator strategy="IDENTITY"/>
         </id>
@@ -17,6 +18,7 @@
                unique="true"
                nullable="false"/>
 
+        <!-- Fields -->
         <field name="eventClass"
                column="event_class"
                type="string"

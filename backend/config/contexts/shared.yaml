@@ -15,9 +15,8 @@ doctrine:
     entity_managers:
       default:
         mappings:
-          EventEntity:
-            is_bundle: false
+          Shared:
             type: xml
-            dir: '%kernel.project_dir%/src/Shared/Infrastructure/Doctrine/Event'
-            prefix: olml89\TelegramUserbot\Backend\Shared\Domain\Entity\Event
-            alias: EventEntity
+            dir: '%kernel.project_dir%/src/Shared/Infrastructure/Doctrine/Mappings'
+            prefix: olml89\TelegramUserbot\Backend\Shared\Domain\Entity
+            is_bundle: false
