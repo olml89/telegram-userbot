@@ -55,6 +55,11 @@ enum MimeType: string implements ValidatableStringBackedEnum, SafeStringBackedEn
         return str_starts_with($this->value, 'audio/');
     }
 
+    public function isVideo(): bool
+    {
+        return str_starts_with($this->value, 'video/');
+    }
+
     /**
      * @throws UnsupportedMimeTypeException
      */

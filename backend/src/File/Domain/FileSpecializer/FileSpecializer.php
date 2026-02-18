@@ -11,6 +11,7 @@ final readonly class FileSpecializer
     public function __construct(
         private ImageSpecializer $imageSpecializer,
         private AudioSpecializer $audioSpecializer,
+        private VideoSpecializer $videoSpecializer,
     ) {}
 
     /**
@@ -21,6 +22,7 @@ final readonly class FileSpecializer
         return match (true) {
             $file->mimeType()->isImage() => $this->imageSpecializer->specialize($file),
             $file->mimeType()->isAudio() => $this->audioSpecializer->specialize($file),
+            $file->mimeType()->isVideo() => $this->videoSpecializer->specialize($file),
             default => $file,
         };
     }

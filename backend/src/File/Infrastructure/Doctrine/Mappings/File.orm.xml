@@ -14,6 +14,7 @@
         <discriminator-map>
             <discriminator-mapping value="image" class="olml89\TelegramUserbot\Backend\File\Domain\Image"/>
             <discriminator-mapping value="audio" class="olml89\TelegramUserbot\Backend\File\Domain\Audio"/>
+            <discriminator-mapping value="video" class="olml89\TelegramUserbot\Backend\File\Domain\Video"/>
         </discriminator-map>
 
         <id name="id" type="integer" column="id">
