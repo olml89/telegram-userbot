@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace olml89\TelegramUserbot\Backend\Shared\Infrastructure\Symfony\EventSubscriber;
+namespace olml89\TelegramUserbot\Backend\Shared\Infrastructure\Symfony\EventSubscribers;
 
 use olml89\TelegramUserbot\Backend\Shared\Infrastructure\Symfony\Exception\ExceptionSentryReporter;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;

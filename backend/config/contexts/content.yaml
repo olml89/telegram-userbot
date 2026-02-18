@@ -8,9 +8,9 @@ doctrine:
   # Types
   dbal:
     types:
-      contentTitle: olml89\TelegramUserbot\Backend\Content\Infrastructure\Doctrine\TitleType
-      contentDescription: olml89\TelegramUserbot\Backend\Content\Infrastructure\Doctrine\DescriptionType
-      contentPrice: olml89\TelegramUserbot\Backend\Content\Infrastructure\Doctrine\PriceType
+      contentTitle: olml89\TelegramUserbot\Backend\Content\Infrastructure\Doctrine\Types\TitleType
+      contentDescription: olml89\TelegramUserbot\Backend\Content\Infrastructure\Doctrine\Types\DescriptionType
+      contentPrice: olml89\TelegramUserbot\Backend\Content\Infrastructure\Doctrine\Types\PriceType
   # Mappings
   orm:
     entity_managers:
@@ -19,6 +19,6 @@ doctrine:
           Content:
             is_bundle: false
             type: xml
-            dir: '%kernel.project_dir%/src/Content/Infrastructure/Doctrine'
+            dir: '%kernel.project_dir%/src/Content/Infrastructure/Doctrine/Mappings'
             prefix: olml89\TelegramUserbot\Backend\Content\Domain
             alias: Content

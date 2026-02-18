@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace olml89\TelegramUserbot\Backend\File\Infrastructure\Symfony\Denormalizer;
+namespace olml89\TelegramUserbot\Backend\File\Infrastructure\Symfony\Denormalizers;
 
 use olml89\TelegramUserbot\Backend\File\Infrastructure\Symfony\Http\Api\Validate\TusdValidateFileRequest;
 use olml89\TelegramUserbot\Backend\File\Infrastructure\Symfony\Http\Api\Validate\ValidateFileRequest;

@@ -33,24 +33,24 @@ services:
 
   # ImageSpecializer
   olml89\TelegramUserbot\Backend\File\Domain\FileSpecializer\ImageSpecializer:
-    alias: olml89\TelegramUserbot\Backend\File\Infrastructure\FileSpecializer\PhpImageSpecializer
+    alias: olml89\TelegramUserbot\Backend\File\Infrastructure\FileSpecializers\PhpImageSpecializer
 
   # AudioSpecializer
   olml89\TelegramUserbot\Backend\File\Domain\FileSpecializer\AudioSpecializer:
-    alias: olml89\TelegramUserbot\Backend\File\Infrastructure\FileSpecializer\FfmpegAudioSpecializer
+    alias: olml89\TelegramUserbot\Backend\File\Infrastructure\FileSpecializers\FfmpegAudioSpecializer
 
   # VideoSpecializer
   olml89\TelegramUserbot\Backend\File\Domain\FileSpecializer\VideoSpecializer:
-    alias: olml89\TelegramUserbot\Backend\File\Infrastructure\FileSpecializer\FfmpegVideoSpecializer
+    alias: olml89\TelegramUserbot\Backend\File\Infrastructure\FileSpecializers\FfmpegVideoSpecializer
 
 doctrine:
   # Types
   dbal:
     types:
-      fileName: olml89\TelegramUserbot\Backend\File\Infrastructure\Doctrine\FileNameType
-      fileOriginalName: olml89\TelegramUserbot\Backend\File\Infrastructure\Doctrine\OriginalNameType
-      fileSize: olml89\TelegramUserbot\Backend\File\Infrastructure\Doctrine\SizeType
-      fileDuration: olml89\TelegramUserbot\Backend\File\Infrastructure\Doctrine\DurationType
+      fileName: olml89\TelegramUserbot\Backend\File\Infrastructure\Doctrine\Types\FileNameType
+      fileOriginalName: olml89\TelegramUserbot\Backend\File\Infrastructure\Doctrine\Types\OriginalNameType
+      fileSize: olml89\TelegramUserbot\Backend\File\Infrastructure\Doctrine\Types\SizeType
+      fileDuration: olml89\TelegramUserbot\Backend\File\Infrastructure\Doctrine\Types\DurationType
   # Mappings
   orm:
     entity_managers:

@@ -2,18 +2,18 @@
 
 declare(strict_types=1);
 
-namespace olml89\TelegramUserbot\Backend\Content\Infrastructure\Doctrine;
+namespace olml89\TelegramUserbot\Backend\File\Infrastructure\Doctrine\Types;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Exception\InvalidFormat;
 use Doctrine\DBAL\Types\Exception\InvalidType;
 use Doctrine\DBAL\Types\Type;
-use olml89\TelegramUserbot\Backend\Content\Domain\Description\Description;
-use olml89\TelegramUserbot\Backend\Content\Domain\Description\DescriptionLengthException;
+use olml89\TelegramUserbot\Backend\File\Domain\OriginalName\OriginalName;
+use olml89\TelegramUserbot\Backend\File\Domain\OriginalName\OriginalNameLengthException;
 
-final class DescriptionType extends Type
+final class OriginalNameType extends Type
 {
-    private const string NAME = 'contentDescription';
+    private const string NAME = 'fileOriginalName';
 
     public function getName(): string
     {
@@ -22,7 +22,9 @@ final class DescriptionType extends Type
 
     public function getSQLDeclaration(array $column, AbstractPlatform $platform): string
     {
-        return $platform->getClobTypeDeclarationSQL($column);
+        return $platform->getStringTypeDeclarationSQL([
+            'length' => OriginalName::maxLength(),
+        ]);
     }
 
     /**
@@ -34,14 +36,14 @@ final class DescriptionType extends Type
             return $value;
         }
 
-        if ($value instanceof Description) {
+        if ($value instanceof OriginalName) {
             return $value->value;
         }
 
         throw InvalidType::new(
             value: $value,
             toType: self::NAME,
-            possibleTypes: ['string', Description::class],
+            possibleTypes: ['string', OriginalName::class],
         );
     }
 
@@ -49,9 +51,9 @@ final class DescriptionType extends Type
      * @throws InvalidType
      * @throws InvalidFormat
      */
-    public function convertToPHPValue(mixed $value, AbstractPlatform $platform): Description
+    public function convertToPHPValue(mixed $value, AbstractPlatform $platform): OriginalName
     {
-        if ($value instanceof Description) {
+        if ($value instanceof OriginalName) {
             return $value;
         }
 
@@ -59,13 +61,13 @@ final class DescriptionType extends Type
             throw InvalidType::new(
                 value: $value,
                 toType: self::NAME,
-                possibleTypes: ['string', Description::class],
+                possibleTypes: ['string', OriginalName::class],
             );
         }
 
         try {
-            return new Description($value);
-        } catch (DescriptionLengthException $e) {
+            return new OriginalName($value);
+        } catch (OriginalNameLengthException $e) {
             throw InvalidFormat::new(
                 value: $value,
                 toType: self::NAME,

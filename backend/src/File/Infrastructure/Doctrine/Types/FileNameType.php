@@ -2,18 +2,18 @@
 
 declare(strict_types=1);
 
-namespace olml89\TelegramUserbot\Backend\Content\Infrastructure\Doctrine;
+namespace olml89\TelegramUserbot\Backend\File\Infrastructure\Doctrine\Types;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Exception\InvalidFormat;
 use Doctrine\DBAL\Types\Exception\InvalidType;
 use Doctrine\DBAL\Types\Type;
-use olml89\TelegramUserbot\Backend\Content\Domain\Title\Title;
-use olml89\TelegramUserbot\Backend\Content\Domain\Title\TitleLengthException;
+use olml89\TelegramUserbot\Backend\File\Domain\FileName\FileName;
+use olml89\TelegramUserbot\Backend\File\Domain\FileName\FileNameLengthException;
 
-final class TitleType extends Type
+final class FileNameType extends Type
 {
-    private const string NAME = 'contentTitle';
+    private const string NAME = 'fileName';
 
     public function getName(): string
     {
@@ -23,7 +23,7 @@ final class TitleType extends Type
     public function getSQLDeclaration(array $column, AbstractPlatform $platform): string
     {
         return $platform->getStringTypeDeclarationSQL([
-            'length' => Title::maxLength(),
+            'length' => FileName::maxLength(),
         ]);
     }
 
@@ -36,14 +36,14 @@ final class TitleType extends Type
             return $value;
         }
 
-        if ($value instanceof Title) {
+        if ($value instanceof FileName) {
             return $value->value;
         }
 
         throw InvalidType::new(
             value: $value,
             toType: self::NAME,
-            possibleTypes: ['string', Title::class],
+            possibleTypes: ['string', FileName::class],
         );
     }
 
@@ -51,9 +51,9 @@ final class TitleType extends Type
      * @throws InvalidType
      * @throws InvalidFormat
      */
-    public function convertToPHPValue(mixed $value, AbstractPlatform $platform): Title
+    public function convertToPHPValue(mixed $value, AbstractPlatform $platform): FileName
     {
-        if ($value instanceof Title) {
+        if ($value instanceof FileName) {
             return $value;
         }
 
@@ -61,13 +61,13 @@ final class TitleType extends Type
             throw InvalidType::new(
                 value: $value,
                 toType: self::NAME,
-                possibleTypes: ['string', Title::class],
+                possibleTypes: ['string', FileName::class],
             );
         }
 
         try {
-            return new Title($value);
-        } catch (TitleLengthException $e) {
+            return new FileName($value);
+        } catch (FileNameLengthException $e) {
             throw InvalidFormat::new(
                 value: $value,
                 toType: self::NAME,

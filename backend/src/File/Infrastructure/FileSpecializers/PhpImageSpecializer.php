@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace olml89\TelegramUserbot\Backend\File\Infrastructure\FileSpecializer;
+namespace olml89\TelegramUserbot\Backend\File\Infrastructure\FileSpecializers;
 
 use olml89\TelegramUserbot\Backend\File\Domain\File;
 use olml89\TelegramUserbot\Backend\File\Domain\FileManager;

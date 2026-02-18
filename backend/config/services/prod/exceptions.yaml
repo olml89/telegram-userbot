@@ -1,7 +1,7 @@
 services:
 
   # Register SentryExceptionReportingSubscriber
-  olml89\TelegramUserbot\Backend\Shared\Infrastructure\Symfony\EventSubscriber\SentryExceptionReportingSubscriber:
+  olml89\TelegramUserbot\Backend\Shared\Infrastructure\Symfony\EventSubscribers\SentryExceptionReportingSubscriber:
     autowire: true
     autoconfigure: true
     arguments:

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace olml89\TelegramUserbot\Backend\File\Infrastructure\FileSpecializer;
+namespace olml89\TelegramUserbot\Backend\File\Infrastructure\FileSpecializers;
 
 use FFMpeg\Coordinate\TimeCode;
 use FFMpeg\FFMpeg;

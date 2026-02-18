@@ -2,18 +2,18 @@
 
 declare(strict_types=1);
 
-namespace olml89\TelegramUserbot\Backend\Shared\Infrastructure\Doctrine\Type;
+namespace olml89\TelegramUserbot\Backend\File\Infrastructure\Doctrine\Types;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Exception\InvalidFormat;
 use Doctrine\DBAL\Types\Exception\InvalidType;
 use Doctrine\DBAL\Types\Type;
-use olml89\TelegramUserbot\Backend\Shared\Domain\ValueObject\Percentage\Percentage;
-use olml89\TelegramUserbot\Backend\Shared\Domain\ValueObject\Percentage\PercentageException;
+use olml89\TelegramUserbot\Backend\File\Domain\Size\Size;
+use olml89\TelegramUserbot\Backend\File\Domain\Size\SizeException;
 
-final class PercentageType extends Type
+final class SizeType extends Type
 {
-    private const string NAME = 'percentage';
+    private const string NAME = 'fileSize';
 
     public function getName(): string
     {
@@ -22,7 +22,7 @@ final class PercentageType extends Type
 
     public function getSQLDeclaration(array $column, AbstractPlatform $platform): string
     {
-        return $platform->getIntegerTypeDeclarationSQL($column);
+        return $platform->getBigIntTypeDeclarationSQL($column);
     }
 
     /**
@@ -34,14 +34,14 @@ final class PercentageType extends Type
             return $value;
         }
 
-        if ($value instanceof Percentage) {
+        if ($value instanceof Size) {
             return $value->value;
         }
 
         throw InvalidType::new(
             value: $value,
             toType: self::NAME,
-            possibleTypes: ['int', Percentage::class],
+            possibleTypes: ['int', Size::class],
         );
     }
 
@@ -49,9 +49,9 @@ final class PercentageType extends Type
      * @throws InvalidType
      * @throws InvalidFormat
      */
-    public function convertToPHPValue(mixed $value, AbstractPlatform $platform): Percentage
+    public function convertToPHPValue(mixed $value, AbstractPlatform $platform): Size
     {
-        if ($value instanceof Percentage) {
+        if ($value instanceof Size) {
             return $value;
         }
 
@@ -63,13 +63,13 @@ final class PercentageType extends Type
             throw InvalidType::new(
                 value: $value,
                 toType: self::NAME,
-                possibleTypes: ['int', Percentage::class],
+                possibleTypes: ['int', Size::class],
             );
         }
 
         try {
-            return new Percentage($value);
-        } catch (PercentageException $e) {
+            return new Size($value);
+        } catch (SizeException $e) {
             throw InvalidFormat::new(
                 value: (string) $value,
                 toType: self::NAME,

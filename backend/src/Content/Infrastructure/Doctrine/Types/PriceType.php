@@ -2,18 +2,18 @@
 
 declare(strict_types=1);
 
-namespace olml89\TelegramUserbot\Backend\File\Infrastructure\Doctrine;
+namespace olml89\TelegramUserbot\Backend\Content\Infrastructure\Doctrine\Types;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Exception\InvalidFormat;
 use Doctrine\DBAL\Types\Exception\InvalidType;
 use Doctrine\DBAL\Types\Type;
-use olml89\TelegramUserbot\Backend\File\Domain\Duration\Duration;
-use olml89\TelegramUserbot\Backend\File\Domain\Duration\DurationException;
+use olml89\TelegramUserbot\Backend\Content\Domain\Price\Price;
+use olml89\TelegramUserbot\Backend\Content\Domain\Price\PriceException;
 
-final class DurationType extends Type
+final class PriceType extends Type
 {
-    private const string NAME = 'fileDuration';
+    private const string NAME = 'contentPrice';
 
     public function getName(): string
     {
@@ -37,14 +37,14 @@ final class DurationType extends Type
             return $value;
         }
 
-        if ($value instanceof Duration) {
+        if ($value instanceof Price) {
             return $value->value;
         }
 
         throw InvalidType::new(
             value: $value,
             toType: self::NAME,
-            possibleTypes: ['float', Duration::class],
+            possibleTypes: ['float', Price::class],
         );
     }
 
@@ -52,9 +52,9 @@ final class DurationType extends Type
      * @throws InvalidType
      * @throws InvalidFormat
      */
-    public function convertToPHPValue(mixed $value, AbstractPlatform $platform): Duration
+    public function convertToPHPValue(mixed $value, AbstractPlatform $platform): Price
     {
-        if ($value instanceof Duration) {
+        if ($value instanceof Price) {
             return $value;
         }
 
@@ -66,13 +66,13 @@ final class DurationType extends Type
             throw InvalidType::new(
                 value: $value,
                 toType: self::NAME,
-                possibleTypes: ['float', Duration::class],
+                possibleTypes: ['float', Price::class],
             );
         }
 
         try {
-            return new Duration($value);
-        } catch (DurationException $e) {
+            return new Price($value);
+        } catch (PriceException $e) {
             throw InvalidFormat::new(
                 value: (string) $value,
                 toType: self::NAME,

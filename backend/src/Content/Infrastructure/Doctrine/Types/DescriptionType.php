@@ -2,18 +2,18 @@
 
 declare(strict_types=1);
 
-namespace olml89\TelegramUserbot\Backend\Shared\Infrastructure\Doctrine\Type;
+namespace olml89\TelegramUserbot\Backend\Content\Infrastructure\Doctrine\Types;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Exception\InvalidFormat;
 use Doctrine\DBAL\Types\Exception\InvalidType;
 use Doctrine\DBAL\Types\Type;
-use olml89\TelegramUserbot\Backend\Shared\Domain\ValueObject\Name\Name;
-use olml89\TelegramUserbot\Backend\Shared\Domain\ValueObject\Name\NameLengthException;
+use olml89\TelegramUserbot\Backend\Content\Domain\Description\Description;
+use olml89\TelegramUserbot\Backend\Content\Domain\Description\DescriptionLengthException;
 
-final class NameType extends Type
+final class DescriptionType extends Type
 {
-    private const string NAME = 'name';
+    private const string NAME = 'contentDescription';
 
     public function getName(): string
     {
@@ -22,9 +22,7 @@ final class NameType extends Type
 
     public function getSQLDeclaration(array $column, AbstractPlatform $platform): string
     {
-        return $platform->getStringTypeDeclarationSQL([
-            'length' => Name::maxLength(),
-        ]);
+        return $platform->getClobTypeDeclarationSQL($column);
     }
 
     /**
@@ -36,14 +34,14 @@ final class NameType extends Type
             return $value;
         }
 
-        if ($value instanceof Name) {
+        if ($value instanceof Description) {
             return $value->value;
         }
 
         throw InvalidType::new(
             value: $value,
             toType: self::NAME,
-            possibleTypes: ['string', Name::class],
+            possibleTypes: ['string', Description::class],
         );
     }
 
@@ -51,9 +49,9 @@ final class NameType extends Type
      * @throws InvalidType
      * @throws InvalidFormat
      */
-    public function convertToPHPValue(mixed $value, AbstractPlatform $platform): Name
+    public function convertToPHPValue(mixed $value, AbstractPlatform $platform): Description
     {
-        if ($value instanceof Name) {
+        if ($value instanceof Description) {
             return $value;
         }
 
@@ -61,13 +59,13 @@ final class NameType extends Type
             throw InvalidType::new(
                 value: $value,
                 toType: self::NAME,
-                possibleTypes: ['string', Name::class],
+                possibleTypes: ['string', Description::class],
             );
         }
 
         try {
-            return new Name($value);
-        } catch (NameLengthException $e) {
+            return new Description($value);
+        } catch (DescriptionLengthException $e) {
             throw InvalidFormat::new(
                 value: $value,
                 toType: self::NAME,

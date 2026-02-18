@@ -2,18 +2,18 @@
 
 declare(strict_types=1);
 
-namespace olml89\TelegramUserbot\Backend\File\Infrastructure\Doctrine;
+namespace olml89\TelegramUserbot\Backend\Content\Infrastructure\Doctrine\Types;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Exception\InvalidFormat;
 use Doctrine\DBAL\Types\Exception\InvalidType;
 use Doctrine\DBAL\Types\Type;
-use olml89\TelegramUserbot\Backend\File\Domain\OriginalName\OriginalName;
-use olml89\TelegramUserbot\Backend\File\Domain\OriginalName\OriginalNameLengthException;
+use olml89\TelegramUserbot\Backend\Content\Domain\Title\Title;
+use olml89\TelegramUserbot\Backend\Content\Domain\Title\TitleLengthException;
 
-final class OriginalNameType extends Type
+final class TitleType extends Type
 {
-    private const string NAME = 'fileOriginalName';
+    private const string NAME = 'contentTitle';
 
     public function getName(): string
     {
@@ -23,7 +23,7 @@ final class OriginalNameType extends Type
     public function getSQLDeclaration(array $column, AbstractPlatform $platform): string
     {
         return $platform->getStringTypeDeclarationSQL([
-            'length' => OriginalName::maxLength(),
+            'length' => Title::maxLength(),
         ]);
     }
 
@@ -36,14 +36,14 @@ final class OriginalNameType extends Type
             return $value;
         }
 
-        if ($value instanceof OriginalName) {
+        if ($value instanceof Title) {
             return $value->value;
         }
 
         throw InvalidType::new(
             value: $value,
             toType: self::NAME,
-            possibleTypes: ['string', OriginalName::class],
+            possibleTypes: ['string', Title::class],
         );
     }
 
@@ -51,9 +51,9 @@ final class OriginalNameType extends Type
      * @throws InvalidType
      * @throws InvalidFormat
      */
-    public function convertToPHPValue(mixed $value, AbstractPlatform $platform): OriginalName
+    public function convertToPHPValue(mixed $value, AbstractPlatform $platform): Title
     {
-        if ($value instanceof OriginalName) {
+        if ($value instanceof Title) {
             return $value;
         }
 
@@ -61,13 +61,13 @@ final class OriginalNameType extends Type
             throw InvalidType::new(
                 value: $value,
                 toType: self::NAME,
-                possibleTypes: ['string', OriginalName::class],
+                possibleTypes: ['string', Title::class],
             );
         }
 
         try {
-            return new OriginalName($value);
-        } catch (OriginalNameLengthException $e) {
+            return new Title($value);
+        } catch (TitleLengthException $e) {
             throw InvalidFormat::new(
                 value: $value,
                 toType: self::NAME,
