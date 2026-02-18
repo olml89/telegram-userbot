@@ -26,6 +26,6 @@ final readonly class RemoveFileCommandHandler
     {
         $file = $this->fileFinder->find($command->publicId);
         $this->fileRemover->remove($file);
-        $this->eventDispatcher->dispatch(...$file->events());
+        $this->eventDispatcher->dispatch(...$file->pullEvents());
     }
 }

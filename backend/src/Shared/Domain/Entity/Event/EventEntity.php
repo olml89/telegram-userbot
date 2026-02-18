@@ -6,12 +6,12 @@ namespace olml89\TelegramUserbot\Backend\Shared\Domain\Entity\Event;
 
 use DateTimeImmutable;
 use olml89\TelegramUserbot\Backend\Shared\Domain\Entity\Entity;
-use olml89\TelegramUserbot\Backend\Shared\Domain\Entity\IsEntity;
+use olml89\TelegramUserbot\Backend\Shared\Domain\Entity\HasIdentity;
 use Symfony\Component\Uid\Uuid;
 
 final class EventEntity implements Entity
 {
-    use IsEntity;
+    use HasIdentity;
 
     public function __construct(
         protected readonly Uuid $publicId,

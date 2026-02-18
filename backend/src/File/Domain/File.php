@@ -11,13 +11,15 @@ use olml89\TelegramUserbot\Backend\File\Domain\OriginalName\OriginalName;
 use olml89\TelegramUserbot\Backend\File\Domain\Size\Size;
 use olml89\TelegramUserbot\Backend\File\Domain\Upload\Upload;
 use olml89\TelegramUserbot\Backend\File\Domain\Upload\UploadConsumed;
-use olml89\TelegramUserbot\Backend\Shared\Domain\Entity\Entity;
-use olml89\TelegramUserbot\Backend\Shared\Domain\Entity\IsEntity;
+use olml89\TelegramUserbot\Backend\Shared\Domain\Entity\EventSource;
+use olml89\TelegramUserbot\Backend\Shared\Domain\Entity\HasEvents;
+use olml89\TelegramUserbot\Backend\Shared\Domain\Entity\HasIdentity;
 use Symfony\Component\Uid\Uuid;
 
-class File implements Entity
+class File implements EventSource
 {
-    use IsEntity;
+    use HasIdentity;
+    use HasEvents;
 
     protected ?Content $content = null;
 
@@ -31,7 +33,7 @@ class File implements Entity
 
     final protected function copyEvents(File $file): static
     {
-        foreach ($file->events() as $event) {
+        foreach ($file->pullEvents() as $event) {
             $this->record($event);
         }
 

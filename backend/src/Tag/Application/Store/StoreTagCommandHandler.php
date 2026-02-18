@@ -32,7 +32,7 @@ final readonly class StoreTagCommandHandler
         }
 
         $this->tagStorer->store($tag);
-        $this->eventDispatcher->dispatch(...$tag->events());
+        $this->eventDispatcher->dispatch(...$tag->pullEvents());
 
         return StoreTagResult::created($tag);
     }
