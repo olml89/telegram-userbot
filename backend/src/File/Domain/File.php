@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace olml89\TelegramUserbot\Backend\File\Domain;
 
 use olml89\TelegramUserbot\Backend\Content\Domain\Content;
+use olml89\TelegramUserbot\Backend\File\Domain\FileName\FileName;
 use olml89\TelegramUserbot\Backend\File\Domain\MimeType\MimeType;
 use olml89\TelegramUserbot\Backend\File\Domain\OriginalName\OriginalName;
 use olml89\TelegramUserbot\Backend\File\Domain\Size\Size;
@@ -12,7 +13,6 @@ use olml89\TelegramUserbot\Backend\File\Domain\Upload\Upload;
 use olml89\TelegramUserbot\Backend\File\Domain\Upload\UploadConsumed;
 use olml89\TelegramUserbot\Backend\Shared\Domain\Entity\Entity;
 use olml89\TelegramUserbot\Backend\Shared\Domain\Entity\IsEntity;
-use olml89\TelegramUserbot\Backend\Shared\Domain\ValueObject\Name\Name;
 use Symfony\Component\Uid\Uuid;
 
 class File implements Entity
@@ -23,15 +23,15 @@ class File implements Entity
 
     public function __construct(
         protected readonly Uuid $publicId,
-        protected readonly Name $name,
+        protected readonly FileName $fileName,
         protected readonly OriginalName $originalName,
         protected readonly MimeType $mimeType,
         protected readonly Size $bytes,
     ) {}
 
-    public function name(): Name
+    public function fileName(): FileName
     {
-        return $this->name;
+        return $this->fileName;
     }
 
     public function originalName(): OriginalName
@@ -56,7 +56,7 @@ class File implements Entity
 
     public function path(string $directory): string
     {
-        return sprintf('%s/%s', $directory, $this->name()->value);
+        return $this->fileName()->path($directory);
     }
 
     public function assertNotAttached(): self

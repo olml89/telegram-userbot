@@ -137,7 +137,7 @@ final readonly class TusdUpload implements Upload
          * Move the uploaded file to the content directory with the correct name and extension
          */
         try {
-            $moved = $this->upload->move($destinationDirectory, $file->name()->value);
+            $moved = $this->upload->move($destinationDirectory, $file->fileName()->value);
         } catch (FileException $uploadMovingException) {
             /**
              * Move of the uploaded file failed, try to remove both files

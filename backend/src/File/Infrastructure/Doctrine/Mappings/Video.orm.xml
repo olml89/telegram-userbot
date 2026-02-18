@@ -7,6 +7,10 @@
     <entity name="olml89\TelegramUserbot\Backend\File\Domain\Video"
             table="video_files">
 
+        <field name="thumbnail"
+               type="fileName"
+               nullable="false"/>
+
         <field name="duration"
                type="fileDuration"
                nullable="false"/>

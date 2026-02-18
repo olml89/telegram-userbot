@@ -27,8 +27,9 @@
                unique="true"
                nullable="false"/>
 
-        <field name="name"
-               type="name"
+        <field name="fileName"
+               column="file_name"
+               type="fileName"
                nullable="false"/>
 
         <field name="originalName"

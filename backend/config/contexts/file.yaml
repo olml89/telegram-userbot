@@ -47,6 +47,7 @@ doctrine:
   # Types
   dbal:
     types:
+      fileName: olml89\TelegramUserbot\Backend\File\Infrastructure\Doctrine\FileNameType
       fileOriginalName: olml89\TelegramUserbot\Backend\File\Infrastructure\Doctrine\OriginalNameType
       fileSize: olml89\TelegramUserbot\Backend\File\Infrastructure\Doctrine\SizeType
       fileDuration: olml89\TelegramUserbot\Backend\File\Infrastructure\Doctrine\DurationType

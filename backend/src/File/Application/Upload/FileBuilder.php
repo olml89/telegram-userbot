@@ -6,6 +6,8 @@ namespace olml89\TelegramUserbot\Backend\File\Application\Upload;
 
 use olml89\TelegramUserbot\Backend\File\Domain\File;
 use olml89\TelegramUserbot\Backend\File\Domain\FileManager;
+use olml89\TelegramUserbot\Backend\File\Domain\FileName\FileName;
+use olml89\TelegramUserbot\Backend\File\Domain\FileName\FileNameLengthException;
 use olml89\TelegramUserbot\Backend\File\Domain\FileSpecializer\FileSpecializationException;
 use olml89\TelegramUserbot\Backend\File\Domain\FileSpecializer\FileSpecializer;
 use olml89\TelegramUserbot\Backend\File\Domain\MimeType\MimeType;
@@ -22,8 +24,6 @@ use olml89\TelegramUserbot\Backend\File\Domain\Upload\UploadReadingException;
 use olml89\TelegramUserbot\Backend\File\Domain\Upload\UploadRemovalException;
 use olml89\TelegramUserbot\Backend\Shared\Application\Validation\ValidationException;
 use olml89\TelegramUserbot\Backend\Shared\Domain\Exception\UnsupportedResourceException;
-use olml89\TelegramUserbot\Backend\Shared\Domain\ValueObject\Name\Name;
-use olml89\TelegramUserbot\Backend\Shared\Domain\ValueObject\Name\NameLengthException;
 use Symfony\Component\Uid\Uuid;
 
 final readonly class FileBuilder
@@ -86,7 +86,7 @@ final readonly class FileBuilder
 
         $validationException = new ValidationException();
         $fileId = Uuid::v4();
-        $name = $this->buildName($validationException, $fileId, $upload);
+        $fileName = $this->buildFileName($validationException, $fileId, $upload);
         $originalName = $this->buildOriginalName($validationException, $upload);
         $size = $this->buildSize($validationException, $upload);
 
@@ -95,13 +95,13 @@ final readonly class FileBuilder
         }
 
         /**
-         * @var Name $name
+         * @var FileName $fileName
          * @var OriginalName $originalName
          * @var Size $size
          */
         return new File(
             publicId: $fileId,
-            name: $name,
+            fileName: $fileName,
             originalName: $originalName,
             mimeType: $mimeType,
             bytes: $size,
@@ -126,17 +126,14 @@ final readonly class FileBuilder
     /**
      * @throws UploadReadingException
      */
-    private function buildName(ValidationException $validationException, Uuid $fileId, Upload $upload): ?Name
+    private function buildFileName(ValidationException $validationException, Uuid $fileId, Upload $upload): ?FileName
     {
         try {
-            return new Name(
-                sprintf(
-                    '%s.%s',
-                    $fileId->toRfc4122(),
-                    $upload->extension(),
-                ),
+            return FileName::from(
+                name: $fileId,
+                extension: $upload->extension(),
             );
-        } catch (NameLengthException $e) {
+        } catch (FileNameLengthException $e) {
             $validationException->addError('name', $e->getMessage());
 
             return null;

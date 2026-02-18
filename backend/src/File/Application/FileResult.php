@@ -14,7 +14,7 @@ final readonly class FileResult implements Result
 
     public function __construct(
         public string $publicId,
-        public string $name,
+        public string $fileName,
         public string $originalName,
         public string $mimeType,
         public int $bytes,
@@ -24,7 +24,7 @@ final readonly class FileResult implements Result
     {
         return new self(
             publicId: $file->publicId()->toRfc4122(),
-            name: $file->name()->value,
+            fileName: $file->fileName()->value,
             originalName: $file->originalName()->value,
             mimeType: $file->mimeType()->value,
             bytes: $file->bytes()->value,

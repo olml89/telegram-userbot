@@ -14,7 +14,7 @@ final class Audio extends File
     ) {
         parent::__construct(
             $file->publicId(),
-            $file->name(),
+            $file->fileName(),
             $file->originalName(),
             $file->mimeType(),
             $file->bytes(),
