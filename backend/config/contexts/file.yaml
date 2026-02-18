@@ -21,12 +21,36 @@ services:
       $filesystem: '@filesystem'
       $contentDirectory: '/var/content'
 
+  # FFMpeg, instantiated through a static constructor factory
+  FFMpeg\FFMpeg:
+    factory: [ 'FFMpeg\FFMpeg', 'create' ]
+    arguments:
+      $configuration:
+        ffmpeg.binaries: '/usr/bin/ffmpeg'
+        ffprobe.binaries: '/usr/bin/ffprobe'
+        timeout: 3600
+        threads: 12
+
+  # ImageSpecializer
+  olml89\TelegramUserbot\Backend\File\Domain\FileSpecializer\ImageSpecializer:
+    alias: olml89\TelegramUserbot\Backend\File\Infrastructure\FileSpecializer\PhpImageSpecializer
+
+  # AudioSpecializer
+  olml89\TelegramUserbot\Backend\File\Domain\FileSpecializer\AudioSpecializer:
+    alias: olml89\TelegramUserbot\Backend\File\Infrastructure\FileSpecializer\FfmpegAudioSpecializer
+
+  # VideoSpecializer
+  olml89\TelegramUserbot\Backend\File\Domain\FileSpecializer\VideoSpecializer:
+    alias: olml89\TelegramUserbot\Backend\File\Infrastructure\FileSpecializer\FfmpegVideoSpecializer
+
 doctrine:
   # Types
   dbal:
     types:
+      fileName: olml89\TelegramUserbot\Backend\File\Infrastructure\Doctrine\FileNameType
       fileOriginalName: olml89\TelegramUserbot\Backend\File\Infrastructure\Doctrine\OriginalNameType
       fileSize: olml89\TelegramUserbot\Backend\File\Infrastructure\Doctrine\SizeType
+      fileDuration: olml89\TelegramUserbot\Backend\File\Infrastructure\Doctrine\DurationType
   # Mappings
   orm:
     entity_managers:
@@ -35,6 +59,6 @@ doctrine:
           File:
             is_bundle: false
             type: xml
-            dir: '%kernel.project_dir%/src/File/Infrastructure/Doctrine'
+            dir: '%kernel.project_dir%/src/File/Infrastructure/Doctrine/Mappings'
             prefix: olml89\TelegramUserbot\Backend\File\Domain
             alias: File

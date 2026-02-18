@@ -3,6 +3,9 @@ FROM php:8.5-fpm-alpine AS base
 # Set the container working directory
 WORKDIR /telegram-userbot/backend
 
+# Install ffmpeg
+RUN apk add --no-cache ffmpeg
+
 # Install PHP extensions
 COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/local/bin/
 RUN install-php-extensions intl pgsql pdo_pgsql
@@ -46,7 +49,7 @@ RUN chmod +x /telegram-userbot/backend/bin/console
 COPY docker-php-ext-opcache.ini /usr/local/etc/php/docker-php-ext-opcache.ini
 
 # Install composer
-# - curl, bash, composer: needed to install dependencies during the build phase, don't keep it in the container
+# - curl, bash, composer: needed to install dependencies during the build phase, don't keep them in the container
 RUN apk add --no-cache curl bash && \
     curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
@@ -63,7 +66,7 @@ FROM base AS dev
 # Install composer and xdebug and clear extensions installer
 RUN install-php-extensions xdebug @composer && rm /usr/local/bin/install-php-extensions;
 
-# Add Node.js + npm fot Vite (to bundle assets on dev environment)
+# Add Node.js + npm for Vite (to bundle assets on dev environment)
 RUN apk add --no-cache nodejs npm
 
 # Copy xdebug configuration file

@@ -4,7 +4,12 @@ declare(strict_types=1);
 
 namespace olml89\TelegramUserbot\Backend\File\Application\Upload;
 
+use olml89\TelegramUserbot\Backend\File\Application\AudioResult;
 use olml89\TelegramUserbot\Backend\File\Application\FileResult;
+use olml89\TelegramUserbot\Backend\File\Application\FileResultFactory;
+use olml89\TelegramUserbot\Backend\File\Application\ImageResult;
+use olml89\TelegramUserbot\Backend\File\Application\VideoResult;
+use olml89\TelegramUserbot\Backend\File\Domain\FileSpecializer\FileSpecializationException;
 use olml89\TelegramUserbot\Backend\File\Domain\FileStorageException;
 use olml89\TelegramUserbot\Backend\File\Domain\FileStorer;
 use olml89\TelegramUserbot\Backend\File\Domain\Upload\UploadConsumptionException;
@@ -21,6 +26,7 @@ final readonly class UploadFileCommandHandler
         private FileBuilder $fileBuilder,
         private FileStorer $fileStorer,
         private EventDispatcher $eventDispatcher,
+        private FileResultFactory $fileResultFactory,
     ) {}
 
     /**
@@ -30,14 +36,15 @@ final readonly class UploadFileCommandHandler
      * @throws ValidationException
      * @throws UploadConsumptionException
      * @throws UploadRemovalException
+     * @throws FileSpecializationException
      * @throws FileStorageException
      */
-    public function handle(UploadFileCommand $command): FileResult
+    public function handle(UploadFileCommand $command): FileResult|ImageResult|AudioResult|VideoResult
     {
         $file = $this->fileBuilder->build($command);
         $this->fileStorer->store($file);
         $this->eventDispatcher->dispatch(...$file->events());
 
-        return FileResult::file($file);
+        return $this->fileResultFactory->create($file);
     }
 }

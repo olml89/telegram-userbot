@@ -25,7 +25,7 @@ final readonly class FileRemoved implements Event
     public function jsonSerialize(): array
     {
         return [
-            'name' => $this->file->name(),
+            'fileName' => $this->file->fileName(),
         ];
     }
 }

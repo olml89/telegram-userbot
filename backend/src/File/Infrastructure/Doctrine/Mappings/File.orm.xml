@@ -5,7 +5,18 @@
                   https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
 
     <entity name="olml89\TelegramUserbot\Backend\File\Domain\File"
-            table="files">
+            table="files"
+            inheritance-type="JOINED">
+
+        <discriminator-column name="type"
+                              type="string"/>
+
+        <discriminator-map>
+            <discriminator-mapping value="file" class="olml89\TelegramUserbot\Backend\File\Domain\File"/>
+            <discriminator-mapping value="image" class="olml89\TelegramUserbot\Backend\File\Domain\Image"/>
+            <discriminator-mapping value="audio" class="olml89\TelegramUserbot\Backend\File\Domain\Audio"/>
+            <discriminator-mapping value="video" class="olml89\TelegramUserbot\Backend\File\Domain\Video"/>
+        </discriminator-map>
 
         <id name="id" type="integer" column="id">
             <generator strategy="IDENTITY"/>
@@ -17,8 +28,9 @@
                unique="true"
                nullable="false"/>
 
-        <field name="name"
-               type="name"
+        <field name="fileName"
+               column="file_name"
+               type="fileName"
                nullable="false"/>
 
         <field name="originalName"

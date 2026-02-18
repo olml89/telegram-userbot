@@ -45,6 +45,21 @@ enum MimeType: string implements ValidatableStringBackedEnum, SafeStringBackedEn
     case pdf = 'application/pdf';
     case txt = 'text/plain';
 
+    public function isImage(): bool
+    {
+        return str_starts_with($this->value, 'image/');
+    }
+
+    public function isAudio(): bool
+    {
+        return str_starts_with($this->value, 'audio/');
+    }
+
+    public function isVideo(): bool
+    {
+        return str_starts_with($this->value, 'video/');
+    }
+
     /**
      * @throws UnsupportedMimeTypeException
      */
