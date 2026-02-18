@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace olml89\TelegramUserbot\Backend\Shared\Infrastructure\Symfony\EventDispatcher;
+namespace olml89\TelegramUserbot\Backend\Shared\Infrastructure\Symfony\EventDispatchers;
 
 use olml89\TelegramUserbot\Backend\Shared\Domain\Entity\Event\Event;
 use olml89\TelegramUserbot\Backend\Shared\Domain\Entity\Event\EventDispatcher;
