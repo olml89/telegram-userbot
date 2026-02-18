@@ -13,11 +13,6 @@ final class ResolutionException extends InvariantException
         parent::__construct($message);
     }
 
-    public static function invalid(): self
-    {
-        return new self('The resolution has to be in the format widthxheight');
-    }
-
     public static function width(): self
     {
         return new self('The width of the frame has to be greater than 0');
