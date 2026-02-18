@@ -18,7 +18,7 @@
         "phpstan/phpstan-mockery": "^2.0",
         "phpunit/phpunit": "^13.0",
         "mockery/mockery": "^1.6",
-        "rector/rector": "^2.1"
+        "rector/rector": "^2.3"
     },
     "scripts": {
         "rector": "rector/rector.sh",
