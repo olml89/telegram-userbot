@@ -15,7 +15,9 @@ final class EventEntity implements Entity
 
     public function __construct(
         protected readonly Uuid $publicId,
+        /** @var class-string<Event> */
         private readonly string $eventClass,
+        /** @var class-string<Entity> */
         private readonly string $entityClass,
         private readonly Uuid $entityId,
         /** @var array<string, mixed> */
@@ -23,11 +25,17 @@ final class EventEntity implements Entity
         private readonly DateTimeImmutable $occurredAt,
     ) {}
 
+    /**
+     * @return class-string<Event>
+     */
     public function eventClass(): string
     {
         return $this->eventClass;
     }
 
+    /**
+     * @return class-string<Entity>
+     */
     public function entityClass(): string
     {
         return $this->entityClass;
@@ -46,7 +54,7 @@ final class EventEntity implements Entity
         return $this->payload;
     }
 
-    public function occuredAt(): DateTimeImmutable
+    public function occurredAt(): DateTimeImmutable
     {
         return $this->occurredAt;
     }
