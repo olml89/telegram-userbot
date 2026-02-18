@@ -54,7 +54,7 @@ final class EventEntity implements Entity
         return $this->payload;
     }
 
-    public function occuredAt(): DateTimeImmutable
+    public function occurredAt(): DateTimeImmutable
     {
         return $this->occurredAt;
     }
