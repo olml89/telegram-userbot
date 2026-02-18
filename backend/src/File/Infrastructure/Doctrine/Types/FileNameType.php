@@ -2,18 +2,18 @@
 
 declare(strict_types=1);
 
-namespace olml89\TelegramUserbot\Backend\File\Infrastructure\Doctrine;
+namespace olml89\TelegramUserbot\Backend\File\Infrastructure\Doctrine\Types;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Exception\InvalidFormat;
 use Doctrine\DBAL\Types\Exception\InvalidType;
 use Doctrine\DBAL\Types\Type;
-use olml89\TelegramUserbot\Backend\File\Domain\Size\Size;
-use olml89\TelegramUserbot\Backend\File\Domain\Size\SizeException;
+use olml89\TelegramUserbot\Backend\File\Domain\FileName\FileName;
+use olml89\TelegramUserbot\Backend\File\Domain\FileName\FileNameLengthException;
 
-final class SizeType extends Type
+final class FileNameType extends Type
 {
-    private const string NAME = 'fileSize';
+    private const string NAME = 'fileName';
 
     public function getName(): string
     {
@@ -22,26 +22,28 @@ final class SizeType extends Type
 
     public function getSQLDeclaration(array $column, AbstractPlatform $platform): string
     {
-        return $platform->getBigIntTypeDeclarationSQL($column);
+        return $platform->getStringTypeDeclarationSQL([
+            'length' => FileName::maxLength(),
+        ]);
     }
 
     /**
      * @throws InvalidType
      */
-    public function convertToDatabaseValue(mixed $value, AbstractPlatform $platform): int
+    public function convertToDatabaseValue(mixed $value, AbstractPlatform $platform): string
     {
-        if (is_int($value)) {
+        if (is_string($value)) {
             return $value;
         }
 
-        if ($value instanceof Size) {
+        if ($value instanceof FileName) {
             return $value->value;
         }
 
         throw InvalidType::new(
             value: $value,
             toType: self::NAME,
-            possibleTypes: ['int', Size::class],
+            possibleTypes: ['string', FileName::class],
         );
     }
 
@@ -49,29 +51,25 @@ final class SizeType extends Type
      * @throws InvalidType
      * @throws InvalidFormat
      */
-    public function convertToPHPValue(mixed $value, AbstractPlatform $platform): Size
+    public function convertToPHPValue(mixed $value, AbstractPlatform $platform): FileName
     {
-        if ($value instanceof Size) {
+        if ($value instanceof FileName) {
             return $value;
         }
 
-        if (is_string($value) && is_numeric($value)) {
-            $value = (int) $value;
-        }
-
-        if (!is_int($value)) {
+        if (!is_string($value)) {
             throw InvalidType::new(
                 value: $value,
                 toType: self::NAME,
-                possibleTypes: ['int', Size::class],
+                possibleTypes: ['string', FileName::class],
             );
         }
 
         try {
-            return new Size($value);
-        } catch (SizeException $e) {
+            return new FileName($value);
+        } catch (FileNameLengthException $e) {
             throw InvalidFormat::new(
-                value: (string) $value,
+                value: $value,
                 toType: self::NAME,
                 expectedFormat: $e->getMessage(),
             );
