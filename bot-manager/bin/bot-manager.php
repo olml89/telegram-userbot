@@ -8,7 +8,7 @@ use olml89\TelegramUserbot\BotManager\Websocket\WebSocketServer;
 use olml89\TelegramUserbot\BotManager\Websocket\WebSocketServerConfig;
 
 /** @var Container $container */
-$container = require 'container.php';
+$container = require __DIR__ . '/container.php';
 
 /** @var StatusInitializer $statusInitializer */
 $statusInitializer = $container->get(StatusInitializer::class);
