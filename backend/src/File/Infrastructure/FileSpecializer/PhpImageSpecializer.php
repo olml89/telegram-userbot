@@ -27,30 +27,21 @@ final readonly class PhpImageSpecializer implements ImageSpecializer
     {
         try {
             $imageFile = $this->fileManager->mediaFile($file);
-            [$width, $height] = $this->getImageSize($imageFile);
-            $resolution = new Resolution($width, $height);
 
-            return new Image($file, $resolution);
+            return new Image(
+                file: $file,
+                resolution: $this->getResolution($imageFile),
+            );
         } catch (RuntimeException|ResolutionException $e) {
             throw new FileSpecializationException($e);
         }
     }
 
     /**
-     * @return array{
-     *     0: int<0, max>,
-     *     1: int<0, max>,
-     *     2: int,
-     *     3: string,
-     *     bits?: int,
-     *     channels?: int,
-     *     mime: string,
-     * }
-     *
      * @throws RuntimeException
      * @throws ResolutionException
      */
-    private function getImageSize(SplFileObject $imageFile): array
+    private function getResolution(SplFileObject $imageFile): Resolution
     {
         $imageSize = @getimagesize($imageFile->getPathname());
 
@@ -58,6 +49,19 @@ final readonly class PhpImageSpecializer implements ImageSpecializer
             throw new RuntimeException('Unable to get image size');
         }
 
-        return $imageSize;
+        /**
+         * @var array{
+         *     0: int<0, max>,
+         *     1: int<0, max>,
+         *     2: int,
+         *     3: string,
+         *     bits?: int,
+         *     channels?: int,
+         *     mime: string,
+         * } $imageSize
+         */
+        [$width, $height] = $imageSize;
+
+        return new Resolution($width, $height);
     }
 }

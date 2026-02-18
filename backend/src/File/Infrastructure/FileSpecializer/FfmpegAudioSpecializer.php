@@ -35,9 +35,10 @@ final readonly class FfmpegAudioSpecializer implements AudioSpecializer
                 throw new RuntimeException('Audio stream not found');
             }
 
-            $duration = $this->getDuration($audioStream);
-
-            return new Audio($file, $duration);
+            return new Audio(
+                file: $file,
+                duration: $this->getDuration($audioStream),
+            );
         } catch (RuntimeException|DurationException $e) {
             throw new FileSpecializationException($e);
         }
