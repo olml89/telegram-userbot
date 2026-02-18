@@ -15,6 +15,8 @@ interface FileManager
     public function consume(File $file, Upload $upload): void;
 
     public function exists(File $file): bool;
+
+    /** @throws FileNotReadableException */
     public function mediaFile(File|FileName $subject): SplFileObject;
     public function path(File|FileName $subject): string;
     public function remove(File $file): void;
