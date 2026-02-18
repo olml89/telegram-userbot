@@ -14,6 +14,9 @@ trait IsResult
      */
     public function jsonSerialize(): array
     {
-        return get_object_vars($this);
+        /** @var array<string, mixed> $properties */
+        $properties = get_object_vars($this);
+
+        return $properties;
     }
 }
