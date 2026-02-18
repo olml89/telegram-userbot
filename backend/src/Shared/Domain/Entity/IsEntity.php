@@ -35,18 +35,9 @@ trait IsEntity
         return $this->publicId;
     }
 
-    protected function record(Event $event): static
+    final protected function record(Event $event): static
     {
         $this->events[] = $event;
-
-        return $this;
-    }
-
-    public function copyEvents(Entity $entity): static
-    {
-        foreach ($entity->events() as $event) {
-            $this->record($event);
-        }
 
         return $this;
     }
@@ -54,7 +45,7 @@ trait IsEntity
     /**
      * @return Event[]
      */
-    public function events(): array
+    final public function events(): array
     {
         $events = $this->events;
         $this->events = [];
