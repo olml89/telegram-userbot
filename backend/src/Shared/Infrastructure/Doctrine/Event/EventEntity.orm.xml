@@ -12,26 +12,26 @@
         </id>
 
         <field name="publicId"
-               type="uuid"
                column="public_id"
+               type="uuid"
                unique="true"
                nullable="false"/>
 
         <field name="eventClass"
-               type="string"
                column="event_class"
+               type="string"
                length="255"
                nullable="false"/>
 
         <field name="entityClass"
-               type="string"
                column="entity_class"
+               type="string"
                length="255"
                nullable="false"/>
 
         <field name="entityId"
-               type="uuid"
                column="entity_id"
+               type="uuid"
                nullable="false"/>
 
         <field name="payload"
@@ -39,8 +39,8 @@
                nullable="false"/>
 
         <field name="occurredAt"
-               type="datetime_immutable"
                column="occurred_at"
+               type="datetime_immutable"
                nullable="false"/>
 
     </entity>
