@@ -7,6 +7,7 @@ namespace olml89\TelegramUserbot\Backend\Content\Application\Store;
 use olml89\TelegramUserbot\Backend\Content\Application\ContentResult;
 use olml89\TelegramUserbot\Backend\Content\Domain\ContentStorageException;
 use olml89\TelegramUserbot\Backend\Content\Domain\ContentStorer;
+use olml89\TelegramUserbot\Backend\File\Application\FileResultFactory;
 use olml89\TelegramUserbot\Backend\Shared\Application\Validation\ValidationException;
 use olml89\TelegramUserbot\Backend\Shared\Domain\Entity\Event\EventDispatcher;
 
@@ -16,6 +17,7 @@ final readonly class StoreContentCommandHandler
         private ContentBuilder $contentBuilder,
         private ContentStorer $contentStorer,
         private EventDispatcher $eventDispatcher,
+        private FileResultFactory $fileResultFactory,
     ) {}
 
     /**
@@ -28,6 +30,6 @@ final readonly class StoreContentCommandHandler
         $this->contentStorer->store($content);
         $this->eventDispatcher->dispatch(...$content->events());
 
-        return ContentResult::content($content);
+        return ContentResult::content($content, $this->fileResultFactory);
     }
 }
