@@ -37,8 +37,8 @@ final readonly class UploadFileCommandHandler
      * @throws ValidationException
      * @throws UploadConsumptionException
      * @throws UploadRemovalException
-     * @throws FileMetadataStrippingException
      * @throws FileSpecializationException
+     * @throws FileMetadataStrippingException
      * @throws FileStorageException
      */
     public function handle(UploadFileCommand $command): FileResult|ImageResult|AudioResult|VideoResult

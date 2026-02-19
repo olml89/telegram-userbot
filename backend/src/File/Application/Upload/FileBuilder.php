@@ -41,8 +41,8 @@ final readonly class FileBuilder
      * @throws ValidationException
      * @throws UploadConsumptionException
      * @throws UploadRemovalException
-     * @throws FileMetadataStrippingException
      * @throws FileSpecializationException
+     * @throws FileMetadataStrippingException
      */
     public function build(UploadFileCommand $command): File
     {

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace olml89\TelegramUserbot\Backend\File\Infrastructure\Symfony\Http\Api\Upload;
 
 use olml89\TelegramUserbot\Backend\File\Application\Upload\UploadFileCommandHandler;
+use olml89\TelegramUserbot\Backend\File\Domain\FileMetadataStripper\FileMetadataStrippingException;
 use olml89\TelegramUserbot\Backend\File\Domain\FileSpecializer\FileSpecializationException;
 use olml89\TelegramUserbot\Backend\File\Domain\FileStorageException;
 use olml89\TelegramUserbot\Backend\File\Domain\Upload\UploadConsumptionException;
@@ -38,6 +39,7 @@ final readonly class UploadFileController
      * @throws UploadConsumptionException
      * @throws UploadRemovalException
      * @throws FileSpecializationException
+     * @throws FileMetadataStrippingException
      * @throws FileStorageException
      */
     public function __invoke(#[MapRequestPayload] UploadFileRequest $request): JsonResponse

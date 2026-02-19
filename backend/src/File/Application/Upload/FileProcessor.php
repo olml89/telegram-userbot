@@ -20,16 +20,16 @@ final readonly class FileProcessor
     ) {}
 
     /**
-     * @throws FileMetadataStrippingException
      * @throws FileSpecializationException
+     * @throws FileMetadataStrippingException
      */
     public function process(File $file): File
     {
         try {
-            $file = $this->fileMetadataStripper->strip($file);
+            $file = $this->fileSpecializer->specialize($file);
 
-            return $this->fileSpecializer->specialize($file);
-        } catch (FileMetadataStrippingException|FileSpecializationException $e) {
+            return $this->fileMetadataStripper->strip($file);
+        } catch (FileSpecializationException|FileMetadataStrippingException $e) {
             /**
              * Rollback: delete the StorageFile if there's an error while trying to process the File
              */

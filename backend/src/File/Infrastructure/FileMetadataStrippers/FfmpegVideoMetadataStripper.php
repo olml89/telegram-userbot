@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace olml89\TelegramUserbot\Backend\File\Infrastructure\FileMetadataStrippers;
 
-use olml89\TelegramUserbot\Backend\File\Domain\File;
 use olml89\TelegramUserbot\Backend\File\Domain\FileManager;
 use olml89\TelegramUserbot\Backend\File\Domain\FileMetadataStripper\FileMetadataStrippingException;
 use olml89\TelegramUserbot\Backend\File\Domain\FileMetadataStripper\VideoMetadataStripper;
 use olml89\TelegramUserbot\Backend\File\Domain\FileName\FileName;
 use olml89\TelegramUserbot\Backend\File\Domain\StorageFile\StorageFile;
+use olml89\TelegramUserbot\Backend\File\Domain\Video;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
 use Symfony\Component\Uid\Uuid;
@@ -24,10 +24,10 @@ final readonly class FfmpegVideoMetadataStripper implements VideoMetadataStrippe
     /**
      * @throws FileMetadataStrippingException
      */
-    public function strip(File $file): File
+    public function strip(Video $video): true
     {
         try {
-            $storageFile = $this->fileManager->storageFile($file);
+            $storageFile = $this->fileManager->storageFile($video);
 
             /**
              * tmp StorageFile name: random UUID, same extension as the original StorageFile
@@ -65,7 +65,7 @@ final readonly class FfmpegVideoMetadataStripper implements VideoMetadataStrippe
 
             $tmpFile->move($storageFile);
 
-            return $file;
+            return true;
         } catch (Throwable $e) {
             throw new FileMetadataStrippingException($e);
         }
