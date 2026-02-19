@@ -20,6 +20,8 @@ final readonly class ImageResult implements Result
         public int $bytes,
         public int $width,
         public int $height,
+        public string $createdAt,
+        public string $updatedAt,
     ) {}
 
     public static function image(Image $image): self
@@ -34,6 +36,8 @@ final readonly class ImageResult implements Result
             bytes: $fileResult->bytes,
             width: $image->resolution()->width,
             height: $image->resolution()->height,
+            createdAt: $fileResult->createdAt,
+            updatedAt: $fileResult->updatedAt,
         );
     }
 }

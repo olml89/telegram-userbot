@@ -21,15 +21,19 @@ use olml89\TelegramUserbot\Backend\Shared\Domain\Collection\GenericCollection;
 use olml89\TelegramUserbot\Backend\Shared\Domain\Entity\EventSource\EventSource;
 use olml89\TelegramUserbot\Backend\Shared\Domain\Entity\EventSource\HasEvents;
 use olml89\TelegramUserbot\Backend\Shared\Domain\Entity\HasIdentity;
+use olml89\TelegramUserbot\Backend\Shared\Domain\Entity\Timestampable\HasTimestamps;
+use olml89\TelegramUserbot\Backend\Shared\Domain\Entity\Timestampable\Timestampable;
 use olml89\TelegramUserbot\Backend\Shared\Domain\Exception\Invariant\CollectionCountException;
 use olml89\TelegramUserbot\Backend\Shared\Domain\ValueObject\Percentage\Percentage;
+use olml89\TelegramUserbot\Backend\Shared\Domain\ValueObject\Timestamps\Timestamps;
 use olml89\TelegramUserbot\Backend\Tag\Domain\Tag;
 use Symfony\Component\Uid\Uuid;
 
-final class Content implements EventSource
+final class Content implements EventSource, Timestampable
 {
     use HasIdentity;
     use HasEvents;
+    use HasTimestamps;
 
     private int $sales = 0;
 
@@ -55,6 +59,7 @@ final class Content implements EventSource
         private Category $category,
         TagCollection $tags,
         FileCollection $files,
+        protected readonly Timestamps $timestamps = new Timestamps(),
     ) {
         $this->tags = $tags->toArray();
 

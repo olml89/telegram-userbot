@@ -58,6 +58,11 @@
                length="20"
                nullable="false"/>
 
+        <!-- Timestamps -->
+        <embedded name="timestamps"
+                  class="olml89\TelegramUserbot\Backend\Shared\Domain\ValueObject\Timestamps\Timestamps"
+                  use-column-prefix="false"/>
+
         <!-- Relationships -->
         <many-to-one field="category"
                      target-entity="olml89\TelegramUserbot\Backend\Category\Domain\Category"

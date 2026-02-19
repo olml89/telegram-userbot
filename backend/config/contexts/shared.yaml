@@ -18,5 +18,5 @@ doctrine:
           Shared:
             type: xml
             dir: '%kernel.project_dir%/src/Shared/Infrastructure/Doctrine/Mappings'
-            prefix: olml89\TelegramUserbot\Backend\Shared\Domain\Entity\EventEntity
+            prefix: olml89\TelegramUserbot\Backend\Shared\Domain
             is_bundle: false

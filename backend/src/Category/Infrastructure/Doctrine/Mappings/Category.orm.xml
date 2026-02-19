@@ -24,6 +24,11 @@
                unique="true"
                nullable="false"/>
 
+        <!-- Timestamps -->
+        <embedded name="timestamps"
+                  class="olml89\TelegramUserbot\Backend\Shared\Domain\ValueObject\Timestamps\Timestamps"
+                  use-column-prefix="false"/>
+
     </entity>
 
 </doctrine-mapping>

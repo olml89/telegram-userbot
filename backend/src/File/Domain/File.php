@@ -14,12 +14,16 @@ use olml89\TelegramUserbot\Backend\File\Domain\Upload\UploadConsumed;
 use olml89\TelegramUserbot\Backend\Shared\Domain\Entity\EventSource\EventSource;
 use olml89\TelegramUserbot\Backend\Shared\Domain\Entity\EventSource\HasEvents;
 use olml89\TelegramUserbot\Backend\Shared\Domain\Entity\HasIdentity;
+use olml89\TelegramUserbot\Backend\Shared\Domain\Entity\Timestampable\HasTimestamps;
+use olml89\TelegramUserbot\Backend\Shared\Domain\Entity\Timestampable\Timestampable;
+use olml89\TelegramUserbot\Backend\Shared\Domain\ValueObject\Timestamps\Timestamps;
 use Symfony\Component\Uid\Uuid;
 
-class File implements EventSource
+class File implements EventSource, Timestampable
 {
     use HasIdentity;
     use HasEvents;
+    use HasTimestamps;
 
     protected ?Content $content = null;
 
@@ -29,6 +33,7 @@ class File implements EventSource
         protected readonly OriginalName $originalName,
         protected readonly MimeType $mimeType,
         protected readonly Size $bytes,
+        protected readonly Timestamps $timestamps = new Timestamps(),
     ) {}
 
     final protected function copyEvents(File $file): static

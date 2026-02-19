@@ -21,6 +21,8 @@ final readonly class VideoResult implements Result
         public float $duration,
         public int $width,
         public int $height,
+        public string $createdAt,
+        public string $updatedAt,
     ) {}
 
     public static function video(Video $video): self
@@ -36,6 +38,8 @@ final readonly class VideoResult implements Result
             duration: $video->duration()->value,
             width: $video->resolution()->width,
             height: $video->resolution()->height,
+            createdAt: $fileResult->createdAt,
+            updatedAt: $fileResult->updatedAt,
         );
     }
 }
