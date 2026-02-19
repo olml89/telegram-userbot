@@ -43,6 +43,10 @@ services:
   olml89\TelegramUserbot\Backend\File\Domain\FileSpecializer\VideoSpecializer:
     alias: olml89\TelegramUserbot\Backend\File\Infrastructure\FileSpecializers\FfmpegVideoSpecializer
 
+  # ImageMetadataStripper
+  olml89\TelegramUserbot\Backend\File\Domain\FileMetadataStripper\ImageMetadataStripper:
+    alias: olml89\TelegramUserbot\Backend\File\Infrastructure\FileMetadataStrippers\ImagickMetadataStripper
+
 doctrine:
   # Types
   dbal:

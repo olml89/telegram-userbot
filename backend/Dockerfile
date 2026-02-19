@@ -3,12 +3,16 @@ FROM php:8.5-fpm-alpine AS base
 # Set the container working directory
 WORKDIR /telegram-userbot/backend
 
-# Install ffmpeg
-RUN apk add --no-cache ffmpeg
+# Install needed runtime dependencies
+# - ffmpeg: get resolution and duration and strip metadata from audio and video files
+# - imagick: strip metadata from image files
+RUN apk add --no-cache \
+    ffmpeg \
+    imagemagick
 
 # Install PHP extensions
 COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/local/bin/
-RUN install-php-extensions intl pgsql pdo_pgsql
+RUN install-php-extensions intl pgsql pdo_pgsql imagick
 
 FROM base AS assets
 
