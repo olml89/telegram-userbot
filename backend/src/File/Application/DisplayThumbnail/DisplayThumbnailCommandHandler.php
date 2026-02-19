@@ -32,6 +32,6 @@ final readonly class DisplayThumbnailCommandHandler
             throw new ThumbnailNotFoundException($file);
         }
 
-        return $this->fileManager->mediaFile($file->thumbnail());
+        return $this->fileManager->storageFile($file->thumbnail());
     }
 }

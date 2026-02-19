@@ -37,7 +37,7 @@ final readonly class SymfonyFileManager implements FileManager
     /**
      * @throws StorageFileNotReadableException
      */
-    public function mediaFile(File|FileName $subject): StorageFile
+    public function storageFile(File|FileName $subject): StorageFile
     {
         $path = $this->path($subject);
 

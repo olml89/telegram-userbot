@@ -38,7 +38,7 @@ final readonly class FileMetadataStripper
     private function readNewSize(File $file): Size
     {
         try {
-            $storageFile = $this->fileManager->mediaFile($file);
+            $storageFile = $this->fileManager->storageFile($file);
             $bytes = $storageFile->getSize();
 
             return new Size($bytes);

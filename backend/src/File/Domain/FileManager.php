@@ -18,7 +18,7 @@ interface FileManager
     public function exists(File $file): bool;
 
     /** @throws StorageFileNotReadableException */
-    public function mediaFile(File|FileName $subject): StorageFile;
+    public function storageFile(File|FileName $subject): StorageFile;
     public function path(File|FileName $subject): string;
     public function remove(File $file): void;
 }

@@ -36,8 +36,8 @@ final readonly class FfmpegVideoSpecializer implements VideoSpecializer
     public function specialize(File $file): Video
     {
         try {
-            $videoFile = $this->fileManager->mediaFile($file);
-            $ffmpegVideoFile = $this->ffmpeg->open($videoFile->getPathname());
+            $storageFile = $this->fileManager->storageFile($file);
+            $ffmpegVideoFile = $this->ffmpeg->open($storageFile->getPathname());
 
             if (!$ffmpegVideoFile instanceof FFMpegVideo) {
                 throw new RuntimeException('File is not a video');

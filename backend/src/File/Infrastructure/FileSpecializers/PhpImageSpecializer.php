@@ -27,11 +27,11 @@ final readonly class PhpImageSpecializer implements ImageSpecializer
     public function specialize(File $file): Image
     {
         try {
-            $imageFile = $this->fileManager->mediaFile($file);
+            $storageFile = $this->fileManager->storageFile($file);
 
             return new Image(
                 file: $file,
-                resolution: $this->getResolution($imageFile),
+                resolution: $this->getResolution($storageFile),
             );
         } catch (Throwable $e) {
             throw new FileSpecializationException($e);
@@ -42,9 +42,9 @@ final readonly class PhpImageSpecializer implements ImageSpecializer
      * @throws RuntimeException
      * @throws ResolutionException
      */
-    private function getResolution(StorageFile $imageFile): Resolution
+    private function getResolution(StorageFile $storageFile): Resolution
     {
-        $imageSize = @getimagesize($imageFile->getPathname());
+        $imageSize = @getimagesize($storageFile->getPathname());
 
         if ($imageSize === false) {
             throw new RuntimeException('Unable to get image size');

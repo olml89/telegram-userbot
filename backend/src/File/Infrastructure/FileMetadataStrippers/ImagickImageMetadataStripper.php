@@ -23,10 +23,10 @@ final readonly class ImagickImageMetadataStripper implements ImageMetadataStripp
     public function strip(File $file): void
     {
         try {
-            $imageFile = $this->fileManager->mediaFile($file);
-            $imagickFile = new Imagick($imageFile->getPathname());
+            $storageFile = $this->fileManager->storageFile($file);
+            $imagickFile = new Imagick($storageFile->getPathname());
             $imagickFile->stripImage();
-            $imagickFile->writeImage($imageFile->getPathname());
+            $imagickFile->writeImage($storageFile->getPathname());
             $imagickFile->clear();
         } catch (Throwable $e) {
             throw new FileMetadataStrippingException($e);
