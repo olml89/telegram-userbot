@@ -14,9 +14,6 @@ use Symfony\Component\HttpFoundation\File\File as SymfonyFile;
 
 final readonly class File
 {
-    private const string DEFAULT_EXTENSION = 'bin';
-    private const string DEFAULT_MIME_TYPE = 'application/octet-stream';
-
     public function __construct(
         private SymfonyFile $file,
     ) {}
@@ -42,7 +39,7 @@ final readonly class File
      */
     public function extension(): string
     {
-        return $this->file->guessExtension() ?? self::DEFAULT_EXTENSION;
+        return $this->file->guessExtension() ?? throw new LogicException('File extension is not available');
     }
 
     /**
@@ -50,7 +47,7 @@ final readonly class File
      */
     public function mimeType(): string
     {
-        return $this->file->getMimeType() ?? self::DEFAULT_MIME_TYPE;
+        return $this->file->getMimeType() ?? throw new LogicException('File mime type is not available');
     }
 
     /**
