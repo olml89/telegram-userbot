@@ -7,6 +7,7 @@
     <entity name="olml89\TelegramUserbot\Backend\Tag\Domain\Tag"
             table="tags">
 
+        <!-- Identity -->
         <id name="id" type="integer" column="id">
             <generator strategy="IDENTITY"/>
         </id>
@@ -17,10 +18,16 @@
                unique="true"
                nullable="false"/>
 
+        <!-- Fields -->
         <field name="name"
                type="name"
                unique="true"
                nullable="false"/>
+
+        <!-- Timestamps -->
+        <embedded name="timestamps"
+                  class="olml89\TelegramUserbot\Backend\Shared\Domain\ValueObject\Timestamps\Timestamps"
+                  use-column-prefix="false"/>
 
     </entity>
 

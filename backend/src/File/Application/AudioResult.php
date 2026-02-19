@@ -19,6 +19,8 @@ final readonly class AudioResult implements Result
         public string $mimeType,
         public int $bytes,
         public float $duration,
+        public string $createdAt,
+        public string $updatedAt,
     ) {}
 
     public static function audio(Audio $audio): self
@@ -32,6 +34,8 @@ final readonly class AudioResult implements Result
             mimeType: $fileResult->mimeType,
             bytes: $fileResult->bytes,
             duration: $audio->duration()->value,
+            createdAt: $fileResult->createdAt,
+            updatedAt: $fileResult->updatedAt,
         );
     }
 }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace olml89\TelegramUserbot\Backend\File\Application;
 
+use DateTimeInterface;
 use olml89\TelegramUserbot\Backend\File\Domain\File;
 use olml89\TelegramUserbot\Backend\Shared\Application\Result\IsResult;
 use olml89\TelegramUserbot\Backend\Shared\Application\Result\Result;
@@ -18,6 +19,8 @@ final readonly class FileResult implements Result
         public string $originalName,
         public string $mimeType,
         public int $bytes,
+        public string $createdAt,
+        public string $updatedAt,
     ) {}
 
     public static function file(File $file): self
@@ -28,6 +31,8 @@ final readonly class FileResult implements Result
             originalName: $file->originalName()->value,
             mimeType: $file->mimeType()->value,
             bytes: $file->bytes()->value,
+            createdAt: $file->createdAt()->format(DateTimeInterface::RFC3339),
+            updatedAt: $file->updatedAt()->format(DateTimeInterface::RFC3339),
         );
     }
 }

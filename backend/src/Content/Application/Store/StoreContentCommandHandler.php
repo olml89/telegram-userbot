@@ -28,7 +28,7 @@ final readonly class StoreContentCommandHandler
     {
         $content = $this->contentBuilder->build($command);
         $this->contentStorer->store($content);
-        $this->eventDispatcher->dispatch(...$content->events());
+        $this->eventDispatcher->dispatch(...$content->pullEvents());
 
         return ContentResult::content($content, $this->fileResultFactory);
     }

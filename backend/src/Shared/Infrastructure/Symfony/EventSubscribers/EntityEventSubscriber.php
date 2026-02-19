@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace olml89\TelegramUserbot\Backend\Shared\Infrastructure\Symfony\EventSubscribers;
 
 use olml89\TelegramUserbot\Backend\Shared\Domain\Entity\Event\Event;
-use olml89\TelegramUserbot\Backend\Shared\Domain\Entity\Event\EventEntity;
-use olml89\TelegramUserbot\Backend\Shared\Domain\Entity\Event\EventEntityRepository;
+use olml89\TelegramUserbot\Backend\Shared\Domain\Entity\EventEntity\EventEntity;
+use olml89\TelegramUserbot\Backend\Shared\Domain\Entity\EventEntity\EventEntityRepository;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Symfony\Component\Uid\Uuid;
 

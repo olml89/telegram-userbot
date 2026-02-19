@@ -43,7 +43,7 @@ final readonly class UploadFileCommandHandler
     {
         $file = $this->fileBuilder->build($command);
         $this->fileStorer->store($file);
-        $this->eventDispatcher->dispatch(...$file->events());
+        $this->eventDispatcher->dispatch(...$file->pullEvents());
 
         return $this->fileResultFactory->create($file);
     }

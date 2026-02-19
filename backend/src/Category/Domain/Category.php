@@ -4,18 +4,25 @@ declare(strict_types=1);
 
 namespace olml89\TelegramUserbot\Backend\Category\Domain;
 
-use olml89\TelegramUserbot\Backend\Shared\Domain\Entity\Entity;
-use olml89\TelegramUserbot\Backend\Shared\Domain\Entity\IsEntity;
+use olml89\TelegramUserbot\Backend\Shared\Domain\Entity\EventSource\EventSource;
+use olml89\TelegramUserbot\Backend\Shared\Domain\Entity\EventSource\HasEvents;
+use olml89\TelegramUserbot\Backend\Shared\Domain\Entity\HasIdentity;
+use olml89\TelegramUserbot\Backend\Shared\Domain\Entity\Timestampable\HasTimestamps;
+use olml89\TelegramUserbot\Backend\Shared\Domain\Entity\Timestampable\Timestampable;
 use olml89\TelegramUserbot\Backend\Shared\Domain\ValueObject\Name\Name;
+use olml89\TelegramUserbot\Backend\Shared\Domain\ValueObject\Timestamps\Timestamps;
 use Symfony\Component\Uid\Uuid;
 
-final class Category implements Entity
+final class Category implements EventSource, Timestampable
 {
-    use IsEntity;
+    use HasIdentity;
+    use HasEvents;
+    use HasTimestamps;
 
     public function __construct(
         protected readonly Uuid $publicId,
         private Name $name,
+        protected readonly Timestamps $timestamps = new Timestamps(),
     ) {}
 
     public function name(): Name

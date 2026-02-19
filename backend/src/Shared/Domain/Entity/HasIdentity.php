@@ -5,21 +5,15 @@ declare(strict_types=1);
 namespace olml89\TelegramUserbot\Backend\Shared\Domain\Entity;
 
 use LogicException;
-use olml89\TelegramUserbot\Backend\Shared\Domain\Entity\Event\Event;
 use Symfony\Component\Uid\Uuid;
 
 /**
  * @mixin Entity
  */
-trait IsEntity
+trait HasIdentity
 {
     protected ?int $id = null;
     protected readonly Uuid $publicId;
-
-    /**
-     * @var Event[]
-     */
-    private array $events = [];
 
     public function id(): int
     {
@@ -33,23 +27,5 @@ trait IsEntity
     public function publicId(): Uuid
     {
         return $this->publicId;
-    }
-
-    final protected function record(Event $event): static
-    {
-        $this->events[] = $event;
-
-        return $this;
-    }
-
-    /**
-     * @return Event[]
-     */
-    final public function events(): array
-    {
-        $events = $this->events;
-        $this->events = [];
-
-        return $events;
     }
 }
