@@ -13,6 +13,7 @@ use olml89\TelegramUserbot\Backend\File\Domain\Resolution\Resolution;
 use olml89\TelegramUserbot\Backend\File\Domain\Resolution\ResolutionException;
 use RuntimeException;
 use SplFileObject;
+use Throwable;
 
 final readonly class PhpImageSpecializer implements ImageSpecializer
 {
@@ -32,7 +33,7 @@ final readonly class PhpImageSpecializer implements ImageSpecializer
                 file: $file,
                 resolution: $this->getResolution($imageFile),
             );
-        } catch (RuntimeException|ResolutionException $e) {
+        } catch (Throwable $e) {
             throw new FileSpecializationException($e);
         }
     }
