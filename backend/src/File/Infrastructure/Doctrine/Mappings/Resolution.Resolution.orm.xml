@@ -6,9 +6,11 @@
 
     <embeddable name="olml89\TelegramUserbot\Backend\File\Domain\Resolution\Resolution">
         <field name="width"
-               type="integer"/>
+               type="integer"
+               nullable="false"/>
         <field name="height"
-               type="integer"/>
+               type="integer"
+               nullable="false"/>
     </embeddable>
 
 </doctrine-mapping>
