@@ -11,8 +11,8 @@ use olml89\TelegramUserbot\Backend\File\Domain\OriginalName\OriginalName;
 use olml89\TelegramUserbot\Backend\File\Domain\Size\Size;
 use olml89\TelegramUserbot\Backend\File\Domain\Upload\Upload;
 use olml89\TelegramUserbot\Backend\File\Domain\Upload\UploadConsumed;
-use olml89\TelegramUserbot\Backend\Shared\Domain\Entity\EventSource;
-use olml89\TelegramUserbot\Backend\Shared\Domain\Entity\HasEvents;
+use olml89\TelegramUserbot\Backend\Shared\Domain\Entity\EventSource\EventSource;
+use olml89\TelegramUserbot\Backend\Shared\Domain\Entity\EventSource\HasEvents;
 use olml89\TelegramUserbot\Backend\Shared\Domain\Entity\HasIdentity;
 use Symfony\Component\Uid\Uuid;
 

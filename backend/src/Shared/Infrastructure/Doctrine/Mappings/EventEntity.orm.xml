@@ -4,7 +4,7 @@
                   xsi:schemaLocation="https://doctrine-project.org/schemas/orm/doctrine-mapping
                   https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
 
-    <entity name="olml89\TelegramUserbot\Backend\Shared\Domain\Entity\Event\EventEntity"
+    <entity name="olml89\TelegramUserbot\Backend\Shared\Domain\Entity\EventEntity\EventEntity"
             table="events">
 
         <!-- Identity -->

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace olml89\TelegramUserbot\Backend\Shared\Domain\Entity\Event;
+namespace olml89\TelegramUserbot\Backend\Shared\Domain\Entity\EventEntity;
 
 use DateTimeImmutable;
 use olml89\TelegramUserbot\Backend\Shared\Domain\Entity\Entity;
