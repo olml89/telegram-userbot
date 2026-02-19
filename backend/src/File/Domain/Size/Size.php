@@ -24,8 +24,8 @@ final readonly class Size extends IntValueObject
         }
     }
 
-    public function diff(self $size): self
+    public function diff(self $size): int
     {
-        return new self($this->value - $size->value);
+        return $this->value - $size->value;
     }
 }

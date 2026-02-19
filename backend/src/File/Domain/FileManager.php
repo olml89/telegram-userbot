@@ -15,10 +15,8 @@ interface FileManager
     /** @throws UploadConsumptionException */
     public function consume(File $file, Upload $upload): void;
 
-    public function exists(File $file): bool;
-
     /** @throws StorageFileNotReadableException */
     public function storageFile(File|FileName $subject): StorageFile;
     public function path(File|FileName $subject): string;
-    public function remove(File $file): void;
+    public function remove(File|StorageFile $file): void;
 }

@@ -5,18 +5,16 @@ declare(strict_types=1);
 namespace olml89\TelegramUserbot\Backend\File\Domain\StorageFile;
 
 use RuntimeException;
-use Throwable;
 
 final class StorageFileNotReadableException extends RuntimeException
 {
-    public function __construct(string $path, Throwable $previous)
+    public function __construct(StorageFile $storageFile)
     {
         parent::__construct(
-            message: sprintf(
+            sprintf(
                 'File %s is not readable',
-                $path,
+                $storageFile->getPathname(),
             ),
-            previous: $previous,
         );
     }
 }

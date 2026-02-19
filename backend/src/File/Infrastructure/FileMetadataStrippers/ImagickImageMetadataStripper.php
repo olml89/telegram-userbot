@@ -20,7 +20,7 @@ final readonly class ImagickImageMetadataStripper implements ImageMetadataStripp
     /**
      * @throws FileMetadataStrippingException
      */
-    public function strip(File $file): void
+    public function strip(File $file): File
     {
         try {
             $storageFile = $this->fileManager->storageFile($file);
@@ -28,6 +28,8 @@ final readonly class ImagickImageMetadataStripper implements ImageMetadataStripp
             $imagickFile->stripImage();
             $imagickFile->writeImage($storageFile->getPathname());
             $imagickFile->clear();
+
+            return $file;
         } catch (Throwable $e) {
             throw new FileMetadataStrippingException($e);
         }

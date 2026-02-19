@@ -31,10 +31,10 @@ final readonly class FileMetadataStripped implements Event
     public function jsonSerialize(): array
     {
         $reducedBytes = $this->file->bytes()->diff($this->newSize);
-        $percent = round($reducedBytes->value / $this->file->bytes()->value);
+        $percent = round(num: $reducedBytes / $this->file->bytes()->value, precision: 2);
 
         return [
-            'reducedBytes' => $reducedBytes->value,
+            'reducedBytes' => $reducedBytes,
             'reductionRatio' => $percent,
         ];
     }

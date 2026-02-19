@@ -16,6 +16,7 @@ final readonly class FileMetadataStripper
     public function __construct(
         private FileManager $fileManager,
         private ImageMetadataStripper $imageMetadataStripper,
+        private VideoMetadataStripper $videoMetadataStripper,
     ) {}
 
     /**
@@ -23,9 +24,15 @@ final readonly class FileMetadataStripper
      */
     public function strip(File $file): File
     {
-        match (true) {
-            default => $this->imageMetadataStripper->strip($file),
+        $hasStrippedMetadata = match (true) {
+            $file->mimeType()->isImage() => $this->imageMetadataStripper->strip($file),
+            $file->mimeType()->isVideo() => $this->videoMetadataStripper->strip($file),
+            default => null,
         };
+
+        if (is_null($hasStrippedMetadata)) {
+            return $file;
+        }
 
         $newSize = $this->readNewSize($file);
 

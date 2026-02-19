@@ -41,7 +41,7 @@ final readonly class SymfonyFileManager implements FileManager
     {
         $path = $this->path($subject);
 
-        return new StorageFile($path);
+        return new StorageFile($path)->assertExists();
     }
 
     public function path(File|FileName $subject): string
@@ -49,8 +49,12 @@ final readonly class SymfonyFileManager implements FileManager
         return $subject->path($this->contentDirectory);
     }
 
-    public function remove(File $file): void
+    public function remove(File|StorageFile $file): void
     {
-        $this->filesystem->remove($file->path($this->contentDirectory));
+        $path = $file instanceof File
+            ? $file->path($this->contentDirectory)
+            : $file->getPathname();
+
+        $this->filesystem->remove($path);
     }
 }
