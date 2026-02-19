@@ -11,7 +11,7 @@ use olml89\TelegramUserbot\Backend\File\Domain\FileMetadataStripper\FileMetadata
 use olml89\TelegramUserbot\Backend\File\Domain\FileMetadataStripper\ImageMetadataStripper;
 use Throwable;
 
-final readonly class ImagickMetadataStripper implements ImageMetadataStripper
+final readonly class ImagickImageMetadataStripper implements ImageMetadataStripper
 {
     public function __construct(
         private FileManager $fileManager,
