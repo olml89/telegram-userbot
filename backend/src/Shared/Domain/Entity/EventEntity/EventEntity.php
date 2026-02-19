@@ -6,6 +6,7 @@ namespace olml89\TelegramUserbot\Backend\Shared\Domain\Entity\EventEntity;
 
 use DateTimeImmutable;
 use olml89\TelegramUserbot\Backend\Shared\Domain\Entity\Entity;
+use olml89\TelegramUserbot\Backend\Shared\Domain\Entity\Event\Event;
 use olml89\TelegramUserbot\Backend\Shared\Domain\Entity\HasIdentity;
 use Symfony\Component\Uid\Uuid;
 
