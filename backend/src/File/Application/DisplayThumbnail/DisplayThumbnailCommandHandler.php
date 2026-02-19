@@ -7,10 +7,10 @@ namespace olml89\TelegramUserbot\Backend\File\Application\DisplayThumbnail;
 use olml89\TelegramUserbot\Backend\File\Domain\FileFinder;
 use olml89\TelegramUserbot\Backend\File\Domain\FileManager;
 use olml89\TelegramUserbot\Backend\File\Domain\FileNotFoundException;
-use olml89\TelegramUserbot\Backend\File\Domain\FileNotReadableException;
+use olml89\TelegramUserbot\Backend\File\Domain\StorageFile\StorageFile;
+use olml89\TelegramUserbot\Backend\File\Domain\StorageFile\StorageFileNotReadableException;
 use olml89\TelegramUserbot\Backend\File\Domain\Thumbnail\ThumbnailDisplayer;
 use olml89\TelegramUserbot\Backend\File\Domain\Thumbnail\ThumbnailNotFoundException;
-use SplFileObject;
 
 final readonly class DisplayThumbnailCommandHandler
 {
@@ -22,9 +22,9 @@ final readonly class DisplayThumbnailCommandHandler
     /**
      * @throws FileNotFoundException
      * @throws ThumbnailNotFoundException
-     * @throws FileNotReadableException
+     * @throws StorageFileNotReadableException
      */
-    public function handle(DisplayThumbnailCommand $command): SplFileObject
+    public function handle(DisplayThumbnailCommand $command): StorageFile
     {
         $file = $this->fileFinder->find($command->publicId);
 

@@ -6,11 +6,10 @@ namespace olml89\TelegramUserbot\Backend\File\Application\Upload;
 
 use olml89\TelegramUserbot\Backend\File\Domain\File;
 use olml89\TelegramUserbot\Backend\File\Domain\FileManager;
-use olml89\TelegramUserbot\Backend\File\Domain\FileMetadataStripper\FileMetadataStripper;
+use olml89\TelegramUserbot\Backend\File\Domain\FileMetadataStripper\FileMetadataStrippingException;
 use olml89\TelegramUserbot\Backend\File\Domain\FileName\FileName;
 use olml89\TelegramUserbot\Backend\File\Domain\FileName\FileNameLengthException;
 use olml89\TelegramUserbot\Backend\File\Domain\FileSpecializer\FileSpecializationException;
-use olml89\TelegramUserbot\Backend\File\Domain\FileSpecializer\FileSpecializer;
 use olml89\TelegramUserbot\Backend\File\Domain\MimeType\MimeType;
 use olml89\TelegramUserbot\Backend\File\Domain\MimeType\UnsupportedMimeTypeException;
 use olml89\TelegramUserbot\Backend\File\Domain\OriginalName\OriginalName;
@@ -32,8 +31,7 @@ final readonly class FileBuilder
     public function __construct(
         private UploadFinder $uploadFinder,
         private FileManager $fileManager,
-        private FileMetadataStripper $fileMetadataStripper,
-        private FileSpecializer $fileSpecializer,
+        private FileProcessor $fileProcessor,
     ) {}
 
     /**
@@ -43,16 +41,30 @@ final readonly class FileBuilder
      * @throws ValidationException
      * @throws UploadConsumptionException
      * @throws UploadRemovalException
+     * @throws FileMetadataStrippingException
      * @throws FileSpecializationException
      */
     public function build(UploadFileCommand $command): File
     {
         $upload = $this->uploadFinder->find($command->uploadId);
+        $file = $this->consumeUpload($upload);
+
+        return $this->fileProcessor->process($file);
+    }
+
+    /**
+     * @throws UploadReadingException
+     * @throws UnsupportedResourceException
+     * @throws ValidationException
+     * @throws UploadConsumptionException
+     * @throws UploadRemovalException
+     */
+    private function consumeUpload(Upload $upload): File
+    {
         $file = $this->buildFile($upload);
         $this->fileManager->consume($file, $upload);
-        $this->fileMetadataStripper->strip($file);
 
-        return $this->specializeFile($file);
+        return $file;
     }
 
     /**
@@ -155,23 +167,6 @@ final readonly class FileBuilder
             $validationException->addError('size', $e->getMessage());
 
             return null;
-        }
-    }
-
-    /**
-     * @throws FileSpecializationException
-     */
-    private function specializeFile(File $file): File
-    {
-        try {
-            return $this->fileSpecializer->specialize($file);
-        } catch (FileSpecializationException $e) {
-            /**
-             * Rollback: delete File mediaFile if there's an error while trying to specialize File
-             */
-            $this->fileManager->remove($file);
-
-            throw $e;
         }
     }
 }

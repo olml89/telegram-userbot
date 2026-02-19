@@ -23,4 +23,9 @@ final readonly class Size extends IntValueObject
             throw SizeException::tooBig(self::MAX_SIZE);
         }
     }
+
+    public function diff(self $size): self
+    {
+        return new self($this->value - $size->value);
+    }
 }

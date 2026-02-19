@@ -2,13 +2,14 @@
 
 declare(strict_types=1);
 
-namespace olml89\TelegramUserbot\Backend\File\Domain;
+namespace olml89\TelegramUserbot\Backend\File\Domain\StorageFile;
 
 use RuntimeException;
+use Throwable;
 
-final class FileNotReadableException extends RuntimeException
+final class StorageFileNotReadableException extends RuntimeException
 {
-    public function __construct(string $path, \Throwable $previous)
+    public function __construct(string $path, Throwable $previous)
     {
         parent::__construct(
             message: sprintf(

@@ -4,15 +4,13 @@ declare(strict_types=1);
 
 namespace olml89\TelegramUserbot\Backend\File\Infrastructure\Symfony\File;
 
-use LogicException;
 use olml89\TelegramUserbot\Backend\File\Domain\File;
 use olml89\TelegramUserbot\Backend\File\Domain\FileManager;
 use olml89\TelegramUserbot\Backend\File\Domain\FileName\FileName;
-use olml89\TelegramUserbot\Backend\File\Domain\FileNotReadableException;
+use olml89\TelegramUserbot\Backend\File\Domain\StorageFile\StorageFile;
+use olml89\TelegramUserbot\Backend\File\Domain\StorageFile\StorageFileNotReadableException;
 use olml89\TelegramUserbot\Backend\File\Domain\Upload\Upload;
 use olml89\TelegramUserbot\Backend\File\Domain\Upload\UploadConsumptionException;
-use RuntimeException;
-use SplFileObject;
 use Symfony\Component\Filesystem\Filesystem;
 
 final readonly class SymfonyFileManager implements FileManager
@@ -37,17 +35,13 @@ final readonly class SymfonyFileManager implements FileManager
     }
 
     /**
-     * @throws FileNotReadableException
+     * @throws StorageFileNotReadableException
      */
-    public function mediaFile(File|FileName $subject): SplFileObject
+    public function mediaFile(File|FileName $subject): StorageFile
     {
         $path = $this->path($subject);
 
-        try {
-            return new SplFileObject($path);
-        } catch (LogicException|RuntimeException $e) {
-            throw new FileNotReadableException($path, $e);
-        }
+        return new StorageFile($path);
     }
 
     public function path(File|FileName $subject): string

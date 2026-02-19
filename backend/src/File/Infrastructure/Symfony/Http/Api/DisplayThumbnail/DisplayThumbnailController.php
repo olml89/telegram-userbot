@@ -7,7 +7,7 @@ namespace olml89\TelegramUserbot\Backend\File\Infrastructure\Symfony\Http\Api\Di
 use olml89\TelegramUserbot\Backend\File\Application\DisplayThumbnail\DisplayThumbnailCommand;
 use olml89\TelegramUserbot\Backend\File\Application\DisplayThumbnail\DisplayThumbnailCommandHandler;
 use olml89\TelegramUserbot\Backend\File\Domain\FileNotFoundException;
-use olml89\TelegramUserbot\Backend\File\Domain\FileNotReadableException;
+use olml89\TelegramUserbot\Backend\File\Domain\StorageFile\StorageFileNotReadableException;
 use olml89\TelegramUserbot\Backend\File\Domain\Thumbnail\ThumbnailNotFoundException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
@@ -29,7 +29,7 @@ final class DisplayThumbnailController extends AbstractController
     /**
      * @throws FileNotFoundException
      * @throws ThumbnailNotFoundException
-     * @throws FileNotReadableException
+     * @throws StorageFileNotReadableException
      */
     public function __invoke(Uuid $publicId): BinaryFileResponse
     {
