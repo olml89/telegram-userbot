@@ -7,6 +7,7 @@
     <entity name="olml89\TelegramUserbot\Backend\File\Domain\Image"
             table="image_files">
 
+        <!-- Fields -->
         <embedded name="resolution"
                   class="olml89\TelegramUserbot\Backend\File\Domain\Resolution\Resolution"
                   use-column-prefix="false"/>
