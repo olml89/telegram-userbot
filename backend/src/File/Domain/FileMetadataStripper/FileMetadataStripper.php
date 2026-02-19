@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace olml89\TelegramUserbot\Backend\File\Domain\FileMetadataStripper;
 
+use olml89\TelegramUserbot\Backend\File\Domain\Audio;
 use olml89\TelegramUserbot\Backend\File\Domain\File;
 use olml89\TelegramUserbot\Backend\File\Domain\FileManager;
 use olml89\TelegramUserbot\Backend\File\Domain\Image;
@@ -18,7 +19,7 @@ final readonly class FileMetadataStripper
     public function __construct(
         private FileManager $fileManager,
         private ImageMetadataStripper $imageMetadataStripper,
-        private VideoMetadataStripper $videoMetadataStripper,
+        private StreamableMediaMetadataStripper $videoMetadataStripper,
     ) {}
 
     /**
@@ -28,6 +29,7 @@ final readonly class FileMetadataStripper
     {
         $hasStrippedMetadata = match (true) {
             $file instanceof Image => $this->imageMetadataStripper->strip($file),
+            $file instanceof Audio,
             $file instanceof Video => $this->videoMetadataStripper->strip($file),
             default => false,
         };

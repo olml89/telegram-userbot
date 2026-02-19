@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace olml89\TelegramUserbot\Backend\File\Infrastructure\FileMetadataStrippers;
 
+use olml89\TelegramUserbot\Backend\File\Domain\Audio;
 use olml89\TelegramUserbot\Backend\File\Domain\FileManager;
 use olml89\TelegramUserbot\Backend\File\Domain\FileMetadataStripper\FileMetadataStrippingException;
-use olml89\TelegramUserbot\Backend\File\Domain\FileMetadataStripper\VideoMetadataStripper;
+use olml89\TelegramUserbot\Backend\File\Domain\FileMetadataStripper\StreamableMediaMetadataStripper;
 use olml89\TelegramUserbot\Backend\File\Domain\FileName\FileName;
 use olml89\TelegramUserbot\Backend\File\Domain\StorageFile\StorageFile;
 use olml89\TelegramUserbot\Backend\File\Domain\Video;
@@ -15,7 +16,7 @@ use Symfony\Component\Process\Process;
 use Symfony\Component\Uid\Uuid;
 use Throwable;
 
-final readonly class FfmpegVideoMetadataStripper implements VideoMetadataStripper
+final readonly class FfmpegStreamableMediaMetadataStripper implements StreamableMediaMetadataStripper
 {
     public function __construct(
         private FileManager $fileManager,
@@ -24,10 +25,10 @@ final readonly class FfmpegVideoMetadataStripper implements VideoMetadataStrippe
     /**
      * @throws FileMetadataStrippingException
      */
-    public function strip(Video $video): true
+    public function strip(Audio|Video $streamableMedia): true
     {
         try {
-            $storageFile = $this->fileManager->storageFile($video);
+            $storageFile = $this->fileManager->storageFile($streamableMedia);
 
             /**
              * tmp StorageFile name: random UUID, same extension as the original StorageFile
