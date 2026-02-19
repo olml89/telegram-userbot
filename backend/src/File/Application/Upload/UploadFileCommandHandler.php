@@ -9,6 +9,7 @@ use olml89\TelegramUserbot\Backend\File\Application\FileResult;
 use olml89\TelegramUserbot\Backend\File\Application\FileResultFactory;
 use olml89\TelegramUserbot\Backend\File\Application\ImageResult;
 use olml89\TelegramUserbot\Backend\File\Application\VideoResult;
+use olml89\TelegramUserbot\Backend\File\Domain\FileMetadataStripper\FileMetadataStrippingException;
 use olml89\TelegramUserbot\Backend\File\Domain\FileSpecializer\FileSpecializationException;
 use olml89\TelegramUserbot\Backend\File\Domain\FileStorageException;
 use olml89\TelegramUserbot\Backend\File\Domain\FileStorer;
@@ -36,6 +37,7 @@ final readonly class UploadFileCommandHandler
      * @throws ValidationException
      * @throws UploadConsumptionException
      * @throws UploadRemovalException
+     * @throws FileMetadataStrippingException
      * @throws FileSpecializationException
      * @throws FileStorageException
      */
