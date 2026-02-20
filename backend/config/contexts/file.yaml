@@ -47,9 +47,13 @@ services:
   olml89\TelegramUserbot\Backend\File\Domain\FileMetadataStripper\ImageMetadataStripper:
     alias: olml89\TelegramUserbot\Backend\File\Infrastructure\FileMetadataStrippers\ExifToolMetadataStripper
 
-  # StreamableMediaMetadataStripper
-  olml89\TelegramUserbot\Backend\File\Domain\FileMetadataStripper\StreamableMediaMetadataStripper:
-    alias: olml89\TelegramUserbot\Backend\File\Infrastructure\FileMetadataStrippers\FfmpegStreamableMediaMetadataStripper
+  # AudioMetadataStripper
+  olml89\TelegramUserbot\Backend\File\Domain\FileMetadataStripper\AudioMetadataStripper:
+    alias: olml89\TelegramUserbot\Backend\File\Infrastructure\FileMetadataStrippers\FfmpegMetadataStripper
+
+  # VideoMetadataStripper
+  olml89\TelegramUserbot\Backend\File\Domain\FileMetadataStripper\VideoMetadataStripper:
+    alias: olml89\TelegramUserbot\Backend\File\Infrastructure\FileMetadataStrippers\FfmpegMetadataStripper
 
   # PdfComplexityChecker
   olml89\TelegramUserbot\Backend\File\Domain\PdfComplexityChecker\PdfComplexityChecker:

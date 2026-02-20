@@ -20,7 +20,8 @@ final readonly class FileMetadataStripper
     public function __construct(
         private FileManager $fileManager,
         private ImageMetadataStripper $imageMetadataStripper,
-        private StreamableMediaMetadataStripper $streamableMediaMetadataStripper,
+        private AudioMetadataStripper $audioMetadataStripper,
+        private VideoMetadataStripper $videoMetadataStripper,
         private PdfMetadataStripper $pdfMetadataStripper,
     ) {}
 
@@ -31,8 +32,8 @@ final readonly class FileMetadataStripper
     {
         $hasStrippedMetadata = match (true) {
             $file instanceof Image => $this->imageMetadataStripper->strip($file),
-            $file instanceof Audio,
-            $file instanceof Video => $this->streamableMediaMetadataStripper->strip($file),
+            $file instanceof Audio => $this->audioMetadataStripper->strip($file),
+            $file instanceof Video => $this->videoMetadataStripper->strip($file),
             $file instanceof Pdf => $this->pdfMetadataStripper->strip($file),
             default => false,
         };

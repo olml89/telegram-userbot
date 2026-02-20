@@ -6,14 +6,15 @@ namespace olml89\TelegramUserbot\Backend\File\Infrastructure\FileMetadataStrippe
 
 use olml89\TelegramUserbot\Backend\File\Domain\Audio;
 use olml89\TelegramUserbot\Backend\File\Domain\FileManager;
+use olml89\TelegramUserbot\Backend\File\Domain\FileMetadataStripper\AudioMetadataStripper;
 use olml89\TelegramUserbot\Backend\File\Domain\FileMetadataStripper\FileMetadataStrippingException;
-use olml89\TelegramUserbot\Backend\File\Domain\FileMetadataStripper\StreamableMediaMetadataStripper;
+use olml89\TelegramUserbot\Backend\File\Domain\FileMetadataStripper\VideoMetadataStripper;
 use olml89\TelegramUserbot\Backend\File\Domain\Video;
 use olml89\TelegramUserbot\Backend\File\Infrastructure\Symfony\Process\ItRunsExternalProcess;
 use Symfony\Component\Process\Process;
 use Throwable;
 
-final readonly class FfmpegStreamableMediaMetadataStripper implements StreamableMediaMetadataStripper
+final readonly class FfmpegMetadataStripper implements AudioMetadataStripper, VideoMetadataStripper
 {
     use ItRunsExternalProcess;
 
@@ -24,10 +25,10 @@ final readonly class FfmpegStreamableMediaMetadataStripper implements Streamable
     /**
      * @throws FileMetadataStrippingException
      */
-    public function strip(Audio|Video $streamableMedia): true
+    public function strip(Audio|Video $file): true
     {
         try {
-            $storageFile = $this->fileManager->storageFile($streamableMedia);
+            $storageFile = $this->fileManager->storageFile($file);
             $tmpFile = $this->createTemporaryFile($storageFile);
 
             $ffmpeg = new Process([

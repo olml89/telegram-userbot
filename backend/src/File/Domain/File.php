@@ -111,7 +111,7 @@ class File implements EventSource, Timestampable
         return $this->record(new FileRemoved($this));
     }
 
-    public function strippedMetadata(Size $newSize): self
+    public function strippedMetadata(Size $newSize): static
     {
         $strippedMetadata = new self(
             publicId: $this->publicId,
