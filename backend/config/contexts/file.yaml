@@ -51,6 +51,14 @@ services:
   olml89\TelegramUserbot\Backend\File\Domain\FileMetadataStripper\StreamableMediaMetadataStripper:
     alias: olml89\TelegramUserbot\Backend\File\Infrastructure\FileMetadataStrippers\FfmpegStreamableMediaMetadataStripper
 
+  # PdfComplexityChecker
+  olml89\TelegramUserbot\Backend\File\Domain\PdfComplexityChecker\PdfComplexityChecker:
+    alias: olml89\TelegramUserbot\Backend\File\Infrastructure\PdfComplexityCheckers\CompoundPdfComplexityChecker
+
+  # PdfMetadataStripper
+  olml89\TelegramUserbot\Backend\File\Domain\FileMetadataStripper\PdfMetadataStripper:
+    alias: olml89\TelegramUserbot\Backend\File\Infrastructure\FileMetadataStrippers\CompoundPdfMetadataStripper
+
 doctrine:
   # Types
   dbal:

@@ -60,6 +60,11 @@ enum MimeType: string implements ValidatableStringBackedEnum, SafeStringBackedEn
         return str_starts_with($this->value, 'video/');
     }
 
+    public function isPdf(): bool
+    {
+        return $this === self::pdf;
+    }
+
     /**
      * @throws UnsupportedMimeTypeException
      */

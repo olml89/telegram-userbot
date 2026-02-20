@@ -6,9 +6,16 @@ WORKDIR /telegram-userbot/backend
 # Install needed runtime dependencies
 # - ffmpeg: get resolution and duration and strip metadata from audio and video files
 # - imagick: strip metadata from image files
+# - ghostcript, exiftool: strip metadata from pdf files
+# - poppler-utils: installs pdfsig to determine if a pdf is signed ot not
+# - qpdf: determines if a pdf has AcroForms, JS or Attachments
 RUN apk add --no-cache \
     ffmpeg \
-    imagemagick
+    imagemagick \
+    ghostscript \
+    exiftool \
+    poppler-utils \
+    qpdf
 
 # Install PHP extensions
 COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/local/bin/

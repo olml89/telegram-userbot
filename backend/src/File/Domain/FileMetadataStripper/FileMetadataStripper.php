@@ -8,6 +8,7 @@ use olml89\TelegramUserbot\Backend\File\Domain\Audio;
 use olml89\TelegramUserbot\Backend\File\Domain\File;
 use olml89\TelegramUserbot\Backend\File\Domain\FileManager;
 use olml89\TelegramUserbot\Backend\File\Domain\Image;
+use olml89\TelegramUserbot\Backend\File\Domain\Pdf;
 use olml89\TelegramUserbot\Backend\File\Domain\Size\Size;
 use olml89\TelegramUserbot\Backend\File\Domain\Size\SizeException;
 use olml89\TelegramUserbot\Backend\File\Domain\StorageFile\StorageFileNotReadableException;
@@ -19,7 +20,8 @@ final readonly class FileMetadataStripper
     public function __construct(
         private FileManager $fileManager,
         private ImageMetadataStripper $imageMetadataStripper,
-        private StreamableMediaMetadataStripper $videoMetadataStripper,
+        private StreamableMediaMetadataStripper $streamableMediaMetadataStripper,
+        private PdfMetadataStripper $pdfMetadataStripper,
     ) {}
 
     /**
@@ -30,7 +32,8 @@ final readonly class FileMetadataStripper
         $hasStrippedMetadata = match (true) {
             $file instanceof Image => $this->imageMetadataStripper->strip($file),
             $file instanceof Audio,
-            $file instanceof Video => $this->videoMetadataStripper->strip($file),
+            $file instanceof Video => $this->streamableMediaMetadataStripper->strip($file),
+            $file instanceof Pdf => $this->pdfMetadataStripper->strip($file),
             default => false,
         };
 

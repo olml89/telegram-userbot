@@ -8,16 +8,15 @@ use olml89\TelegramUserbot\Backend\File\Domain\Audio;
 use olml89\TelegramUserbot\Backend\File\Domain\FileManager;
 use olml89\TelegramUserbot\Backend\File\Domain\FileMetadataStripper\FileMetadataStrippingException;
 use olml89\TelegramUserbot\Backend\File\Domain\FileMetadataStripper\StreamableMediaMetadataStripper;
-use olml89\TelegramUserbot\Backend\File\Domain\FileName\FileName;
-use olml89\TelegramUserbot\Backend\File\Domain\StorageFile\StorageFile;
 use olml89\TelegramUserbot\Backend\File\Domain\Video;
-use Symfony\Component\Process\Exception\ProcessFailedException;
+use olml89\TelegramUserbot\Backend\File\Infrastructure\Symfony\Process\ItRunsExternalProcess;
 use Symfony\Component\Process\Process;
-use Symfony\Component\Uid\Uuid;
 use Throwable;
 
 final readonly class FfmpegStreamableMediaMetadataStripper implements StreamableMediaMetadataStripper
 {
+    use ItRunsExternalProcess;
+
     public function __construct(
         private FileManager $fileManager,
     ) {}
@@ -29,25 +28,9 @@ final readonly class FfmpegStreamableMediaMetadataStripper implements Streamable
     {
         try {
             $storageFile = $this->fileManager->storageFile($streamableMedia);
+            $tmpFile = $this->createTemporaryFile($storageFile);
 
-            /**
-             * tmp StorageFile name: random UUID, same extension as the original StorageFile
-             * (ffmpeg deducts the format of the container from the extension of the output file)
-             */
-            $tmpFileName = FileName::from(
-                name: Uuid::v4(),
-                extension: $storageFile->getExtension(),
-            );
-
-            $tmpFile = new StorageFile(
-                sprintf(
-                    '%s/%s',
-                    $storageFile->getPath(),
-                    $tmpFileName->value,
-                ),
-            );
-
-            $process = new Process([
+            $ffmpeg = new Process([
                 'ffmpeg',
                 '-y',
                 '-i', $storageFile->getPathname(),
@@ -57,13 +40,7 @@ final readonly class FfmpegStreamableMediaMetadataStripper implements Streamable
                 $tmpFile->getPathname(),
             ]);
 
-            $process->run();
-
-            if (!$process->isSuccessful()) {
-                $this->fileManager->remove($tmpFile);
-                throw new ProcessFailedException($process);
-            }
-
+            $this->run($ffmpeg, fn() => $this->fileManager->remove($storageFile));
             $tmpFile->move($storageFile);
 
             return true;
