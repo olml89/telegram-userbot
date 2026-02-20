@@ -6,13 +6,15 @@ namespace olml89\TelegramUserbot\Backend\File\Infrastructure\FileMetadataStrippe
 
 use olml89\TelegramUserbot\Backend\File\Domain\FileManager;
 use olml89\TelegramUserbot\Backend\File\Domain\FileMetadataStripper\FileMetadataStrippingException;
+use olml89\TelegramUserbot\Backend\File\Domain\FileMetadataStripper\ImageMetadataStripper;
 use olml89\TelegramUserbot\Backend\File\Domain\FileMetadataStripper\PdfMetadataStripper;
+use olml89\TelegramUserbot\Backend\File\Domain\Image;
 use olml89\TelegramUserbot\Backend\File\Domain\Pdf;
 use olml89\TelegramUserbot\Backend\File\Infrastructure\Symfony\Process\ItRunsExternalProcess;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
 
-final readonly class ExifToolMetadataStripper implements PdfMetadataStripper
+final readonly class ExifToolMetadataStripper implements ImageMetadataStripper, PdfMetadataStripper
 {
     use ItRunsExternalProcess;
 
@@ -23,10 +25,10 @@ final readonly class ExifToolMetadataStripper implements PdfMetadataStripper
     /**
      * @throws FileMetadataStrippingException
      */
-    public function strip(Pdf $pdf): bool
+    public function strip(Image|Pdf $file): bool
     {
         try {
-            $storageFile = $this->fileManager->storageFile($pdf);
+            $storageFile = $this->fileManager->storageFile($file);
 
             $exif = new Process([
                 'exiftool',

@@ -25,14 +25,14 @@ final readonly class CompoundPdfMetadataStripper implements PdfMetadataStripper
     /**
      * @throws FileMetadataStrippingException
      */
-    public function strip(Pdf $pdf): bool
+    public function strip(Pdf $file): bool
     {
         try {
-            if (!$pdf->isComplex($this->pdfReader)) {
-                $this->ghostScriptMetadataStripper->strip($pdf);
+            if (!$file->isComplex($this->pdfReader)) {
+                $this->ghostScriptMetadataStripper->strip($file);
             }
 
-            $this->exifToolMetadataStripper->strip($pdf);
+            $this->exifToolMetadataStripper->strip($file);
 
             return true;
         } catch (PdfPasswordProtectedException) {

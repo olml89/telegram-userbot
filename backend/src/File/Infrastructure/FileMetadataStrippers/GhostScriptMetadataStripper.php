@@ -23,10 +23,10 @@ final readonly class GhostScriptMetadataStripper implements PdfMetadataStripper
     /**
      * @throws FileMetadataStrippingException
      */
-    public function strip(Pdf $pdf): bool
+    public function strip(Pdf $file): bool
     {
         try {
-            $storageFile = $this->fileManager->storageFile($pdf);
+            $storageFile = $this->fileManager->storageFile($file);
             $tmpFile = $this->createTemporaryFile($storageFile);
 
             $ghostscript = new Process([

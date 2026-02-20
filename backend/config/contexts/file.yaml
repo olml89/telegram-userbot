@@ -45,7 +45,7 @@ services:
 
   # ImageMetadataStripper
   olml89\TelegramUserbot\Backend\File\Domain\FileMetadataStripper\ImageMetadataStripper:
-    alias: olml89\TelegramUserbot\Backend\File\Infrastructure\FileMetadataStrippers\ImagickImageMetadataStripper
+    alias: olml89\TelegramUserbot\Backend\File\Infrastructure\FileMetadataStrippers\ExifToolMetadataStripper
 
   # StreamableMediaMetadataStripper
   olml89\TelegramUserbot\Backend\File\Domain\FileMetadataStripper\StreamableMediaMetadataStripper:
