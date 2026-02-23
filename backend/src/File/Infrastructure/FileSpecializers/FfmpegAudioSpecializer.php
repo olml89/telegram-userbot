@@ -14,6 +14,7 @@ use olml89\TelegramUserbot\Backend\File\Domain\FileManager;
 use olml89\TelegramUserbot\Backend\File\Domain\FileSpecializer\AudioSpecializer;
 use olml89\TelegramUserbot\Backend\File\Domain\FileSpecializer\FileSpecializationException;
 use RuntimeException;
+use Throwable;
 
 final readonly class FfmpegAudioSpecializer implements AudioSpecializer
 {
@@ -28,8 +29,8 @@ final readonly class FfmpegAudioSpecializer implements AudioSpecializer
     public function specialize(File $file): Audio
     {
         try {
-            $audioFile = $this->fileManager->mediaFile($file);
-            $audioStream = $this->ffmpeg->open($audioFile->getPathname())->getStreams()->audios()->first();
+            $storageFile = $this->fileManager->storageFile($file);
+            $audioStream = $this->ffmpeg->open($storageFile->getPathname())->getStreams()->audios()->first();
 
             if (is_null($audioStream)) {
                 throw new RuntimeException('Audio stream not found');
@@ -39,7 +40,7 @@ final readonly class FfmpegAudioSpecializer implements AudioSpecializer
                 file: $file,
                 duration: $this->getDuration($audioStream),
             );
-        } catch (RuntimeException|DurationException $e) {
+        } catch (Throwable $e) {
             throw new FileSpecializationException($e);
         }
     }

@@ -6,10 +6,10 @@ namespace olml89\TelegramUserbot\Backend\File\Application\Upload;
 
 use olml89\TelegramUserbot\Backend\File\Domain\File;
 use olml89\TelegramUserbot\Backend\File\Domain\FileManager;
+use olml89\TelegramUserbot\Backend\File\Domain\FileMetadataStripper\FileMetadataStrippingException;
 use olml89\TelegramUserbot\Backend\File\Domain\FileName\FileName;
 use olml89\TelegramUserbot\Backend\File\Domain\FileName\FileNameLengthException;
 use olml89\TelegramUserbot\Backend\File\Domain\FileSpecializer\FileSpecializationException;
-use olml89\TelegramUserbot\Backend\File\Domain\FileSpecializer\FileSpecializer;
 use olml89\TelegramUserbot\Backend\File\Domain\MimeType\MimeType;
 use olml89\TelegramUserbot\Backend\File\Domain\MimeType\UnsupportedMimeTypeException;
 use olml89\TelegramUserbot\Backend\File\Domain\OriginalName\OriginalName;
@@ -31,7 +31,7 @@ final readonly class FileBuilder
     public function __construct(
         private UploadFinder $uploadFinder,
         private FileManager $fileManager,
-        private FileSpecializer $fileSpecializer,
+        private FileProcessor $fileProcessor,
     ) {}
 
     /**
@@ -42,13 +42,14 @@ final readonly class FileBuilder
      * @throws UploadConsumptionException
      * @throws UploadRemovalException
      * @throws FileSpecializationException
+     * @throws FileMetadataStrippingException
      */
     public function build(UploadFileCommand $command): File
     {
         $upload = $this->uploadFinder->find($command->uploadId);
-        $file = $this->buildFileAndConsumeUpload($upload);
+        $file = $this->consumeUpload($upload);
 
-        return $this->specializeFile($file);
+        return $this->fileProcessor->process($file);
     }
 
     /**
@@ -58,13 +59,47 @@ final readonly class FileBuilder
      * @throws UploadConsumptionException
      * @throws UploadRemovalException
      */
-    private function buildFileAndConsumeUpload(Upload $upload): File
+    private function consumeUpload(Upload $upload): File
     {
-        try {
-            $file = $this->buildFile($upload);
-            $this->fileManager->consume($file, $upload);
+        $file = $this->buildFile($upload);
+        $this->fileManager->consume($file, $upload);
 
-            return $file;
+        return $file;
+    }
+
+    /**
+     * @throws UploadReadingException
+     * @throws UnsupportedResourceException
+     * @throws ValidationException
+     * @throws UploadRemovalException
+     */
+    private function buildFile(Upload $upload): File
+    {
+        $validationException = new ValidationException();
+        $fileId = Uuid::v4();
+
+        try {
+            $mimeType = $this->buildMimeType($upload);
+            $fileName = $this->buildFileName($validationException, $fileId, $upload);
+            $originalName = $this->buildOriginalName($validationException, $upload);
+            $size = $this->buildSize($validationException, $upload);
+
+            if ($validationException->hasErrors()) {
+                throw $validationException;
+            }
+
+            /**
+             * @var FileName $fileName
+             * @var OriginalName $originalName
+             * @var Size $size
+             */
+            return new File(
+                publicId: $fileId,
+                fileName: $fileName,
+                originalName: $originalName,
+                mimeType: $mimeType,
+                bytes: $size,
+            );
         } catch (UploadReadingException|UnsupportedResourceException|ValidationException $e) {
             /**
              * Rollback: delete Upload data if there's an error while trying to build File
@@ -73,39 +108,6 @@ final readonly class FileBuilder
 
             throw $e;
         }
-    }
-
-    /**
-     * @throws UploadReadingException
-     * @throws UnsupportedResourceException
-     * @throws ValidationException
-     */
-    private function buildFile(Upload $upload): File
-    {
-        $mimeType = $this->buildMimeType($upload);
-
-        $validationException = new ValidationException();
-        $fileId = Uuid::v4();
-        $fileName = $this->buildFileName($validationException, $fileId, $upload);
-        $originalName = $this->buildOriginalName($validationException, $upload);
-        $size = $this->buildSize($validationException, $upload);
-
-        if ($validationException->hasErrors()) {
-            throw $validationException;
-        }
-
-        /**
-         * @var FileName $fileName
-         * @var OriginalName $originalName
-         * @var Size $size
-         */
-        return new File(
-            publicId: $fileId,
-            fileName: $fileName,
-            originalName: $originalName,
-            mimeType: $mimeType,
-            bytes: $size,
-        );
     }
 
     /**
@@ -165,23 +167,6 @@ final readonly class FileBuilder
             $validationException->addError('size', $e->getMessage());
 
             return null;
-        }
-    }
-
-    /**
-     * @throws FileSpecializationException
-     */
-    private function specializeFile(File $file): File
-    {
-        try {
-            return $this->fileSpecializer->specialize($file);
-        } catch (FileSpecializationException $e) {
-            /**
-             * Rollback: delete File mediaFile if there's an error while trying to specialize File
-             */
-            $this->fileManager->remove($file);
-
-            throw $e;
         }
     }
 }

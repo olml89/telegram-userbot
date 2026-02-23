@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace olml89\TelegramUserbot\Backend\File\Domain;
 
 use olml89\TelegramUserbot\Backend\Content\Domain\Content;
+use olml89\TelegramUserbot\Backend\File\Domain\FileMetadataStripper\FileMetadataStripped;
 use olml89\TelegramUserbot\Backend\File\Domain\FileName\FileName;
 use olml89\TelegramUserbot\Backend\File\Domain\MimeType\MimeType;
 use olml89\TelegramUserbot\Backend\File\Domain\OriginalName\OriginalName;
@@ -32,7 +33,7 @@ class File implements EventSource, Timestampable
         protected readonly FileName $fileName,
         protected readonly OriginalName $originalName,
         protected readonly MimeType $mimeType,
-        protected readonly Size $bytes,
+        protected Size $bytes,
         protected readonly Timestamps $timestamps = new Timestamps(),
     ) {}
 
@@ -108,5 +109,12 @@ class File implements EventSource, Timestampable
     public function removed(): self
     {
         return $this->record(new FileRemoved($this));
+    }
+
+    public function strippedMetadata(Size $bytes): static
+    {
+        $this->bytes = $bytes;
+
+        return $this->record(new FileMetadataStripped($this, $bytes));
     }
 }

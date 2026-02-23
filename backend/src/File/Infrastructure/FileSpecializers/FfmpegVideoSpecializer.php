@@ -21,6 +21,7 @@ use olml89\TelegramUserbot\Backend\File\Domain\Resolution\Resolution;
 use olml89\TelegramUserbot\Backend\File\Domain\Resolution\ResolutionException;
 use olml89\TelegramUserbot\Backend\File\Domain\Video;
 use RuntimeException;
+use Throwable;
 
 final readonly class FfmpegVideoSpecializer implements VideoSpecializer
 {
@@ -35,8 +36,8 @@ final readonly class FfmpegVideoSpecializer implements VideoSpecializer
     public function specialize(File $file): Video
     {
         try {
-            $videoFile = $this->fileManager->mediaFile($file);
-            $ffmpegVideoFile = $this->ffmpeg->open($videoFile->getPathname());
+            $storageFile = $this->fileManager->storageFile($file);
+            $ffmpegVideoFile = $this->ffmpeg->open($storageFile->getPathname());
 
             if (!$ffmpegVideoFile instanceof FFMpegVideo) {
                 throw new RuntimeException('File is not a video');
@@ -54,7 +55,7 @@ final readonly class FfmpegVideoSpecializer implements VideoSpecializer
                 duration: $this->getDuration($videoStream),
                 resolution: $this->getResolution($videoStream),
             );
-        } catch (LogicException|RuntimeException|ResolutionException|DurationException $e) {
+        } catch (Throwable $e) {
             throw new FileSpecializationException($e);
         }
     }

@@ -177,6 +177,7 @@ export const initFileUpload = () => {
             setWarning,
             clearError,
             detachProgress,
+            setSize,
             cancelBtn,
             retryBtn,
             removeBtn,
@@ -369,6 +370,7 @@ export const initFileUpload = () => {
                         const result = await fileUpload({ uploadId: uploader.getId() });
                         element.dataset.fileId = result.publicId;
                         uploadedFileIds.add(result.publicId);
+                        setSize(result.bytes);
                         clearError();
                         setProgressMessage('');
                         setUploadingState(false);

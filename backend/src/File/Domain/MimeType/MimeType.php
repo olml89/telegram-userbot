@@ -32,6 +32,7 @@ enum MimeType: string implements ValidatableStringBackedEnum, SafeStringBackedEn
 
     // Video
     case mp4 = 'video/mp4';
+    case m4v = 'video/x-m4v';
     case mpeg = 'video/mpeg';
     case webm_video = 'video/webm';
     case ogg_video = 'video/ogg';
@@ -58,6 +59,11 @@ enum MimeType: string implements ValidatableStringBackedEnum, SafeStringBackedEn
     public function isVideo(): bool
     {
         return str_starts_with($this->value, 'video/');
+    }
+
+    public function isPdf(): bool
+    {
+        return $this === self::pdf;
     }
 
     /**

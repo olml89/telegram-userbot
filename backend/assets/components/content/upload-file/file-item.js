@@ -53,7 +53,7 @@ export const createFileItem = (file) => {
     metaRight.innerHTML = `
         <div class="file-row">
             <span class="file-label">Size:</span>
-            <span class="file-value">${formatSize(file.size)}</span>
+            <span class="file-value" data-file-size-value>${formatSize(file.size)}</span>
         </div>
     `;
 
@@ -148,6 +148,14 @@ export const createFileItem = (file) => {
         setProgressBarVisible(false);
     };
 
+    const setSize = (bytes) => {
+        item.dataset.fileSize = String(bytes);
+        const fileSizeValueEl = item.querySelector('[data-file-size-value]');
+        if (fileSizeValueEl) {
+            fileSizeValueEl.textContent = formatSize(bytes);
+        }
+    };
+
     return {
         element: item,
         progress,
@@ -158,6 +166,7 @@ export const createFileItem = (file) => {
         setWarning,
         clearError,
         detachProgress,
+        setSize,
         cancelBtn,
         retryBtn,
         removeBtn,

@@ -11,8 +11,9 @@ use olml89\TelegramUserbot\Backend\File\Domain\FileSpecializer\ImageSpecializer;
 use olml89\TelegramUserbot\Backend\File\Domain\Image;
 use olml89\TelegramUserbot\Backend\File\Domain\Resolution\Resolution;
 use olml89\TelegramUserbot\Backend\File\Domain\Resolution\ResolutionException;
+use olml89\TelegramUserbot\Backend\File\Domain\StorageFile\StorageFile;
 use RuntimeException;
-use SplFileObject;
+use Throwable;
 
 final readonly class PhpImageSpecializer implements ImageSpecializer
 {
@@ -26,13 +27,13 @@ final readonly class PhpImageSpecializer implements ImageSpecializer
     public function specialize(File $file): Image
     {
         try {
-            $imageFile = $this->fileManager->mediaFile($file);
+            $storageFile = $this->fileManager->storageFile($file);
 
             return new Image(
                 file: $file,
-                resolution: $this->getResolution($imageFile),
+                resolution: $this->getResolution($storageFile),
             );
-        } catch (RuntimeException|ResolutionException $e) {
+        } catch (Throwable $e) {
             throw new FileSpecializationException($e);
         }
     }
@@ -41,9 +42,9 @@ final readonly class PhpImageSpecializer implements ImageSpecializer
      * @throws RuntimeException
      * @throws ResolutionException
      */
-    private function getResolution(SplFileObject $imageFile): Resolution
+    private function getResolution(StorageFile $storageFile): Resolution
     {
-        $imageSize = @getimagesize($imageFile->getPathname());
+        $imageSize = @getimagesize($storageFile->getPathname());
 
         if ($imageSize === false) {
             throw new RuntimeException('Unable to get image size');
