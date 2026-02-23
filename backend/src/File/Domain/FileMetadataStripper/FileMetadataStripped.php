@@ -16,7 +16,7 @@ final readonly class FileMetadataStripped implements Event
 
     public function __construct(
         private File $file,
-        private Size $newSize,
+        private Size $oldSize,
         protected DateTimeImmutable $occurredAt = new DateTimeImmutable(),
     ) {}
 
@@ -30,7 +30,7 @@ final readonly class FileMetadataStripped implements Event
      */
     public function jsonSerialize(): array
     {
-        $reducedBytes = $this->file->bytes()->diff($this->newSize);
+        $reducedBytes = $this->oldSize->diff($this->file->bytes());
         $percent = round(num: $reducedBytes / $this->file->bytes()->value, precision: 2);
 
         return [

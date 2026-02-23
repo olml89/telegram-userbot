@@ -113,8 +113,9 @@ class File implements EventSource, Timestampable
 
     public function strippedMetadata(Size $bytes): static
     {
+        $oldSize = $this->bytes;
         $this->bytes = $bytes;
 
-        return $this->record(new FileMetadataStripped($this, $bytes));
+        return $this->record(new FileMetadataStripped($this, $oldSize));
     }
 }
