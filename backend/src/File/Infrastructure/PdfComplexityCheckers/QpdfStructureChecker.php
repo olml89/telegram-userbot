@@ -89,7 +89,7 @@ final readonly class QpdfStructureChecker
     }
 
     /**
-     * @param array<string, mixed> $data
+     * @param array<int|string, mixed> $data
      */
     private function hasJavascript(array $data): bool
     {
@@ -98,14 +98,11 @@ final readonly class QpdfStructureChecker
                 return true;
             }
 
-            if (is_array($value)) {
-                /** @var array<string, mixed> $value */
-                if ($this->hasJavascript($value)) {
-                    return true;
-                }
+            if (is_array($value) && $this->hasJavascript($value)) {
+                return true;
             }
 
-            if (strcasecmp($key, '/OpenAction') === 0) {
+            if (is_string($key) && strcasecmp($key, '/OpenAction') === 0) {
                 return true;
             }
         }
