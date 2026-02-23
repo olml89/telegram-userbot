@@ -32,6 +32,7 @@ enum MimeType: string implements ValidatableStringBackedEnum, SafeStringBackedEn
 
     // Video
     case mp4 = 'video/mp4';
+    case m4v = 'video/x-m4v';
     case mpeg = 'video/mpeg';
     case webm_video = 'video/webm';
     case ogg_video = 'video/ogg';
