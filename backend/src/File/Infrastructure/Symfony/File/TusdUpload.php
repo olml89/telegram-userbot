@@ -11,7 +11,6 @@ use olml89\TelegramUserbot\Backend\File\Domain\Upload\UploadConsumptionException
 use olml89\TelegramUserbot\Backend\File\Domain\Upload\UploadReadingException;
 use olml89\TelegramUserbot\Backend\File\Domain\Upload\UploadNotFoundException;
 use olml89\TelegramUserbot\Backend\File\Domain\Upload\UploadRemovalException;
-use olml89\TelegramUserbot\Backend\File\Infrastructure\Symfony\File\File as SymfonyFile;
 use RuntimeException;
 use Symfony\Component\Filesystem\Exception\IOException;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
@@ -21,8 +20,8 @@ use Webmozart\Assert\Assert;
 
 final readonly class TusdUpload implements Upload
 {
-    private SymfonyFile $upload;
-    private SymfonyFile $info;
+    private FilesystemFile $upload;
+    private FilesystemFile $info;
 
     /**
      * @throws UploadNotFoundException
@@ -30,8 +29,14 @@ final readonly class TusdUpload implements Upload
     public function __construct(string $uploadDirectory, string $uploadId)
     {
         try {
-            $this->upload = SymfonyFile::from($uploadDirectory, $uploadId);
-            $this->info = SymfonyFile::from($uploadDirectory, sprintf('%s.info', $uploadId));
+            $this->upload = FilesystemFile::from(
+                $uploadDirectory,
+                $uploadId,
+            );
+            $this->info = FilesystemFile::from(
+                $uploadDirectory,
+                sprintf('%s.info', $uploadId),
+            );
         } catch (FileNotFoundException $e) {
             throw new UploadNotFoundException(
                 $uploadDirectory,
@@ -137,14 +142,14 @@ final readonly class TusdUpload implements Upload
          * Move the uploaded file to the content directory with the correct name and extension
          */
         try {
-            $moved = $this->upload->move($destinationDirectory, $file->fileName()->value);
+            $moved = $this->upload->move($destinationDirectory, $file);
         } catch (FileException $uploadMovingException) {
             /**
              * Move of the uploaded file failed, try to remove both files
              */
             $exception = new UploadConsumptionException(
                 originPath: $this->upload->path(),
-                destinationPath: $file->path($destinationDirectory),
+                destinationPath: $file->filePath($destinationDirectory),
                 previous: $uploadMovingException,
             );
 
@@ -184,7 +189,7 @@ final readonly class TusdUpload implements Upload
              */
             $exception = new UploadConsumptionException(
                 originPath: $this->upload->path(),
-                destinationPath: $file->path($destinationDirectory),
+                destinationPath: $file->filePath($destinationDirectory),
                 previous: $infoRemovalException,
             );
 
