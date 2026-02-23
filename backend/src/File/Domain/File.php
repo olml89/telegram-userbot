@@ -33,7 +33,7 @@ class File implements EventSource, Timestampable
         protected readonly FileName $fileName,
         protected readonly OriginalName $originalName,
         protected readonly MimeType $mimeType,
-        protected readonly Size $bytes,
+        protected Size $bytes,
         protected readonly Timestamps $timestamps = new Timestamps(),
     ) {}
 
@@ -111,18 +111,10 @@ class File implements EventSource, Timestampable
         return $this->record(new FileRemoved($this));
     }
 
-    public function strippedMetadata(Size $newSize): static
+    public function strippedMetadata(Size $bytes): static
     {
-        $strippedMetadata = new self(
-            publicId: $this->publicId,
-            fileName: $this->fileName,
-            originalName: $this->originalName,
-            mimeType: $this->mimeType,
-            bytes: $newSize,
-        );
+        $this->bytes = $bytes;
 
-        return $strippedMetadata
-            ->copyEvents($this)
-            ->record(new FileMetadataStripped($this, $newSize));
+        return $this->record(new FileMetadataStripped($this, $bytes));
     }
 }
