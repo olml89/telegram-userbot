@@ -71,9 +71,9 @@ class File implements EventSource, Timestampable
         return $this->content;
     }
 
-    public function path(string $directory): string
+    public function filePath(string $contentDirectory): string
     {
-        return $this->fileName()->path($directory);
+        return $this->fileName()->filePath($contentDirectory);
     }
 
     public function assertNotAttached(): self

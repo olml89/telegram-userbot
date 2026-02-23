@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace olml89\TelegramUserbot\Backend\File\Infrastructure\Symfony\File;
 
 use LogicException;
+use olml89\TelegramUserbot\Backend\File\Domain\File;
 use RuntimeException;
 use Symfony\Component\Filesystem\Exception\FileNotFoundException;
 use Symfony\Component\Filesystem\Exception\IOException;
@@ -12,7 +13,7 @@ use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\File\File as SymfonyFile;
 
-final readonly class File
+final readonly class FilesystemFile
 {
     public function __construct(
         private SymfonyFile $file,
@@ -53,9 +54,14 @@ final readonly class File
     /**
      * @throws FileException
      */
-    public function move(string $directory, string $name): self
+    public function move(string $directory, File $file): self
     {
-        return new self($this->file->move($directory, $name));
+        $movedSymfonyFile = $this->file->move(
+            directory: $file->fileName()->directoryPath($directory),
+            name: $file->fileName()->value,
+        );
+
+        return new self($movedSymfonyFile);
     }
 
     public function name(): string

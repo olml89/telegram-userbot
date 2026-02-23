@@ -32,8 +32,33 @@ final readonly class FileName extends StringValueObject
         }
     }
 
-    public function path(string $directory): string
+    private function sharding(): string
     {
-        return sprintf('%s/%s', $directory, $this->value);
+        return implode(
+            separator: '/',
+            array: array_slice(
+                array: explode('-', $this->value),
+                offset: 0,
+                length: 2,
+            ),
+        );
+    }
+
+    public function directoryPath(string $contentDirectory): string
+    {
+        return sprintf(
+            '%s/%s',
+            $contentDirectory,
+            $this->sharding(),
+        );
+    }
+
+    public function filePath(string $contentDirectory): string
+    {
+        return sprintf(
+            '%s/%s',
+            $this->directoryPath($contentDirectory),
+            $this->value,
+        );
     }
 }
