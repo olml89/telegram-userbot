@@ -77,16 +77,24 @@ export const initTags = () => {
     const getTagId = (el) => (el.dataset.tagId || '').trim();
 
     const createSelectedTag = ({ id, name }) => {
-        const pill = document.createElement('button');
-        pill.type = 'button';
+        const pill = document.createElement('span');
         pill.className = 'tag tag-selected';
         pill.dataset.tagId = id;
         pill.dataset.tagName = name;
-        pill.textContent = `${name} ✕`;
 
-        pill.addEventListener('click', () => {
-            pill.remove();
-        });
+        pill.innerHTML = `
+                <span class="tag-label">${name}</span>
+                <button type="button" class="tag-remove" aria-label="Remove tag">✕</button>
+            `;
+
+        const removeBtn = pill.querySelector('.tag-remove');
+
+        if (removeBtn) {
+            removeBtn.addEventListener('click', (event) => {
+                event.stopPropagation();
+                pill.remove();
+            });
+        }
 
         return pill;
     };

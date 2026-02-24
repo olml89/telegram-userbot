@@ -97,7 +97,25 @@
     background: var(--accent);
     color: #ffffff;
     border-color: var(--accent);
+    cursor: default;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+#contentAddModal .tag-selected .tag-remove {
+    background: transparent;
+    border: none;
+    color: inherit;
+    font: inherit;
     cursor: pointer;
+    padding: 0 2px;
+    line-height: 1;
+}
+
+#contentAddModal .tag-selected .tag-remove:hover,
+#contentAddModal .tag-selected .tag-remove:focus-visible {
+    color: #dbdbdb;
 }
 
 #contentAddModal .tag.tag-selected.is-error {
