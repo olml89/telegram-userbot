@@ -25,8 +25,8 @@ final readonly class SearchTagController
     public function __invoke(#[MapQueryString] SearchTagRequest $request): JsonResponse
     {
         $searchTagCommand = $request->command();
-        $searchTagResult = $this->searchTagCommandHandler->handle($searchTagCommand);
+        $searchTagResults = $this->searchTagCommandHandler->handle($searchTagCommand);
 
-        return new JsonResponse($searchTagResult, status: Response::HTTP_OK);
+        return new JsonResponse($searchTagResults, status: Response::HTTP_OK);
     }
 }
