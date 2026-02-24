@@ -4,6 +4,23 @@
     display: flex;
     flex-direction: column;
     overflow: hidden;
+    position: relative;
+}
+
+/* Overlay to block ALL the interactions while the modal is busy */
+#contentAddModal.is-busy .modal-content::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 9999;
+    background: transparent;
+    pointer-events: all;
+}
+
+/* As a fallback, hide caret if something somehow stays focused */
+#contentAddModal.is-busy input,
+#contentAddModal.is-busy textarea {
+    caret-color: transparent;
 }
 
 #contentAddModal .modal-body {
@@ -452,9 +469,30 @@
     gap: 10px;
 }
 
-#contentAddModal [data-content-add]:disabled {
-    opacity: 0.6;
+#contentAddModal input:disabled,
+#contentAddModal textarea:disabled,
+#contentAddModal .select-trigger:disabled,
+#contentAddModal .file-upload-card.is-disabled,
+#contentAddModal .file-item.is-disabled,
+#contentAddModal button:disabled {
     cursor: not-allowed;
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+#contentAddModal .btn:disabled:hover {
+    box-shadow: none;
+    filter: none;
+}
+
+#contentAddModal [data-content-add]:focus,
+#contentAddModal [data-content-add]:focus-visible {
+    background: #333333;
+    color: #ffffff;
+    border-color: transparent;
+}
+
+#contentAddModal [data-content-add]:disabled {
     box-shadow: none;
     filter: grayscale(0.2);
 }

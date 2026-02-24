@@ -12,6 +12,15 @@ export const initContentSave = (getFileIds) => {
     const modeSelect = document.querySelector('[data-mode-select]');
     const tagsSelected = document.querySelector('[data-tags-selected]');
     const tableBody = document.querySelector('[data-library-table-body]');
+    const addModal = document.getElementById('contentAddModal');
+
+    if (
+        !saveBtn || !titleInput || !descriptionInput || !priceInput || !intensityInput ||
+        !categorySelect || !languageSelect || !statusSelect || !modeSelect ||
+        !tagsSelected || !addModal || !getFileIds
+    ) {
+        return;
+    }
 
     const fieldErrors = {
         title: document.querySelector('[data-error-for="title"]'),
@@ -26,13 +35,56 @@ export const initContentSave = (getFileIds) => {
         fileIds: document.querySelector('[data-error-for="fileIds"]'),
     };
 
-    if (
-        !saveBtn || !titleInput || !descriptionInput || !priceInput || !intensityInput ||
-        !categorySelect || !languageSelect || !statusSelect || !modeSelect ||
-        !tagsSelected || !getFileIds
-    ) {
-        return;
-    }
+    const setModalBusy = (isBusy) => {
+        if (!addModal) {
+            return;
+        }
+
+        saveBtn.disabled = isBusy;
+
+        addModal.querySelectorAll('input, textarea').forEach((el) => {
+            el.disabled = isBusy;
+        });
+
+        addModal.querySelectorAll('button, select').forEach((el) => {
+            if (el === saveBtn) {
+                return;
+            }
+
+            el.disabled = isBusy;
+        });
+
+        addModal.querySelectorAll('[data-add-close]').forEach((el) => {
+            el.disabled = isBusy;
+        });
+
+        addModal.querySelectorAll('.custom-select .select-trigger').forEach((el) => {
+            el.disabled = isBusy;
+            el.setAttribute('aria-disabled', String(isBusy));
+        });
+
+        addModal.querySelectorAll('.file-actions button').forEach((el) => {
+            el.disabled = isBusy;
+        });
+
+        addModal.querySelectorAll('[data-file-id] [data-remove-file]').forEach((el) => {
+            el.disabled = isBusy;
+        });
+
+        addModal.querySelectorAll('[data-tags-input]').forEach((el) => {
+            el.disabled = isBusy;
+        });
+
+        addModal.querySelectorAll('[data-upload-card]').forEach((el) => {
+            el.classList.toggle('is-disabled', isBusy);
+        });
+
+        addModal.querySelectorAll('[data-file-list] .file-item').forEach((el) => {
+            el.classList.toggle('is-disabled', isBusy);
+        });
+
+        addModal.classList.toggle('is-busy', isBusy);
+    };
 
     let uploadsActive = false;
 
@@ -285,7 +337,7 @@ export const initContentSave = (getFileIds) => {
             return;
         }
 
-        saveBtn.disabled = true;
+        setModalBusy(true);
 
         const response = await fetch('/api/content', {
             method: 'POST',
@@ -307,17 +359,11 @@ export const initContentSave = (getFileIds) => {
         });
 
         if (!response.ok) {
-            let payload = null;
-
-            try {
-                payload = await response.json();
-            } catch (e) {
-                payload = null;
-            }
-
+            const payload = await response.json().catch(() => null);
             const serverErrors = payload?.errors || { form: payload?.message || 'Failed to save content.' };
             setErrors(serverErrors);
             setSaveDisabled();
+            setModalBusy(false);
 
             return;
         }
@@ -331,6 +377,6 @@ export const initContentSave = (getFileIds) => {
         }
 
         setErrors([]);
-        saveBtn.disabled = false;
+        setModalBusy(false);
     });
 };
