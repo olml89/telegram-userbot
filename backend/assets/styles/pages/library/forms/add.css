@@ -38,6 +38,18 @@
     gap: 14px;
 }
 
+#contentAddModal .modal-subtitle,
+#contentAddModal .form-label,
+#contentAddModal .form-label-title,
+#contentAddModal .file-label,
+#contentAddModal .tag-group-title,
+#contentAddModal .file-upload-content,
+#contentAddModal .file-item,
+#contentAddModal .file-total-size,
+#contentAddModal [data-content-add] {
+    user-select: none;
+}
+
 #contentAddModal .form-label.full-width {
     grid-column: 1 / -1;
     margin-top: 14px;
