@@ -1,7 +1,8 @@
 import { renderContentRow } from './content-row.js';
 
 export const initContentSave = (getFileIds) => {
-    const saveBtn = document.querySelector('[data-content-add]');
+    const tableBody = document.querySelector('[data-library-table-body]');
+    const addModal = document.getElementById('contentAddModal');
     const titleInput = document.querySelector('[data-content-title]');
     const descriptionInput = document.querySelector('[data-content-description]');
     const priceInput = document.querySelector('[data-price-input]');
@@ -11,13 +12,14 @@ export const initContentSave = (getFileIds) => {
     const statusSelect = document.querySelector('[data-content-status]');
     const modeSelect = document.querySelector('[data-mode-select]');
     const tagsSelected = document.querySelector('[data-tags-selected]');
-    const tableBody = document.querySelector('[data-library-table-body]');
-    const addModal = document.getElementById('contentAddModal');
+    const saveBtn = document.querySelector('[data-content-add]');
 
     if (
-        !saveBtn || !titleInput || !descriptionInput || !priceInput || !intensityInput ||
+        !tableBody || !addModal ||
+        !titleInput || !descriptionInput || !priceInput || !intensityInput ||
         !categorySelect || !languageSelect || !statusSelect || !modeSelect ||
-        !tagsSelected || !addModal || !getFileIds
+        !tagsSelected || !getFileIds ||
+        !saveBtn
     ) {
         return;
     }
@@ -33,6 +35,7 @@ export const initContentSave = (getFileIds) => {
         intensity: document.querySelector('[data-error-for="intensity"]'),
         tagIds: document.querySelector('[data-error-for="tagIds"]'),
         fileIds: document.querySelector('[data-error-for="fileIds"]'),
+        form: document.querySelector('[data-error-for="form"]'),
     };
 
     const setModalBusy = (isBusy) => {
@@ -84,6 +87,14 @@ export const initContentSave = (getFileIds) => {
         });
 
         addModal.classList.toggle('is-busy', isBusy);
+    };
+
+    const setSubmitLoading = (isLoading) => {
+        saveBtn.classList.toggle('is-loading', isLoading);
+        saveBtn.disabled = isLoading;
+
+        const label = saveBtn.querySelector('.btn-label');
+        label.textContent = isLoading ? saveBtn.dataset.labelLoading : saveBtn.dataset.labelDefault;
     };
 
     let uploadsActive = false;
@@ -314,6 +325,76 @@ export const initContentSave = (getFileIds) => {
         setSaveDisabled();
     });
 
+    const parseApiError = async (response, errorMessage) => {
+        let uiMessage = errorMessage;
+        let debugMessage;
+        let errors = null;
+
+        try {
+            const data = await response.json();
+            debugMessage = data.message;
+
+            if (response.status === 422 && data.errors) {
+                errors = data.errors;
+
+                const humanizeField = (field) => field
+                    .replace(/([a-z0-9])([A-Z])/g, '$1 $2')
+                    .replace(/[_-]+/g, ' ')
+                    .replace(/\s+/g, ' ')
+                    .trim()
+                    .toLowerCase()
+                    .replace(/^\w/, (c) => c.toUpperCase());
+
+                const lowerFirst = (text) => text
+                    ? text.replace(/^\w/, (c) => c.toLowerCase())
+                    : text;
+
+                const formattedErrors = Object.entries(errors)
+                    .map(([field, msg]) => `${humanizeField(field)}: ${lowerFirst(String(msg))}`)
+                    .join(' · ');
+
+                if (formattedErrors) {
+                    debugMessage += ` (${formattedErrors})`;
+                }
+            }
+        } catch (e) {
+            /**
+             * JSON parsing error: not a JSON response.
+             * Check if the response is a 504 directly returned by nginx in HTML.
+             */
+            debugMessage = response.statusText;
+
+            if (response.status === 504) {
+                uiMessage += '. Please retry';
+            }
+        }
+
+        const error = new Error(uiMessage);
+        error.consoleMessage = `${errorMessage} (${response.status}): ${debugMessage}`;
+        error.errors = errors;
+
+        return error;
+    };
+
+    const addContent = async(content) => {
+        const response = await fetch('/api/content', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(content),
+        });
+
+        if (!response.ok) {
+            throw await parseApiError(
+                response,
+                'Failed to add content',
+            );
+        }
+
+        return response.json();
+    }
+
     setSaveDisabled();
 
     saveBtn.addEventListener('click', async () => {
@@ -338,13 +419,10 @@ export const initContentSave = (getFileIds) => {
         }
 
         setModalBusy(true);
+        setSubmitLoading(true);
 
-        const response = await fetch('/api/content', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
+        try {
+            const content = await addContent({
                 title,
                 description,
                 language,
@@ -355,28 +433,21 @@ export const initContentSave = (getFileIds) => {
                 categoryId,
                 tagIds,
                 fileIds,
-            }),
-        });
+            });
 
-        if (!response.ok) {
-            const payload = await response.json().catch(() => null);
-            const serverErrors = payload?.errors || { form: payload?.message || 'Failed to save content.' };
-            setErrors(serverErrors);
+            const row = document.createElement('tbody');
+            row.innerHTML = renderContentRow(content).trim();
+            tableBody.prepend(row.firstElementChild);
+
+            setErrors([]);
+            setSubmitLoading(false);
+            setModalBusy(false);
+        } catch (e) {
+            console.error(e.consoleMessage);
+            setErrors(e?.errors || { form: e.message });
+            setSubmitLoading(false);
             setSaveDisabled();
             setModalBusy(false);
-
-            return;
         }
-
-        const payload = await response.json().catch(() => ({}));
-
-        if (tableBody) {
-            const row = document.createElement('tbody');
-            row.innerHTML = renderContentRow(payload).trim();
-            tableBody.prepend(row.firstElementChild);
-        }
-
-        setErrors([]);
-        setModalBusy(false);
     });
 };

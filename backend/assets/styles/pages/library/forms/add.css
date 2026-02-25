@@ -479,6 +479,13 @@
     display: flex;
     justify-content: flex-end;
     gap: 10px;
+    flex-wrap: wrap;
+}
+
+#contentAddModal .modal-footer [data-error-for="form"] {
+    flex: 1 1 100%;
+    text-align: center;
+    margin-bottom: 6px;
 }
 
 #contentAddModal input:disabled,
@@ -495,6 +502,49 @@
 #contentAddModal .btn:disabled:hover {
     box-shadow: none;
     filter: none;
+}
+
+#contentAddModal [data-content-add] {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+#contentAddModal [data-content-add] .btn-label-wrap {
+    display: grid;
+    grid-template-columns: 1fr;
+}
+
+#contentAddModal [data-content-add] .btn-label,
+#contentAddModal [data-content-add] .btn-sizer {
+    grid-area: 1 / 1;
+}
+
+#contentAddModal [data-content-add] .btn-sizer {
+    visibility: hidden;
+    white-space: nowrap;
+    height: 0;
+}
+
+#contentAddModal [data-content-add] .btn-spinner {
+    width: 14px;
+    height: 14px;
+    border: 2px solid rgba(255, 255, 255, 0.45);
+    border-top-color: #ffffff;
+    border-radius: 999px;
+    display: none;
+    animation: spin 0.8s linear infinite;
+}
+
+#contentAddModal [data-content-add].is-loading .btn-spinner {
+    display: inline-block;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
 }
 
 #contentAddModal [data-content-add]:focus,

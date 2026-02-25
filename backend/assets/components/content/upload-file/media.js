@@ -17,6 +17,7 @@ export const media = ({ mime, objectUrl, element }) => {
         };
 
         img.src = objectUrl;
+
         return;
     }
 

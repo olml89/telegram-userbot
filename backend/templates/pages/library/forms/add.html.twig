@@ -163,8 +163,21 @@
         </div>
 
         <div class="modal-footer">
+            <div class="field-error" data-error-for="form" hidden></div>
             <button type="button" class="btn btn-secondary btn-hover-outline" data-add-close>Close</button>
-            <button type="button" class="btn btn-primary" data-content-add>Add content</button>
+            <button
+                    type="button"
+                    class="btn btn-primary"
+                    data-content-add
+                    data-label-default="Add content"
+                    data-label-loading="Adding..."
+            >
+                    <span class="btn-label-wrap">
+                        <span class="btn-label">Add content</span>
+                        <span class="btn-sizer">Adding...</span>
+                    </span>
+                <span class="btn-spinner" aria-hidden="true"></span>
+            </button>
         </div>
     </div>
 </div>
