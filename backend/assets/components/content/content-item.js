@@ -1,4 +1,4 @@
-export const renderContentRow = (content) => {
+export const renderContentItem = (content) => {
     const files = Array.isArray(content.files) ? content.files : [];
     const filesCount = files.length;
     const mediaClass = filesCount === 1 ? 'media-single' : filesCount === 2 ? 'media-pair' : 'media-grid';

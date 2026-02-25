@@ -1,4 +1,4 @@
-import { renderContentRow } from './content-row.js';
+import { renderContentItem } from './content-item.js';
 import { parseApiError } from '../http/api-error-parser.js';
 
 export const initContentAdd = (getFileIds) => {
@@ -386,7 +386,7 @@ export const initContentAdd = (getFileIds) => {
             });
 
             const row = document.createElement('tbody');
-            row.innerHTML = renderContentRow(content).trim();
+            row.innerHTML = renderContentItem(content).trim();
             tableBody.prepend(row.firstElementChild);
 
             setErrors([]);
