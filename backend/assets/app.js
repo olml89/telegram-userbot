@@ -10,12 +10,12 @@ import './styles/pages/userbot.css';
 
 import { initCustomSelects } from './components/custom-select.js';
 import { initPreviewModal } from './components/content/preview.js';
-import { initAddModal } from './components/content/add.js';
+import { initAddModal } from './components/content/add-modal.js';
 import { initModePrice } from './components/content/price.js';
 import { initIntensity } from './components/content/intensity.js';
 import { initTags } from './components/content/tags.js';
-import { initFileUpload } from './components/content/upload-file/upload-file.js';
-import { initContentSave } from './components/content/save-content.js';
+import { initFileUpload } from './components/content/file-upload/file-upload.js';
+import { initContentAdd } from './components/content/content-add.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     initCustomSelects();
@@ -25,6 +25,6 @@ document.addEventListener('DOMContentLoaded', () => {
     initIntensity();
     initTags();
 
-    const uploadFileState = initFileUpload();
-    initContentSave(uploadFileState?.getFileIds);
+    const fileUpload = initFileUpload();
+    initContentAdd(fileUpload?.getFileIds);
 });

@@ -1,6 +1,6 @@
 import { renderContentRow } from './content-row.js';
 
-export const initContentSave = (getFileIds) => {
+export const initContentAdd = (getFileIds) => {
     const tableBody = document.querySelector('[data-library-table-body]');
     const addModal = document.getElementById('contentAddModal');
     const titleInput = document.querySelector('[data-content-title]');
