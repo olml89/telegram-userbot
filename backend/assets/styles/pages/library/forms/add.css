@@ -292,6 +292,10 @@
     visibility: hidden;
 }
 
+#contentAddModal .file-progress-status span {
+    display: block;
+}
+
 #contentAddModal .file-progress-status.is-error {
     color: #b91c1c;
 }

@@ -1,5 +1,5 @@
 import { createProgressBar } from './progress.js';
-import { formatSize, getEmoji } from './format.js';
+import { formatSize, getEmoji, humanizeError } from '../../formatter.js';
 
 export const createFileItem = (file) => {
     const mime = file.type || 'application/octet-stream';
@@ -114,31 +114,53 @@ export const createFileItem = (file) => {
         setStatusVisible(isUploading || hasError);
     };
 
+    const setStatusLines = (lines) => {
+        progress.status.innerHTML = '';
+
+        lines.forEach((message) => {
+            const line = document.createElement('span');
+            line.textContent = message;
+            progress.status.appendChild(line);
+        });
+    };
+
     const setProgressMessage = (message) => {
-        progress.status.textContent = message;
         progress.status.classList.remove('is-error', 'is-warning');
         item.classList.remove('file-item-error', 'file-item-warning');
+
+        setStatusLines([message]);
         setStatusVisible(Boolean(message));
     };
 
-    const setError = (message) => {
+    const formatErrors = (error) => {
+        return error?.errors
+            ? Object
+                .entries(error.errors)
+                .map(([field, message]) => humanizeError(field, message))
+            : [error.message];
+    }
+
+    const setError = (error) => {
         item.classList.add('file-item-error');
-        progress.status.textContent = message;
         progress.status.classList.add('is-error');
+
+        setStatusLines(formatErrors(error));
         setStatusVisible(true);
     };
 
-    const setWarning = (message) => {
+    const setWarning = (error) => {
         item.classList.add('file-item-warning');
-        progress.status.textContent = message;
         progress.status.classList.add('is-warning');
+
+        setStatusLines(formatErrors(error));
         setStatusVisible(true);
     };
 
     const clearError = () => {
         item.classList.remove('file-item-error', 'file-item-warning');
         progress.status.classList.remove('is-error', 'is-warning');
-        progress.status.textContent = '';
+
+        setStatusLines([]);
         setStatusVisible(false);
         setProgressBarVisible(false);
     };

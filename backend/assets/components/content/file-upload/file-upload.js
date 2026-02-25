@@ -1,7 +1,8 @@
 import { createFileItem } from './file-item.js';
-import { formatSize, formatProgress } from './format.js';
+import { formatSize, formatProgress } from '../../formatter.js';
 import { media } from './media.js';
-import { createTusUploader } from './tus-uploader.js';
+import { createTusUploader, convertTusErrorToResponse } from './tus-uploader.js';
+import { parseApiError } from '../../http/api-error-parser.js';
 
 export const initFileUpload = () => {
     const fileInput = document.querySelector('[data-file-input]');
@@ -55,54 +56,12 @@ export const initFileUpload = () => {
         }
     };
 
-    const parseApiError = async (response, prefix) => {
-        let message = '';
-        let uiMessage = '';
-
-        const humanizeField = (field) => field
-            .replace(/([a-z0-9])([A-Z])/g, '$1 $2')
-            .replace(/[_-]+/g, ' ')
-            .replace(/\s+/g, ' ')
-            .trim()
-            .toLowerCase()
-            .replace(/^\w/, (c) => c.toUpperCase());
-
-        const lowerFirst = (text) => text
-            ? text.replace(/^\w/, (c) => c.toLowerCase())
-            : text;
-
-        try {
-            const data = await response.json();
-            message = data?.message;
-
-            if (response.status === 422 && data?.errors) {
-                const errors = Object.entries(data.errors)
-                    .map(([field, msg]) => `${humanizeField(field)}: ${lowerFirst(String(msg))}`)
-                    .join(' · ');
-                if (errors) {
-                    message = errors;
-                }
-            }
-
-            uiMessage = message.replace(/\s*\(\d{3}\)\s*$/, '');
-
-            if (response.status === 404) {
-                uiMessage = 'Upload not found';
-            }
-        } catch (e) {
-            //Ignore JSON parsing errors
-        }
-
-        return {
-            uiMessage,
-            consoleMessage: `${prefix} (${response.status}): ${message}`,
-        };
-    };
-
     const fileValidate = async (file) => {
         const response = await fetch('/api/files/validation', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+                'Content-Type': 'application/json',
+            },
             body: JSON.stringify({
                 originalName: file.name,
                 mimeType: file.type || null,
@@ -111,37 +70,29 @@ export const initFileUpload = () => {
         });
 
         if (!response.ok) {
-            const { uiMessage, consoleMessage } = await parseApiError(
+            throw await parseApiError(
                 response,
                 'Failed to validate file',
             );
-
-            const err = new Error(uiMessage);
-            err.uiMessage = uiMessage;
-            err.consoleMessage = consoleMessage;
-            throw err;
         }
     }
 
     const fileUpload = async ({ uploadId }) => {
         const response = await fetch('/api/files', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+                'Content-Type': 'application/json',
+            },
             body: JSON.stringify({
                 uploadId,
             }),
         });
 
         if (!response.ok) {
-            const { uiMessage, consoleMessage } = await parseApiError(
+            throw await parseApiError(
                 response,
                 'Failed to save file',
             );
-
-            const err = new Error(uiMessage);
-            err.uiMessage = uiMessage;
-            err.consoleMessage = consoleMessage;
-            throw err;
         }
 
         return response.json();
@@ -153,15 +104,10 @@ export const initFileUpload = () => {
         });
 
         if (!response.ok) {
-            const { uiMessage, consoleMessage } = await parseApiError(
+            throw await parseApiError(
                 response,
                 'Failed to delete file',
             );
-
-            const err = new Error(uiMessage);
-            err.uiMessage = uiMessage;
-            err.consoleMessage = consoleMessage;
-            throw err;
         }
     };
 
@@ -222,8 +168,8 @@ export const initFileUpload = () => {
             removeItem();
         };
 
-        const handleDeleteError = (message) => {
-            setWarning(message);
+        const handleDeleteError = (error) => {
+            setWarning(error);
             finalizeUpload();
 
             if (cancelBtn) {
@@ -274,11 +220,8 @@ export const initFileUpload = () => {
             try {
                 await fileValidate(file);
             } catch (e) {
-                const uiMessage = e?.uiMessage || 'Failed to validate file. Please retry.';
-                const consoleMessage = e?.consoleMessage || uiMessage;
-
-                console.error(consoleMessage);
-                setError(uiMessage);
+                console.error(e.consoleMessage);
+                setError(e);
                 setUploadingState(false);
 
                 if (retryBtn) {
@@ -337,15 +280,18 @@ export const initFileUpload = () => {
 
                     progress.status.textContent = `${formatProgress(bytesSent, bytesTotal, emaSpeed, remainingSeconds)}`;
                 },
-                onError: (error) => {
+                onError: async (error) => {
                     if (isCanceled) {
                         return;
                     }
 
-                    console.error(error);
+                    const response = await convertTusErrorToResponse(error);
+                    const parsedError = await parseApiError(response, 'Failed to upload file');
+
+                    console.error(parsedError.consoleMessage);
+                    setError(parsedError);
 
                     detachProgress();
-                    setError('Failed to upload file. Please retry.');
                     setUploadingState(false);
                     finalizeUpload();
 
@@ -377,11 +323,8 @@ export const initFileUpload = () => {
                         finalizeUpload();
                         updateTotals();
                     } catch (e) {
-                        const uiMessage = e?.uiMessage || 'Failed to save file. Please retry.';
-                        const consoleMessage = e?.consoleMessage || uiMessage;
-
-                        console.error(consoleMessage);
-                        setError(uiMessage);
+                        console.error(e.consoleMessage);
+                        setError(e);
                         setUploadingState(false);
                         finalizeUpload();
 
@@ -439,11 +382,8 @@ export const initFileUpload = () => {
                     await fileDelete({fileId});
                     removeItem();
                 } catch (e) {
-                    const uiMessage = e?.uiMessage || 'Failed to save file. Please retry.';
-                    const consoleMessage = e?.consoleMessage || uiMessage;
-
-                    console.error(consoleMessage);
-                    handleDeleteError(uiMessage);
+                    console.error(e.consoleMessage);
+                    handleDeleteError(e);
                 } finally {
                     pendingDeletes = Math.max(0, pendingDeletes - 1);
                     setUploadsActive();

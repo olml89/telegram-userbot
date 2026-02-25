@@ -1,4 +1,5 @@
 import { renderContentRow } from './content-row.js';
+import { parseApiError } from '../http/api-error-parser.js';
 
 export const initContentAdd = (getFileIds) => {
     const tableBody = document.querySelector('[data-library-table-body]');
@@ -254,8 +255,8 @@ export const initContentAdd = (getFileIds) => {
         const tagItemErrors = [];
         const fileItemErrors = [];
         const fieldErrorsList = [];
-
-        Object.entries(errors || {}).forEach(([key, value]) => {
+        console.log(errors);
+        Object.entries(errors).forEach(([key, value]) => {
             const normalized = key.replace(/\[\d+]/g, '');
             const list = Array.isArray(value) ? value : [value];
 
@@ -324,57 +325,6 @@ export const initContentAdd = (getFileIds) => {
         uploadsActive = Boolean(event.detail?.active);
         setSaveDisabled();
     });
-
-    const parseApiError = async (response, errorMessage) => {
-        let uiMessage = errorMessage;
-        let debugMessage;
-        let errors = null;
-
-        try {
-            const data = await response.json();
-            debugMessage = data.message;
-
-            if (response.status === 422 && data.errors) {
-                errors = data.errors;
-
-                const humanizeField = (field) => field
-                    .replace(/([a-z0-9])([A-Z])/g, '$1 $2')
-                    .replace(/[_-]+/g, ' ')
-                    .replace(/\s+/g, ' ')
-                    .trim()
-                    .toLowerCase()
-                    .replace(/^\w/, (c) => c.toUpperCase());
-
-                const lowerFirst = (text) => text
-                    ? text.replace(/^\w/, (c) => c.toLowerCase())
-                    : text;
-
-                const formattedErrors = Object.entries(errors)
-                    .map(([field, msg]) => `${humanizeField(field)}: ${lowerFirst(String(msg))}`)
-                    .join(' · ');
-
-                if (formattedErrors) {
-                    debugMessage += ` (${formattedErrors})`;
-                }
-            }
-        } catch (e) {
-            /**
-             * JSON parsing error: not a JSON response.
-             * Check if the response is a 504 directly returned by nginx in HTML.
-             */
-            debugMessage = response.statusText;
-
-            if (response.status === 504) {
-                uiMessage += '. Please retry';
-            }
-        }
-
-        const error = new Error(uiMessage);
-        error.consoleMessage = `${errorMessage} (${response.status}): ${debugMessage}`;
-        error.errors = errors;
-
-        return error;
-    };
 
     const addContent = async(content) => {
         const response = await fetch('/api/content', {

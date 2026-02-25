@@ -51,3 +51,19 @@ const formatSpeed = (bytesPerSecond) => {
 export const formatProgress = (bytesSent = 0, bytesTotal = 0, speed = 0, remainingSeconds = null) => {
     return `Uploading: ${formatSize(bytesSent)} / ${formatSize(bytesTotal)} · ${formatSpeed(speed)} · ETA ${formatEta(remainingSeconds)}`;
 };
+
+export const humanizeError = (field, message) => {
+    const humanizeField = (field) => field
+        .replace(/([a-z0-9])([A-Z])/g, '$1 $2')
+        .replace(/[_-]+/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim()
+        .toLowerCase()
+        .replace(/^\w/, (c) => c.toUpperCase());
+
+    const lowerFirst = (text) => text
+        ? text.replace(/^\w/, (c) => c.toLowerCase())
+        : text;
+
+    return `${humanizeField(field)}: ${lowerFirst(String(message))}`;
+};

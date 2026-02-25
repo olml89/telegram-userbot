@@ -1,4 +1,4 @@
-import { formatProgress } from './format.js';
+import { formatProgress } from '../../formatter.js';
 
 export const createProgressBar = () => {
     const wrap = document.createElement('div');
