@@ -248,13 +248,20 @@ export class ContentAddModal {
         this.openBtn = openBtn;
         this.closeBtns = closeBtns;
 
-        this.contentFields.onChange(() => this.setAddButtonDisabled(this.contentFields.hasErrors()));
         this.setAddButtonDisabled(!this.contentFields.validate());
+
+        this.contentFields.files.onChange((): void => {
+            this.setAddButtonDisabled(this.contentFields.hasErrors());
+
+            this.closeBtns.forEach((closeBtn: HTMLButtonElement): void => {
+                closeBtn.disabled = this.contentFields.files.isActive();
+            });
+        });
 
         this.openBtn.addEventListener('click', (): void => this.addModal.classList.add('active'));
 
-        this.closeBtns.forEach((button: HTMLButtonElement): void => {
-            button.addEventListener('click', (): void => this.addModal.classList.remove('active'));
+        this.closeBtns.forEach((closeBtn: HTMLButtonElement): void => {
+            closeBtn.addEventListener('click', (): void => this.addModal.classList.remove('active'));
         });
 
         this.addBtn.addEventListener('click', async(): Promise<void> => this.submit());
