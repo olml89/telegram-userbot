@@ -1,0 +1,86 @@
+.price-input {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 32px;
+    width: 100%;
+}
+
+.price-input .price-input-field {
+    position: relative;
+    min-width: 0;
+}
+
+.price-input .price-prefix {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-muted);
+    font-size: 13px;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.price-input:has([data-price-input]:disabled) .price-prefix {
+    opacity: 0.6;
+}
+
+.price-input [data-price-input] {
+    width: 100%;
+    padding-left: 28px;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+.price-input .price-buttons {
+    display: grid;
+    grid-template-rows: 1fr 1fr;
+}
+
+.price-input .price-button {
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    min-height: 0;
+    font-size: 11px;
+    line-height: 1;
+    border-style: solid;
+    border-width: 1px;
+    border-left: 0;
+}
+
+.price-input:has([data-price-input]:focus) .price-button,
+.price-input:has([data-price-input].is-focused) .price-button {
+    border-width: 2px;
+}
+
+.price-input .price-button:not(:disabled) {
+    cursor: pointer;
+}
+
+.price-input .price-button:not(:disabled):hover {
+    --btn-primary-bg: var(--accent-weak);
+}
+
+/**
+ * It is not a .btn, so we have to repeat the styling even if it is a button
+ */
+.price-input .price-button:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.price-input .price-button-up {
+    border-top-right-radius: 10px;
+    border-bottom: 0;
+}
+
+.price-input:has([data-price-input]:focus) .price-button-up,
+.price-input:has([data-price-input].is-focused) .price-button-up {
+    border-bottom-width: 0;
+}
+
+.price-input .price-button-down {
+    border-bottom-right-radius: 10px;
+}

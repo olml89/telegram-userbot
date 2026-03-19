@@ -1,0 +1,14 @@
+.tag-group-title {
+    font-size: 11px;
+    color: var(--text-muted);
+}
+
+.tag-group-title.is-error {
+    color: var(--danger);
+}
+
+.tag-group-title.is-disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+    pointer-events: none;
+}

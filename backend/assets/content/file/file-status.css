@@ -1,0 +1,70 @@
+.file-status {
+    grid-column: 1 / -1;
+    display: none;
+}
+
+.file-status.is-visible {
+    display: block;
+}
+
+.file-status .file-progress {
+    position: relative;
+    height: 10px;
+    border-radius: 999px;
+    background: var(--border);
+    overflow: hidden;
+    display: none;
+}
+
+.file-status .file-progress.is-visible {
+    display: block;
+}
+
+.file-status .file-progress-bar {
+    height: 100%;
+    width: 0;
+    border-radius: 999px;
+    background: var(--accent);
+    transition: width 0.2s ease-in-out;
+}
+
+.file-status .file-progress-label {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 10px;
+    color: #111111;
+    text-shadow: none;
+    pointer-events: none;
+}
+
+.file-status .file-progress-label.is-on-bar {
+    color: #ffffff;
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.35);
+}
+
+.file-status .file-status-label {
+    font-size: 11px;
+    margin-top: 6px;
+    text-align: center;
+    min-height: 14px;
+    display: none;
+    color: var(--text-muted);
+}
+
+.file-status.is-error .file-status-label {
+    color: var(--danger);
+}
+
+.file-status.is-warning .file-status-label {
+    color: var(--warning);
+}
+
+.file-status .file-status-label.is-visible {
+    display: block;
+}
+
+.file-status .file-status-label span {
+    display: block;
+}

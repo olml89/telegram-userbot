@@ -1,0 +1,39 @@
+textarea.form-textarea {
+    width: 100%;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 12px;
+    font-family: inherit;
+    font-size: 13px;
+    background: var(--form-field-background);
+    color: var(--text);
+    resize: none;
+}
+
+textarea.form-textarea:hover {
+    border-color: var(--form-field-hover-border);
+    background-color: var(--form-field-hover-background);
+}
+
+textarea.form-textarea:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+textarea.form-textarea.is-error {
+    accent-color: var(--danger);
+    border-color: var(--danger);
+    background: var(--danger-background);
+}
+
+textarea.form-textarea.is-error:hover {
+    background: var(--danger-background-hover);
+}
+
+textarea.form-textarea.is-error:focus,
+textarea.form-textarea.is-error.is-focused {
+    border-width: 2px;
+    border-color: var(--danger);
+    outline: none;
+}

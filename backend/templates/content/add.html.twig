@@ -1,0 +1,105 @@
+<div id="contentAddModal" class="modal {% if show_add_modal %}active{% endif %}">
+    <div class="modal-content modal-lg">
+        <div class="modal-header">
+            <div>
+                <h3>Add New Content</h3>
+                <p class="modal-subtitle">Create new content and upload files.</p>
+            </div>
+            <button class="close-modal" type="button" data-content-close aria-label="Close">&times;</button>
+        </div>
+
+        <div class="modal-body">
+            <div class="modal-section form-grid">
+                {% include 'content/components/title.html.twig' with {
+                    required: true,
+                    minLength: 1,
+                    maxLength: 255,
+                } only %}
+
+                {% include 'content/components/description.html.twig' with {
+                    required: true,
+                    minLength: 1,
+                } only %}
+
+                {% include 'common/components/custom_select.html.twig' with {
+                    field: 'categoryId',
+                    item: 'category',
+                    required: true,
+                    options: categories|map(category => {
+                        value: category.publicId,
+                        label: category.name,
+                    }),
+                } only %}
+
+                {% include 'common/components/custom_select.html.twig' with {
+                    field: 'mode',
+                    item: 'mode',
+                    required: true,
+                    options: modes|map(mode => {
+                        value: mode.value,
+                        label: mode.label(),
+                    }),
+                } only %}
+
+                {% include 'content/components/price.html.twig' with {
+                    required: true,
+                } only %}
+
+                {% include 'content/components/intensity.html.twig' with {
+                    required: true,
+                    value: 50,
+                } only %}
+
+                {% include 'common/components/custom_select.html.twig' with {
+                    field: 'language',
+                    item: 'language',
+                    required: true,
+                    options: languages|map(language => {
+                        value: language.value,
+                        label: language.label(),
+                    }),
+                } only %}
+
+                {% include 'common/components/custom_select.html.twig' with {
+                    field: 'status',
+                    item: 'status',
+                    required: true,
+                    options: statuses|map(status => {
+                        value: status.value,
+                        label: status.label(),
+                    }),
+                } only %}
+            </div>
+
+            <div class="modal-section">
+                {% include 'content/components/tags.html.twig' with {
+                    required: true,
+                    minCount: 1,
+                    maxCount: 10,
+                    tagMaxLength: 50,
+                } only %}
+            </div>
+
+            <div class="modal-section">
+                {% include 'content/components/files.html.twig' with {
+                    required: true,
+                    minCount: 1,
+                    maxCount: 10,
+                } only %}
+            </div>
+        </div>
+
+        <div class="modal-footer">
+            <div class="field-error" data-error-for="form" hidden></div>
+            <button type="button" class="btn btn-secondary btn-hover-outline" data-content-close>Close</button>
+            <button type="button" class="btn btn-primary" data-content-add>
+                <span class="btn-label-wrap">
+                    <span class="btn-label-default">Add content</span>
+                    <span class="btn-label-loading">
+                        Adding... <span class="btn-spinner" aria-hidden="true"></span>
+                    </span>
+                </span>
+            </button>
+        </div>
+    </div>
+</div>
