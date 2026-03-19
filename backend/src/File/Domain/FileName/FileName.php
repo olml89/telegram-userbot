@@ -10,7 +10,7 @@ use Symfony\Component\Uid\Uuid;
 final readonly class FileName extends StringValueObject
 {
     private const int MIN_LENGTH = 1;
-    private const int MAX_LENGTH = 40;
+    private const int MAX_LENGTH = 45;
 
     public static function from(Uuid $name, string $extension): self
     {
