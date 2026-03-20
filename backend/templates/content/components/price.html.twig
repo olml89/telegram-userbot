@@ -1,0 +1,26 @@
+<label class="form-label" data-content-price>
+    <span class="form-label-title" data-error-for="price">Price</span>
+    <div class="price-input">
+        <div class="price-input-field">
+            <span class="price-prefix">$</span>
+            <input
+                    name="price"
+                    type="number"
+                    class="form-input"
+                    placeholder="Enter price..."
+                    min="0"
+                    step="1"
+                    inputmode="decimal"
+                    data-price-input
+                    {% if required|default(false) %}required{% endif %}/>
+        </div>
+        <div class="price-buttons">
+            <button type="button"
+                    class="btn-primary price-button price-button-up"
+                    data-price-step-up aria-label="Increase price">+</button>
+            <button type="button"
+                    class="btn-primary price-button price-button-down"
+                    data-price-step-down aria-label="Decrease price">−</button>
+        </div>
+    </div>
+</label>

@@ -13,14 +13,14 @@ readonly class TagResult implements Result
     use IsResult;
 
     public function __construct(
-        public string $id,
+        public string $publicId,
         public string $name,
     ) {}
 
     public static function tag(Tag $tag): self
     {
         return new self(
-            id: $tag->publicId()->toRfc4122(),
+            publicId: $tag->publicId()->toRfc4122(),
             name: $tag->name()->value,
         );
     }

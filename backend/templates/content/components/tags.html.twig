@@ -1,0 +1,26 @@
+<div
+    data-content-tags
+    {% if required|default(false) %}data-required{% endif %}
+    {% if minCount is defined and minCount is not null %}data-min-count="{{ minCount }}"{% endif %}
+    {% if maxCount is defined and maxCount is not null %}data-max-count="{{ maxCount }}"{% endif %}>
+    <h4 class="section-title" data-error-for="tagIds">Tags</h4>
+    <div class="tag-input">
+        <label>
+            <input
+                name="tags"
+                type="text"
+                {% if tagMaxLength is defined and tagMaxLength is not null %}maxLength="{{ tagMaxLength }}"{% endif %}
+                class="form-input"
+                placeholder="Type and press Enter..."
+                data-tag-input/>
+        </label>
+        <div class="tag-dropdown" data-tag-dropdown hidden></div>
+    </div>
+
+    <div class="tag-group">
+        <div class="tag-group-title" data-tag-count>
+            Selected tags: <span data-tag-count-value>0</span>
+        </div>
+        <div class="tag-list" data-tag-selected></div>
+    </div>
+</div>

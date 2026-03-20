@@ -24,7 +24,7 @@ final class ListContentController extends AbstractController
     {
         $listContentResult = $this->listContentCommandHandler->handle();
 
-        return $this->render('pages/library/list.html.twig', [
+        return $this->render('content/list.html.twig', [
             'active_menu' => 'library.list',
             'categories' => $listContentResult->categories,
             'modes' => $listContentResult->modes,

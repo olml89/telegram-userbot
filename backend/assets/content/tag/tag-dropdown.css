@@ -1,0 +1,55 @@
+.tag-dropdown {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    right: 0;
+    background: var(--form-field-background);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 6px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    z-index: 20;
+    max-height: 180px;
+    overflow-y: auto;
+}
+
+.tag-dropdown[hidden] {
+    display: none;
+}
+
+.tag-dropdown .tag-option {
+    width: 100%;
+    text-align: left;
+    padding: 8px 10px;
+    border: none;
+    background: transparent;
+    font-size: 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    color: var(--text);
+}
+
+.tag-dropdown .tag-option:not(.is-loading):not(.is-error):not(.is-active):hover {
+    background: #f3f4f6;
+}
+
+.tag-dropdown .tag-option.is-loading {
+    color: var(--text-muted);
+    cursor: default;
+}
+
+.tag-dropdown .tag-option.is-error {
+    color: var(--danger);
+    cursor: default;
+}
+
+
+.tag-dropdown .tag-option.is-active {
+    background: #eef2f7;
+}
+
+.tag-dropdown .tag-option.is-active:hover {
+    background: #e6ebf2;
+}

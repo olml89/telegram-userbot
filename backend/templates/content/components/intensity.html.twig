@@ -1,0 +1,12 @@
+<label class="form-label" data-content-intensity>
+    <span class="form-label-title" data-error-for="intensity">Intensity (<span data-intensity-value>{{ value }}</span>)</span>
+    <input
+        name="intensity"
+        type="range"
+        class="form-input"
+        min="0"
+        max="100"
+        value="{{ value }}"
+        data-intensity-range
+        {% if required|default(false) %}required{% endif %}/>
+</label>

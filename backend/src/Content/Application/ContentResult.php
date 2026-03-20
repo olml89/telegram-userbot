@@ -20,6 +20,7 @@ use olml89\TelegramUserbot\Backend\Tag\Domain\Tag;
 final readonly class ContentResult
 {
     public function __construct(
+        public string $publicId,
         public string $title,
         public string $description,
         public float $price,
@@ -50,6 +51,7 @@ final readonly class ContentResult
             ->toArray();
 
         return new self(
+            publicId: $content->publicId()->toRfc4122(),
             title: $content->title()->value,
             description: $content->description()->value,
             price: $content->price()->value,

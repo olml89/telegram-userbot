@@ -1,0 +1,23 @@
+<label class="form-label" data-content-{{ item }}>
+    <span class="form-label-title" data-error-for="{{ field }}">{{ item|capitalize }}</span>
+    <div class="custom-select" data-select{% if required|default(false) %} data-required{% endif %}>
+        <button
+            type="button"
+            class="select-trigger"
+            data-select-trigger
+            aria-haspopup="listbox"
+            aria-expanded="false">
+            <span class="select-value unselected" data-select-value>Select the {{ item }}</span>
+        </button>
+        <div class="select-dropdown" role="listbox">
+            {% for option in options %}
+                <button
+                    type="button"
+                    class="select-option"
+                    data-select-option
+                    value="{{ option.value }}"
+                >{{ option.label }}</button>
+            {% endfor %}
+        </div>
+    </div>
+</label>

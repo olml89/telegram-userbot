@@ -1,0 +1,50 @@
+.tag {
+    background: #f3f4f6;
+    color: #111111;
+    border: 1px solid var(--border);
+    font-size: 11px;
+    padding: 3px 8px;
+    border-radius: 999px;
+}
+
+.tag.tag-selected {
+    background: var(--accent);
+    color: #ffffff;
+    border-color: var(--accent);
+    cursor: default;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.tag.tag-selected.is-error {
+    background: var(--danger-background);
+    border-color: var(--danger-background);
+    color: var(--danger);
+}
+
+.tag.tag-selected.is-error:focus-visible {
+    outline: 2px solid var(--danger-background-hover);
+    outline-offset: 2px;
+}
+
+.tag.tag-selected.is-disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+.tag.tag-selected .tag-remove {
+    background: transparent;
+    border: none;
+    color: inherit;
+    font: inherit;
+    cursor: pointer;
+    padding: 0 2px;
+    line-height: 1;
+}
+
+.tag.tag-selected .tag-remove:hover,
+.tag.tag-selected .tag-remove:focus-visible {
+    color: color-mix(in srgb, currentColor 50%, transparent);
+}

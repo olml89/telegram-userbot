@@ -18,15 +18,15 @@
             <p>Admin Dashboard</p>
         </div>
         <nav class="sidebar-menu">
-            <a href="{{ path('dashboard') }}" class="menu-item {% if active_menu == 'dashboard' %}active{% endif %}">
+            <a href="{{ path('dashboard') }}" class="menu-item {% if active_menu == 'dashboard' %}is-active{% endif %}">
                 <span class="menu-item-icon">📊</span>
                 Dashboard
             </a>
-            <a href="{{ path('library.list') }}" class="menu-item {% if active_menu == 'library.list' %}active{% endif %}">
+            <a href="{{ path('library.list') }}" class="menu-item {% if active_menu == 'library.list' %}is-active{% endif %}">
                 <span class="menu-item-icon">📝</span>
                 Library
             </a>
-            <a href="{{ path('userbot') }}" class="menu-item {% if active_menu == 'userbot' %}active{% endif %}">
+            <a href="{{ path('userbot') }}" class="menu-item {% if active_menu == 'userbot' %}is-active{% endif %}">
                 <span class="menu-item-icon">👤</span>
                 Userbot
             </a>

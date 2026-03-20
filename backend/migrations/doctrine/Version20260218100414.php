@@ -23,11 +23,11 @@ final class Version20260218100414 extends AbstractMigration
         $this->addSql('
             ALTER TABLE files 
             ALTER file_name 
-            TYPE VARCHAR(40)
+            TYPE VARCHAR(45)
         ');
         $this->addSql('
             ALTER TABLE video_files 
-            ADD thumbnail VARCHAR(40) NOT NULL
+            ADD thumbnail VARCHAR(45) NOT NULL
         ');
     }
 
