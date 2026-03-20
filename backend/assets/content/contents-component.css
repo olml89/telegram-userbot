@@ -1,4 +1,5 @@
-/* ===== LIBRARY PAGE ===== */
+@import 'add-modal.css';
+
 .page-header {
     display: flex;
     align-items: flex-end;
@@ -10,12 +11,6 @@
 .header-actions {
     display: flex;
     gap: 10px;
-}
-
-.header-actions .btn-primary:hover {
-    background: #333333;
-    color: #ffffff;
-    border-color: transparent;
 }
 
 .library-card {
@@ -56,7 +51,7 @@
 
 .library-table th,
 .library-table td {
-    text-align: left;
+    text-align: center;
     padding: 12px 10px;
     font-size: 13px;
     border-bottom: 1px solid var(--border);
@@ -157,14 +152,16 @@
 
 .tag-list {
     display: flex;
-    gap: 6px;
+    align-items: center;
+    justify-content: center;
     flex-wrap: wrap;
+    gap: 6px;
 }
 
 .price-info {
     display: flex;
+    align-items: center;
     flex-direction: column;
-    align-items: flex-start;
     gap: 6px;
 }
 
@@ -196,6 +193,66 @@
 .page-indicator {
     color: var(--text-muted);
     font-size: 13px;
+}
+
+/* ===== ACTION MENU ===== */
+.actions-menu {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+}
+
+.actions-menu-trigger {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    border: 1px solid transparent;
+    background: transparent;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+.actions-menu-trigger:hover,
+.actions-menu:focus-within .actions-menu-trigger {
+    background: #f3f4f6;
+    border-color: var(--border);
+}
+
+.actions-menu-dropdown {
+    position: absolute;
+    right: 0;
+    top: 38px;
+    min-width: 160px;
+    background: #ffffff;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    display: none;
+    padding: 6px;
+    z-index: 5;
+}
+
+.actions-menu:focus-within .actions-menu-dropdown {
+    display: block;
+}
+
+.action-item {
+    width: 100%;
+    text-align: left;
+    padding: 8px 10px;
+    border: none;
+    background: transparent;
+    font-size: 13px;
+    border-radius: 8px;
+    cursor: pointer;
+    color: var(--text);
+}
+
+.action-item:hover {
+    background: #f3f4f6;
+}
+
+.action-danger {
+    color: var(--danger);
 }
 
 /* ===== RESPONSIVE ===== */

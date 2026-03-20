@@ -6,6 +6,8 @@ namespace olml89\TelegramUserbot\Backend\Content\Infrastructure\Doctrine;
 
 use olml89\TelegramUserbot\Backend\Content\Domain\Content;
 use olml89\TelegramUserbot\Backend\Content\Domain\ContentRepository;
+use olml89\TelegramUserbot\Backend\Shared\Domain\Collection\Collection;
+use olml89\TelegramUserbot\Backend\Shared\Domain\Collection\GenericCollection;
 use olml89\TelegramUserbot\Backend\Shared\Infrastructure\Doctrine\DoctrineRepository;
 
 /**
@@ -16,6 +18,14 @@ final class DoctrineContentRepository extends DoctrineRepository implements Cont
     protected static function entityClass(): string
     {
         return Content::class;
+    }
+
+    /**
+     * @return Collection<Content>
+     */
+    public function all(): Collection
+    {
+        return new GenericCollection(...$this->findAll());
     }
 
     public function getByTitle(string $title): ?Content

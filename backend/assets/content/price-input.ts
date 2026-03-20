@@ -1,6 +1,6 @@
 import {BusyAware, ChangeAware} from '../common/component/contracts';
 import { NumberInput } from '../common/component/number-input';
-import { ModeSelect } from './mode/mode-select';
+import { ValidatableModeSelect } from './mode/mode-select';
 import { assertImported, querySelector } from '../common/importer';
 
 class HoldableButton implements BusyAware, ChangeAware {
@@ -82,14 +82,14 @@ class HoldableButton implements BusyAware, ChangeAware {
 }
 
 export class PriceInput extends NumberInput {
-    private readonly mode: ModeSelect;
+    private readonly mode: ValidatableModeSelect;
     private readonly stepUpButton: HoldableButton;
     private readonly stepDownButton: HoldableButton;
 
     private lastSellingValue: number|null = null;
 
     public constructor(
-        mode: ModeSelect,
+        mode: ValidatableModeSelect,
         label: HTMLSpanElement,
         input: HTMLInputElement,
         stepUpButton: HoldableButton,
@@ -114,7 +114,7 @@ export class PriceInput extends NumberInput {
         this.syncButtons();
     }
 
-    public static from(mode: ModeSelect|null, priceContainer: HTMLLabelElement|null): PriceInput|null {
+    public static from(mode: ValidatableModeSelect|null, priceContainer: HTMLLabelElement|null): PriceInput|null {
         const label = querySelector<HTMLSpanElement>(priceContainer, '[data-error-for]');
         const input = querySelector<HTMLInputElement>(priceContainer, '[data-price-input]');
         const stepUpButton = querySelector<HTMLButtonElement>(priceContainer, '[data-price-step-up]');

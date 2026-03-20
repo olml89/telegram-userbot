@@ -11,7 +11,7 @@ use olml89\TelegramUserbot\Backend\File\Domain\Video;
 
 final readonly class FileResultFactory
 {
-    public function create(File $file): FileResult|ImageResult|AudioResult|VideoResult
+    public static function create(File $file): FileResult|ImageResult|AudioResult|VideoResult
     {
         return match (true) {
             $file instanceof Image => ImageResult::image($file),

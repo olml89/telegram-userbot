@@ -1,14 +1,25 @@
-.tag-group-title {
+.tag-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.tag-group .tag-group-title {
     font-size: 11px;
     color: var(--text-muted);
 }
 
-.tag-group-title.is-error {
+.tag-group .tag-group-title.is-error {
     color: var(--danger);
 }
 
-.tag-group-title.is-disabled {
+.tag-group .tag-group-title.is-disabled {
     cursor: not-allowed;
     opacity: 0.6;
     pointer-events: none;
+}
+
+.tag-group .tag-list {
+    justify-content: left;
 }

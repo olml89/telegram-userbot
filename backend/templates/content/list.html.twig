@@ -14,20 +14,6 @@
         </div>
     </div>
 
-    {# Flash Messages for SUCCESS only #}
-    {% for message in app.flashes('success') %}
-        <div class="alert alert-success">
-            ✅ {{ message }}
-        </div>
-    {% endfor %}
-
-    {# Flash Messages for ERROR only #}
-    {% for message in app.flashes('error') %}
-        <div class="alert alert-error">
-            ❌ {{ message }}
-        </div>
-    {% endfor %}
-
     <div class="library-card">
         <div class="library-card-header">
             <div>
@@ -45,44 +31,24 @@
                 class="form-input search-input"
             />
             <div class="library-filter-group">
-                <div class="custom-select" data-select>
-                    <button type="button"
-                            class="select-trigger"
-                            data-select-trigger
-                            aria-haspopup="listbox"
-                            aria-expanded="false">
-                        <span class="select-value" data-select-value>All Categories</span>
-                    </button>
-                    <div class="select-dropdown" role="listbox">
-                        {% for category in categories %}
-                            <button
-                                    type="button"
-                                    class="select-option"
-                                    data-select-option
-                                    value="{{ category.publicId }}"
-                            >{{ category.name }}</button>
-                        {% endfor %}
-                    </div>
+                <div data-library-category>
+                    {% include 'common/components/select.html.twig' with {
+                        defaultLabel: 'All Categories',
+                        options: categories|map(category => {
+                            value: category.publicId,
+                            label: category.name,
+                        }),
+                    } only %}
                 </div>
 
-                <div class="custom-select" data-select>
-                    <button type="button"
-                            class="select-trigger"
-                            data-select-trigger
-                            aria-haspopup="listbox"
-                            aria-expanded="false">
-                        <span class="select-value" data-select-value>All Modes</span>
-                    </button>
-                    <div class="select-dropdown" role="listbox">
-                        {% for mode in modes %}
-                            <button
-                                    type="button"
-                                    class="select-option"
-                                    data-select-option
-                                    value="{{ mode.value }}"
-                            >{{ mode.label() }}</button>
-                        {% endfor %}
-                    </div>
+                <div data-library-mode>
+                    {% include 'common/components/select.html.twig' with {
+                        defaultLabel: 'All Modes',
+                        options: modes|map(mode => {
+                            value: mode.value,
+                            label: mode.label(),
+                        }),
+                    } only %}
                 </div>
             </div>
         </div>
@@ -93,77 +59,28 @@
                 <tr>
                     <th>Media</th>
                     <th>Content</th>
-                    <th>CategorySelect</th>
+                    <th>Category</th>
                     <th>Bundle</th>
-                    <th>PriceInput</th>
+                    <th>Price</th>
                     <th>Sales</th>
                     <th>Status</th>
-                    <th>Created</th>
+                    <th>Created At</th>
                     <th></th>
                 </tr>
                 </thead>
                 <tbody data-library-table-body>
-                {% set mockItems = [
-                    {
-                        title: 'Single Image',
-                        description: 'One thumbnail only.',
-                        files: [
-                        { thumbnail: 'https://picsum.photos/seed/one/120/120', mimeType: 'image/jpeg' }
-                    ]
-                    },
-                    {
-                        title: 'Two images',
-                        description: 'Two images.',
-                        files: [
-                        { thumbnail: 'https://picsum.photos/seed/one/120/120', mimeType: 'image/jpeg' },
-                        { thumbnail: 'https://picsum.photos/seed/two/120/120', mimeType: 'image/png' }
-                    ]
-                    },
-                    {
-                        title: '3 images',
-                        description: '3 images.',
-                        files: [
-                        { thumbnail: 'https://picsum.photos/seed/two/120/120', mimeType: 'image/jpeg' },
-                        { thumbnail: 'https://picsum.photos/seed/three/120/120', mimeType: 'image/jpeg' },
-                        { thumbnail: 'https://picsum.photos/seed/four/120/120', mimeType: 'image/webp' }
-                    ]
-                    },
-                    {
-                        title: '4 images',
-                        description: '4 images.',
-                        files: [
-                        { thumbnail: 'https://picsum.photos/seed/five/120/120', mimeType: 'image/jpeg' },
-                        { thumbnail: 'https://picsum.photos/seed/six/120/120', mimeType: 'image/jpeg' },
-                        { thumbnail: 'https://picsum.photos/seed/seven/120/120', mimeType: 'image/png' },
-                        { thumbnail: 'https://picsum.photos/seed/eight/120/120', mimeType: 'image/jpeg' }
-                    ]
-                    },
-                    {
-                        title: 'Mixed Media',
-                        description: 'Images + video + audio + docs.',
-                        files: [
-                        { thumbnail: 'https://picsum.photos/seed/nine/120/120', mimeType: 'image/jpeg' },
-                        { thumbnail: 'https://picsum.photos/seed/ten/120/120', mimeType: 'image/jpeg' },
-                        { thumbnail: 'https://picsum.photos/seed/eleven/120/120', mimeType: 'video/mp4' },
-                        { thumbnail: 'https://picsum.photos/seed/twelve/120/120', mimeType: 'audio/mpeg' },
-                        { thumbnail: 'https://picsum.photos/seed/thirteen/120/120', mimeType: 'application/pdf' },
-                        { thumbnail: 'https://picsum.photos/seed/fourteen/120/120', mimeType: 'application/msword' }
-                    ]
-                    }
-                ] %}
-
-                {% for item in mockItems %}
+                {% for content in contents %}
                     <tr>
                         <td>
-                            {% set filesCount = item.files|length %}
+                            {% set filesCount = content.files|length %}
                             {% set mediaClass =
                                 filesCount == 1 ? 'media-single' :
                                 filesCount == 2 ? 'media-pair' :
                                 'media-grid'
                             %}
                             <div class="media-thumb {{ mediaClass }}">
-                                {% for file in item.files|slice(0, 4) %}
-                                    <img src="{{ file.thumbnail }}" alt="Media thumbnail" class="media-img">
+                                {% for file in content.files.list|slice(0, 4) %}
+                                    <img src="https://picsum.photos/seed/one/120/120" alt="Media thumbnail" class="media-img">
                                 {% endfor %}
                                 {% if filesCount > 4 %}
                                     <span class="media-more">+{{ filesCount - 4 }}</span>
@@ -172,44 +89,34 @@
                         </td>
                         <td>
                             <div class="content-info">
-                                <div class="content-title">{{ item.title }}</div>
-                                <div class="content-description">{{ item.description }}</div>
+                                <div class="content-title">{{ content.title }}</div>
+                                <div class="content-description">{{ content.description }}</div>
                                 <div class="tag-list">
-                                    <span class="tag">mock</span>
-                                    <span class="tag">preview</span>
+                                    {% for tag in content.tags %}
+                                        <span class="tag">{{ tag.name }}</span>
+                                    {% endfor %}
                                 </div>
                             </div>
                         </td>
-                        <td><span class="pill">Message</span></td>
+                        <td><span class="pill">{{ content.category.name }}</span></td>
                         <td>
-                            {% set images = 0 %}
-                            {% set videos = 0 %}
-                            {% set audios = 0 %}
-                            {% set docs = 0 %}
-
-                            {% for file in item.files %}
-                                {% if file.mimeType starts with 'image/' %}
-                                    {% set images = images + 1 %}
-                                {% elseif file.mimeType starts with 'video/' %}
-                                    {% set videos = videos + 1 %}
-                                {% elseif file.mimeType starts with 'audio/' %}
-                                    {% set audios = audios + 1 %}
-                                {% else %}
-                                    {% set docs = docs + 1 %}
-                                {% endif %}
-                            {% endfor %}
-
-                            Images {{ images }} · Videos {{ videos }} · Audio {{ audios }} · Docs {{ docs }}
+                            Images {{ content.files.imageCount }} ·
+                            Videos {{ content.files.videoCount }} ·
+                            Audio {{ content.files.audioCount }} ·
+                            Docs {{ content.files.documentCount }}
                         </td>
                         <td>
                             <div class="price-info">
-                                <div class="price-value">$12.00</div>
-                                <span class="pill pill-muted">Selling</span>
+                                <div class="price-value">${{ content.price }}</div>
+                                <span class="pill pill-muted">{{ content.mode.label() }}</span>
                             </div>
                         </td>
-                        <td>42</td>
-                        <td><span class="pill pill-success">Active</span></td>
-                        <td>2026-01-27</td>
+                        <td>{{ content.sales }}</td>
+                        <td>
+                            {% set statusClass = (content.status.value is same as('active')) ? 'pill-active' : 'pill-inactive' %}
+                            <span class="pill {{ statusClass }}">{{ content.status.label() }}</span>
+                        </td>
+                        <td>{{ content.createdAt|date('Y-m-d H:i:s') }}</td>
                         <td>
                             <div class="actions-menu">
                                 <button class="actions-menu-trigger" type="button" aria-label="More actions">⋯</button>

@@ -1,18 +1,18 @@
 import { BusyAware, ChangeAware, Component, ErrorAware } from '../common/component/contracts';
 import { ValidatableComponent } from '../common/component/validatable-component';
 import { TextInput } from '../common/component/text-input';
-import { CategorySelect } from './category/category-select';
-import { LanguageSelect } from './language/language-select';
-import { StatusSelect } from './status/status-select';
-import { ModeSelect } from './mode/mode-select';
+import { ValidatableCategorySelect } from './category/category-select';
+import { ValidatableLanguageSelect } from './language/language-select';
+import { ValidatableStatusSelect } from './status/status-select';
+import { ValidatableModeSelect } from './mode/mode-select';
 import { PriceInput } from './price-input';
 import { IntensityInput } from './intensity-input';
 import { Tag } from './tag/tag';
 import { TagsComponent } from './tag/tags-component';
 import { File as BackendFile } from './file/file';
 import { FilesComponent } from './file/files-component';
+import { Content } from './content';
 import { BackendError } from '../common/backend-error';
-import { renderContentItem } from './content-component';
 import { assertImported, querySelector, querySelectorAll } from '../common/importer';
 
 type ContentFieldKey = keyof ContentFields;
@@ -22,10 +22,10 @@ type ContentFieldValue = ReturnType<ContentFieldComponent['getValue']>;
 class ContentFields implements BusyAware, ChangeAware, Component<Record<string, ContentFieldValue>>, ErrorAware {
     public title: TextInput;
     public description: TextInput;
-    public category: CategorySelect;
-    public language: LanguageSelect;
-    public status: StatusSelect;
-    public mode: ModeSelect;
+    public category: ValidatableCategorySelect;
+    public language: ValidatableLanguageSelect;
+    public status: ValidatableStatusSelect;
+    public mode: ValidatableModeSelect;
     public price: PriceInput;
     public intensity: IntensityInput;
     public tags: TagsComponent;
@@ -34,10 +34,10 @@ class ContentFields implements BusyAware, ChangeAware, Component<Record<string, 
     public constructor(
         title: TextInput,
         description: TextInput,
-        category: CategorySelect,
-        language: LanguageSelect,
-        status: StatusSelect,
-        mode: ModeSelect,
+        category: ValidatableCategorySelect,
+        language: ValidatableLanguageSelect,
+        status: ValidatableStatusSelect,
+        mode: ValidatableModeSelect,
         price: PriceInput,
         intensity: IntensityInput,
         tags: TagsComponent,
@@ -56,16 +56,37 @@ class ContentFields implements BusyAware, ChangeAware, Component<Record<string, 
     }
 
     public static from(addModal: HTMLElement|null): ContentFields|null {
-        const title = TextInput.from(querySelector<HTMLLabelElement>(addModal, '[data-content-title]'));
-        const description = TextInput.from(querySelector<HTMLLabelElement>(addModal, '[data-content-description]'));
-        const category = CategorySelect.from(querySelector<HTMLLabelElement>(addModal, '[data-content-category]'),);
-        const language = LanguageSelect.from(querySelector<HTMLLabelElement>(addModal, '[data-content-language]'),);
-        const status = StatusSelect.from(querySelector<HTMLLabelElement>(addModal, '[data-content-status]'),);
-        const mode = ModeSelect.from(querySelector<HTMLLabelElement>(addModal, '[data-content-mode]'),);
-        const price = PriceInput.from(mode, querySelector<HTMLLabelElement>(addModal, '[data-content-price]'));
-        const intensity = IntensityInput.from(querySelector<HTMLLabelElement>(addModal, '[data-content-intensity]'));
-        const tags = TagsComponent.from(querySelector<HTMLDivElement>(addModal, '[data-content-tags]'),);
-        const files = FilesComponent.from(querySelector<HTMLDivElement>(addModal, '[data-content-files]'),);
+        const title = TextInput.from(
+            querySelector<HTMLLabelElement>(addModal, '[data-content-title]'),
+        );
+        const description = TextInput.from(
+            querySelector<HTMLLabelElement>(addModal, '[data-content-description]'),
+        );
+        const category = ValidatableCategorySelect.from(
+            querySelector<HTMLLabelElement>(addModal, '[data-content-category]'),
+        );
+        const language = ValidatableLanguageSelect.from(
+            querySelector<HTMLLabelElement>(addModal, '[data-content-language]'),
+        );
+        const status = ValidatableStatusSelect.from(
+            querySelector<HTMLLabelElement>(addModal, '[data-content-status]'),
+        );
+        const mode = ValidatableModeSelect.from(
+            querySelector<HTMLLabelElement>(addModal, '[data-content-mode]'),
+        );
+        const price = PriceInput.from(
+            mode,
+            querySelector<HTMLLabelElement>(addModal, '[data-content-price]'),
+        );
+        const intensity = IntensityInput.from(
+            querySelector<HTMLLabelElement>(addModal, '[data-content-intensity]'),
+        );
+        const tags = TagsComponent.from(
+            querySelector<HTMLDivElement>(addModal, '[data-content-tags]'),
+        );
+        const files = FilesComponent.from(
+            querySelector<HTMLDivElement>(addModal, '[data-content-files]'),
+        );
 
         const required = {
             addModal,
@@ -222,30 +243,27 @@ class ContentFields implements BusyAware, ChangeAware, Component<Record<string, 
     }
 }
 
-export class ContentAddModal {
-    private readonly contentTableBody: HTMLElement;
-    private readonly addModal: HTMLElement;
+export class ContentAddModal implements Component<Content|null> {
+    private readonly contentAddModalElement: HTMLDivElement;
     private readonly contentFields: ContentFields;
     private readonly formError: HTMLElement;
     private readonly addBtn: HTMLButtonElement;
-    private readonly openBtn: HTMLButtonElement;
     private readonly closeBtns: NodeListOf<HTMLButtonElement>;
+    private readonly eventTarget: EventTarget = new EventTarget();
+
+    private content: Content|null = null;
 
     public constructor(
-        contentTableBody: HTMLElement,
-        addModal: HTMLElement,
+        contentAddModalElement: HTMLDivElement,
         contentFields: ContentFields,
         formError: HTMLElement,
         addBtn: HTMLButtonElement,
-        openBtn: HTMLButtonElement,
         closeBtns: NodeListOf<HTMLButtonElement>,
     ) {
-        this.contentTableBody = contentTableBody;
-        this.addModal = addModal;
+        this.contentAddModalElement = contentAddModalElement;
         this.contentFields = contentFields;
         this.formError = formError;
         this.addBtn = addBtn;
-        this.openBtn = openBtn;
         this.closeBtns = closeBtns;
 
         this.setAddButtonDisabled(!this.contentFields.validate());
@@ -258,10 +276,8 @@ export class ContentAddModal {
             });
         });
 
-        this.openBtn.addEventListener('click', (): void => this.addModal.classList.add('active'));
-
         this.closeBtns.forEach((closeBtn: HTMLButtonElement): void => {
-            closeBtn.addEventListener('click', (): void => this.addModal.classList.remove('active'));
+            closeBtn.addEventListener('click', (): void => this.close());
         });
 
         this.addBtn.addEventListener('click', async(): Promise<void> => this.submit());
@@ -269,43 +285,36 @@ export class ContentAddModal {
         /**
          * Automatically close modal if we click the backdrop
          */
-        this.addModal.addEventListener('click', (event: MouseEvent): void => {
-            if ((event.target as HTMLElement) === this.addModal) {
-               this.addModal.classList.remove('active');
+        this.contentAddModalElement.addEventListener('click', (event: MouseEvent): void => {
+            if ((event.target as HTMLElement) === this.contentAddModalElement) {
+               this.contentAddModalElement.classList.remove('active');
             }
         });
     }
 
-    public static create(): ContentAddModal|null {
-        const contentTableBody = querySelector<HTMLElement>(document, '[data-library-table-body]');
-        const addModal = document.getElementById('contentAddModal') as HTMLElement|null;
-        const formError = querySelector<HTMLElement>(document, '[data-error-for="form"]');
-        const contentFields = ContentFields.from(addModal);
-        const addBtn = querySelector<HTMLButtonElement>(document, '[data-content-add]');
-        const openBtn = querySelector<HTMLButtonElement>(document, '[data-content-open]');
-        const closeBtns = querySelectorAll<HTMLButtonElement>(document, '[data-content-close]');
+    public static create(contentAddModalElement: HTMLDivElement|null): ContentAddModal|null {
+        const formError = querySelector<HTMLDivElement>(contentAddModalElement, '[data-error-for="form"]');
+        const contentFields = ContentFields.from(contentAddModalElement);
+        const addBtn = querySelector<HTMLButtonElement>(contentAddModalElement, '[data-content-add]');
+        const closeBtns = querySelectorAll<HTMLButtonElement>(contentAddModalElement, '[data-content-close]');
 
         const required = {
-            contentTableBody,
-            addModal,
+            contentAddModalElement,
             formError,
             contentFields,
             addBtn,
-            openBtn,
             closeBtns,
         }
 
-        if (!assertImported('add-modal', required)) {
+        if (!assertImported('content-add-modal', required)) {
             return null;
         }
 
         return new ContentAddModal(
-            required.contentTableBody,
-            required.addModal,
+            required.contentAddModalElement,
             required.contentFields,
             required.formError,
             required.addBtn,
-            required.openBtn,
             required.closeBtns,
         );
     }
@@ -334,6 +343,24 @@ export class ContentAddModal {
         this.formError.hidden = true;
     };
 
+    public close(): void {
+        this.contentAddModalElement.classList.remove('is-active');
+    }
+
+    public onAddedContent(listener: (content: Content) => void) {
+        this.eventTarget.addEventListener('contents-component:add', (event: Event): void => {
+            listener((event as CustomEvent<Content>).detail);
+        });
+    }
+
+    public getValue(): Content|null {
+        return this.content;
+    }
+
+    public open(): void {
+        this.contentAddModalElement.classList.add('is-active');
+    }
+
     private setAddButtonDisabled(hasErrors: boolean): void {
         this.addBtn.disabled = this.contentFields.files.isActive() || hasErrors;
     }
@@ -356,7 +383,7 @@ export class ContentAddModal {
             button.disabled = isLoading;
         })
 
-        this.addModal.classList.toggle('is-busy', isLoading);
+        this.contentAddModalElement.classList.toggle('is-busy', isLoading);
         this.contentFields.setBusy(isLoading);
     }
 
@@ -370,10 +397,7 @@ export class ContentAddModal {
 
         try {
             const content = await this.add(this.contentFields);
-
-            const row = document.createElement('tbody');
-            row.innerHTML = renderContentItem(content).trim();
-            this.contentTableBody.prepend(row.firstElementChild);
+            this.eventTarget.dispatchEvent(new CustomEvent('contents-component:add', { detail: content }));
         } catch (e: any) {
             const backendError = e as BackendError;
             console.error(e.consoleMessage);

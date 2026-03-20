@@ -1,9 +1,9 @@
-.custom-select {
+.select {
     position: relative;
     min-width: 180px;
 }
 
-.custom-select .select-trigger {
+.select .select-trigger {
     width: 100%;
     border: 1px solid var(--border);
     border-radius: 12px;
@@ -20,7 +20,7 @@
     background-size: 12px;
 }
 
-.custom-select .select-trigger:hover {
+.select .select-trigger:hover {
     border-color: var(--form-field-hover-border);
     background-color: var(--form-field-hover-background);
 }
@@ -28,31 +28,31 @@
 /**
  * It is not a .btn, so we have to repeat the styling
  */
-.custom-select .select-trigger:disabled {
+.select .select-trigger:disabled {
     cursor: not-allowed;
     opacity: 0.6;
     pointer-events: none;
 }
 
-.custom-select .select-trigger.is-error {
+.select .select-trigger.is-error {
     accent-color: var(--danger);
     border-color: var(--danger);
     background: var(--danger-background);
 }
 
-.custom-select .select-trigger.is-error:hover {
+.select .select-trigger.is-error:hover {
     background: var(--danger-background-hover);
 }
 
-.custom-select.open .select-trigger {
+.select.open .select-trigger {
     border-color: #c7c7cc;
 }
 
-.custom-select .select-trigger .select-value.unselected {
+.select .select-trigger .select-value.unselected {
     color: var(--text-muted);
 }
 
-.custom-select .select-dropdown {
+.select .select-dropdown {
     position: absolute;
     top: calc(100% + 6px);
     left: 0;
@@ -65,11 +65,11 @@
     z-index: 10;
 }
 
-.custom-select.open .select-dropdown {
+.select.open .select-dropdown {
     display: block;
 }
 
-.custom-select .select-dropdown .select-option {
+.select .select-dropdown .select-option {
     width: 100%;
     border: none;
     background: transparent;
@@ -81,6 +81,6 @@
     color: var(--text);
 }
 
-.custom-select .select-dropdown .select-option:hover {
+.select .select-dropdown .select-option:hover {
     background: #f3f4f6;
 }

@@ -1,4 +1,4 @@
-import { BusyAware, Component, HtmlElementWrapper } from './contracts';
+import {BusyAware, ChangeAware, Component, Errorable, ErrorClearable, HtmlElementWrapper} from './contracts';
 import { Enum } from '../models/enum';
 import { RequirableComponent } from './requirable-component';
 import { assertImported, querySelector, querySelectorAll } from '../importer';
@@ -37,38 +37,36 @@ class SelectOption implements Component<Enum>, HtmlElementWrapper {
     }
 }
 
-export abstract class CustomSelect<TValue = Enum|null> extends RequirableComponent<TValue> implements BusyAware {
-    protected readonly itemName: string;
+export abstract class Select<TValue = Enum|null> implements BusyAware, ChangeAware, Component<TValue>, Errorable, ErrorClearable {
     protected readonly select: HTMLDivElement;
     protected readonly trigger: HTMLButtonElement;
     protected readonly valueLabel: HTMLSpanElement;
     protected readonly selectOptions: SelectOption[] = [];
+    protected readonly changeListeners: Set<() => void> = new Set<() => void>();
 
     protected enum: Enum|null = null;
 
     protected constructor(
-        itemName: string,
-        label: HTMLSpanElement,
         select: HTMLDivElement,
         trigger: HTMLButtonElement,
         valueLabel: HTMLSpanElement,
         selectOptions: SelectOption[],
     ) {
-        super(label, select.hasAttribute('data-required'));
-
-        this.itemName = itemName;
         this.select = select;
         this.trigger = trigger;
         this.valueLabel = valueLabel;
         this.selectOptions = selectOptions;
 
+        /**
+         * Dropdown behaviour
+         */
         this.trigger.addEventListener('click', (): void => {
             const isOpen = this.select.classList.contains('open');
 
             /**
-             * Close all other open .custom-select elements
+             * Close all other open .select elements
              */
-            const openedCustomSelectElements = document.querySelectorAll<HTMLDivElement>('.custom-select.open');
+            const openedCustomSelectElements = document.querySelectorAll<HTMLDivElement>('.select.open');
             openedCustomSelectElements.forEach((openedCustomSelectElement: HTMLDivElement): void => openedCustomSelectElement.classList.remove('open'));
 
             if (!this.selectOptions.length) {
@@ -80,32 +78,39 @@ export abstract class CustomSelect<TValue = Enum|null> extends RequirableCompone
             }
         });
 
+        /**
+         * Selection behaviour
+         */
         this.selectOptions.forEach((selectOption: SelectOption): void => {
             selectOption.onSelected((): void => {
                 this.enum = selectOption.getValue();
                 this.valueLabel.textContent = selectOption.getValue().name;
                 this.valueLabel.classList.remove('unselected');
                 this.select.classList.remove('open');
-                this.changeListeners.forEach((listener: () => void): void => listener());
+                this.notifyChange();
             });
         });
 
+        /**
+         * Outside click handler
+         */
         if (!isOutsideClickBound) {
             isOutsideClickBound = true;
 
             document.addEventListener('click', (event: PointerEvent): void => {
-                if (!(event.target as HTMLElement).closest('.custom-select')) {
-                    const openedCustomSelectElements = document.querySelectorAll<HTMLDivElement>('.custom-select.open');
-                    openedCustomSelectElements.forEach((openedCustomSelectElement: HTMLDivElement): void => openedCustomSelectElement.classList.remove('open'));
+                if (!(event.target as HTMLElement).closest('.select')) {
+                    const openedCustomSelectElements = document.querySelectorAll<HTMLDivElement>('.select.open');
+
+                    openedCustomSelectElements.forEach((openedCustomSelectElement: HTMLDivElement): void => {
+                        openedCustomSelectElement.classList.remove('open');
+                    });
                 }
             });
         }
     }
 
-    protected static createFrom<T extends CustomSelect>(
+    protected static createFrom<T extends Select>(
         this: new (
-            itemName: string,
-            label: HTMLSpanElement,
             select: HTMLDivElement,
             trigger: HTMLButtonElement,
             valueLabel: HTMLSpanElement,
@@ -114,7 +119,6 @@ export abstract class CustomSelect<TValue = Enum|null> extends RequirableCompone
         itemName: string,
         selectContainer: HTMLLabelElement|null,
     ): T | null {
-        const label = querySelector<HTMLSpanElement>(selectContainer, '[data-error-for]');
         const select = querySelector<HTMLDivElement>(selectContainer, '[data-select]');
         const trigger = querySelector<HTMLButtonElement>(selectContainer, '[data-select-trigger]');
         const valueLabel = querySelector<HTMLSpanElement>(selectContainer, '[data-select-value]');
@@ -122,20 +126,17 @@ export abstract class CustomSelect<TValue = Enum|null> extends RequirableCompone
 
         const required = {
             selectContainer,
-            label,
             select,
             trigger,
             valueLabel,
             selectOptions,
         }
 
-        if (!assertImported(itemName, required)) {
+        if (!assertImported(`${itemName}-select`, required)) {
             return null;
         }
 
         return new this(
-            itemName,
-            required.label,
             required.select,
             required.trigger,
             required.valueLabel,
@@ -143,24 +144,106 @@ export abstract class CustomSelect<TValue = Enum|null> extends RequirableCompone
         );
     }
 
+    public clearErrors(): void {
+        this.trigger.classList.remove('is-error');
+    }
+
+    public destroy(): void {
+        this.select.classList.remove('open');
+        this.changeListeners.clear();
+    }
+
+    public getValue(): TValue {
+        return this.enum as TValue;
+    }
+
+    public onChange(listener: () => void) {
+        this.changeListeners.add(listener);
+    }
+
+    private notifyChange(): void {
+        this.changeListeners.forEach((listener: () => void): void => listener());
+    }
+
+    public required(): boolean {
+        return this.select.hasAttribute('data-required');
+    }
+
+    public setBusy(isBusy: boolean) {
+        this.trigger.disabled = isBusy;
+        this.trigger.setAttribute('aria-disabled', String(isBusy));
+    }
+
+    public setErrors(): void {
+        this.trigger.classList.add('is-error');
+    }
+}
+
+export abstract class ValidatableSelect<TValue = Enum|null> extends RequirableComponent<TValue> implements BusyAware {
+    protected readonly itemName: string;
+    private readonly select: Select<TValue>;
+
+    protected constructor(
+        itemName: string,
+        label: HTMLSpanElement,
+        select: Select<TValue>,
+    ) {
+        super(label, select.required());
+
+        this.itemName = itemName;
+        this.select = select;
+
+        /**
+         * Forward change events from Select to RequirableComponent listeners
+         */
+        this.select.onChange((): void => {
+            this.changeListeners.forEach((listener: () => void): void => listener());
+        })
+    }
+
+    protected static createFrom<T extends ValidatableSelect<TValue>, TValue = Enum|null>(
+        this: new (
+            itemName: string,
+            label: HTMLSpanElement,
+            select: Select<TValue>,
+        ) => T,
+        itemName: string,
+        selectContainer: HTMLLabelElement|null,
+        select: Select<TValue>|null,
+    ): T | null {
+        const label = querySelector<HTMLSpanElement>(selectContainer, '[data-error-for]');
+
+        const required = {
+            selectContainer,
+            label,
+            select,
+        };
+
+        if (!assertImported(`${itemName}-validatable-select`, required)) {
+            return null;
+        }
+
+        return new this(
+            itemName,
+            required.label,
+            required.select,
+        );
+    }
+
     public override clearErrors(): void {
         super.clearErrors();
 
-        this.trigger.classList.remove('is-error');
+        this.select.clearErrors();
     }
 
     public override destroy(): void {
         super.destroy();
 
-        this.select.classList.remove('open');
-    }
-
-    public getOptions(): SelectOption[] {
-        return this.selectOptions;
+        this.select.destroy();
     }
 
     public override getValue(): TValue {
-        return this.enum as TValue;
+        return this.select.getValue();
     }
 
     protected override isEmpty(): boolean {
@@ -177,14 +260,12 @@ export abstract class CustomSelect<TValue = Enum|null> extends RequirableCompone
 
     public setBusy(isBusy: boolean) {
         this.label.classList.toggle('is-disabled', isBusy);
-
-        this.trigger.disabled = isBusy;
-        this.trigger.setAttribute('aria-disabled', String(isBusy));
+        this.select.setBusy(isBusy);
     }
 
     public override setErrors(...errorMessages: string[]): void {
         super.setErrors(...errorMessages);
 
-        this.trigger.classList.add('is-error');
+        this.select.setErrors();
     }
 }
