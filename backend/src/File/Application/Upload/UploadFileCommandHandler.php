@@ -27,7 +27,6 @@ final readonly class UploadFileCommandHandler
         private FileBuilder $fileBuilder,
         private FileStorer $fileStorer,
         private EventDispatcher $eventDispatcher,
-        private FileResultFactory $fileResultFactory,
     ) {}
 
     /**
@@ -47,6 +46,6 @@ final readonly class UploadFileCommandHandler
         $this->fileStorer->store($file);
         $this->eventDispatcher->dispatch(...$file->pullEvents());
 
-        return $this->fileResultFactory->create($file);
+        return FileResultFactory::create($file);
     }
 }

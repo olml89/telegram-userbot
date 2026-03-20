@@ -28,6 +28,11 @@ export class FileHandler implements BusyAware, Component<FileComponent[]> {
         void fileComponent.startUpload();
     }
 
+    public destroy(): void {
+        this.handledFiles.clear();
+        this.fileList.innerHTML = '';
+    }
+
     public getValue(): FileComponent[] {
         return Array.from(this.handledFiles);
     }

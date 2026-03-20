@@ -124,6 +124,10 @@ class ContentFields implements BusyAware, ChangeAware, Component<Record<string, 
         return Object.values(this) as ContentFieldComponent[];
     }
 
+    public destroy(): void {
+        this.components().forEach((component: ContentFieldComponent): void => component.destroy());
+    }
+
     private get<K extends ContentFieldKey>(name: K): ContentFieldComponent {
         return this[name] as ContentFieldComponent;
     }
@@ -292,7 +296,7 @@ export class ContentAddModal implements Component<Content|null> {
         });
     }
 
-    public static create(contentAddModalElement: HTMLDivElement|null): ContentAddModal|null {
+    public static from(contentAddModalElement: HTMLDivElement|null): ContentAddModal|null {
         const formError = querySelector<HTMLDivElement>(contentAddModalElement, '[data-error-for="form"]');
         const contentFields = ContentFields.from(contentAddModalElement);
         const addBtn = querySelector<HTMLButtonElement>(contentAddModalElement, '[data-content-add]');
@@ -319,7 +323,7 @@ export class ContentAddModal implements Component<Content|null> {
         );
     }
 
-    private async add(contentFields: ContentFields): Promise<any> {
+    private async add(contentFields: ContentFields): Promise<Content> {
         const response = await fetch('/api/content', {
             method: 'POST',
             headers: {
@@ -335,7 +339,7 @@ export class ContentAddModal implements Component<Content|null> {
             );
         }
 
-        return response.json();
+        return await response.json() as Content;
     }
 
     private clearFormError(): void {
@@ -398,6 +402,9 @@ export class ContentAddModal implements Component<Content|null> {
         try {
             const content = await this.add(this.contentFields);
             this.eventTarget.dispatchEvent(new CustomEvent('contents-component:add', { detail: content }));
+            this.contentFields.destroy();
+            this.setAddButtonDisabled(!this.contentFields.validate());
+            this.close();
         } catch (e: any) {
             const backendError = e as BackendError;
             console.error(e.consoleMessage);

@@ -44,12 +44,20 @@
     background: var(--danger-background-hover);
 }
 
-.select.open .select-trigger {
+.select.is-opened .select-trigger {
     border-color: #c7c7cc;
 }
 
-.select .select-trigger .select-value.unselected {
+.select .select-trigger .default-value {
     color: var(--text-muted);
+}
+
+.select .select-trigger .default-value.is-hidden {
+    display: none;
+}
+
+.select .select-trigger .select-value.is-hidden {
+    display: none;
 }
 
 .select .select-dropdown {
@@ -65,7 +73,7 @@
     z-index: 10;
 }
 
-.select.open .select-dropdown {
+.select.is-opened .select-dropdown {
     display: block;
 }
 

@@ -27,7 +27,7 @@ final readonly class ListContentCommandHandler
             ->contentRepository
             ->all()
             ->map(
-                fn (Content $content): ContentResult => ContentResult::content($content),
+                fn(Content $content): ContentResult => ContentResult::content($content),
             )
             ->toArray();
 
@@ -35,7 +35,7 @@ final readonly class ListContentCommandHandler
             ->categoryRepository
             ->all()
             ->map(
-                fn (Category $category): CategoryResult => CategoryResult::category($category),
+                fn(Category $category): CategoryResult => CategoryResult::category($category),
             )
             ->toArray();
 

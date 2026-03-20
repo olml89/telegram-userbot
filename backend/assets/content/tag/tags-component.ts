@@ -154,6 +154,7 @@ export class TagsComponent extends CollectionComponent<Tag> {
         super.destroy();
 
         this.tagDropdown.clear();
+        this.tagCount.destroy();
     }
 
     private async fetchTags(query: string): Promise<Tag[]> {

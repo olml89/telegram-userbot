@@ -1,10 +1,11 @@
-import { Component } from './component/contracts';
+import { Component, HtmlElementWrapper } from './component/contracts';
 
 type QueryResult =
     | Element
     | NodeListOf<any>
     | Array<Element|HTMLElement>
     | Component
+    | HtmlElementWrapper
     | null
     | boolean
     | undefined;

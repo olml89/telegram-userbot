@@ -9,7 +9,8 @@
             data-select-trigger
             aria-haspopup="listbox"
             aria-expanded="false">
-            <span class="select-value unselected" data-select-value>{{ defaultLabel }}</span>
+            <span class="default-value" data-default-value>{{ defaultValue }}</span>
+            <span class="select-value" data-select-value></span>
         </button>
         <div class="select-dropdown" role="listbox">
             {% for option in options %}
@@ -18,7 +19,7 @@
                     class="select-option"
                     data-select-option
                     value="{{ option.value }}"
-                >{{ option.label }}</button>
+                >{{ option.name }}</button>
             {% endfor %}
         </div>
     </div>

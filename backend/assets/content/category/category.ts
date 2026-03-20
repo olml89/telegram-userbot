@@ -1,4 +1,5 @@
-export type Category = {
-    publicId: string,
+import { Entity } from '../../common/models/entity';
+
+export type Category = Entity & {
     name: string,
 };

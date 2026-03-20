@@ -90,6 +90,10 @@ export class FileCount extends BaseComponent<UploadedFile[]>implements BusyAware
         this.uploadCard.classList.remove('is-error');
     }
 
+    public override destroy() {
+        this.uploadedFiles.forEach((uploadedFile: UploadedFile): void => this.removeUploadedFile(uploadedFile));
+    }
+
     public onAddedFiles(listener: (files: File[]) => void): void {
         this.eventTarget.addEventListener('file:added', (event: Event): void => {
             listener((event as CustomEvent<File[]>).detail);

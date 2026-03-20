@@ -55,18 +55,8 @@ export class TagCount extends BaseComponent<TagComponent[]> implements BusyAware
         }
 
         const tagComponent = new TagComponent(tag);
-
         tagComponent.onError(() => this.eventTarget.dispatchEvent(new CustomEvent('tag-count:change')));
-
-        tagComponent.onRemove((tagComponent: TagComponent): void => {
-            if (!this.tagComponents.has(tagComponent.getValue().publicId)) {
-                return;
-            }
-
-            this.tagComponents.delete(tagComponent.getValue().publicId);
-            this.selectedTags.removeChild(tagComponent.element());
-            this.eventTarget.dispatchEvent(new CustomEvent('tag-count:change'));
-        });
+        tagComponent.onRemove((tagComponent: TagComponent): void => this.removeTagComponent(tagComponent));
 
         this.tagComponents.set(tagComponent.getValue().publicId, tagComponent);
         this.selectedTags.appendChild(tagComponent.element());
@@ -81,6 +71,10 @@ export class TagCount extends BaseComponent<TagComponent[]> implements BusyAware
      */
     public clearErrors(): void {
         this.label.classList.remove('is-error');
+    }
+
+    public override destroy(): void {
+        this.tagComponents.forEach((tagComponent: TagComponent): void => this.removeTagComponent(tagComponent));
     }
 
     public getTagComponent(publicId: string): TagComponent|null {
@@ -99,6 +93,16 @@ export class TagCount extends BaseComponent<TagComponent[]> implements BusyAware
 
     public onChange(listener: () => void): void {
         this.eventTarget.addEventListener('tag-count:change', listener);
+    }
+
+    private removeTagComponent(tagComponent: TagComponent): void {
+        if (!this.tagComponents.has(tagComponent.getValue().publicId)) {
+            return;
+        }
+
+        this.tagComponents.delete(tagComponent.getValue().publicId);
+        this.selectedTags.removeChild(tagComponent.element());
+        this.eventTarget.dispatchEvent(new CustomEvent('tag-count:change'));
     }
 
     public setBusy(isBusy: boolean): void {

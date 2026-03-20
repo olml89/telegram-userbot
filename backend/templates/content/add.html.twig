@@ -27,10 +27,10 @@
                         field: 'categoryId',
                         required: true,
                     },
-                    defaultLabel: 'Select the category',
+                    defaultValue: 'Select the category',
                     options: categories|map(category => {
                         value: category.publicId,
-                        label: category.name,
+                        name: category.name,
                     }),
                 } only %}
 
@@ -39,11 +39,8 @@
                         item: 'mode',
                         required: true,
                     },
-                    defaultLabel: 'Select the mode',
-                    options: modes|map(mode => {
-                        value: mode.value,
-                        label: mode.label(),
-                    }),
+                    defaultValue: 'Select the mode',
+                    options: modes,
                 } only %}
 
                 {% include 'content/components/price.html.twig' with {
@@ -60,11 +57,8 @@
                         item: 'language',
                         required: true,
                     },
-                    defaultLabel: 'Select the language',
-                    options: languages|map(language => {
-                        value: language.value,
-                        label: language.label(),
-                    }),
+                    defaultValue: 'Select the language',
+                    options: languages,
                 } only %}
 
                 {% include 'common/components/select.html.twig' with {
@@ -72,11 +66,8 @@
                         item: 'status',
                         required: true,
                     },
-                    defaultLabel: 'Select the status',
-                    options: statuses|map(status => {
-                        value: status.value,
-                        label: status.label(),
-                    }),
+                    defaultValue: 'Select the status',
+                    options: statuses,
                 } only %}
             </div>
 

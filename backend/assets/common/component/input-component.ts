@@ -22,6 +22,12 @@ export abstract class InputComponent<TValue = unknown> extends RequirableCompone
         this.input.setCustomValidity('');
     }
 
+    public override destroy() {
+        super.destroy();
+
+        this.input.value = '';
+    }
+
     protected disabled(): boolean {
         return this.input.disabled;
     }

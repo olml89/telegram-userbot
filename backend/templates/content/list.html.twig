@@ -14,6 +14,8 @@
         </div>
     </div>
 
+    <div data-library-notifications></div>
+
     <div class="library-card">
         <div class="library-card-header">
             <div>
@@ -33,21 +35,18 @@
             <div class="library-filter-group">
                 <div data-library-category>
                     {% include 'common/components/select.html.twig' with {
-                        defaultLabel: 'All Categories',
+                        defaultValue: 'All Categories',
                         options: categories|map(category => {
+                            name: category.name,
                             value: category.publicId,
-                            label: category.name,
                         }),
                     } only %}
                 </div>
 
                 <div data-library-mode>
                     {% include 'common/components/select.html.twig' with {
-                        defaultLabel: 'All Modes',
-                        options: modes|map(mode => {
-                            value: mode.value,
-                            label: mode.label(),
-                        }),
+                        defaultValue: 'All Modes',
+                        options: modes,
                     } only %}
                 </div>
             </div>
@@ -100,10 +99,10 @@
                         </td>
                         <td><span class="pill">{{ content.category.name }}</span></td>
                         <td>
-                            Images {{ content.files.imageCount }} ·
-                            Videos {{ content.files.videoCount }} ·
-                            Audio {{ content.files.audioCount }} ·
-                            Docs {{ content.files.documentCount }}
+                            Images {{ content.files.count.images }} ·
+                            Videos {{ content.files.count.videos }} ·
+                            Audio {{ content.files.count.audios }} ·
+                            Docs {{ content.files.count.documents }}
                         </td>
                         <td>
                             <div class="price-info">
@@ -116,7 +115,7 @@
                             {% set statusClass = (content.status.value is same as('active')) ? 'pill-active' : 'pill-inactive' %}
                             <span class="pill {{ statusClass }}">{{ content.status.label() }}</span>
                         </td>
-                        <td>{{ content.createdAt|date('Y-m-d H:i:s') }}</td>
+                        <td>{{ content.createdAt|date('Y-m-d, H:i:s') }}</td>
                         <td>
                             <div class="actions-menu">
                                 <button class="actions-menu-trigger" type="button" aria-label="More actions">⋯</button>
