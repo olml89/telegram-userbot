@@ -6,7 +6,6 @@ namespace olml89\TelegramUserbot\Backend\Content\Application;
 
 use olml89\TelegramUserbot\Backend\File\Application\AudioResult;
 use olml89\TelegramUserbot\Backend\File\Application\FileResult;
-use olml89\TelegramUserbot\Backend\File\Application\FileResultFactory;
 use olml89\TelegramUserbot\Backend\File\Application\ImageResult;
 use olml89\TelegramUserbot\Backend\File\Application\VideoResult;
 use olml89\TelegramUserbot\Backend\File\Domain\File;
@@ -22,7 +21,7 @@ final readonly class FileContainer implements Result
         public FileCounter $count,
 
         /**
-        * @var array<ImageResult|VideoResult|AudioResult|FileResult>
+        * @var FileResult[]
         */
         public array $list,
     ) {}
@@ -32,16 +31,14 @@ final readonly class FileContainer implements Result
      */
     public static function files(Collection $files): self
     {
-        $fileResults = [];
         $imageCount = 0;
         $audioCount = 0;
         $videoCount = 0;
         $documentCount = 0;
 
-        $files->each(
-            function (File $file) use (&$fileResults, &$imageCount, &$audioCount, &$videoCount, &$documentCount): void {
-                $fileResult = FileResultFactory::create($file);
-                $fileResults[] = $fileResult;
+        $fileResults = $files->map(
+            function (File $file) use (&$imageCount, &$audioCount, &$videoCount, &$documentCount): FileResult {
+                $fileResult = FileResult::file($file);
 
                 match (true) {
                     $fileResult instanceof ImageResult => ++$imageCount,
@@ -49,6 +46,8 @@ final readonly class FileContainer implements Result
                     $fileResult instanceof VideoResult => ++$videoCount,
                     $fileResult instanceof FileResult => ++$documentCount,
                 };
+
+                return $fileResult;
             },
         );
 
@@ -59,7 +58,7 @@ final readonly class FileContainer implements Result
                 audios: $audioCount,
                 documents: $documentCount,
             ),
-            list: $fileResults,
+            list: $fileResults->toArray(),
         );
     }
 }

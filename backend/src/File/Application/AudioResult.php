@@ -5,37 +5,15 @@ declare(strict_types=1);
 namespace olml89\TelegramUserbot\Backend\File\Application;
 
 use olml89\TelegramUserbot\Backend\File\Domain\Audio;
-use olml89\TelegramUserbot\Backend\Shared\Application\Result\IsResult;
-use olml89\TelegramUserbot\Backend\Shared\Application\Result\Result;
 
-final readonly class AudioResult implements Result
+final readonly class AudioResult extends FileResult
 {
-    use IsResult;
+    public float $duration;
 
-    public function __construct(
-        public string $publicId,
-        public string $fileName,
-        public string $originalName,
-        public string $mimeType,
-        public int $bytes,
-        public float $duration,
-        public string $createdAt,
-        public string $updatedAt,
-    ) {}
-
-    public static function audio(Audio $audio): self
+    public function __construct(Audio $audio)
     {
-        $fileResult = FileResult::file($audio);
+        parent::__construct($audio);
 
-        return new self(
-            publicId: $fileResult->publicId,
-            fileName: $fileResult->fileName,
-            originalName: $fileResult->originalName,
-            mimeType: $fileResult->mimeType,
-            bytes: $fileResult->bytes,
-            duration: $audio->duration()->value,
-            createdAt: $fileResult->createdAt,
-            updatedAt: $fileResult->updatedAt,
-        );
+        $this->duration = $audio->duration()->value;
     }
 }

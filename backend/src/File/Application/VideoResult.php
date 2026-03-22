@@ -5,41 +5,19 @@ declare(strict_types=1);
 namespace olml89\TelegramUserbot\Backend\File\Application;
 
 use olml89\TelegramUserbot\Backend\File\Domain\Video;
-use olml89\TelegramUserbot\Backend\Shared\Application\Result\IsResult;
-use olml89\TelegramUserbot\Backend\Shared\Application\Result\Result;
 
-final readonly class VideoResult implements Result
+final readonly class VideoResult extends FileResult
 {
-    use IsResult;
+    public float $duration;
+    public int $width;
+    public int $height;
 
-    public function __construct(
-        public string $publicId,
-        public string $fileName,
-        public string $originalName,
-        public string $mimeType,
-        public int $bytes,
-        public float $duration,
-        public int $width,
-        public int $height,
-        public string $createdAt,
-        public string $updatedAt,
-    ) {}
-
-    public static function video(Video $video): self
+    public function __construct(Video $video)
     {
-        $fileResult = FileResult::file($video);
+        parent::__construct($video);
 
-        return new self(
-            publicId: $fileResult->publicId,
-            fileName: $fileResult->fileName,
-            originalName: $fileResult->originalName,
-            mimeType: $fileResult->mimeType,
-            bytes: $fileResult->bytes,
-            duration: $video->duration()->value,
-            width: $video->resolution()->width,
-            height: $video->resolution()->height,
-            createdAt: $fileResult->createdAt,
-            updatedAt: $fileResult->updatedAt,
-        );
+        $this->duration = $video->duration()->value;
+        $this->width = $video->resolution()->width;
+        $this->height = $video->resolution()->height;
     }
 }

@@ -5,39 +5,17 @@ declare(strict_types=1);
 namespace olml89\TelegramUserbot\Backend\File\Application;
 
 use olml89\TelegramUserbot\Backend\File\Domain\Image;
-use olml89\TelegramUserbot\Backend\Shared\Application\Result\IsResult;
-use olml89\TelegramUserbot\Backend\Shared\Application\Result\Result;
 
-final readonly class ImageResult implements Result
+final readonly class ImageResult extends FileResult
 {
-    use IsResult;
+    public int $width;
+    public int $height;
 
-    public function __construct(
-        public string $publicId,
-        public string $fileName,
-        public string $originalName,
-        public string $mimeType,
-        public int $bytes,
-        public int $width,
-        public int $height,
-        public string $createdAt,
-        public string $updatedAt,
-    ) {}
-
-    public static function image(Image $image): self
+    public function __construct(Image $image)
     {
-        $fileResult = FileResult::file($image);
+        parent::__construct($image);
 
-        return new self(
-            publicId: $fileResult->publicId,
-            fileName: $fileResult->fileName,
-            originalName: $fileResult->originalName,
-            mimeType: $fileResult->mimeType,
-            bytes: $fileResult->bytes,
-            width: $image->resolution()->width,
-            height: $image->resolution()->height,
-            createdAt: $fileResult->createdAt,
-            updatedAt: $fileResult->updatedAt,
-        );
+        $this->width = $image->resolution()->width;
+        $this->height = $image->resolution()->height;
     }
 }

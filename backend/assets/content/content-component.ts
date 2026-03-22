@@ -22,33 +22,34 @@ class MediaThumb extends CellElement {
     public constructor(files: FileContainer) {
         super();
 
+        const thumbnailFiles = files.list.filter((file: File) => file.hasThumbnail);
         const mediaThumb = document.createElement('div');
-        mediaThumb.classList.add('media-thumb', this.calculateMediaGrid(files));
+        mediaThumb.classList.add('media-thumb', this.calculateMediaGrid(thumbnailFiles));
 
-        files.list.forEach((file: File) => {
+        thumbnailFiles.slice(0, 4).forEach((thumbnailFile: File) => {
             const thumbnail = document.createElement('img');
             thumbnail.classList.add('media-img');
-            thumbnail.src = 'https://picsum.photos/seed/one/120/120';
+            thumbnail.src = `/api/files/${thumbnailFile.publicId}/thumbnail`;
             thumbnail.alt = 'Media thumbnail';
             mediaThumb.appendChild(thumbnail);
-        });
+        })
 
-        if (files.list.length > 4) {
+        if (thumbnailFiles.length > 4) {
             const more = document.createElement('span');
             more.classList.add('media-more');
-            more.textContent = `+${files.list.length - 4}`;
+            more.textContent = `+${thumbnailFiles.length - 4}`;
             mediaThumb.appendChild(more);
         }
 
         this.cell.appendChild(mediaThumb);
     }
 
-    private calculateMediaGrid(files: FileContainer): string {
-        if (files.list.length === 1) {
+    private calculateMediaGrid(thumbnailFiles: File[]): string {
+        if (thumbnailFiles.length === 1) {
             return 'media-single';
         }
 
-        if (files.list.length === 2) {
+        if (thumbnailFiles.length === 2) {
             return 'media-pair';
         }
 
@@ -121,12 +122,20 @@ class Bundle extends CellElement {
     public constructor(files: FileContainer) {
         super();
 
-        this.cell.textContent = `
+        this.cell.appendChild(this.createBundle(files));
+    }
+
+    private createBundle(files: FileContainer): HTMLSpanElement {
+        const bundle = document.createElement('span');
+        bundle.classList.add('bundle');
+        bundle.textContent = `
             Images ${files.count.images} ·
             Videos ${files.count.videos} ·
             Audio ${files.count.audios} ·
             Docs ${files.count.documents}
         `;
+
+        return bundle;
     }
 }
 
@@ -210,6 +219,7 @@ export class ContentComponent implements Component<Content>, HtmlElementWrapper 
     public constructor(content: Content) {
         this.content = content;
         this.row = document.createElement('tr');
+        this.row.setAttribute('data-content-row', '');
 
         /**
          * Thumbnail

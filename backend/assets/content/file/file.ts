@@ -43,6 +43,7 @@ export type File = Entity & {
     originalName: string;
     mimeType: string;
     bytes: Size;
+    hasThumbnail: boolean;
     width?: number;
     height?: number;
     duration?: number;
