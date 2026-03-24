@@ -178,12 +178,16 @@ class PaginationControls implements ChangeAware, Component<Pagination> {
         this.changeListeners.add(listener);
     }
 
+    private checkVisibility(): void {
+        this.paginationPanel.classList.toggle('is-hidden', this.pagination.isEmpty());
+    }
+
     public reset(): void {
         this.update(this.pagination.reset());
     }
 
-    private checkVisibility(): void {
-        this.paginationPanel.classList.toggle('is-hidden', this.pagination.isEmpty());
+    public restart(): void {
+        this.update(this.pagination.restart());
     }
 
     public update(pagination: Pagination): void {
@@ -200,6 +204,7 @@ class ContentQueryFields implements ChangeAware, Component<string> {
     private readonly category: CategorySelect;
     private readonly mode: ModeSelect;
     public readonly pagination: PaginationControls;
+    private readonly changeListeners: Set<(isFilterChange: boolean) => void> = new Set();
 
     public constructor(
         searchBox: SearchBox,
@@ -267,11 +272,28 @@ class ContentQueryFields implements ChangeAware, Component<string> {
         return query ? `?${query}` : '';
     }
 
-    public onChange(listener: () => void): void {
-        this.searchBox.onChange(listener);
-        this.category.onChange(listener);
-        this.mode.onChange(listener);
-        this.pagination.onChange(listener);
+    public onChange(listener: (isFilterChange: boolean) => void): void {
+        this.changeListeners.add(listener);
+
+        /**
+         * Register filters listeners
+         */
+        const filterListener = (): void => this.changeListeners.forEach(
+            (listener: (isFilterChange: boolean) => void): void => listener(true),
+        );
+
+        this.searchBox.onChange(filterListener);
+        this.category.onChange(filterListener);
+        this.mode.onChange(filterListener);
+
+        /**
+         * Register pagination listeners
+         */
+        const paginationListener = (): void => this.changeListeners.forEach(
+            (listener: (isFilterChange: boolean) => void): void => listener(false),
+        );
+
+        this.pagination.onChange(paginationListener);
     }
 }
 
@@ -293,9 +315,13 @@ export class ContentsComponent  {
         this.openContentAddModalBtn = openContentAddModalBtn;
         this.contentAddModal = contentAddModal;
 
-        this.contentQueryFields.onChange(async (): Promise<void> => {
+        this.contentQueryFields.onChange(async (isFilterChange: boolean): Promise<void> => {
             if (this.isLoading) {
                 return;
+            }
+
+            if (isFilterChange) {
+                this.contentQueryFields.pagination.restart();
             }
 
             this.isLoading = true;

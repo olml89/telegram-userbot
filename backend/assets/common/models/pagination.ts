@@ -70,6 +70,15 @@ export class Pagination {
             0,
         );
     }
+
+    public restart(): Pagination {
+        return new Pagination(
+            1,
+            this.perPage,
+            this.totalCount,
+            this.pageCount,
+        );
+    }
 }
 
 export class Paginated<T extends Entity = Entity> {
