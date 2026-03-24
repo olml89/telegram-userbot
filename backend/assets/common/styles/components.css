@@ -178,6 +178,18 @@
     margin-top: 18px;
 }
 
+mark {
+    background-color: rgba(59, 130, 246, 0.2);
+    color: inherit;
+    border-radius: 0.25rem;
+    font-weight: 600;
+    transition: background-color 0.2s ease;
+}
+
+mark:hover {
+    background-color: rgba(59, 130, 246, 0.35);
+}
+
 /* ===== RESPONSIVE ===== */
 @media (max-width: 1024px) {
     .dashboard-cards {
@@ -192,5 +204,16 @@
 @media (max-width: 640px) {
     .dashboard-cards {
         grid-template-columns: 1fr;
+    }
+}
+
+/* Dark variant for the dark mode */
+@media (prefers-color-scheme: dark) {
+    mark {
+        background-color: rgba(96, 165, 250, 0.25);
+    }
+
+    mark:hover {
+        background-color: rgba(96, 165, 250, 0.4);
     }
 }

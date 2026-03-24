@@ -8,10 +8,10 @@ import './styles/pages/library/forms/common.css';
 import './styles/pages/library/forms/preview.css';
 import './styles/pages/dashboard.css';
 import './styles/pages/userbot.css';
-import '../content/contents-component.css';
+import '../content/list/contents-component.css';
 
 import { initPreviewModal } from '../content/preview-modal';
-import { ContentsComponent } from '../content/contents-component';
+import { ContentsComponent } from '../content/list/contents-component';
 
 document.addEventListener('DOMContentLoaded', (): void => {
     initPreviewModal();

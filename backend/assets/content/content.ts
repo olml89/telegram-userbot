@@ -1,9 +1,9 @@
 import { Entity } from '../common/models/entity';
-import { Mode} from './mode/mode';
-import { Status } from './status/status';
-import { Category } from './category/category';
-import { Tag} from './tag/tag';
-import { File } from './file/file';
+import { Mode} from './mode';
+import { Status } from './status';
+import { Category } from './category';
+import { Tag} from './tag';
+import { File } from './file';
 
 type FileCounter = {
     images: number,

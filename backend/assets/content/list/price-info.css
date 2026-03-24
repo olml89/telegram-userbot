@@ -1,0 +1,11 @@
+.price-info {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.price-info .price-value {
+    font-weight: 600;
+    color: var(--text);
+}
