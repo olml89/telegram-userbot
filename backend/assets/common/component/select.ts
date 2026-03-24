@@ -1,10 +1,11 @@
-import {BusyAware, ChangeAware, Component, Errorable, ErrorClearable, HtmlElementWrapper} from './contracts';
+import { BusyAware, ChangeAware, Component, Errorable, ErrorClearable, HtmlElementWrapper } from './contracts';
 import { Enum } from '../models/enum';
 import { RequirableComponent } from './requirable-component';
 import { assertImported, querySelector, querySelectorAll } from '../importer';
 import { capitalize } from '../strings';
 
 let isOutsideClickBound = false;
+const selectInstances = new Set<Select>();
 
 class SelectOption implements Component<Enum>, HtmlElementWrapper {
     private readonly option: HTMLButtonElement;
@@ -59,25 +60,26 @@ export abstract class Select<TValue = Enum|null> implements BusyAware, ChangeAwa
         this.defaultValue = defaultValue;
         this.selectedValue = selectedValue;
         this.selectOptions = selectOptions;
+        selectInstances.add(this as Select);
 
         /**
          * Dropdown behaviour
          */
         this.trigger.addEventListener('click', (): void => {
-            const isOpened = this.select.classList.contains('is-opened');
+            const isOpened = this.isOpened();
 
-            /**
-             * Close all other opened .select elements
-             */
-            const openedCustomSelectElements = document.querySelectorAll<HTMLDivElement>('.select.is-opened');
-            openedCustomSelectElements.forEach((openedCustomSelectElement: HTMLDivElement): void => openedCustomSelectElement.classList.remove('is-opened'));
+            const otherOpenedSelects = Array
+                .from(selectInstances)
+                .filter((select: Select): boolean => select !== this && select.isOpened());
 
-            if (!this.selectOptions.length) {
+            otherOpenedSelects.forEach((otherOpenedSelect: Select): void => otherOpenedSelect.close());
+
+            if (!this.length()) {
                 return;
             }
 
             if (!isOpened) {
-                this.select.classList.add('is-opened');
+                this.open();
             }
         });
 
@@ -86,12 +88,8 @@ export abstract class Select<TValue = Enum|null> implements BusyAware, ChangeAwa
          */
         this.selectOptions.forEach((selectOption: SelectOption): void => {
             selectOption.onSelected((): void => {
-                this.enum = selectOption.getValue();
-                this.selectedValue.textContent = selectOption.getValue().name;
-                this.selectedValue.classList.remove('is-hidden');
-                this.defaultValue.classList.add('is-hidden');
-                this.select.classList.remove('is-opened');
-                this.notifyChange();
+                this.selectOption(selectOption);
+                this.close();
             });
         });
 
@@ -102,11 +100,20 @@ export abstract class Select<TValue = Enum|null> implements BusyAware, ChangeAwa
             isOutsideClickBound = true;
 
             document.addEventListener('click', (event: PointerEvent): void => {
+                /**
+                 * If we are not clicking on a Select component
+                 */
                 if (!(event.target as HTMLElement).closest('.select')) {
-                    const openedCustomSelectElements = document.querySelectorAll<HTMLDivElement>('.select.is-opened');
+                    const openedSelects = Array
+                        .from(selectInstances)
+                        .filter((select: Select): boolean => select.isOpened());
 
-                    openedCustomSelectElements.forEach((openedCustomSelectElement: HTMLDivElement): void => {
-                        openedCustomSelectElement.classList.remove('is-opened');
+                    openedSelects.forEach((openedSelect: Select): void => {
+                        if (!openedSelect.required()) {
+                            openedSelect.reset();
+                        }
+
+                        openedSelect.close();
                     });
                 }
             });
@@ -156,12 +163,13 @@ export abstract class Select<TValue = Enum|null> implements BusyAware, ChangeAwa
         this.trigger.classList.remove('is-error');
     }
 
-    public destroy(): void {
+    private close(): void {
         this.select.classList.remove('is-opened');
-        this.enum = null;
-        this.selectedValue.textContent = '';
-        this.selectedValue.classList.add('is-hidden');
-        this.defaultValue.classList.remove('is-hidden');
+    }
+
+    public destroy(): void {
+        this.reset();
+        this.close();
         this.changeListeners.clear();
     }
 
@@ -169,16 +177,44 @@ export abstract class Select<TValue = Enum|null> implements BusyAware, ChangeAwa
         return this.enum as TValue;
     }
 
+    private isOpened(): boolean {
+        return this.select.classList.contains('is-opened');
+    }
+
+    private length(): number {
+        return this.selectOptions.length;
+    }
+
     public onChange(listener: () => void) {
         this.changeListeners.add(listener);
+    }
+
+    private open(): void {
+        this.select.classList.add('is-opened');
     }
 
     private notifyChange(): void {
         this.changeListeners.forEach((listener: () => void): void => listener());
     }
 
+    private reset(): void {
+        this.enum = null;
+        this.selectedValue.textContent = '';
+        this.selectedValue.classList.add('is-hidden');
+        this.defaultValue.classList.remove('is-hidden');
+        this.notifyChange();
+    }
+
     public required(): boolean {
         return this.select.hasAttribute('data-required');
+    }
+
+    private selectOption(selectOption: SelectOption): void {
+        this.enum = selectOption.getValue();
+        this.selectedValue.textContent = selectOption.getValue().name;
+        this.selectedValue.classList.remove('is-hidden');
+        this.defaultValue.classList.add('is-hidden');
+        this.notifyChange();
     }
 
     public setBusy(isBusy: boolean) {

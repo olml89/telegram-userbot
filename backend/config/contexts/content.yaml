@@ -4,6 +4,12 @@ services:
   olml89\TelegramUserbot\Backend\Content\Domain\ContentRepository:
     alias: olml89\TelegramUserbot\Backend\Content\Infrastructure\Doctrine\DoctrineContentRepository
 
+  # ContentPaginator
+  olml89\TelegramUserbot\Backend\Content\Application\Paginate\ContentPaginator:
+    arguments:
+      $perPage: '%env(int:APP_LIBRARY_CONTENT_PER_PAGE)%'
+      $contentRepository: '@olml89\TelegramUserbot\Backend\Content\Domain\ContentRepository'
+
 doctrine:
   # Types
   dbal:

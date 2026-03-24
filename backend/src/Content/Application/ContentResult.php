@@ -9,11 +9,15 @@ use olml89\TelegramUserbot\Backend\Category\Application\CategoryResult;
 use olml89\TelegramUserbot\Backend\Content\Domain\Content;
 use olml89\TelegramUserbot\Backend\Content\Domain\Mode\Mode;
 use olml89\TelegramUserbot\Backend\Content\Domain\Status\Status;
+use olml89\TelegramUserbot\Backend\Shared\Application\Result\IsResult;
+use olml89\TelegramUserbot\Backend\Shared\Application\Result\Result;
 use olml89\TelegramUserbot\Backend\Tag\Application\TagResult;
 use olml89\TelegramUserbot\Backend\Tag\Domain\Tag;
 
-final readonly class ContentResult
+final readonly class ContentResult implements Result
 {
+    use IsResult;
+
     public function __construct(
         public string $publicId,
         public string $title,

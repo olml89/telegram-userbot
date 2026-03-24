@@ -20,16 +20,16 @@ type ContentFieldComponent = ValidatableComponent&BusyAware;
 type ContentFieldValue = ReturnType<ContentFieldComponent['getValue']>;
 
 class ContentFields implements BusyAware, ChangeAware, Component<Record<string, ContentFieldValue>>, ErrorAware {
-    public title: TextInput;
-    public description: TextInput;
-    public category: ValidatableCategorySelect;
-    public language: ValidatableLanguageSelect;
-    public status: ValidatableStatusSelect;
-    public mode: ValidatableModeSelect;
-    public price: PriceInput;
-    public intensity: IntensityInput;
-    public tags: TagsComponent;
-    public files: FilesComponent;
+    private readonly title: TextInput;
+    private readonly description: TextInput;
+    private readonly category: ValidatableCategorySelect;
+    private readonly language: ValidatableLanguageSelect;
+    private readonly status: ValidatableStatusSelect;
+    private readonly mode: ValidatableModeSelect;
+    private readonly price: PriceInput;
+    private readonly intensity: IntensityInput;
+    private readonly tags: TagsComponent;
+    public readonly files: FilesComponent;
 
     public constructor(
         title: TextInput,

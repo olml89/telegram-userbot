@@ -118,7 +118,7 @@ export class TagInput extends BaseComponent<string> implements BusyAware, ErrorC
 
         this.searchTimeout = setTimeout(() => {
             this.eventTarget.dispatchEvent(new CustomEvent('tag-input:query', { detail: value }));
-        }, 250);
+        }, 400);
     }
 
     private async onKeydown(event: KeyboardEvent): Promise<void> {

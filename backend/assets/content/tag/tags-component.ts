@@ -129,7 +129,7 @@ export class TagsComponent extends CollectionComponent<Tag> {
         this.tagCount.clearErrors();
     }
 
-    private async createTag(name: string): Promise<Tag> {
+    private async create(name: string): Promise<Tag> {
         const response = await fetch('/api/tags', {
             method: 'POST',
             headers: {
@@ -157,7 +157,7 @@ export class TagsComponent extends CollectionComponent<Tag> {
         this.tagCount.destroy();
     }
 
-    private async fetchTags(query: string): Promise<Tag[]> {
+    private async fetch(query: string): Promise<Tag[]> {
         const response = await fetch(`/api/tags?query=${encodeURIComponent(query)}`);
 
         if (!response.ok) {
@@ -167,11 +167,7 @@ export class TagsComponent extends CollectionComponent<Tag> {
             );
         }
 
-        const payload = await response.json();
-
-        return payload.map(
-            (payloadItem: { publicId: string; name: string }) => payloadItem as Tag,
-        );
+        return await response.json() as Tag[];
     }
 
     public override getValue(): Tag[] {
@@ -202,7 +198,7 @@ export class TagsComponent extends CollectionComponent<Tag> {
         try {
             this.tagInput.setBusy(true);
             this.tagDropdown.creatingTag();
-            const created = await this.createTag(value);
+            const created = await this.create(value);
 
             if (this.tagCount.addTag(created)) {
                 this.tagInput.clear();
@@ -221,7 +217,7 @@ export class TagsComponent extends CollectionComponent<Tag> {
         try {
             this.tagInput.setBusy(true);
             this.tagDropdown.fetchingTags();
-            const tags = await this.fetchTags(query);
+            const tags = await this.fetch(query);
 
             this.tagDropdown.show(
                 tags,

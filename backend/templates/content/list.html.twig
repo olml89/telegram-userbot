@@ -24,13 +24,14 @@
             </div>
         </div>
 
-        <div class="library-filters">
+        <div class="library-filters" data-library-filters>
             <label for="contentSearch" class="sr-only">Search content</label>
             <input
-                type="search"
                 id="contentSearch"
-                placeholder="Search Content..."
+                type="search"
                 class="form-input search-input"
+                placeholder="Search Content..."
+                data-content-search
             />
             <div class="library-filter-group">
                 <div data-library-category>
@@ -69,20 +70,45 @@
                 </thead>
                 <tbody data-library-table-body>
                 {% for content in contents %}
-                    <tr data-content-row>
+                    <tr class="content-item" data-content-row>
                         <td>
-                            {% set thumbnailFiles = content.files.list|filter(file => file.hasThumbnail ?? false) %}
+                            {%
+                                set thumbnailFiles = content.files.list
+                                    |filter(file => file.hasThumbnail ?? false)
+                                    |slice(0, 4)
+                            %}
+                            {%
+                                set nonThumbnailFiles = content.files.list
+                                    |filter(file => not (file.hasThumbnail ?? false))
+                                    |slice(0, 4 - thumbnailFiles|length)
+                            %}
+                            {% set totalFiles = content.files.list|length %}
+
                             {% set mediaClass =
-                                thumbnailFiles|length == 1 ? 'media-single' :
-                                thumbnailFiles|length == 2 ? 'media-pair' :
+                                totalFiles == 1 ? 'media-single' :
+                                totalFiles == 2 ? 'media-pair' :
                                 'media-grid'
                             %}
+
                             <div class="media-thumb {{ mediaClass }}">
-                                {% for thumbnailFile in thumbnailFiles|slice(0, 4) %}
+                                {% for thumbnailFile in thumbnailFiles %}
                                     <img src="/api/files/{{ thumbnailFile.publicId }}/thumbnail" alt="Media thumbnail" class="media-img">
                                 {% endfor %}
-                                {% if thumbnailFiles|length > 4 %}
-                                    <span class="media-more">+{{ thumbnailFiles|length - 4 }}</span>
+
+                                {% for nonThumbnailFile in nonThumbnailFiles %}
+                                    <span class="placeholder">
+                                        {% if nonThumbnailFile.mimeType starts with 'audio/' %}
+                                            🎵
+                                        {% elseif nonThumbnailFile.mimeType starts with 'text/plain' or nonThumbnailFile.mimeType starts with 'application/pdf' %}
+                                            📄
+                                        {% else %}
+                                            📦
+                                        {% endif %}
+                                    </span>
+                                {% endfor %}
+
+                                {% if totalFiles > 4 %}
+                                    <span class="media-more">+{{ totalFiles - 4 }}</span>
                                 {% endif %}
                             </div>
                         </td>
@@ -117,7 +143,7 @@
                             {% set statusClass = (content.status.value is same as('active')) ? 'pill-active' : 'pill-inactive' %}
                             <span class="pill {{ statusClass }}">{{ content.status.label() }}</span>
                         </td>
-                        <td>{{ content.createdAt|date('Y-m-d, H:i:s') }}</td>
+                        <td>{{ content.createdAt|date('Y/m/d, H:i:s') }}</td>
                         <td>
                             <div class="actions-menu">
                                 <button class="actions-menu-trigger" type="button" aria-label="More actions">⋯</button>
@@ -148,11 +174,23 @@
         </div>
 
         <div class="library-footer">
-            <span class="library-count">Showing 1-10 of 156</span>
-            <div class="library-pagination">
-                <button class="btn btn-secondary btn-hover-outline btn-sm">Previous</button>
-                <span class="page-indicator">Page 1 of 16</span>
-                <button class="btn btn-secondary btn-hover-outline btn-sm">Next</button>
+            <span class="library-count" data-library-counter>
+                <span data-library-counter-empty hidden>No content found</span>
+                <span data-library-counter-count></span>
+            </span>
+            <div class="library-pagination" data-library-pagination>
+                <script>
+                    window.paginationData = {{ contents|json_encode|raw }}
+                </script>
+                <button
+                    class="btn btn-secondary btn-hover-outline btn-sm"
+                    data-library-pagination-previous
+                >Previous</button>
+                <span class="page-indicator" data-library-pagination-page></span>
+                <button
+                    class="btn btn-secondary btn-hover-outline btn-sm"
+                    data-library-pagination-next
+                >Next</button>
             </div>
         </div>
     </div>

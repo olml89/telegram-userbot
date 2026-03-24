@@ -1,4 +1,4 @@
-import {BusyAware, ChangeAware, ErrorClearable, HtmlElementWrapper} from '../../common/component/contracts';
+import { BusyAware, ChangeAware, ErrorClearable, HtmlElementWrapper } from '../../common/component/contracts';
 import { BaseComponent } from '../../common/component/base-component';
 import { File as BackendFile, Size } from './file';
 import { FileItem } from './file-item';
@@ -103,7 +103,7 @@ export class FileComponent extends BaseComponent<BackendFile|null> implements Bu
             this.emit('file-item:delete:begin');
 
             try {
-                await this.deleteBackendFile();
+                await this.removeBackendFile();
                 this.removeItem();
             } catch (e: any) {
                 const backendError = e as BackendError;
@@ -141,23 +141,6 @@ export class FileComponent extends BaseComponent<BackendFile|null> implements Bu
     public clearErrors(): void {
         this.errorHandler.clearErrors();
         this.fileItem.clearErrors();
-    }
-
-    private async deleteBackendFile(): Promise<void> {
-        if (this.backendFile === null) {
-            return;
-        }
-
-        const response = await fetch(`/api/files/${this.backendFile.publicId}`, {
-            method: 'DELETE',
-        });
-
-        if (!response.ok) {
-            throw await BackendError.from(
-                response,
-                'Failed to delete file',
-            );
-        }
     }
 
     public override getValue(): BackendFile|null {
@@ -233,6 +216,23 @@ export class FileComponent extends BaseComponent<BackendFile|null> implements Bu
         });
     }
 
+    private async removeBackendFile(): Promise<void> {
+        if (this.backendFile === null) {
+            return;
+        }
+
+        const response = await fetch(`/api/files/${this.backendFile.publicId}`, {
+            method: 'DELETE',
+        });
+
+        if (!response.ok) {
+            throw await BackendError.from(
+                response,
+                'Failed to delete file',
+            );
+        }
+    }
+
     private removeItem(): void {
         this.emit('file-item:removed', this);
         this.emit('file-item:cancel:unregister', this.cancelHandler);
@@ -259,17 +259,9 @@ export class FileComponent extends BaseComponent<BackendFile|null> implements Bu
         const payload = await response.json();
 
         return {
-            publicId: payload.publicId,
-            fileName: payload.fileName,
-            originalName: payload.originalName,
-            mimeType: payload.mimeType,
+            ...payload,
             bytes: new Size(payload.bytes),
-            width: payload?.width,
-            height: payload?.height,
-            duration: payload?.duration,
-            createdAt: payload.createdAt,
-            updatedAt: payload.updatedAt,
-        };
+        } as BackendFile;
     }
 
     public setBusy(isBusy: boolean): void {
@@ -290,7 +282,7 @@ export class FileComponent extends BaseComponent<BackendFile|null> implements Bu
         this.emit('file-item:upload:begin');
 
         try {
-            await this.validateLocalFile();
+            await this.validate();
             this.fileItem.setUploadingState();
             this.uploader.start();
         } catch (e: any) {
@@ -302,7 +294,7 @@ export class FileComponent extends BaseComponent<BackendFile|null> implements Bu
         }
     }
 
-    private async validateLocalFile(): Promise<void> {
+    private async validate(): Promise<void> {
         const response = await fetch('/api/files/validation', {
             method: 'POST',
             headers: {
