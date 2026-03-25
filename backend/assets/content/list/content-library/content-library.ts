@@ -188,7 +188,7 @@ export class ContentLibrary implements BusyAware {
             querySelector<HTMLDivElement>(document, '[data-library-pagination]'),
         );
 
-        const openContentAddModalBtn = querySelector<HTMLButtonElement>(document, '[data-content-open]');
+        const openContentAddModalBtn = querySelector<HTMLButtonElement>(document, '[data-content-add-open]');
         const contentAddModal = ContentAddModal.from(document.getElementById('contentAddModal') as HTMLDivElement|null);
 
         const required = {
