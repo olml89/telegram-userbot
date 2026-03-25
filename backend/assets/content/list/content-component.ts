@@ -27,14 +27,7 @@ export class ContentComponent implements Component<Content>, Highlightable, Html
         this.row = document.createElement('tr');
         this.row.classList.add('content-row');
         this.row.setAttribute('data-content-row', '');
-
-        if (isNew) {
-            this.row.classList.add('is-new');
-
-            setTimeout((): void => {
-                this.row.classList.remove('is-new');
-            }, 600);
-        }
+        this.row.classList.toggle('is-new', isNew);
 
         /**
          * Thumbnail

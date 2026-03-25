@@ -137,10 +137,26 @@ export class ContentList implements BusyAware, Component<Content[]> {
         this.contentNotifications.clear();
         this.contentNotifications.success(content);
 
-        if (contentQueryFields.matches(content)) {
-            this.contentTable.prepend(content);
-            contentQueryFields.pagination.increaseTotalCount();
+        /**
+         * A) Content does not match with the current filters
+         * B) Content matches with the current filters, but pagination is not set on the first page
+         *
+         * - Reload to fetch the latest content
+         */
+        if (!contentQueryFields.matches(content) || !contentQueryFields.pagination.isFirstPage()) {
+            contentQueryFields.pagination.restart();
+
+            return;
         }
+
+        /**
+         * Optimistic addition
+         *
+         * - Add the content to the top of the current table and discard the last one
+         * - Increase the total count
+         */
+        this.contentTable.prepend(content);
+        contentQueryFields.pagination.increaseTotalCount();
     }
 
     public getValue(): Content[] {

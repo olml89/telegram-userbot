@@ -159,8 +159,21 @@ export class ContentLibrary implements BusyAware {
         this.contentAddModal = contentAddModal;
 
         this.openContentAddModalBtn.addEventListener('click', (): void => this.contentAddModal.open());
-        this.contentAddModal.onAddedContent((content: Content): void => this.contentList.add(content, this.contentQueryFields));
-        this.contentQueryFields.onChange(async (isFilterChange: boolean): Promise<void> => this.load(isFilterChange));
+
+        this.contentAddModal.onAddedContent((content: Content): void => this.contentList.add(
+            content,
+            this.contentQueryFields),
+        );
+
+        this.contentQueryFields.onChange(async (isFilterChange: boolean): Promise<void> => {
+            if (isFilterChange) {
+                this.contentQueryFields.pagination.restart();
+
+                return;
+            }
+
+            await this.load();
+        });
     }
 
     public static create(): ContentLibrary|null {
@@ -212,13 +225,9 @@ export class ContentLibrary implements BusyAware {
         return Paginated.from<Content>(payload, Content);
     }
 
-    private async load(isFilterChange: boolean): Promise<void> {
+    private async load(): Promise<void> {
         if (this.isBusy) {
             return;
-        }
-
-        if (isFilterChange) {
-            this.contentQueryFields.pagination.restart();
         }
 
         this.setBusy(true);

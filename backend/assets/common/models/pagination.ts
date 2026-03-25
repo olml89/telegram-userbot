@@ -33,6 +33,14 @@ export class Pagination {
         );
     }
 
+    public firstPage(): Pagination {
+        return new Pagination(
+            1,
+            this.perPage,
+            this.totalCount,
+        );
+    }
+
     public formatCount(): string {
         const firstIndex = (this.page - 1) * this.perPage + 1;
         const lastIndex = Math.min(this.page * this.perPage, this.totalCount);
@@ -52,19 +60,23 @@ export class Pagination {
         return this.page > 1;
     }
 
+    public isFirstPage(): boolean {
+        return this.page === 1;
+    }
+
     public isEmpty(): boolean {
         return this.totalCount === 0;
     }
 
-    public itemAdded(): Pagination {
+    public increaseTotalCount(): Pagination {
         return new Pagination(
-            1,
+            this.page,
             this.perPage,
             this.totalCount + 1,
         );
     }
 
-    public next(): Pagination {
+    public nextPage(): Pagination {
         return new Pagination(
             this.page + 1,
             this.perPage,
@@ -76,7 +88,7 @@ export class Pagination {
         return Math.ceil(this.totalCount / this.perPage);
     }
 
-    public previous(): Pagination {
+    public previousPage(): Pagination {
         return new Pagination(
             this.page - 1,
             this.perPage,
@@ -84,19 +96,11 @@ export class Pagination {
         )
     }
 
-    public reset(): Pagination {
+    public resetTotalCount(): Pagination {
         return new Pagination(
-            1,
+            this.page,
             this.perPage,
             0,
-        );
-    }
-
-    public restart(): Pagination {
-        return new Pagination(
-            1,
-            this.perPage,
-            this.totalCount,
         );
     }
 }

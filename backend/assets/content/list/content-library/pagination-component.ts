@@ -85,12 +85,33 @@ export class PaginationComponent implements BusyAware, ChangeAware, Component<Pa
         return this.pagination;
     }
 
+    /**
+     * On optimistic update
+     *
+     * 1. Set firstPage, increase totalCount
+     * 2. Update UI
+     */
     public increaseTotalCount(): void {
-        this.update(this.pagination.itemAdded());
+        this.update(this.pagination.firstPage().increaseTotalCount());
     }
 
+    public isFirstPage(): boolean {
+        return this.pagination.isFirstPage();
+    }
+
+    /**
+     * On nextPageBtn click
+     *
+     * 1. Set nextPage
+     * 2. Update UI
+     * 3. Trigger change event
+     */
     private next(): void {
-        this.pagination = this.pagination.next();
+        this.update(this.pagination.nextPage());
+        this.notifyChange();
+    }
+
+    private notifyChange(): void {
         this.changeListeners.forEach((listener: () => void): void => listener());
     }
 
@@ -98,17 +119,37 @@ export class PaginationComponent implements BusyAware, ChangeAware, Component<Pa
         this.changeListeners.add(listener);
     }
 
+    /**
+     * On previousPageBtn click
+     *
+     * 1. Set previousPage
+     * 2. Update UI
+     * 3. Trigger change event
+     */
     public previous(): void {
-        this.pagination = this.pagination.previous();
-        this.changeListeners.forEach((listener: () => void): void => listener());
+        this.pagination = this.pagination.previousPage();
+        this.notifyChange();
     }
 
+    /**
+     * On fetching error
+     *
+     * 1. Set firstPage, reset totalCount (0)
+     * 2. Update UI
+     */
     public reset(): void {
-        this.update(this.pagination.reset());
+        this.update(this.pagination.firstPage().resetTotalCount());
     }
 
+    /**
+     * On filter change event
+     *
+     * 1. Set firstPage
+     * 2. Trigger change event
+     */
     public restart(): void {
-        this.pagination = this.pagination.restart();
+        this.pagination = this.pagination.firstPage();
+        this.notifyChange();
     }
 
     public setBusy(isBusy: boolean): void {
@@ -116,6 +157,12 @@ export class PaginationComponent implements BusyAware, ChangeAware, Component<Pa
         this.nextPageBtn.disabled = isBusy;
     }
 
+    /**
+     * On fetch response
+     *
+     * 1. Update pagination from the outside
+     * 2. Update UI
+     */
     public update(pagination: Pagination): void {
         this.pagination = pagination;
         this.checkButtonState();
