@@ -1,5 +1,6 @@
-@import './bundle.css';
 @import './content-info/content-info.css';
+@import './actions-menu.css';
+@import './bundle.css';
 @import './media-thumb.css';
 @import './price-info.css';
 
@@ -46,65 +47,6 @@ tr[data-content-row].is-new {
         opacity: 1;
         transform: translateY(0);
     }
-}
-
-tr[data-content-row] .actions-menu {
-    position: relative;
-    display: inline-flex;
-    align-items: center;
-}
-
-tr[data-content-row] .actions-menu .actions-menu-trigger {
-    width: 32px;
-    height: 32px;
-    border-radius: 8px;
-    border: 1px solid transparent;
-    background: transparent;
-    font-size: 20px;
-    cursor: pointer;
-}
-
-tr[data-content-row] .actions-menu .actions-menu-trigger:hover,
-tr[data-content-row] .actions-menu:focus-within .actions-menu-trigger {
-    background: #f3f4f6;
-    border-color: var(--border);
-}
-
-tr[data-content-row] .actions-menu .actions-menu-dropdown {
-    position: absolute;
-    right: 0;
-    top: 38px;
-    min-width: 160px;
-    background: #ffffff;
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    display: none;
-    padding: 6px;
-    z-index: 5;
-}
-
-tr[data-content-row] .actions-menu:focus-within .actions-menu-dropdown {
-    display: block;
-}
-
-tr[data-content-row] .actions-menu .actions-menu-dropdown .action-item {
-    width: 100%;
-    text-align: left;
-    padding: 8px 10px;
-    border: none;
-    background: transparent;
-    font-size: 13px;
-    border-radius: 8px;
-    cursor: pointer;
-    color: var(--text);
-}
-
-tr[data-content-row] .actions-menu .actions-menu-dropdown .action-item:hover {
-    background: #f3f4f6;
-}
-
-tr[data-content-row] .actions-menu .actions-menu-dropdown .action-item.action-danger {
-    color: var(--danger);
 }
 
 /* Accessibility preferences */

@@ -1,11 +1,11 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}ContentLibrary - Admin Panel{% endblock %}
+{% block title %}Library - Admin Panel{% endblock %}
 
 {% block body %}
     <div class="page-header">
         <div class="content-header">
-            <h2>ContentLibrary</h2>
+            <h2>Library</h2>
             <p>Manage your digital content and pricing.</p>
         </div>
         <div class="header-actions">
@@ -19,7 +19,7 @@
     <div class="library-card">
         <div class="library-card-header">
             <div>
-                <h3>Content ContentLibrary</h3>
+                <h3>Content Library</h3>
                 <p class="library-subtitle">Manage your content and pricing</p>
             </div>
         </div>
@@ -68,108 +68,7 @@
                     <th></th>
                 </tr>
                 </thead>
-                <tbody>
-                {% for content in contents %}
-                    <tr class="content-item" data-content-row>
-                        <td>
-                            {%
-                                set thumbnailFiles = content.files.list
-                                    |filter(file => file.hasThumbnail ?? false)
-                                    |slice(0, 4)
-                            %}
-                            {%
-                                set nonThumbnailFiles = content.files.list
-                                    |filter(file => not (file.hasThumbnail ?? false))
-                                    |slice(0, 4 - thumbnailFiles|length)
-                            %}
-                            {% set totalFiles = content.files.list|length %}
-
-                            {% set mediaClass =
-                                totalFiles == 1 ? 'media-single' :
-                                totalFiles == 2 ? 'media-pair' :
-                                'media-grid'
-                            %}
-
-                            <div class="media-thumb {{ mediaClass }}">
-                                {% for thumbnailFile in thumbnailFiles %}
-                                    <img src="/api/files/{{ thumbnailFile.publicId }}/thumbnail" alt="Media thumbnail" class="media-img">
-                                {% endfor %}
-
-                                {% for nonThumbnailFile in nonThumbnailFiles %}
-                                    <span class="placeholder">
-                                        {% if nonThumbnailFile.mimeType starts with 'audio/' %}
-                                            🎵
-                                        {% elseif nonThumbnailFile.mimeType starts with 'text/plain' or nonThumbnailFile.mimeType starts with 'application/pdf' %}
-                                            📄
-                                        {% else %}
-                                            📦
-                                        {% endif %}
-                                    </span>
-                                {% endfor %}
-
-                                {% if totalFiles > 4 %}
-                                    <span class="media-more">+{{ totalFiles - 4 }}</span>
-                                {% endif %}
-                            </div>
-                        </td>
-                        <td>
-                            <div class="content-info">
-                                <div class="content-title">{{ content.title }}</div>
-                                <div class="content-description">{{ content.description }}</div>
-                                <div class="tag-list">
-                                    {% for tag in content.tags %}
-                                        <span class="tag">{{ tag.name }}</span>
-                                    {% endfor %}
-                                </div>
-                            </div>
-                        </td>
-                        <td><span class="pill">{{ content.category.name }}</span></td>
-                        <td>
-                            <span class="bundle">
-                                Images {{ content.files.count.images }} ·
-                                Videos {{ content.files.count.videos }} ·
-                                Audio {{ content.files.count.audios }} ·
-                                Docs {{ content.files.count.documents }}
-                            </span>
-                        </td>
-                        <td>
-                            <div class="price-info">
-                                <div class="price-value">${{ content.price }}</div>
-                                <span class="pill pill-muted">{{ content.mode.label() }}</span>
-                            </div>
-                        </td>
-                        <td>{{ content.sales }}</td>
-                        <td>
-                            {% set statusClass = (content.status.value is same as('active')) ? 'pill-active' : 'pill-inactive' %}
-                            <span class="pill {{ statusClass }}">{{ content.status.label() }}</span>
-                        </td>
-                        <td>{{ content.createdAt|date('Y/m/d, H:i:s') }}</td>
-                        <td>
-                            <div class="actions-menu">
-                                <button class="actions-menu-trigger" type="button" aria-label="More actions">⋯</button>
-                                <div class="actions-menu-dropdown">
-                                    <button type="button" class="action-item" data-preview-open>
-                                        <span class="action-icon">👁️</span>
-                                        Preview
-                                    </button>
-                                    <button type="button" class="action-item">
-                                        <span class="action-icon">📝</span>
-                                        Edit
-                                    </button>
-                                    <button type="button" class="action-item">
-                                        <span class="action-icon">🗐</span>
-                                        Duplicate
-                                    </button>
-                                    <button type="button" class="action-item action-danger">
-                                        <span class="action-icon">🗑️</span>
-                                        Delete
-                                    </button>
-                                </div>
-                            </div>
-                        </td>
-                    </tr>
-                {% endfor %}
-                </tbody>
+                <tbody></tbody>
             </table>
         </div>
 
@@ -179,9 +78,6 @@
                 <span data-library-counter-count></span>
             </span>
             <div class="library-pagination" data-library-pagination>
-                <script>
-                    window.paginationData = {{ contents|json_encode|raw }}
-                </script>
                 <button
                     class="btn btn-secondary btn-hover-outline btn-sm"
                     data-library-pagination-previous

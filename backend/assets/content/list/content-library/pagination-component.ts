@@ -1,26 +1,16 @@
-import {BusyAware, ChangeAware, Component} from '../../../common/component/contracts';
+import { BusyAware, ChangeAware, Component } from '../../../common/component/contracts';
 import { Pagination } from '../../../common/models/pagination';
 import { Counter } from './counter';
 import { assertImported, querySelector } from '../../../common/importer';
 
-/**
- * Declared on: templates/content/list.html.twig
- */
-declare const paginationData: {
-    page: number;
-    perPage: number;
-    totalCount: number;
-    pageCount: number;
-};
-
-export class PaginationComponent implements BusyAware, ChangeAware, Component<Pagination> {
+export class PaginationComponent implements BusyAware, ChangeAware, Component<Pagination|null> {
     private readonly counter: Counter;
     private readonly paginationPanel: HTMLDivElement;
     private readonly pageSpan: HTMLSpanElement;
     private readonly previousPageBtn: HTMLButtonElement;
     private readonly nextPageBtn: HTMLButtonElement;
     private readonly changeListeners: Set<() => void> = new Set<() => void>();
-    private pagination: Pagination;
+    private pagination: Pagination|null = null;
 
     public constructor(
         counter: Counter,
@@ -35,11 +25,7 @@ export class PaginationComponent implements BusyAware, ChangeAware, Component<Pa
         this.previousPageBtn = previousPageBtn;
         this.nextPageBtn = nextPageBtn;
 
-        /**
-         * Declared on: templates/content/list.html.twig
-         */
-        this.pagination = Pagination.fromJson(paginationData);
-        this.update(this.pagination);
+        this.checkVisibility();
 
         this.previousPageBtn.addEventListener('click', (): void => this.previous());
         this.nextPageBtn.addEventListener('click', (): void => this.next());
@@ -72,16 +58,13 @@ export class PaginationComponent implements BusyAware, ChangeAware, Component<Pa
         );
     }
 
-    private checkButtonState(): void {
-        this.previousPageBtn.disabled = !this.pagination.hasPreviousPage();
-        this.nextPageBtn.disabled = !this.pagination.hasNextPage();
-    }
-
     private checkVisibility(): void {
-        this.paginationPanel.classList.toggle('is-hidden', this.pagination.isEmpty());
+        this.paginationPanel.classList.toggle('is-hidden', this.isEmpty());
+        this.previousPageBtn.disabled = this.isFirstPage();
+        this.nextPageBtn.disabled = this.isLastPage();
     }
 
-    public getValue(): Pagination {
+    public getValue(): Pagination|null {
         return this.pagination;
     }
 
@@ -92,11 +75,23 @@ export class PaginationComponent implements BusyAware, ChangeAware, Component<Pa
      * 2. Update UI
      */
     public increaseTotalCount(): void {
+        if (!this.pagination) {
+            return;
+        }
+
         this.update(this.pagination.firstPage().increaseTotalCount());
     }
 
+    private isEmpty(): boolean {
+        return this.pagination?.isEmpty() ?? true;
+    }
+
     public isFirstPage(): boolean {
-        return this.pagination.isFirstPage();
+        return this.pagination?.isFirstPage() ?? true;
+    }
+
+    private isLastPage(): boolean {
+        return this.pagination?.isLastPage() ?? true;
     }
 
     /**
@@ -107,6 +102,10 @@ export class PaginationComponent implements BusyAware, ChangeAware, Component<Pa
      * 3. Trigger change event
      */
     private next(): void {
+        if (!this.pagination) {
+            return;
+        }
+
         this.update(this.pagination.nextPage());
         this.notifyChange();
     }
@@ -127,6 +126,10 @@ export class PaginationComponent implements BusyAware, ChangeAware, Component<Pa
      * 3. Trigger change event
      */
     public previous(): void {
+        if (!this.pagination) {
+            return;
+        }
+
         this.pagination = this.pagination.previousPage();
         this.notifyChange();
     }
@@ -138,6 +141,10 @@ export class PaginationComponent implements BusyAware, ChangeAware, Component<Pa
      * 2. Update UI
      */
     public reset(): void {
+        if (!this.pagination) {
+            return;
+        }
+
         this.update(this.pagination.firstPage().resetTotalCount());
     }
 
@@ -148,13 +155,17 @@ export class PaginationComponent implements BusyAware, ChangeAware, Component<Pa
      * 2. Trigger change event
      */
     public restart(): void {
+        if (!this.pagination) {
+            return;
+        }
+
         this.pagination = this.pagination.firstPage();
         this.notifyChange();
     }
 
     public setBusy(isBusy: boolean): void {
-        this.previousPageBtn.disabled = isBusy;
-        this.nextPageBtn.disabled = isBusy;
+        this.previousPageBtn.disabled = isBusy || this.isFirstPage();
+        this.nextPageBtn.disabled = isBusy || this.isLastPage();
     }
 
     /**
@@ -165,9 +176,8 @@ export class PaginationComponent implements BusyAware, ChangeAware, Component<Pa
      */
     public update(pagination: Pagination): void {
         this.pagination = pagination;
-        this.checkButtonState();
         this.checkVisibility();
-        this.pageSpan.textContent = pagination.formatPage();
-        this.counter.update(pagination);
+        this.pageSpan.textContent = this.pagination.formatPage();
+        this.counter.update(this.pagination);
     }
 }

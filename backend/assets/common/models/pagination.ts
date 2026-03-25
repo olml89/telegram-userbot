@@ -20,17 +20,13 @@ export class Pagination {
             throw Error('perPage must be greater than 0');
         }
 
+        if (totalCount < 0) {
+            throw Error('totalCount cannot be negative');
+        }
+
         this.page = page;
         this.perPage = perPage;
         this.totalCount = totalCount;
-    }
-
-    public static fromJson(payload: any): Pagination {
-        return new Pagination(
-            payload.page,
-            payload.perPage,
-            payload.totalCount,
-        );
     }
 
     public firstPage(): Pagination {
@@ -52,16 +48,12 @@ export class Pagination {
         return `Page ${this.page} of ${this.pageCount()}`;
     }
 
-    public hasNextPage(): boolean {
-        return this.page < this.pageCount();
-    }
-
-    public hasPreviousPage(): boolean {
-        return this.page > 1;
-    }
-
     public isFirstPage(): boolean {
         return this.page === 1;
+    }
+
+    public isLastPage(): boolean {
+        return this.page === this.pageCount();
     }
 
     public isEmpty(): boolean {

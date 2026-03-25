@@ -1,5 +1,4 @@
 import { BusyAware, Component, HtmlElementWrapper } from '../../../common/component/contracts';
-import { ContentNotifications } from './content-notifications';
 import { Content } from '../../content';
 import { ContentComponent } from '../content-component';
 import { ContentQueryFields } from './content-library';

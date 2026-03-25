@@ -8,6 +8,7 @@ import { PriceInfo } from './price-info';
 import { SalesInfo } from './sales-info';
 import { StatusPill } from './status-pill';
 import { CreatedAt } from './created-at';
+import { ActionsMenu } from './actions-menu';
 import { Content } from '../content';
 
 export class ContentComponent implements Component<Content>, Highlightable, HtmlElementWrapper {
@@ -19,6 +20,7 @@ export class ContentComponent implements Component<Content>, Highlightable, Html
     private readonly salesInfo: SalesInfo;
     private readonly statusPill: StatusPill;
     private readonly createdAt: CreatedAt;
+    private readonly actionsMenu: ActionsMenu;
     private readonly row: HTMLTableRowElement;
     private readonly content: Content;
 
@@ -76,6 +78,12 @@ export class ContentComponent implements Component<Content>, Highlightable, Html
          */
         this.createdAt = new CreatedAt(content.createdAt);
         this.row.appendChild(this.createdAt.element());
+
+        /**
+         * ActionsMenu
+         */
+        this.actionsMenu = new ActionsMenu();
+        this.row.appendChild(this.actionsMenu.element());
     }
 
     public element(): HTMLTableRowElement {

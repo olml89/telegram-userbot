@@ -63,7 +63,7 @@ export class ContentQueryFields implements BusyAware, ChangeAware, Component<str
         const search = this.searchInput.getValue();
         const categoryId = this.category.getValue()?.publicId;
         const mode = this.mode.getValue()?.value;
-        const page = this.pagination.getValue().page;
+        const page = this.pagination.getValue()?.page;
         const params = new URLSearchParams();
 
         if (search) {
@@ -78,7 +78,10 @@ export class ContentQueryFields implements BusyAware, ChangeAware, Component<str
             params.set('mode', mode);
         }
 
-        params.set('page', page.toString());
+        if (page) {
+            params.set('page', page.toString());
+        }
+
         const query = params.toString();
 
         return query ? `?${query}` : '';
@@ -162,8 +165,8 @@ export class ContentLibrary implements BusyAware {
 
         this.contentAddModal.onAddedContent((content: Content): void => this.contentList.add(
             content,
-            this.contentQueryFields),
-        );
+            this.contentQueryFields,
+        ));
 
         this.contentQueryFields.onChange(async (isFilterChange: boolean): Promise<void> => {
             if (isFilterChange) {
@@ -174,6 +177,11 @@ export class ContentLibrary implements BusyAware {
 
             await this.load();
         });
+
+        /**
+         * Initial content rendering
+         */
+        void this.load();
     }
 
     public static create(): ContentLibrary|null {
