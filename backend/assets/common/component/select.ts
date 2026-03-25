@@ -1,5 +1,4 @@
-import { BusyAware, ChangeAware, Component, Errorable, ErrorClearable, HtmlElementWrapper } from './contracts';
-import { Enum } from '../models/enum';
+import { BusyAware, ChangeAware, Component, Errorable, ErrorClearable } from './contracts';
 import { RequirableComponent } from './requirable-component';
 import { assertImported, querySelector, querySelectorAll } from '../importer';
 import { capitalize } from '../strings';
@@ -7,30 +6,24 @@ import { capitalize } from '../strings';
 let isOutsideClickBound = false;
 const selectInstances = new Set<Select>();
 
-class SelectOption implements Component<Enum>, HtmlElementWrapper {
+class SelectOption {
     private readonly option: HTMLButtonElement;
-    private readonly enum: Enum;
     private readonly selectedListeners: Set<() => void> = new Set<() => void>();
 
     public constructor(option: HTMLButtonElement) {
         this.option = option;
-
-        this.enum = {
-            name: option.textContent.trim(),
-            value: option.value.trim(),
-        }
 
         this.option.addEventListener('click', (): void => {
             this.selectedListeners.forEach((listener: () => void): void => listener());
         });
     }
 
-    public getValue(): Enum {
-        return this.enum;
+    public getLabel(): string {
+        return this.option.textContent?.trim() ?? '';
     }
 
-    public element(): HTMLElement {
-        return this.option;
+    public getValue(): string {
+        return this.option.value.trim();
     }
 
     public onSelected(listener: () => void): void {
@@ -38,7 +31,7 @@ class SelectOption implements Component<Enum>, HtmlElementWrapper {
     }
 }
 
-export abstract class Select<TValue = Enum|null> implements BusyAware, ChangeAware, Component<TValue>, Errorable, ErrorClearable {
+export abstract class Select<TValue = any> implements BusyAware, ChangeAware, Component<TValue>, Errorable, ErrorClearable {
     protected readonly select: HTMLDivElement;
     protected readonly trigger: HTMLButtonElement;
     protected readonly defaultValue: HTMLSpanElement;
@@ -46,7 +39,7 @@ export abstract class Select<TValue = Enum|null> implements BusyAware, ChangeAwa
     protected readonly selectOptions: SelectOption[] = [];
     protected readonly changeListeners: Set<() => void> = new Set<() => void>();
 
-    protected enum: Enum|null = null;
+    protected selectedOption: SelectOption|null = null;
 
     protected constructor(
         select: HTMLDivElement,
@@ -155,7 +148,7 @@ export abstract class Select<TValue = Enum|null> implements BusyAware, ChangeAwa
             required.trigger,
             required.defaultValue,
             required.selectedValue,
-            required.selectOptions.map((el: HTMLButtonElement): SelectOption => new SelectOption(el))
+            required.selectOptions.map((selectButton: HTMLButtonElement): SelectOption => new SelectOption(selectButton)),
         );
     }
 
@@ -173,9 +166,7 @@ export abstract class Select<TValue = Enum|null> implements BusyAware, ChangeAwa
         this.changeListeners.clear();
     }
 
-    public getValue(): TValue {
-        return this.enum as TValue;
-    }
+    public abstract getValue(): TValue;
 
     private isOpened(): boolean {
         return this.select.classList.contains('is-opened');
@@ -198,7 +189,7 @@ export abstract class Select<TValue = Enum|null> implements BusyAware, ChangeAwa
     }
 
     private reset(): void {
-        this.enum = null;
+        this.selectedOption = null;
         this.selectedValue.textContent = '';
         this.selectedValue.classList.add('is-hidden');
         this.defaultValue.classList.remove('is-hidden');
@@ -209,9 +200,9 @@ export abstract class Select<TValue = Enum|null> implements BusyAware, ChangeAwa
         return this.select.hasAttribute('data-required');
     }
 
-    private selectOption(selectOption: SelectOption): void {
-        this.enum = selectOption.getValue();
-        this.selectedValue.textContent = selectOption.getValue().name;
+    private selectOption(selectedOption: SelectOption): void {
+        this.selectedOption = selectedOption;
+        this.selectedValue.textContent = this.selectedOption.getLabel();
         this.selectedValue.classList.remove('is-hidden');
         this.defaultValue.classList.add('is-hidden');
         this.notifyChange();
@@ -227,7 +218,7 @@ export abstract class Select<TValue = Enum|null> implements BusyAware, ChangeAwa
     }
 }
 
-export abstract class ValidatableSelect<TValue = Enum|null> extends RequirableComponent<TValue> implements BusyAware {
+export abstract class ValidatableSelect<TValue = any> extends RequirableComponent<TValue> implements BusyAware {
     protected readonly itemName: string;
     private readonly select: Select<TValue>;
 
@@ -249,7 +240,7 @@ export abstract class ValidatableSelect<TValue = Enum|null> extends RequirableCo
         })
     }
 
-    protected static createFrom<T extends ValidatableSelect<TValue>, TValue = Enum|null>(
+    protected static createFrom<T extends ValidatableSelect<TValue>, TValue = any>(
         this: new (
             itemName: string,
             label: HTMLSpanElement,
@@ -291,7 +282,7 @@ export abstract class ValidatableSelect<TValue = Enum|null> extends RequirableCo
     }
 
     public override getValue(): TValue {
-        return this.select.getValue();
+        return this.select.getValue() as TValue;
     }
 
     protected override isEmpty(): boolean {

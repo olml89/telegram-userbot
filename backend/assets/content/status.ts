@@ -1,3 +1,7 @@
 import { Enum } from '../common/models/enum';
 
-export type Status = Enum;
+export class Status extends Enum {
+    public override equals(other: Status): boolean {
+        return super.equals(other);
+    }
+}

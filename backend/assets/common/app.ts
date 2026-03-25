@@ -8,12 +8,12 @@ import './styles/pages/library/forms/common.css';
 import './styles/pages/library/forms/preview.css';
 import './styles/pages/dashboard.css';
 import './styles/pages/userbot.css';
-import '../content/list/contents-component.css';
+import '../content/list/content-library/content-library.css';
 
-import { initPreviewModal } from '../content/preview-modal';
-import { ContentsComponent } from '../content/list/contents-component';
+import { initPreviewModal } from '../content/preview/preview-modal';
+import { ContentLibrary } from '../content/list/content-library/content-library';
 
 document.addEventListener('DOMContentLoaded', (): void => {
     initPreviewModal();
-    ContentsComponent.create()
+    ContentLibrary.create()
 });

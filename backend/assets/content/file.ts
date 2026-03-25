@@ -1,4 +1,4 @@
-import { Entity } from '../common/models/entity';
+import { Entity, Payload } from '../common/models/entity';
 
 export class Size {
     private bytes: number;
@@ -38,15 +38,76 @@ export class Size {
     }
 }
 
-export type File = Entity & {
+type FilePayload = Payload & {
     fileName: string;
     originalName: string;
     mimeType: string;
-    bytes: Size;
+    bytes: number;
     hasThumbnail: boolean;
+    createdAt: string;
+    updatedAt: string;
     width?: number;
     height?: number;
     duration?: number;
-    createdAt: string;
-    updatedAt: string;
-};
+}
+
+export class File extends Entity {
+    public readonly fileName: string;
+    public readonly originalName: string;
+    public readonly mimeType: string;
+    public readonly bytes: Size;
+    public readonly hasThumbnail: boolean;
+    public readonly createdAt: string;
+    public readonly updatedAt: string;
+    public readonly width?: number|undefined;
+    public readonly height?: number|undefined;
+    public readonly duration?: number|undefined;
+
+    public constructor(
+        publicId: string,
+        fileName: string,
+        originalName: string,
+        mimeType: string,
+        bytes: Size,
+        hasThumbnail: boolean,
+        createdAt: string,
+        updatedAt: string,
+        width?: number|undefined,
+        height?: number|undefined,
+        duration?: number|undefined,
+    ) {
+        super(publicId);
+
+        this.fileName = fileName;
+        this.originalName = originalName;
+        this.mimeType = mimeType;
+        this.bytes = bytes;
+        this.hasThumbnail = hasThumbnail;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+        this.width = width;
+        this.height = height;
+        this.duration = duration;
+    }
+
+    public static from(payload: FilePayload): File {
+        return new File(
+            payload.publicId,
+            payload.fileName,
+            payload.originalName,
+            payload.mimeType,
+            new Size(payload.bytes),
+            payload.hasThumbnail,
+            payload.createdAt,
+            payload.updatedAt,
+            payload?.width,
+            payload?.height,
+            payload?.duration,
+        )
+    }
+
+    public override equals(other: File): boolean {
+        return super.equals(other);
+    }
+}
+

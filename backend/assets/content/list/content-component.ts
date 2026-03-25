@@ -6,7 +6,7 @@ import { CategoryPill } from './category-pill';
 import { Bundle } from './bundle';
 import { PriceInfo } from './price-info';
 import { SalesInfo } from './sales-info';
-import { StatusPill } from './status-component';
+import { StatusPill } from './status-pill';
 import { CreatedAt } from './created-at';
 import { Content } from '../content';
 

@@ -18,8 +18,6 @@ final readonly class PaginationResult implements Result, IteratorAggregate
 {
     use IsResult;
 
-    public int $pageCount;
-
     /**
      * @var array<int, T>
      */
@@ -35,7 +33,6 @@ final readonly class PaginationResult implements Result, IteratorAggregate
         Result ...$results,
     ) {
         $this->list = array_values($results);
-        $this->pageCount = (int) ceil($this->totalCount / $perPage);
 
         if ($this->page < 1) {
             throw new PaginationException('page must be greater than 0');

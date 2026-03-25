@@ -1,6 +1,6 @@
 import { BusyAware, ChangeAware, ErrorClearable, HtmlElementWrapper } from '../../../common/component/contracts';
 import { BaseComponent } from '../../../common/component/base-component';
-import { File as BackendFile, Size } from '../../file';
+import { File as BackendFile } from '../../file';
 import { FileItem } from './file-item';
 import { TusUploader, convertTusErrorToResponse } from './tus-uploader';
 import { BackendError } from '../../../common/backend-error';
@@ -256,12 +256,7 @@ export class FileComponent extends BaseComponent<BackendFile|null> implements Bu
             );
         }
 
-        const payload = await response.json();
-
-        return {
-            ...payload,
-            bytes: new Size(payload.bytes),
-        } as BackendFile;
+        return BackendFile.from(await response.json());
     }
 
     public setBusy(isBusy: boolean): void {

@@ -3,7 +3,14 @@ import { Language } from './language';
 
 export class LanguageSelect extends Select<Language|null> {
     public override getValue(): Language|null {
-        return super.getValue() as Language|null;
+        if (this.selectedOption === null) {
+            return null;
+        }
+
+        return new Language(
+            this.selectedOption.getValue(),
+            this.selectedOption.getLabel()
+        );
     }
 
     public static from(selectContainer: HTMLLabelElement|null): LanguageSelect|null {

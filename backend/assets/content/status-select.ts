@@ -3,7 +3,14 @@ import { Status } from './status';
 
 export class StatusSelect extends Select<Status|null> {
     public override getValue(): Status|null {
-        return super.getValue() as Status|null;
+        if (this.selectedOption === null) {
+            return null;
+        }
+
+        return new Status(
+            this.selectedOption.getValue(),
+            this.selectedOption.getLabel()
+        );
     }
 
     public static from(selectContainer: HTMLLabelElement|null): StatusSelect|null {

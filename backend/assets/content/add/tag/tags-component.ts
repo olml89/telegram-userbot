@@ -1,5 +1,5 @@
 import { CollectionComponent } from '../../../common/component/collection-component';
-import { Tag } from '../../tag';
+import { Tag, TagPayload } from '../../tag';
 import { TagCount } from './tag-count';
 import { TagInput } from './tag-input';
 import { TagDropdown } from './tag-dropdown';
@@ -147,7 +147,7 @@ export class TagsComponent extends CollectionComponent<Tag> {
             );
         }
 
-        return await response.json() as Tag;
+        return Tag.from(await response.json());
     }
 
     public override destroy(): void {
@@ -167,7 +167,9 @@ export class TagsComponent extends CollectionComponent<Tag> {
             );
         }
 
-        return await response.json() as Tag[];
+        const payload = await response.json();
+
+        return payload.map((tagPayload: TagPayload): Tag => Tag.from(tagPayload));
     }
 
     public override getValue(): Tag[] {

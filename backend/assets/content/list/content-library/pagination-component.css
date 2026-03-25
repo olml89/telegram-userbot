@@ -1,0 +1,14 @@
+.library-pagination {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.library-pagination.is-hidden {
+    display: none;
+}
+
+.library-pagination .page-indicator {
+    color: var(--text-muted);
+    font-size: 13px;
+}

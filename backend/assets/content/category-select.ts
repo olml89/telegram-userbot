@@ -3,14 +3,14 @@ import { Category } from './category';
 
 export class CategorySelect extends Select<Category|null> {
     public override getValue(): Category|null {
-        if (this.enum === null) {
+        if (this.selectedOption === null) {
             return null;
         }
 
-        return {
-            publicId: this.enum.value,
-            name: this.enum.name,
-        };
+        return new Category(
+            this.selectedOption.getValue(),
+            this.selectedOption.getLabel()
+        );
     }
 
     public static from(selectContainer: HTMLLabelElement|null): CategorySelect|null {

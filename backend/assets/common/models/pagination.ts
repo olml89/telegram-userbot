@@ -1,12 +1,17 @@
-import { Entity } from './entity';
+import { Entity, EntityFactory, Payload } from './entity';
+
+type PaginationPayload = {
+    page: number;
+    perPage: number;
+    totalCount: number;
+};
 
 export class Pagination {
     public readonly page: number;
     public readonly perPage: number;
     public readonly totalCount: number;
-    public readonly pageCount: number;
 
-    public constructor(page: number, perPage: number, totalCount: number, pageCount: number) {
+    public constructor(page: number, perPage: number, totalCount: number) {
         if (page < 1) {
             throw Error('page must be greater than 0');
         }
@@ -18,7 +23,6 @@ export class Pagination {
         this.page = page;
         this.perPage = perPage;
         this.totalCount = totalCount;
-        this.pageCount = pageCount;
     }
 
     public static fromJson(payload: any): Pagination {
@@ -26,7 +30,6 @@ export class Pagination {
             payload.page,
             payload.perPage,
             payload.totalCount,
-            payload.pageCount,
         );
     }
 
@@ -38,11 +41,11 @@ export class Pagination {
     }
 
     public formatPage(): string {
-        return `Page ${this.page} of ${this.pageCount}`;
+        return `Page ${this.page} of ${this.pageCount()}`;
     }
 
     public hasNextPage(): boolean {
-        return this.page < this.pageCount;
+        return this.page < this.pageCount();
     }
 
     public hasPreviousPage(): boolean {
@@ -53,20 +56,38 @@ export class Pagination {
         return this.totalCount === 0;
     }
 
-    public modifyPage(direction: 1|-1): Pagination {
+    public itemAdded(): Pagination {
         return new Pagination(
-            this.page + direction,
+            1,
+            this.perPage,
+            this.totalCount + 1,
+        );
+    }
+
+    public next(): Pagination {
+        return new Pagination(
+            this.page + 1,
             this.perPage,
             this.totalCount,
-            this.pageCount
         );
+    }
+
+    private pageCount(): number {
+        return Math.ceil(this.totalCount / this.perPage);
+    }
+
+    public previous(): Pagination {
+        return new Pagination(
+            this.page - 1,
+            this.perPage,
+            this.totalCount,
+        )
     }
 
     public reset(): Pagination {
         return new Pagination(
             1,
             this.perPage,
-            0,
             0,
         );
     }
@@ -76,10 +97,13 @@ export class Pagination {
             1,
             this.perPage,
             this.totalCount,
-            this.pageCount,
         );
     }
 }
+
+type PaginatedPayload<TPayload extends Payload = Payload> = PaginationPayload & {
+    list: TPayload[];
+};
 
 export class Paginated<T extends Entity = Entity> {
     public readonly pagination: Pagination;
@@ -90,12 +114,17 @@ export class Paginated<T extends Entity = Entity> {
         this.list = list;
     }
 
-    public static from<T extends Entity>(payload: any): Paginated<T> {
-        const { list, page, perPage, totalCount, pageCount } = payload;
-
+    public static from<T extends Entity, TPayload extends Payload = Payload>(
+        payload: PaginatedPayload<TPayload>,
+        entityFactory: EntityFactory<T>,
+    ): Paginated<T> {
         return new Paginated<T>(
-            new Pagination(page, perPage, totalCount, pageCount),
-            list as T[],
+            new Pagination(
+                payload.page,
+                payload.perPage,
+                payload.totalCount,
+            ),
+            payload.list.map((item: TPayload) => entityFactory.from(item)),
         );
     }
 }

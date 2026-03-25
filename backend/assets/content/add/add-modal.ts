@@ -339,7 +339,7 @@ export class ContentAddModal implements Component<Content|null> {
             );
         }
 
-        return await response.json() as Content;
+        return Content.from(await response.json());
     }
 
     private clearFormError(): void {

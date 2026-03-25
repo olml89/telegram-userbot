@@ -1,10 +1,9 @@
 import { Enum } from '../common/models/enum';
 
-export class Mode implements Enum {
-    constructor(
-        public readonly name: string,
-        public readonly value: string,
-    ) {}
+export class Mode extends Enum {
+    public override equals(other: Mode): boolean {
+        return super.equals(other);
+    }
 
     public isTeasing(): boolean {
         return this.value === 'teasing';
