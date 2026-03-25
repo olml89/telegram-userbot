@@ -1,7 +1,7 @@
-import { ChangeAware, Component } from '../../../common/component/contracts';
+import {BusyAware, ChangeAware, Component} from '../../../common/component/contracts';
 import { assertImported } from '../../../common/importer';
 
-export class SearchInput implements ChangeAware, Component<string|null> {
+export class SearchInput implements BusyAware, ChangeAware, Component<string|null> {
     protected readonly input: HTMLInputElement;
     protected readonly changeListeners: Set<() => void> = new Set<() => void>();
     private searchTimeout: number|undefined = undefined;
@@ -42,5 +42,9 @@ export class SearchInput implements ChangeAware, Component<string|null> {
 
     public onChange(listener: () => void): void {
         this.changeListeners.add(listener);
+    }
+
+    public setBusy(isBusy: boolean): void {
+        this.input.disabled = isBusy;
     }
 }

@@ -1,4 +1,4 @@
-import { ChangeAware, Component } from '../../../common/component/contracts';
+import {BusyAware, ChangeAware, Component} from '../../../common/component/contracts';
 import { Pagination } from '../../../common/models/pagination';
 import { Counter } from './counter';
 import { assertImported, querySelector } from '../../../common/importer';
@@ -13,7 +13,7 @@ declare const paginationData: {
     pageCount: number;
 };
 
-export class PaginationComponent implements ChangeAware, Component<Pagination> {
+export class PaginationComponent implements BusyAware, ChangeAware, Component<Pagination> {
     private readonly counter: Counter;
     private readonly paginationPanel: HTMLDivElement;
     private readonly pageSpan: HTMLSpanElement;
@@ -109,6 +109,11 @@ export class PaginationComponent implements ChangeAware, Component<Pagination> {
 
     public restart(): void {
         this.pagination = this.pagination.restart();
+    }
+
+    public setBusy(isBusy: boolean): void {
+        this.previousPageBtn.disabled = isBusy;
+        this.nextPageBtn.disabled = isBusy;
     }
 
     public update(pagination: Pagination): void {

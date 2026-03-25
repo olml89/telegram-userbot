@@ -1,14 +1,12 @@
 .library-table {
     position: relative;
-    transition: opacity 0.2s ease-in-out;
 }
 
-.library-table.is-loading {
-    opacity: 0.5;
+.library-table.is-busy {
     pointer-events: none;
 }
 
-.library-table.is-loading::after {
+.library-table.is-busy::after {
     content: '';
     position: absolute;
     top: 50%;
@@ -49,10 +47,26 @@
     letter-spacing: 0.04em;
 }
 
+.library-table.is-busy tbody {
+    opacity: 0.3;
+    filter: blur(2px);
+    transition: opacity 0.2s ease-in-out, filter 0.2s ease-in-out;
+}
+
+.library-table:not(.is-busy) tbody {
+    opacity: 1;
+    filter: blur(0);
+    transition: opacity 0.3s ease-in-out, filter 0.3s ease-in-out;
+}
+
 /* Accessibility preferences */
 @media (prefers-reduced-motion: reduce) {
-    .library-table.is-loading::after {
+    .library-table.is-busy::after {
         animation: none;
         border-top-color: transparent;
+    }
+
+    .library-table.is-busy tbody {
+        filter: none;
     }
 }

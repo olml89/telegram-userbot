@@ -1,4 +1,4 @@
-import { ChangeAware, Component } from '../../../common/component/contracts';
+import { BusyAware, ChangeAware, Component } from '../../../common/component/contracts';
 import { SearchInput } from './search-input';
 import { PaginationComponent } from './pagination-component';
 import { ContentList } from './content-list';
@@ -11,7 +11,7 @@ import { Paginated } from '../../../common/models/pagination';
 import { BackendError } from '../../../common/backend-error';
 import { assertImported, querySelector } from '../../../common/importer';
 
-export class ContentQueryFields implements ChangeAware, Component<string> {
+export class ContentQueryFields implements BusyAware, ChangeAware, Component<string> {
     public readonly searchInput: SearchInput;
     private readonly category: CategorySelect;
     private readonly mode: ModeSelect;
@@ -131,14 +131,21 @@ export class ContentQueryFields implements ChangeAware, Component<string> {
 
         this.pagination.onChange(paginationListener);
     }
+
+    public setBusy(isBusy: boolean) {
+        this.searchInput.setBusy(isBusy);
+        this.category.setBusy(isBusy);
+        this.mode.setBusy(isBusy);
+        this.pagination.setBusy(isBusy);
+    }
 }
 
-export class ContentLibrary {
+export class ContentLibrary implements BusyAware {
     private readonly contentQueryFields: ContentQueryFields;
     private readonly contentList: ContentList;
     private readonly openContentAddModalBtn: HTMLButtonElement;
     private readonly contentAddModal: ContentAddModal;
-    private isLoading: boolean = false;
+    private isBusy: boolean = false;
 
     public constructor(
         contentQueryFields: ContentQueryFields,
@@ -159,7 +166,7 @@ export class ContentLibrary {
     public static create(): ContentLibrary|null {
         const contentList = ContentList.from(
             querySelector<HTMLDivElement>(document, '[data-library-notifications]'),
-            querySelector<HTMLTableElement>(document, '[data-library-table-body]'),
+            querySelector<HTMLTableElement>(document, '[data-library-table]'),
         );
 
         const contentQueryFields = ContentQueryFields.from(
@@ -206,7 +213,7 @@ export class ContentLibrary {
     }
 
     private async load(isFilterChange: boolean): Promise<void> {
-        if (this.isLoading) {
+        if (this.isBusy) {
             return;
         }
 
@@ -214,7 +221,7 @@ export class ContentLibrary {
             this.contentQueryFields.pagination.restart();
         }
 
-        this.isLoading = true;
+        this.setBusy(true);
 
         try {
             const query = this.contentQueryFields.getValue();
@@ -231,7 +238,13 @@ export class ContentLibrary {
             this.contentList.error(backendError);
             this.contentQueryFields.pagination.reset();
         } finally {
-            this.isLoading = false;
+            this.setBusy(false);
         }
+    }
+
+    public setBusy(isBusy: boolean): void {
+        this.isBusy = isBusy;
+        this.contentList.setBusy(isBusy);
+        this.contentQueryFields.setBusy(isBusy);
     }
 }

@@ -1,46 +1,88 @@
-import { Component } from '../../../common/component/contracts';
+import { BusyAware, Component, HtmlElementWrapper } from '../../../common/component/contracts';
 import { ContentNotifications } from './content-notifications';
 import { Content } from '../../content';
 import { ContentComponent } from '../content-component';
 import { ContentQueryFields } from './content-library';
 import { BackendError } from '../../../common/backend-error';
-import { assertImported } from '../../../common/importer';
+import { assertImported, querySelector } from '../../../common/importer';
 
-export class ContentList implements Component<Content[]> {
-    private readonly notifications: ContentNotifications;
-    private readonly libraryTable: HTMLTableElement;
-    private contents: Content[] = [];
+class ContentNotifications implements HtmlElementWrapper {
+    private readonly notifications: HTMLDivElement;
 
-    public constructor(notifications: ContentNotifications, libraryTable: HTMLTableElement) {
+    public constructor(notifications: HTMLDivElement) {
         this.notifications = notifications;
-        this.libraryTable = libraryTable;
     }
 
-    public static from(libraryNotifications: HTMLDivElement|null, libraryTable: HTMLTableElement|null): ContentList|null {
-        const notifications = ContentNotifications.from(libraryNotifications);
-
+    public static from(notifications: HTMLDivElement|null): ContentNotifications|null {
         const required = {
             notifications,
-            libraryTable,
         };
 
-        if (!assertImported('content-list', required)) {
+        if (!assertImported('notifications', required)) {
             return null;
         }
 
-        return new ContentList(required.notifications, required.libraryTable)
+        return new ContentNotifications(required.notifications);
     }
 
-    public add(content: Content, contentQueryFields: ContentQueryFields): void {
-        this.notifications.clear();
-        this.notifications.success(content);
+    public clear(): void {
+        this.notifications.innerHTML = '';
+    }
 
-        if (contentQueryFields.matches(content)) {
-            const contentComponent = this.createComponent(content, true);
-            this.libraryTable.lastChild?.remove();
-            this.libraryTable.prepend(contentComponent.element());
-            contentQueryFields.pagination.increaseTotalCount();
+    public element(): HTMLDivElement {
+        return this.notifications;
+    }
+
+    public error(error: BackendError): void {
+        const notification = document.createElement('div');
+        notification.classList.add('alert', 'alert-error');
+        notification.innerHTML = error.formatErrors().join('<br>');
+        this.notifications.appendChild(notification);
+    }
+
+    public success(content: Content): void {
+        const notification = document.createElement('div');
+        notification.classList.add('alert', 'alert-success');
+        notification.innerHTML = `Content <strong>${content.title}</strong> added successfully.`;
+        this.notifications.appendChild(notification);
+    }
+}
+
+class ContentTable implements BusyAware, Component<Content[]> {
+    private readonly table: HTMLTableElement;
+    private readonly tableBody: HTMLTableSectionElement;
+    private contents: Content[] = [];
+
+    public constructor(table: HTMLTableElement, tableBody: HTMLTableSectionElement) {
+        this.table = table;
+        this.tableBody = tableBody;
+    }
+
+    public static from(table: HTMLTableElement|null): ContentTable|null {
+        const tableBody = querySelector<HTMLTableSectionElement>(table, 'tbody');
+
+        const required = {
+            table,
+            tableBody,
+        };
+
+        if (!assertImported('library-table', required)) {
+            return null;
         }
+
+        return new ContentTable(required.table, required.tableBody);
+    }
+
+    public append(content: Content): ContentComponent {
+        const contentComponent = this.createComponent(content);
+        this.tableBody.appendChild(contentComponent.element());
+
+        return contentComponent;
+    }
+
+    public clear(): void {
+        this.contents = [];
+        this.tableBody.innerHTML = '';
     }
 
     private createComponent(content: Content, isNew: boolean = false): ContentComponent {
@@ -53,27 +95,78 @@ export class ContentList implements Component<Content[]> {
         return this.contents;
     }
 
-    private clear(): void {
-        this.libraryTable.innerHTML = '';
+    public prepend(content: Content): ContentComponent {
+        const contentComponent = this.createComponent(content, true);
+        this.tableBody.lastChild?.remove();
+        this.tableBody.prepend(contentComponent.element());
+
+        return contentComponent;
+    }
+
+    public setBusy(isBusy: boolean) {
+        this.table.classList.toggle('is-busy', isBusy);
+    }
+}
+
+export class ContentList implements BusyAware, Component<Content[]> {
+    private readonly contentNotifications: ContentNotifications;
+    private readonly contentTable: ContentTable
+
+    public constructor(contentNotifications: ContentNotifications, contentTable: ContentTable) {
+        this.contentNotifications = contentNotifications;
+        this.contentTable = contentTable;
+    }
+
+    public static from(libraryNotifications: HTMLDivElement|null, libraryTable: HTMLTableElement|null): ContentList|null {
+        const contentNotifications = ContentNotifications.from(libraryNotifications);
+        const contentTable = ContentTable.from(libraryTable);
+
+        const required = {
+            contentNotifications,
+            contentTable,
+        };
+
+        if (!assertImported('content-list', required)) {
+            return null;
+        }
+
+        return new ContentList(required.contentNotifications, required.contentTable);
+    }
+
+    public add(content: Content, contentQueryFields: ContentQueryFields): void {
+        this.contentNotifications.clear();
+        this.contentNotifications.success(content);
+
+        if (contentQueryFields.matches(content)) {
+            this.contentTable.prepend(content);
+            contentQueryFields.pagination.increaseTotalCount();
+        }
+    }
+
+    public getValue(): Content[] {
+        return this.contentTable.getValue();
     }
 
     public error(error: BackendError): void {
-        this.clear();
-        this.notifications.clear();
-        this.notifications.error(error);
+        this.contentNotifications.clear();
+        this.contentNotifications.error(error);
+        this.contentTable.clear();
     }
 
     public replace(contents: Content[], searchTerm: string|null): void {
-        this.clear();
-        this.notifications.clear();
+        this.contentNotifications.clear();
+        this.contentTable.clear();
 
         contents.forEach((content: Content): void => {
-            const contentComponent = this.createComponent(content);
-            this.libraryTable.appendChild(contentComponent.element());
+            const contentComponent = this.contentTable.append(content);
 
             if (searchTerm) {
                 contentComponent.highlight(searchTerm);
             }
         });
+    }
+
+    public setBusy(isBusy: boolean) {
+        this.contentTable.setBusy(isBusy);
     }
 }
