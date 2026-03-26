@@ -5,6 +5,7 @@ export class SearchInput implements BusyAware, ChangeAware, Component<string|nul
     protected readonly input: HTMLInputElement;
     protected readonly changeListeners: Set<() => void> = new Set<() => void>();
     private searchTimeout: number|undefined = undefined;
+    private shouldRestoreFocus: boolean = false;
 
     public constructor(input: HTMLInputElement) {
         this.input = input;
@@ -45,6 +46,23 @@ export class SearchInput implements BusyAware, ChangeAware, Component<string|nul
     }
 
     public setBusy(isBusy: boolean): void {
+        /**
+         * When busy, remember if whe should restore focus to the input when is not busy any more
+         */
+        if (isBusy) {
+            this.shouldRestoreFocus = document.activeElement === this.input;
+        }
+
         this.input.disabled = isBusy;
+
+        /**
+         * When not busy, restore focus to the input if needed
+         */
+        if (!isBusy && this.shouldRestoreFocus) {
+            requestAnimationFrame((): void => {
+                this.input.focus();
+                this.shouldRestoreFocus = false;
+            });
+        }
     }
 }
