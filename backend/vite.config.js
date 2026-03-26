@@ -8,7 +8,7 @@ export default defineConfig(({ command }) => {
         plugins: [
             symfony({
                 input: {
-                    app: './assets/common/app.ts',
+                    app: './assets/app.ts',
                 },
                 buildDirectory: 'build/.vite',
             }),
@@ -19,7 +19,7 @@ export default defineConfig(({ command }) => {
             emptyOutDir: true,
             rollupOptions: {
                 input: {
-                    app: './assets/common/app.ts',
+                    app: './assets/app.ts',
                 },
             },
         },

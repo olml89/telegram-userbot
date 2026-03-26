@@ -1,10 +1,10 @@
-@import '../../common/component/input-component.css';
-@import '../../common/component/select.css';
-@import '../../common/component/text-input.css';
-@import 'intensity-input.css';
-@import 'price-input.css';
-@import 'file/files-component.css';
-@import 'tag/tags-component.css';
+@import '../../components/input/input-component.css';
+@import '../../components/select/select.css';
+@import '../../components/input/text-input.css';
+@import '../components/intensity-input.css';
+@import '../components/price-input.css';
+@import '../components/file/files-component.css';
+@import '../components/tag/tags-component.css';
 
 /* ===== CONTENT ADDITION MODAL ===== */
 #contentAddModal .modal-content {

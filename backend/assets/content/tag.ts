@@ -1,4 +1,4 @@
-import { Entity, Payload } from '../common/models/entity';
+import { Entity, Payload } from '../models/entity';
 
 export type TagPayload = Payload & {
     name: string;

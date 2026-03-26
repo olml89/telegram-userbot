@@ -21,7 +21,7 @@
                     minLength: 1,
                 } only %}
 
-                {% include 'common/components/select.html.twig' with {
+                {% include 'components/select.html.twig' with {
                     form: {
                         item: 'category',
                         field: 'categoryId',
@@ -34,7 +34,7 @@
                     }),
                 } only %}
 
-                {% include 'common/components/select.html.twig' with {
+                {% include 'components/select.html.twig' with {
                     form: {
                         item: 'mode',
                         required: true,
@@ -52,7 +52,7 @@
                     value: 50,
                 } only %}
 
-                {% include 'common/components/select.html.twig' with {
+                {% include 'components/select.html.twig' with {
                     form: {
                         item: 'language',
                         required: true,
@@ -61,7 +61,7 @@
                     options: languages,
                 } only %}
 
-                {% include 'common/components/select.html.twig' with {
+                {% include 'components/select.html.twig' with {
                     form: {
                         item: 'status',
                         required: true,

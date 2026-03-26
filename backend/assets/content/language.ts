@@ -1,4 +1,4 @@
-import { Enum } from '../common/models/enum';
+import { Enum } from '../models/enum';
 
 export class Language extends Enum {
     public override equals(other: Language): boolean {

@@ -1,4 +1,4 @@
-import { Entity, Payload } from '../common/models/entity';
+import { Entity, Payload } from '../models/entity';
 import { Mode} from './mode';
 import { Status } from './status';
 import { Category } from './category';

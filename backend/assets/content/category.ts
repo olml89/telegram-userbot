@@ -1,4 +1,4 @@
-import { Entity } from '../common/models/entity';
+import { Entity } from '../models/entity';
 
 export class Category extends Entity {
     public readonly name: string;

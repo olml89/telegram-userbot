@@ -11,7 +11,7 @@ use Symfony\Component\Routing\Attribute\Route;
 
 #[Route(
     path: '/library',
-    name: 'library.list',
+    name: 'content.list',
     methods: ['GET'],
 )]
 final class ListContentController extends AbstractController
@@ -24,8 +24,8 @@ final class ListContentController extends AbstractController
     {
         $listContentResult = $this->listContentCommandHandler->handle();
 
-        return $this->render('content/list.html.twig', [
-            'active_menu' => 'library.list',
+        return $this->render('pages/library.html.twig', [
+            'active_menu' => 'library',
             'categories' => $listContentResult->categories,
             'modes' => $listContentResult->modes,
             'languages' => $listContentResult->languages,
