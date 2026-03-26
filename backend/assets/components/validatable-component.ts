@@ -16,10 +16,6 @@ export abstract class ValidatableComponent<TValue = unknown> extends HtmlLabelCo
         this.label.removeAttribute('title');
     }
 
-    public override destroy(): void {
-        this.changeListeners.clear();
-    }
-
     protected abstract frontendErrors(): string[];
     protected abstract name(): string;
 

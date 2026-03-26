@@ -163,7 +163,6 @@ export abstract class Select<TValue = any> implements BusyAware, ChangeAware, Co
     public destroy(): void {
         this.reset();
         this.close();
-        this.changeListeners.clear();
     }
 
     public abstract getValue(): TValue;
