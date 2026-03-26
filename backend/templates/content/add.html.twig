@@ -21,24 +21,26 @@
                     minLength: 1,
                 } only %}
 
-                {% include 'common/components/custom_select.html.twig' with {
-                    field: 'categoryId',
-                    item: 'category',
-                    required: true,
+                {% include 'components/select.html.twig' with {
+                    form: {
+                        item: 'category',
+                        field: 'categoryId',
+                        required: true,
+                    },
+                    defaultValue: 'Select the category',
                     options: categories|map(category => {
                         value: category.publicId,
-                        label: category.name,
+                        name: category.name,
                     }),
                 } only %}
 
-                {% include 'common/components/custom_select.html.twig' with {
-                    field: 'mode',
-                    item: 'mode',
-                    required: true,
-                    options: modes|map(mode => {
-                        value: mode.value,
-                        label: mode.label(),
-                    }),
+                {% include 'components/select.html.twig' with {
+                    form: {
+                        item: 'mode',
+                        required: true,
+                    },
+                    defaultValue: 'Select the mode',
+                    options: modes,
                 } only %}
 
                 {% include 'content/components/price.html.twig' with {
@@ -50,24 +52,22 @@
                     value: 50,
                 } only %}
 
-                {% include 'common/components/custom_select.html.twig' with {
-                    field: 'language',
-                    item: 'language',
-                    required: true,
-                    options: languages|map(language => {
-                        value: language.value,
-                        label: language.label(),
-                    }),
+                {% include 'components/select.html.twig' with {
+                    form: {
+                        item: 'language',
+                        required: true,
+                    },
+                    defaultValue: 'Select the language',
+                    options: languages,
                 } only %}
 
-                {% include 'common/components/custom_select.html.twig' with {
-                    field: 'status',
-                    item: 'status',
-                    required: true,
-                    options: statuses|map(status => {
-                        value: status.value,
-                        label: status.label(),
-                    }),
+                {% include 'components/select.html.twig' with {
+                    form: {
+                        item: 'status',
+                        required: true,
+                    },
+                    defaultValue: 'Select the status',
+                    options: statuses,
                 } only %}
             </div>
 
@@ -90,7 +90,7 @@
         </div>
 
         <div class="modal-footer">
-            <div class="field-error" data-error-for="form" hidden></div>
+            <div class="form-error" data-error-for="form" hidden></div>
             <button type="button" class="btn btn-secondary btn-hover-outline" data-content-close>Close</button>
             <button type="button" class="btn btn-primary" data-content-add>
                 <span class="btn-label-wrap">

@@ -1,0 +1,94 @@
+.select {
+    position: relative;
+    min-width: 180px;
+}
+
+.select .select-trigger {
+    width: 100%;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 10px 36px 10px 12px;
+    font-family: inherit;
+    font-size: 13px;
+    background-color: var(--form-field-background);
+    color: var(--text);
+    cursor: pointer;
+    text-align: left;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23111111' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 12px;
+}
+
+.select .select-trigger:hover {
+    border-color: var(--form-field-hover-border);
+    background-color: var(--form-field-hover-background);
+}
+
+/**
+ * It is not a .btn, so we have to repeat the styling
+ */
+.select .select-trigger:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+.select .select-trigger.is-error {
+    accent-color: var(--danger);
+    border-color: var(--danger);
+    background: var(--danger-background);
+}
+
+.select .select-trigger.is-error:hover {
+    background: var(--danger-background-hover);
+}
+
+.select.is-opened .select-trigger {
+    border-color: #c7c7cc;
+}
+
+.select .select-trigger .default-value {
+    color: var(--text-muted);
+}
+
+.select .select-trigger .default-value.is-hidden {
+    display: none;
+}
+
+.select .select-trigger .select-value.is-hidden {
+    display: none;
+}
+
+.select .select-dropdown {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    right: 0;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: var(--form-field-background);
+    padding: 6px;
+    display: none;
+    z-index: 10;
+}
+
+.select.is-opened .select-dropdown {
+    display: block;
+}
+
+.select .select-dropdown .select-option {
+    width: 100%;
+    border: none;
+    background: transparent;
+    padding: 8px 10px;
+    text-align: left;
+    font-size: 13px;
+    border-radius: 8px;
+    cursor: pointer;
+    color: var(--text);
+}
+
+.select .select-dropdown .select-option:hover {
+    background: #f3f4f6;
+}

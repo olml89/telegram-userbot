@@ -4,21 +4,20 @@ declare(strict_types=1);
 
 namespace olml89\TelegramUserbot\Backend\Content\Application;
 
+use DateTimeInterface;
 use olml89\TelegramUserbot\Backend\Category\Application\CategoryResult;
 use olml89\TelegramUserbot\Backend\Content\Domain\Content;
 use olml89\TelegramUserbot\Backend\Content\Domain\Mode\Mode;
 use olml89\TelegramUserbot\Backend\Content\Domain\Status\Status;
-use olml89\TelegramUserbot\Backend\File\Application\AudioResult;
-use olml89\TelegramUserbot\Backend\File\Application\FileResult;
-use olml89\TelegramUserbot\Backend\File\Application\FileResultFactory;
-use olml89\TelegramUserbot\Backend\File\Application\ImageResult;
-use olml89\TelegramUserbot\Backend\File\Application\VideoResult;
-use olml89\TelegramUserbot\Backend\File\Domain\File;
+use olml89\TelegramUserbot\Backend\Shared\Application\Result\IsResult;
+use olml89\TelegramUserbot\Backend\Shared\Application\Result\Result;
 use olml89\TelegramUserbot\Backend\Tag\Application\TagResult;
 use olml89\TelegramUserbot\Backend\Tag\Domain\Tag;
 
-final readonly class ContentResult
+final readonly class ContentResult implements Result
 {
+    use IsResult;
+
     public function __construct(
         public string $publicId,
         public string $title,
@@ -32,22 +31,17 @@ final readonly class ContentResult
         /** @var TagResult[] */
         public array $tags,
 
-        /** @var array<int, FileResult|ImageResult|AudioResult|VideoResult> $files */
-        public array $files,
+        public FileContainer $files,
+        public string $createdAt,
+        public string $updatedAt,
     ) {}
 
-    public static function content(Content $content, FileResultFactory $fileResultFactory): self
+    public static function content(Content $content): self
     {
         /** @var TagResult[] $tags */
         $tags = $content
             ->tags()
             ->map(fn(Tag $tag): TagResult => TagResult::tag($tag))
-            ->toArray();
-
-        /** @var array<int, FileResult|ImageResult|AudioResult|VideoResult> $files */
-        $files = $content
-            ->files()
-            ->map(fn(File $file): FileResult|ImageResult|AudioResult|VideoResult => $fileResultFactory->create($file))
             ->toArray();
 
         return new self(
@@ -60,7 +54,9 @@ final readonly class ContentResult
             status: $content->status(),
             category: CategoryResult::category($content->category()),
             tags: $tags,
-            files: $files,
+            files: FileContainer::files($content->files()),
+            createdAt: $content->createdAt()->format(DateTimeInterface::RFC3339),
+            updatedAt: $content->updatedAt()->format(DateTimeInterface::RFC3339),
         );
     }
 }

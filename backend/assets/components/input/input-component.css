@@ -1,0 +1,71 @@
+/* Chrome, Edge, Safari */
+input.form-input:-webkit-autofill {
+    -webkit-text-fill-color: inherit;
+    box-shadow: 0 0 0 1000px var(--form-field-background) inset;
+    transition: background-color 9999s ease-in-out;
+}
+
+input[type='number'].form-input::-webkit-outer-spin-button,
+input[type='number'].form-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* Firefox */
+input.form-input:autofill {
+    box-shadow: 0 0 0 1000px var(--form-field-background) inset;
+    transition: background-color 9999s ease-in-out;
+}
+
+input[type='number'].form-input {
+    -moz-appearance: textfield;
+}
+
+/* Common */
+input.form-input {
+    display: inline-block;
+    width: 100%;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 12px;
+    font-family: inherit;
+    font-size: 13px;
+    background: var(--form-field-background);
+    color: var(--text);
+}
+
+input.form-input:hover {
+    border-color: var(--form-field-hover-border);
+    background-color: var(--form-field-hover-background);
+}
+
+input.form-input:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+    pointer-events: none;
+    caret-color: transparent;
+}
+
+input.form-input:focus,
+input.form-input.is-focused {
+    border-width: 2px;
+    border-color: #000000;
+    outline: none;
+}
+
+input.form-input.is-error {
+    accent-color: var(--danger);
+    border-color: var(--danger);
+    background: var(--danger-background);
+}
+
+input.form-input.is-error:hover {
+    background: var(--danger-background-hover);
+}
+
+input.form-input.is-error:focus,
+input.form-input.is-error.is-focused {
+    border-width: 2px;
+    border-color: var(--danger);
+    outline: none;
+}

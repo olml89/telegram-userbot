@@ -1,0 +1,31 @@
+.pill {
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: 999px;
+    font-size: 11px;
+    border: 1px solid var(--border);
+    background: #f3f4f6;
+    color: var(--text);
+}
+
+.pill-muted {
+    color: var(--text-muted);
+}
+
+.pill-active {
+    background: #ecfdf3;
+    color: #15803d;
+    border-color: #bbf7d0;
+}
+
+.pill-pending {
+    background: #fff7ed;
+    color: #9a3412;
+    border-color: #fed7aa;
+}
+
+.pill-inactive {
+    background: #f3f4f6;
+    color: var(--text-muted);
+    border-color: var(--border);
+}

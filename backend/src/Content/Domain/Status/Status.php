@@ -23,6 +23,11 @@ enum Status: string implements SerializableStringBackedEnum, SafeStringBackedEnu
         };
     }
 
+    public function isActive(): bool
+    {
+        return $this === self::Active;
+    }
+
     /**
      * @throws UnsupportedStatusException
      */

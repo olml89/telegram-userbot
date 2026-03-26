@@ -16,7 +16,7 @@ trait IsSerializableStringBackedEnum
     {
         return [
             'value' => $this->value,
-            'label' => $this->label(),
+            'name' => $this->label(),
         ];
     }
 }
