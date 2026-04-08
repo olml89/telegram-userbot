@@ -11,7 +11,7 @@ chmod +x phpstan/phpstan.sh
 chmod +x pint/pint.sh
 
 # Install dev dependencies
-/telegram-userbot/shared/bin/composer-install.sh dev
+/telegram-userbot/shared/bin/composer-install.sh dev shared backend bot bot-manager
 
 # Maintain the container always up with tail
 echo "✅ Container up [tail -f /dev/null]."
