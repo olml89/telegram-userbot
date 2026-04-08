@@ -27,9 +27,6 @@ jobs:
   phpstan:
     needs: wait-for-ghcr
     runs-on: ubuntu-latest
-    if: >
-      github.event_name == 'pull_request' ||
-      github.event.workflow_run.conclusion == 'success'
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -48,9 +45,6 @@ jobs:
   phpunit:
     needs: wait-for-ghcr
     runs-on: ubuntu-latest
-    if: >
-      github.event_name == 'pull_request' ||
-      github.event.workflow_run.conclusion == 'success'
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -74,9 +68,6 @@ jobs:
   pint:
     needs: wait-for-ghcr
     runs-on: ubuntu-latest
-    if: >
-      github.event_name == 'pull_request' ||
-      github.event.workflow_run.conclusion == 'success'
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -95,9 +86,6 @@ jobs:
   rector:
     needs: wait-for-ghcr
     runs-on: ubuntu-latest
-    if: >
-      github.event_name == 'pull_request' ||
-      github.event.workflow_run.conclusion == 'success'
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
