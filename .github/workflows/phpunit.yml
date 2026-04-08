@@ -38,7 +38,7 @@ jobs:
             -e APP_ENV=ci \
             -w /telegram-userbot/dev \
             ghcr.io/olml89/telegram-userbot-dev:ci \
-            phpunit/phpunit.sh --ci
+            ./phpunit/phpunit.sh --ci
 
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v5

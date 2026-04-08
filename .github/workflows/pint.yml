@@ -38,4 +38,4 @@ jobs:
             -e APP_ENV=ci \
             -w /telegram-userbot/dev \
             ghcr.io/olml89/telegram-userbot-dev:ci \
-            pint/pint.sh --test
+            ./pint/pint.sh --test
