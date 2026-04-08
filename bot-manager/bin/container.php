@@ -23,6 +23,7 @@ use olml89\TelegramUserbot\BotManager\Websocket\WebSocketServerConfig;
 use olml89\TelegramUserbot\Shared\App\Environment\Env;
 use olml89\TelegramUserbot\Shared\Bot\Command\CompletePhoneLogin\PhoneCodeStorage;
 use olml89\TelegramUserbot\Shared\Bot\Process\ProcessManager;
+use olml89\TelegramUserbot\Shared\Error\SentryConfig;
 use olml89\TelegramUserbot\Shared\Logger\Channel;
 use olml89\TelegramUserbot\Shared\Logger\LogRecordLogger;
 use olml89\TelegramUserbot\Shared\Logger\LogRecordLoggerFactory;
@@ -51,6 +52,12 @@ $containerBuilder = require dirname(__DIR__, 2) . '/shared/bin/container-builder
 Env::load(dirname(__DIR__));
 
 $containerBuilder->addDefinitions([
+
+    SentryConfig::class => DI\factory(
+        fn(): SentryConfig => new SentryConfig(
+            dsn: Env::string('BOT_MANAGER_SENTRY_DSN'),
+        ),
+    ),
 
     WebSocketServerConfig::class => DI\factory(
         fn(): WebSocketServerConfig => new WebSocketServerConfig(

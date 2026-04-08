@@ -9,6 +9,7 @@ use olml89\TelegramUserbot\Bot\Bot\BotLogFile;
 use olml89\TelegramUserbot\Bot\Bot\BotSession;
 use olml89\TelegramUserbot\Bot\Redis\AmphpRedisPublisher;
 use olml89\TelegramUserbot\Shared\App\Environment\Env;
+use olml89\TelegramUserbot\Shared\Error\SentryConfig;
 use olml89\TelegramUserbot\Shared\Redis\PhpRedis\PhpRedisStorage;
 use olml89\TelegramUserbot\Shared\Redis\RedisPublisher;
 use olml89\TelegramUserbot\Shared\Redis\RedisStorage;
@@ -31,6 +32,12 @@ $containerBuilder = require dirname(__DIR__, 2) . '/shared/bin/container-builder
 Env::load(dirname(__DIR__));
 
 return $containerBuilder->addDefinitions([
+
+    SentryConfig::class => DI\factory(
+        fn(): SentryConfig => new SentryConfig(
+            dsn: Env::string('BOT_SENTRY_DSN'),
+        ),
+    ),
 
     BotConfig::class => DI\factory(
         fn(): BotConfig => new BotConfig(

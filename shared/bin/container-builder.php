@@ -9,7 +9,6 @@ use olml89\TelegramUserbot\Shared\App\AppConfig;
 use olml89\TelegramUserbot\Shared\App\Environment\Env;
 use olml89\TelegramUserbot\Shared\App\Environment\Environment;
 use olml89\TelegramUserbot\Shared\Bot\Process\ProcessManager;
-use olml89\TelegramUserbot\Shared\Error\SentryConfig;
 use olml89\TelegramUserbot\Shared\Logger\LoggerConfig;
 use olml89\TelegramUserbot\Shared\Redis\RedisConfig;
 use olml89\TelegramUserbot\Shared\Supervisor\SupervisorConfig;
@@ -59,12 +58,6 @@ return $containerBuilder->addDefinitions([
     SupervisorConfig::class => DI\factory(
         fn(): SupervisorConfig => new SupervisorConfig(
             configPath: Env::string('SUPERVISOR_CONFIG_PATH'),
-        ),
-    ),
-
-    SentryConfig::class => DI\factory(
-        fn(): SentryConfig => new SentryConfig(
-            dsn: Env::string('SENTRY_DSN'),
         ),
     ),
 
