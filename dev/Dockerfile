@@ -19,8 +19,21 @@ RUN printf '\nxdebug.client_port=%s\n' ${XDEBUG_PORT} >> /usr/local/etc/php/dock
 
 FROM base AS ci
 
-# Xdebug ci config (onky coverage mode)
-COPY dev/docker-php-ext-xdebug.ci.ini /usr/local/etc/php/docker-php-ext-xdebug.ini
-
 # Install git (needed to install dependencies on Github when dist fails due to rate limiting HTTP/2 429)
 RUN apk add --no-cache git
+
+# Xdebug ci config (only coverage mode)
+COPY dev/docker-php-ext-xdebug.ci.ini /usr/local/etc/php/docker-php-ext-xdebug.ini
+
+# Copy the entire project into the image
+COPY . /telegram-userbot/
+
+# Make all CI needed scripts executable
+RUN chmod +x /telegram-userbot/shared/bin/composer-install.sh && \
+    chmod +x /telegram-userbot/dev/phpstan/phpstan.sh && \
+    chmod +x /telegram-userbot/dev/phpunit/phpunit.sh && \
+    chmod +x /telegram-userbot/dev/pint/pint.sh && \
+    chmod +x /telegram-userbot/dev/rector/rector.sh
+
+# Pre-install dependencies to cache them in the image
+RUN /telegram-userbot/shared/bin/composer-install.sh dev shared backend bot bot-manager
