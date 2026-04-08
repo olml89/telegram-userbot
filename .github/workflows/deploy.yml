@@ -41,10 +41,6 @@ jobs:
     runs-on: ubuntu-latest
     environment: staging
 
-    env:
-      APP_ENV: prod
-      APP_DEBUG: false
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -68,6 +64,7 @@ jobs:
           set -euo pipefail
           
           # Generate root .env from .env.example
+          export APP_ENV="${{ env.APP_ENV }}"
           export BACKEND_PORT="${{ vars.BACKEND_PORT }}"
           export SUPERVISOR_USER="${{ secrets.SUPERVISOR_USER }}"
           export SUPERVISOR_PASSWORD="${{ secrets.SUPERVISOR_PASSWORD }}"
@@ -76,6 +73,7 @@ jobs:
           envsubst < .env.example > .env
           
           # Generate backend/.env from backend/.env.example
+          export APP_DEBUG="${{ env.APP_DEBUG }}"
           export APP_SECRET="${{ secrets.APP_SECRET }}"
           export BACKEND_SENTRY_DSN="${{ secrets.BACKEND_SENTRY_DSN }}"
           export DB_HOST="${{ secrets.DB_HOST }}"
