@@ -1,14 +1,5 @@
 name: Pint
 
-# Code linting
-# Runs on push and waits for GHCR workflow if needed
-#
-# on.push: triggered if there's a push on main or dev
-# on.workflow_run: triggered if dev/Dockerfile is changed
-#
-# If there's a push and dev/Dockerfile does not change: it runs immediately
-# If there's a push and dev/Dockerfile changes: publish.yml runs first, it waits until it finishes, and then it runs
-
 on:
   push:
     branches:
@@ -16,14 +7,23 @@ on:
   pull_request:
     branches:
       - main
-  workflow_run:
-    workflows:
-      - GHCR
-    types:
-      - completed
 
 jobs:
+  # Wait for GHCR to complete if it's running
+  wait-for-image:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Wait for GHCR workflow
+        uses: lewagon/wait-on-check-action@v1.3.4
+        with:
+          ref: ${{ github.sha }}
+          check-name: 'build-and-push'
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          wait-interval: 10
+          allowed-conclusions: success,skipped
+
   pint:
+    needs: wait-for-image
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
