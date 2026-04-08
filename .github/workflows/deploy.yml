@@ -41,10 +41,6 @@ jobs:
     runs-on: ubuntu-latest
     environment: staging
 
-    env:
-      APP_ENV: prod
-      APP_DEBUG: false
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -53,9 +49,10 @@ jobs:
           ref: ${{ github.event.workflow_run.head_sha || github.sha }}
 
       - name: Set up SSH
-        uses: webfactory/ssh-agent@v0.9.0
-        with:
-          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
 
       - name: Add server to known hosts
         run: |
@@ -68,6 +65,7 @@ jobs:
           set -euo pipefail
           
           # Generate root .env from .env.example
+          export APP_ENV="${{ env.APP_ENV }}"
           export BACKEND_PORT="${{ vars.BACKEND_PORT }}"
           export SUPERVISOR_USER="${{ secrets.SUPERVISOR_USER }}"
           export SUPERVISOR_PASSWORD="${{ secrets.SUPERVISOR_PASSWORD }}"
@@ -76,6 +74,7 @@ jobs:
           envsubst < .env.example > .env
           
           # Generate backend/.env from backend/.env.example
+          export APP_DEBUG="${{ env.APP_DEBUG }}"
           export APP_SECRET="${{ secrets.APP_SECRET }}"
           export BACKEND_SENTRY_DSN="${{ secrets.BACKEND_SENTRY_DSN }}"
           export DB_HOST="${{ secrets.DB_HOST }}"
