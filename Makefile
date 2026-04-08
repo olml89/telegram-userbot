@@ -26,7 +26,7 @@ endif
 
 
 # Build containers
-.PHONY: build upd stop down restart debug
+.PHONY: build up upd stop down deploy
 
 # Guarantee build order: backend and nginx first (backend builds assets), then the rest
 build:
@@ -36,6 +36,13 @@ build:
 		docker compose $(DOCKER_COMPOSE) $(ENV) build --no-cache backend && \
 		docker compose $(DOCKER_COMPOSE) $(ENV) build --no-cache nginx && \
 		docker compose $(DOCKER_COMPOSE) $(ENV) build --no-cache \
+	)
+
+up:
+	$(eval SERVICE := $(word 2, $(MAKECMDGOALS)))
+	$(if $(SERVICE), \
+		docker compose $(DOCKER_COMPOSE) $(ENV) up --remove-orphans $(SERVICE), \
+		docker compose $(DOCKER_COMPOSE) $(ENV) up --remove-orphans \
 	)
 
 upd:
@@ -58,6 +65,22 @@ down:
 		docker compose $(DOCKER_COMPOSE) $(ENV) down $(SERVICE), \
 		docker compose $(DOCKER_COMPOSE) $(ENV) down \
 	)
+
+deploy:
+	@echo "🚀 Starting deployment..."
+	$(MAKE) down
+	$(MAKE) build
+	$(MAKE) upd
+	@echo "⏳ Waiting for containers to be ready..."
+	docker compose $(DOCKER_COMPOSE) $(ENV) exec -T postgres sh -c 'until pg_isready -U $$POSTGRES_USER; do sleep 1; done'
+	docker compose $(DOCKER_COMPOSE) $(ENV) exec -T backend sh -c 'until php -r "exit(0);" 2>/dev/null; do sleep 1; done'
+	@echo "🔄 Running database migrations..."
+	docker compose $(DOCKER_COMPOSE) $(ENV) exec -T backend php bin/console doctrine:migrations:migrate --no-interaction
+	@echo "🔄 Seeding database..."
+	docker compose $(DOCKER_COMPOSE) $(ENV) exec -T backend php bin/console app:db:seed
+	@echo "🧹 Clearing Symfony cache..."
+	docker compose $(DOCKER_COMPOSE) $(ENV) exec -T backend php bin/console cache:clear --env=prod
+	@echo "✅ Deployment completed successfully!"
 
 # Debug containers
 # Make syntax, to avoid dependence on bash/unix
