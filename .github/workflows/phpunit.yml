@@ -1,7 +1,18 @@
 name: PHPUnit
 
+# PUSH TO MAIN
+# GHCR -> PHPStan, PHPUnit, Pint, Rector -> Deploy
+#
+# PULL REQUEST
+# (Don't wait for GHCR, the image already published is used)
+# PHPStan, PHPUnit, Pint, Rector -> Deploy
+
 on:
-  push:
+  workflow_run:
+    workflows:
+      - GHCR
+    types:
+      - completed
     branches:
       - main
   pull_request:
@@ -9,22 +20,12 @@ on:
       - main
 
 jobs:
-  # Wait for GHCR to complete if it's running
-  wait-for-image:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Wait for GHCR workflow
-        uses: lewagon/wait-on-check-action@v1.3.4
-        with:
-          ref: ${{ github.sha }}
-          check-name: 'build-and-push'
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-          wait-interval: 10
-          allowed-conclusions: success,skipped
-
   phpunit:
-    needs: wait-for-image
     runs-on: ubuntu-latest
+    # Only execute if GHCR was successful, or if it is a PR where GHCR doesn't run
+    if: >
+      github.event_name == 'pull_request' ||
+      github.event.workflow_run.conclusion == 'success'
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
