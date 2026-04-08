@@ -1,0 +1,106 @@
+name: Deploy to Server
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:  # Allows manual deployment
+
+jobs:
+  quality-checks:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Wait for quality checks
+        uses: lewagon/wait-on-check-action@v1.3.4
+        with:
+          ref: ${{ github.sha }}
+          check-regexp: '^(PHPStan|PHPUnit|Pint|Rector)$'
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          wait-interval: 10
+
+  deploy:
+    needs: quality-checks
+    runs-on: ubuntu-latest
+    environment: staging
+
+    env:
+      APP_ENV: prod
+      APP_DEBUG: false
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up SSH
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Add server to known hosts
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Generate .env files from .env.example templates
+        run: |
+          # Stop script if any variable is missing instead of failing silently
+          set -euo pipefail
+          
+          # Generate root .env from .env.example
+          export BACKEND_PORT="${{ vars.BACKEND_PORT }}"
+          export SUPERVISOR_USER="${{ secrets.SUPERVISOR_USER }}"
+          export SUPERVISOR_PASSWORD="${{ secrets.SUPERVISOR_PASSWORD }}"
+          export GRAFANA_PORT="${{ vars.GRAFANA_PORT }}"
+          export GRAFANA_SECURITY_ADMIN_PASSWORD="${{ secrets.GRAFANA_SECURITY_ADMIN_PASSWORD }}"
+          envsubst < .env.example > .env
+          
+          # Generate backend/.env from backend/.env.example
+          export APP_SECRET="${{ secrets.APP_SECRET }}"
+          export BACKEND_SENTRY_DSN="${{ secrets.BACKEND_SENTRY_DSN }}"
+          export DB_HOST="${{ secrets.DB_HOST }}"
+          export DB_PORT="${{ vars.DB_PORT }}"
+          export DB_NAME="${{ secrets.DB_NAME }}"
+          export DB_USER="${{ secrets.DB_USER }}"
+          export DB_PASSWORD="${{ secrets.DB_PASSWORD }}"
+          export APP_LIBRARY_CONTENT_PER_PAGE="${{ vars.APP_LIBRARY_CONTENT_PER_PAGE }}"
+          envsubst < backend/.env.example > backend/.env
+          
+          # Generate bot/.env from bot/.env.example
+          export BOT_SENTRY_DSN="${{ secrets.BOT_SENTRY_DSN }}"
+          export TELEGRAM_API_ID="${{ TELEGRAM_API_ID }}"
+          export TELEGRAM_API_HASH="${{ TELEGRAM_API_HASH }}"
+          export TELEGRAM_PHONE_NUMBER="${{ TELEGRAM_PHONE_NUMBER }}"
+          export TELEGRAM_USERNAME="${{ TELEGRAM_USERNAME }}"
+          envsubst < bot/.env.example > bot/.env
+          
+          # Generate bot-manager/.env from bot-manager/.env.example
+          export BOT_MANAGER_SENTRY_DSN="${{ secrets.BOT_SENTRY_DSN }}"
+          envsubst < bot-manager/.env.example > bot-manager/.env
+
+      - name: Upload generated .env files to server
+        run: |
+          scp -P ${{ secrets.SSH_PORT }} .env ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/home/tbot/telegram-userbot/.env
+          scp -P ${{ secrets.SSH_PORT }} backend/.env ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/home/tbot/telegram-userbot/backend/.env
+          scp -P ${{ secrets.SSH_PORT }} bot/.env ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/home/tbot/telegram-userbot/bot/.env
+          scp -P ${{ secrets.SSH_PORT }} bot-manager/.env ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/home/tbot/telegram-userbot/bot-manager/.env
+
+      - name: Deploy to server
+        run: |
+          ssh -p ${{ secrets.SSH_PORT }} ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'ENDSSH'
+            # Stop script if any variable is missing instead of failing silently
+            set -euo pipefail
+          
+            # Pull last changes from main
+            cd /home/tbot/telegram-userbot
+            git fetch --all
+            git reset --hard origin/main
+          
+            # Set proper permissions
+            chmod 600 .env backend/.env bot/.env bot-manager/.env
+          
+            # Also secure .env.example files (though less critical)
+            chmod 644 .env.example backend/.env.example bot/.env.example bot-manager/.env.example
+        
+            # Deploy with Makefile
+            make deploy
+          ENDSSH

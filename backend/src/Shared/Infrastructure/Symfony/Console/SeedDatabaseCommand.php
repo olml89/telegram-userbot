@@ -38,7 +38,7 @@ final class SeedDatabaseCommand extends Command
             categoryNames: [
                 'Belly',
                 'Feet',
-                'Creampie',
+                'Trampling',
             ],
         );
 
