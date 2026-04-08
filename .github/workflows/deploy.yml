@@ -1,41 +1,30 @@
 name: Deploy
 
-# PUSH TO MAIN
-# 1) GHCR runs (if dev/Dockerfile changed)
-# 2) PHPStan, PHPUnit, Pint, Rector wait for GHCR and run in parallel
-# 3) Deploy triggered immediately, but the first job waits for the 4 quality checks to complete
-#
-# MANUAL DISPATCH
-# 1) Deploy waits for the quality checks from the last commit on main
+# Waits for the CI workflow to complete successfully before deploying
 
 on:
-  push:
+  workflow_run:
+    workflows:
+      - CI
+    types:
+      - completed
     branches:
       - main
   workflow_dispatch:  # Allows manual deployment
 
 jobs:
-  # Wait for all quality checks to complete successfully
-  wait-for-quality-checks:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Wait for all quality checks
-        uses: lewagon/wait-on-check-action@v1.3.4
-        with:
-          ref: ${{ github.sha }}
-          check-regexp: '^(PHPStan|PHPUnit|Pint|Rector)$'
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-          wait-interval: 10
-          allowed-conclusions: success
-
   deploy:
-    needs: wait-for-quality-checks
     runs-on: ubuntu-latest
+    if: >
+      github.event_name == 'workflow_dispatch' ||
+      github.event.workflow_run.conclusion == 'success'
     environment: staging
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
 
       - name: Set up SSH
         run: |

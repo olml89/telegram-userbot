@@ -1,9 +1,18 @@
-![PHPUnit](https://github.com/olml89/telegram-userbot/actions/workflows/phpunit.yml/badge.svg?branch=main)
-[![codecov](https://codecov.io/gh/olml89/telegram-userbot/branch/main/graph/badge.svg)](https://codecov.io/gh/olml89/telegram-userbot)
-![PHPStan level:max](https://github.com/olml89/telegram-userbot/actions/workflows/phpstan.yml/badge.svg?branch=main)
-![Laravel Pint](https://github.com/olml89/telegram-userbot/actions/workflows/pint.yml/badge.svg?branch=main)
-
 # Telegram Userbot
+
+[![CI](https://github.com/olml89/telegram-userbot/actions/workflows/ci.yml/badge.svg)](https://github.com/olml89/telegram-userbot/actions/workflows/ci.yml)
+[![Deploy](https://github.com/olml89/telegram-userbot/actions/workflows/deploy.yml/badge.svg)](https://github.com/olml89/telegram-userbot/actions/workflows/deploy.yml)
+[![codecov](https://codecov.io/gh/olml89/telegram-userbot/branch/main/graph/badge.svg)](https://codecov.io/gh/olml89/telegram-userbot)
+
+<details>
+<summary>📊 Detailed Quality Checks Status</summary>
+
+![PHPStan](https://img.shields.io/github/actions/workflow/status/olml89/telegram-userbot/quality-checks.yml?label=PHPStan&job=phpstan&branch=main)
+![PHPUnit](https://img.shields.io/github/actions/workflow/status/olml89/telegram-userbot/quality-checks.yml?label=PHPUnit&job=phpunit&branch=main)
+![Pint](https://img.shields.io/github/actions/workflow/status/olml89/telegram-userbot/quality-checks.yml?label=Pint&job=pint&branch=main)
+![Rector](https://img.shields.io/github/actions/workflow/status/olml89/telegram-userbot/quality-checks.yml?label=Rector&job=rector&branch=main)
+
+</details>
 
 This application manages the lifecycle and behaviour of a Telegram userbot interacting directly 
 with the MTProto API, similarly to an official app, using 
