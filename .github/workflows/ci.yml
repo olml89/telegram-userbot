@@ -3,11 +3,7 @@ name: CI
 # Runs all quality checks in parallel after GHCR completes
 
 on:
-  workflow_run:
-    workflows:
-      - GHCR
-    types:
-      - completed
+  push:
     branches:
       - main
   pull_request:
@@ -15,7 +11,21 @@ on:
       - main
 
 jobs:
+  # Wait for GHCR if it's running
+  wait-for-ghcr:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Wait for GHCR to complete
+        uses: lewagon/wait-on-check-action@v1.3.4
+        with:
+          ref: ${{ github.sha }}
+          check-name: 'build-and-push'
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          wait-interval: 10
+          allowed-conclusions: success,skipped
+
   phpstan:
+    needs: wait-for-ghcr
     runs-on: ubuntu-latest
     if: >
       github.event_name == 'pull_request' ||
@@ -36,6 +46,7 @@ jobs:
             ./phpstan/phpstan.sh --ci
 
   phpunit:
+    needs: wait-for-ghcr
     runs-on: ubuntu-latest
     if: >
       github.event_name == 'pull_request' ||
@@ -61,6 +72,7 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
 
   pint:
+    needs: wait-for-ghcr
     runs-on: ubuntu-latest
     if: >
       github.event_name == 'pull_request' ||
@@ -81,6 +93,7 @@ jobs:
             ./pint/pint.sh --test
 
   rector:
+    needs: wait-for-ghcr
     runs-on: ubuntu-latest
     if: >
       github.event_name == 'pull_request' ||
