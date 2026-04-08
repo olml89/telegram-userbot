@@ -1,30 +1,31 @@
 name: PHPStan
 
-# Code static analysis
-# Runs on push and waits for GHCR workflow if needed
+# PUSH TO MAIN
+# GHCR -> PHPStan, PHPUnit, Pint, Rector -> Deploy
 #
-# on.push: triggered if there's a push on main or dev
-# on.workflow_run: triggered if dev/Dockerfile is changed
-#
-# If there's a push and dev/Dockerfile does not change: it runs immediately
-# If there's a push and dev/Dockerfile changes: publish.yml runs first, it waits until it finishes, and then it runs
+# PULL REQUEST
+# (Don't wait for GHCR, the image already published is used)
+# PHPStan, PHPUnit, Pint, Rector -> Deploy
 
 on:
-  push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
   workflow_run:
     workflows:
       - GHCR
     types:
       - completed
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
 
 jobs:
   phpstan:
     runs-on: ubuntu-latest
+    # Only execute if GHCR was successful, or if it is a PR where GHCR doesn't run
+    if: >
+      github.event_name == 'pull_request' ||
+      github.event.workflow_run.conclusion == 'success'
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3

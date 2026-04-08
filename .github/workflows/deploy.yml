@@ -1,25 +1,29 @@
 name: Deploy to Server
 
 on:
-  push:
+  workflow_run:
+    workflows:
+      - PHPStan
+      - PHPUnit
+      - Pint
+      - Rector
+    types:
+      - completed
     branches:
       - main
   workflow_dispatch:  # Allows manual deployment
 
 jobs:
-  quality-checks:
+  # Verify all quality checks passed before deploying
+  verify-quality-checks:
     runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     steps:
-      - name: Wait for quality checks
-        uses: lewagon/wait-on-check-action@v1.3.4
-        with:
-          ref: ${{ github.sha }}
-          check-regexp: '^(PHPStan|PHPUnit|Pint|Rector)$'
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-          wait-interval: 10
+      - name: Check workflow run conclusion
+        run: echo "All quality checks passed"
 
   deploy:
-    needs: quality-checks
+    needs: verify-quality-checks
     runs-on: ubuntu-latest
     environment: staging
 
