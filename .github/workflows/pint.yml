@@ -1,11 +1,12 @@
 name: Pint
 
 # PUSH TO MAIN
-# GHCR -> PHPStan, PHPUnit, Pint, Rector -> Deploy
+# 1) GHCR runs (if dev/Dockerfile changed)
+# 2) Pint waits for GHCR to complete successfully
+# 3) Deploy waits for Pint (and PHPStan, PHPUnit, Rector) to complete
 #
 # PULL REQUEST
-# (Don't wait for GHCR, the image already published is used)
-# PHPStan, PHPUnit, Pint, Rector -> Deploy
+# 1) Pint runs immediately (uses already published Docker image)
 
 on:
   workflow_run:

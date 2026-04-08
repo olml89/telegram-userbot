@@ -1,52 +1,41 @@
-name: Deploy to Server
+name: Deploy
+
+# PUSH TO MAIN
+# 1) GHCR runs (if dev/Dockerfile changed)
+# 2) PHPStan, PHPUnit, Pint, Rector wait for GHCR and run in parallel
+# 3) Deploy triggered immediately, but the first job waits for the 4 quality checks to complete
+#
+# MANUAL DISPATCH
+# 1) Deploy waits for the quality checks from the last commit on main
 
 on:
-  workflow_run:
-    workflows:
-      - PHPStan
-      - PHPUnit
-      - Pint
-      - Rector
-    types:
-      - completed
+  push:
     branches:
       - main
   workflow_dispatch:  # Allows manual deployment
 
 jobs:
-  # Verify all quality checks passed before deploying
-  verify-quality-checks:
+  # Wait for all quality checks to complete successfully
+  wait-for-quality-checks:
     runs-on: ubuntu-latest
-    # Skip verification on manual dispatch or verify on workflow_run
-    if: >
-      github.event_name == 'workflow_dispatch' ||
-      github.event.workflow_run.conclusion == 'success'
     steps:
-      - name: Wait for all quality checks to complete
-        # Only wait if triggered by workflow_run (not manual)
-        if: github.event_name != 'workflow_dispatch'
+      - name: Wait for all quality checks
         uses: lewagon/wait-on-check-action@v1.3.4
         with:
-          ref: ${{ github.event.workflow_run.head_sha }}
+          ref: ${{ github.sha }}
           check-regexp: '^(PHPStan|PHPUnit|Pint|Rector)$'
           repo-token: ${{ secrets.GITHUB_TOKEN }}
           wait-interval: 10
           allowed-conclusions: success
 
-      - name: All checks passed
-        run: echo "All quality checks passed or manual deployment triggered"
-
   deploy:
-    needs: verify-quality-checks
+    needs: wait-for-quality-checks
     runs-on: ubuntu-latest
     environment: staging
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-        with:
-          # Use the SHA from workflow_run if available, otherwise use default
-          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
 
       - name: Set up SSH
         run: |

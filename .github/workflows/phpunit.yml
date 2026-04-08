@@ -1,11 +1,12 @@
 name: PHPUnit
 
 # PUSH TO MAIN
-# GHCR -> PHPStan, PHPUnit, Pint, Rector -> Deploy
+# 1) GHCR runs (if dev/Dockerfile changed)
+# 2) PHPUnit waits for GHCR to complete successfully
+# 3) Deploy waits for PHPUnit (and PHPStan, Pint, Rector) to complete
 #
 # PULL REQUEST
-# (Don't wait for GHCR, the image already published is used)
-# PHPStan, PHPUnit, Pint, Rector -> Deploy
+# 1) PHPUnit runs immediately (uses already published Docker image)
 
 on:
   workflow_run:
