@@ -9,11 +9,8 @@ LOG="/var/log/bot"
 echo "🔧 Creating ${LOG} directory for the supervisord.log in the shared container..."
 mkdir -p ${LOG}
 
-# Install shared dependencies (as this is the first microservice: bot-manager depends on bot, and backend on bot-manager)
-/telegram-userbot/shared/bin/composer-install.sh shared
-
 # Install bot dependencies
-/telegram-userbot/shared/bin/composer-install.sh bot
+/telegram-userbot/shared/bin/composer-install.sh shared bot
 
 # Use exec to replace the shell and start with PID 1
 CONF="/etc/supervisor/supervisord.conf"

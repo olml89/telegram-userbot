@@ -16,8 +16,9 @@ FROM base AS prod
 # Copy the bot-manager codebase to the container
 COPY bot-manager/ ./
 
-# Copy the shared codebase to the container
+# Copy shared codebase to the container and make composer-install script executable
 COPY shared/ /telegram-userbot/shared/
+RUN chmod +x /telegram-userbot/shared/bin/composer-install.sh
 
 # Copy supervisord config files
 COPY bot-manager/supervisor/supervisord.conf /etc/supervisor/supervisord.conf
@@ -31,7 +32,8 @@ RUN apk add --no-cache curl bash && \
     curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
 # Install PHP dependencies (without require-dev, optimized autoload)
-RUN composer install --no-dev --optimize-autoloader --no-interaction --no-progress
+RUN composer install --no-dev --optimize-autoloader --no-interaction --no-progress --working-dir=/telegram-userbot/shared && \
+    composer install --no-dev --optimize-autoloader --no-interaction --no-progress
 
 # Clear composer, curl, bash and extensions installer
 RUN rm /usr/local/bin/composer && \

@@ -42,9 +42,6 @@ FROM base AS prod
 # Copy the backend codebase to the container
 COPY backend/ ./
 
-# Copy shared codebase to the container
-COPY shared/ /telegram-userbot/shared/
-
 # Copy built assets from assets stage to a compiled intermediate directory
 COPY --from=assets /telegram-userbot/backend/public/build /telegram-userbot/backend/var/build
 
