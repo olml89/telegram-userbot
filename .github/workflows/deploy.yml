@@ -34,7 +34,6 @@ jobs:
 
       - name: Add server to known hosts
         run: |
-          mkdir -p ~/.ssh
           ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
 
       - name: Generate .env files from .env.example templates
@@ -43,7 +42,7 @@ jobs:
           set -euo pipefail
           
           # Generate root .env from .env.example
-          export APP_ENV="${{ env.APP_ENV }}"
+          export APP_ENV="${{ vars.APP_ENV }}"
           export BACKEND_PORT="${{ vars.BACKEND_PORT }}"
           export SUPERVISOR_USER="${{ secrets.SUPERVISOR_USER }}"
           export SUPERVISOR_PASSWORD="${{ secrets.SUPERVISOR_PASSWORD }}"
@@ -52,7 +51,7 @@ jobs:
           envsubst < .env.example > .env
           
           # Generate backend/.env from backend/.env.example
-          export APP_DEBUG="${{ env.APP_DEBUG }}"
+          export APP_DEBUG="${{ vars.APP_DEBUG }}"
           export APP_SECRET="${{ secrets.APP_SECRET }}"
           export BACKEND_SENTRY_DSN="${{ secrets.BACKEND_SENTRY_DSN }}"
           export DB_HOST="${{ secrets.DB_HOST }}"
@@ -77,14 +76,14 @@ jobs:
 
       - name: Upload generated .env files to server
         run: |
-          scp -P ${{ secrets.SSH_PORT }} .env ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/home/tbot/telegram-userbot/.env
-          scp -P ${{ secrets.SSH_PORT }} backend/.env ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/home/tbot/telegram-userbot/backend/.env
-          scp -P ${{ secrets.SSH_PORT }} bot/.env ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/home/tbot/telegram-userbot/bot/.env
-          scp -P ${{ secrets.SSH_PORT }} bot-manager/.env ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/home/tbot/telegram-userbot/bot-manager/.env
+          scp -i ~/.ssh/deploy_key -P ${{ secrets.SSH_PORT }} .env ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/home/tbot/telegram-userbot/.env
+          scp -i ~/.ssh/deploy_key -P ${{ secrets.SSH_PORT }} backend/.env ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/home/tbot/telegram-userbot/backend/.env
+          scp -i ~/.ssh/deploy_key -P ${{ secrets.SSH_PORT }} bot/.env ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/home/tbot/telegram-userbot/bot/.env
+          scp -i ~/.ssh/deploy_key -P ${{ secrets.SSH_PORT }} bot-manager/.env ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/home/tbot/telegram-userbot/bot-manager/.env
 
       - name: Deploy to server
         run: |
-          ssh -p ${{ secrets.SSH_PORT }} ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'ENDSSH'
+          ssh -i ~/.ssh/deploy_key -p ${{ secrets.SSH_PORT }} ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'ENDSSH'
             # Stop script if any variable is missing instead of failing silently
             set -euo pipefail
           
