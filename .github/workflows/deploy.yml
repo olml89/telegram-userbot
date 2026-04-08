@@ -67,10 +67,10 @@ jobs:
           
           # Generate bot/.env from bot/.env.example
           export BOT_SENTRY_DSN="${{ secrets.BOT_SENTRY_DSN }}"
-          export TELEGRAM_API_ID="${{ TELEGRAM_API_ID }}"
-          export TELEGRAM_API_HASH="${{ TELEGRAM_API_HASH }}"
-          export TELEGRAM_PHONE_NUMBER="${{ TELEGRAM_PHONE_NUMBER }}"
-          export TELEGRAM_USERNAME="${{ TELEGRAM_USERNAME }}"
+          export TELEGRAM_API_ID="${{ secrets.TELEGRAM_API_ID }}"
+          export TELEGRAM_API_HASH="${{ secrets.TELEGRAM_API_HASH }}"
+          export TELEGRAM_PHONE_NUMBER="${{ secrets.TELEGRAM_PHONE_NUMBER }}"
+          export TELEGRAM_USERNAME="${{ secrets.TELEGRAM_USERNAME }}"
           envsubst < bot/.env.example > bot/.env
           
           # Generate bot-manager/.env from bot-manager/.env.example
