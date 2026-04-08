@@ -13,7 +13,6 @@
     "require": {
         "php": "^8.5",
         "ext-intl": "*",
-        "ext-imagick": "*",
         "symfony/framework-bundle": "^8.0",
         "symfony/runtime": "^8.0",
         "symfony/yaml": "^8.0",
