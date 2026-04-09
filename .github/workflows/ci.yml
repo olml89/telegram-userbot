@@ -1,13 +1,9 @@
 name: CI
 
-# Runs all quality checks in parallel after GHCR completes
+# Runs all quality checks in parallel
 
 on:
-  workflow_run:
-    workflows:
-      - GHCR
-    types:
-      - completed
+  push:
     branches:
       - main
   pull_request:
@@ -15,14 +11,50 @@ on:
       - main
 
 jobs:
-  phpstan:
+  # Builds the dev/Dockerfile image if any of the image-affecting files changed
+  build-image:
     runs-on: ubuntu-latest
-    if: >
-      github.event_name == 'pull_request' ||
-      github.event.workflow_run.conclusion == 'success'
+    permissions:
+      packages: write
+      contents: read
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 2
+
+      - name: Check if image-affecting files changed
+        id: check
+        run: dev/bin/deploy/check-image-changes.sh "${{ github.event_name }}" "${{ github.event.before }}" "${{ github.sha }}" "$GITHUB_OUTPUT"
+
+      - name: Validate dev/Dockerfile and dev/composer.json consistency
+        if: steps.check.outputs.rebuild == 'true'
+        run: dev/bin/deploy/validate-image-consistency.php
+
+      - name: Login to GHCR
+        if: steps.check.outputs.rebuild == 'true'
+        uses: docker/login-action@v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GHCR_TOKEN }}
+
+      - name: Build and push dev/Dockerfile image
+        if: steps.check.outputs.rebuild == 'true'
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          file: ./dev/Dockerfile
+          target: ci
+          push: true
+          tags: ghcr.io/olml89/telegram-userbot-dev:ci
+
+  phpstan:
+    needs: build-image
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
 
       - name: Login to GHCR
         run: echo "${{ secrets.GHCR_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
@@ -36,13 +68,11 @@ jobs:
             ./phpstan/phpstan.sh --ci
 
   phpunit:
+    needs: build-image
     runs-on: ubuntu-latest
-    if: >
-      github.event_name == 'pull_request' ||
-      github.event.workflow_run.conclusion == 'success'
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v6
 
       - name: Login to GHCR
         run: echo "${{ secrets.GHCR_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
@@ -61,13 +91,11 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
 
   pint:
+    needs: build-image
     runs-on: ubuntu-latest
-    if: >
-      github.event_name == 'pull_request' ||
-      github.event.workflow_run.conclusion == 'success'
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v6
 
       - name: Login to GHCR
         run: echo "${{ secrets.GHCR_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
@@ -81,13 +109,11 @@ jobs:
             ./pint/pint.sh --test
 
   rector:
+    needs: build-image
     runs-on: ubuntu-latest
-    if: >
-      github.event_name == 'pull_request' ||
-      github.event.workflow_run.conclusion == 'success'
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v6
 
       - name: Login to GHCR
         run: echo "${{ secrets.GHCR_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
@@ -115,7 +141,7 @@ jobs:
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "| Check | Status |" >> $GITHUB_STEP_SUMMARY
           echo "|-------|--------|" >> $GITHUB_STEP_SUMMARY
-          echo "| PHPStan | ${{ job.phpstan.result == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| PHPUnit | ${{ job.phpunit.result == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| Pint | ${{ job.pint.result == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| Rector | ${{ job.rector.result == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| PHPStan | ${{ needs.phpstan.result == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| PHPUnit | ${{ needs.phpunit.result == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Pint | ${{ needs.pint.result == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Rector | ${{ needs.rector.result == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
