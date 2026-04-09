@@ -125,7 +125,7 @@ services:
     cpus: 12
     mem_limit: 24g
     tty: true
-    entrypoint: [bin/entrypoint.sh]
+    entrypoint: [sh, bin/entrypoint.sh]
     environment:
       APP_ENV: ${APP_ENV}
       PHP_IDE_CONFIG: "serverName=${PHP_SERVER_NAME}"

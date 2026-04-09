@@ -49,9 +49,6 @@ COPY --from=assets /telegram-userbot/backend/public/build /telegram-userbot/back
 RUN mkdir -p /telegram-userbot/backend/var/cache  &&  \
     chown -R www-data:www-data /telegram-userbot/backend/var
 
-# Make bin/console executable
-RUN chmod +x /telegram-userbot/backend/bin/console
-
 # In PHP 8.5 Opcache is already integrated into the core. Copy the Opcache configuration
 COPY docker-php-ext-opcache.ini /usr/local/etc/php/docker-php-ext-opcache.ini
 

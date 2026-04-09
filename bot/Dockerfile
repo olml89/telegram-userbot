@@ -49,9 +49,8 @@ FROM base AS prod
 # Copy the bot codebase to the container
 COPY bot/ ./
 
-# Copy shared codebase to the container and make composer-install script executable
+# Copy shared codebase to the container
 COPY shared/ /telegram-userbot/shared/
-RUN chmod +x /telegram-userbot/shared/bin/composer-install.sh
 
 # Copy supervisord config files during the build phase, before the docker volume is mounted
 COPY bot/supervisor/supervisord.conf /etc/supervisor/supervisord.conf
