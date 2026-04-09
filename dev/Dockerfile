@@ -32,12 +32,5 @@ COPY dev/docker-php-ext-xdebug.ci.ini /usr/local/etc/php/docker-php-ext-xdebug.i
 # Copy the entire project into the image
 COPY . /telegram-userbot/
 
-# Make all CI needed scripts executable
-RUN chmod +x /telegram-userbot/shared/bin/composer-install.sh && \
-    chmod +x /telegram-userbot/dev/phpstan/phpstan.sh && \
-    chmod +x /telegram-userbot/dev/phpunit/phpunit.sh && \
-    chmod +x /telegram-userbot/dev/pint/pint.sh && \
-    chmod +x /telegram-userbot/dev/rector/rector.sh
-
 # Pre-install PHP dependencies to cache them in the image
 RUN /telegram-userbot/shared/bin/composer-install.sh dev shared backend bot bot-manager

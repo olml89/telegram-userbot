@@ -1,10 +1,6 @@
 #!/bin/sh
 set -e
 
-CONSOLE="/telegram-userbot/backend/bin/console"
-echo "🔧 Making ${CONSOLE} executable..."
-chmod +x "${CONSOLE}"
-
 CACHE="/telegram-userbot/backend/var/cache"
 echo "🔧 Creating ${CACHE}..."
 mkdir -p "${CACHE}"
