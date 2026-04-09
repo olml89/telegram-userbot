@@ -13,6 +13,8 @@
     "require": {
         "php": "^8.5",
         "ext-intl": "*",
+        "ext-pgsql": "*",
+        "ext-pdo_pgsql": "*",
         "symfony/framework-bundle": "^8.0",
         "symfony/runtime": "^8.0",
         "symfony/yaml": "^8.0",

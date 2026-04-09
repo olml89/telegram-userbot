@@ -2,3 +2,9 @@
 
 # Execute the pre-commit script inside the container, that launches validate-commit.sh
 docker-compose -f docker-compose.yml -f docker-compose.dev.yml --env-file .env --env-file backend/.env exec -T dev composer pre-commit
+
+# Stage any changes the sync made (on the host, where git lives)
+if ! git diff --quiet dev/composer.json 2>/dev/null; then
+    echo "📦 dev/composer.json was updated with new platform requirements. Staging changes..."
+    git add dev/composer.json
+fi

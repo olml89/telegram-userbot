@@ -1,6 +1,6 @@
 {
     "name": "olml89/telegram-userbot-dev",
-    "description": "Auxiliar container running only on development environment. It provides testing, static analysis and code linting tools.",
+    "description": "Auxiliar container running only on development environment and CI workflow. It provides testing, static analysis and code linting tools.",
     "type": "project",
     "version": "1.0.0",
     "license": "proprietary",
@@ -10,6 +10,16 @@
         }
     ],
     "minimum-stability": "stable",
+    "require": {
+        "php": "^8.5",
+        "ext-ffi": "*",
+        "ext-intl": "*",
+        "ext-pcntl": "*",
+        "ext-pdo_pgsql": "*",
+        "ext-pgsql": "*",
+        "ext-posix": "*",
+        "ext-redis": "*"
+    },
     "require-dev": {
         "laravel/pint": "^1.27",
         "phpstan/phpstan": "^2.1",
