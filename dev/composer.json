@@ -35,6 +35,6 @@
         "pint": "pint/pint.sh",
         "phpstan": "phpstan/phpstan.sh",
         "phpunit": "phpunit/phpunit.sh",
-        "pre-commit": "bin/git/validate-commit.sh"
+        "pre-commit": "bin/commit/validate-commit.sh"
     }
 }

@@ -2,7 +2,7 @@
 set -e
 
 # Sync platform requirements from modules into dev/composer.json
-/telegram-userbot/dev/bin/sync-platform-reqs.sh
+./sync-platform-reqs.sh
 
 echo "🔍 Validating commit..."
 

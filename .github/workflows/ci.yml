@@ -25,71 +25,11 @@ jobs:
 
       - name: Check if image-affecting files changed
         id: check
-        run: |
-          set -euo pipefail
-
-          IMAGE_PATHS="dev/Dockerfile dev/composer.json docker-php-ext-opcache.ini"
-
-          REBUILD=false
-
-          # On pull requests, compare against the base branch
-          if [ "${{ github.event_name }}" = "pull_request" ]; then
-            CHANGED_FILES=$(git diff --name-only HEAD~1 HEAD)
-          else
-            CHANGED_FILES=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }})
-          fi
-
-          for path in $IMAGE_PATHS; do
-            if echo "$CHANGED_FILES" | grep -q "^${path}$"; then
-              echo "🔄 Changed: $path"
-              REBUILD=true
-            fi
-          done
-
-          echo "rebuild=$REBUILD" >> $GITHUB_OUTPUT
+        run: dev/bin/deploy/check-image-changes.sh "${{ github.event_name }}" "${{ github.event.before }}" "${{ github.sha }}" "$GITHUB_OUTPUT"
 
       - name: Validate dev/Dockerfile and dev/composer.json consistency
         if: steps.check.outputs.rebuild == 'true'
-        run: |
-          set -euo pipefail
-
-          echo "🔍 Checking that dev/Dockerfile extensions match dev/composer.json..."
-
-          # Extract ext-* from dev/composer.json (sorted)
-          COMPOSER_EXTS=$(php -r "
-            \$json = json_decode(file_get_contents('dev/composer.json'), true);
-            \$exts = [];
-            foreach (\$json['require'] ?? [] as \$pkg => \$ver) {
-              if (str_starts_with(\$pkg, 'ext-')) {
-                \$exts[] = substr(\$pkg, 4);
-              }
-            }
-            sort(\$exts);
-            echo implode(\"\n\", \$exts);
-          ")
-
-          # Extract extensions installed in dev/Dockerfile (sorted)
-          DOCKERFILE_EXTS=$(grep 'install-php-extensions' dev/Dockerfile \
-            | sed 's/#.*//' \
-            | grep -oE '[a-z_]+' \
-            | grep -v -E '^(install|php|extensions|xdebug|composer|RUN)$' \
-            | sort -u)
-
-          echo "Composer extensions: $COMPOSER_EXTS"
-          echo "Dockerfile extensions: $DOCKERFILE_EXTS"
-
-          if [ "$COMPOSER_EXTS" != "$DOCKERFILE_EXTS" ]; then
-            echo "❌ Mismatch between dev/Dockerfile and dev/composer.json!"
-            echo ""
-            echo "In composer.json but not in Dockerfile:"
-            comm -23 <(echo "$COMPOSER_EXTS") <(echo "$DOCKERFILE_EXTS") || true
-            echo ""
-            echo "In Dockerfile but not in composer.json:"
-            comm -13 <(echo "$COMPOSER_EXTS") <(echo "$DOCKERFILE_EXTS") || true
-            exit 1
-          fi
-
-          echo "✅ Dockerfile and composer.json extensions are in sync."
+        run: dev/bin/deploy/validate-image-consistency.php
 
       - name: Login to GHCR
         if: steps.check.outputs.rebuild == 'true'
