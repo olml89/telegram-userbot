@@ -54,8 +54,8 @@ foreach ($lines as $line) {
 $dockerfileExts = array_unique($dockerfileExts);
 sort($dockerfileExts);
 
-echo 'Composer extensions: ' . implode(', ', $composerExts) . "\n";
-echo 'Dockerfile extensions: ' . implode(', ', $dockerfileExts) . "\n";
+echo 'dev/composer.json extensions: ' . implode(', ', $composerExts) . "\n";
+echo 'dev/Dockerfile extensions: ' . implode(', ', $dockerfileExts) . "\n";
 
 $inComposerOnly = array_diff($composerExts, $dockerfileExts);
 $inDockerfileOnly = array_diff($dockerfileExts, $composerExts);
@@ -64,7 +64,7 @@ if ($inComposerOnly || $inDockerfileOnly) {
     echo "\n❌ Mismatch between dev/Dockerfile and dev/composer.json!\n";
 
     if ($inComposerOnly) {
-        echo "\nIn composer.json but not in Dockerfile:\n";
+        echo "\nIn dev/composer.json but not in dev/Dockerfile:\n";
 
         foreach ($inComposerOnly as $e) {
             echo "  - $e\n";
@@ -72,7 +72,7 @@ if ($inComposerOnly || $inDockerfileOnly) {
     }
 
     if ($inDockerfileOnly) {
-        echo "\nIn Dockerfile but not in composer.json:\n";
+        echo "\nIn dev/Dockerfile but not in dev/composer.json:\n";
 
         foreach ($inDockerfileOnly as $e) {
             echo "  - $e\n";
@@ -82,4 +82,4 @@ if ($inComposerOnly || $inDockerfileOnly) {
     exit(1);
 }
 
-echo "\n✅ Dockerfile and composer.json extensions are in sync.\n";
+echo "\n✅ dev/Dockerfile and dev/composer.json extensions are in sync.\n";
