@@ -15,6 +15,7 @@
         "ext-intl": "*",
         "ext-pgsql": "*",
         "ext-pdo_pgsql": "*",
+        "olml89/telegram-userbot-shared": "*",
         "symfony/framework-bundle": "^8.0",
         "symfony/runtime": "^8.0",
         "symfony/yaml": "^8.0",
@@ -39,6 +40,15 @@
         "symfony/web-profiler-bundle": "^8.0",
         "symfony/profiler-pack": "^1.0"
     },
+    "repositories": [
+        {
+            "type": "path",
+            "url": "../shared",
+            "options": {
+                "symlink": true
+            }
+        }
+    ],
     "autoload": {
         "psr-4": {
             "olml89\\TelegramUserbot\\Backend\\": "src/",
