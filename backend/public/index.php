@@ -14,11 +14,6 @@ use Symfony\Component\Dotenv\Dotenv;
 require dirname(__DIR__) . '/vendor/autoload_runtime.php';
 
 /**
- * Load shared env vars
- */
-new Dotenv()->bootEnv(dirname(__DIR__, 2) . '/shared/.env');
-
-/**
  * Load backend env vars
  */
 new Dotenv()->bootEnv(dirname(__DIR__) . '/.env', overrideExistingVars: true);
