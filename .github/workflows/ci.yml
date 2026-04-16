@@ -23,6 +23,9 @@ jobs:
         with:
           fetch-depth: 2
 
+      - name: Check if composer.json files are in sync with their composer.lock counterparts
+        run: dev/bin/deploy/check-composer-sync.sh
+
       - name: Check if image-affecting files changed
         id: check
         run: dev/bin/deploy/check-image-changes.sh "${{ github.event_name }}" "${{ github.event.before }}" "${{ github.sha }}" "$GITHUB_OUTPUT"
