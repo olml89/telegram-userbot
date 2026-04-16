@@ -34,8 +34,8 @@ for path in $IMAGE_PATHS; do
     fi
 done
 
+echo "🔧 rebuild=$REBUILD"
+
 if [ -n "$GITHUB_OUTPUT" ]; then
     echo "rebuild=$REBUILD" >> "$GITHUB_OUTPUT"
-else
-    echo "rebuild=$REBUILD"
 fi
