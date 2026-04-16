@@ -18,7 +18,7 @@ if [ "$APP_ENV" = "prod" ]; then
 	fi
 else
 	# In environments that are not prod, install dependencies (since they are not baked into the container image)
-    /telegram-userbot/shared/bin/composer-install.sh backend
+    /telegram-userbot/shared/bin/composer-install.sh shared backend
 fi
 
 CACHE="/telegram-userbot/backend/var/cache"
