@@ -74,6 +74,13 @@ jobs:
             # Export bot-manager/.env variables
             export BOT_MANAGER_SENTRY_DSN='${{ secrets.BOT_MANAGER_SENTRY_DSN }}'
           
+            # Export shared/.env variables
+            export REDIS_STATUS_CHANNEL='${{ vars.REDIS_STATUS_CHANNEL }}'
+            export REDIS_PHONE_CODE_STORAGE_KEY='${{ vars.REDIS_PHONE_CODE_STORAGE_KEY }}'
+            export SUPERVISOR_CONFIG_PATH='${{ vars.SUPERVISOR_CONFIG_PATH }}'
+            export LOG_DIRECTORY='${{ vars.LOG_DIRECTORY }}'
+            export LOG_LEVEL='${{ vars.LOG_LEVEL }}'
+          
             # Pull last changes and deploy
             cd /home/tbot/telegram-userbot
             git fetch --all
