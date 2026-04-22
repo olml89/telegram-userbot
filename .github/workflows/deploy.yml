@@ -40,65 +40,39 @@ jobs:
           ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
 
       - name: Deploy to server
-        env:
-          # .env variables
-          APP_ENV: ${{ vars.APP_ENV }}
-          BACKEND_PORT: ${{ vars.BACKEND_PORT }}
-          SUPERVISOR_USER: ${{ secrets.SUPERVISOR_USER }}
-          SUPERVISOR_PASSWORD: ${{ secrets.SUPERVISOR_PASSWORD }}
-          GRAFANA_PORT: ${{ vars.GRAFANA_PORT }}
-          GRAFANA_SECURITY_ADMIN_PASSWORD: ${{ secrets.GRAFANA_SECURITY_ADMIN_PASSWORD }}
-          # backend/.env variables
-          APP_DEBUG: ${{ vars.APP_DEBUG }}
-          APP_SECRET: ${{ secrets.APP_SECRET }}
-          BACKEND_SENTRY_DSN: ${{ secrets.BACKEND_SENTRY_DSN }}
-          DB_HOST: ${{ secrets.DB_HOST }}
-          DB_PORT: ${{ vars.DB_PORT }}
-          DB_NAME: ${{ secrets.DB_NAME }}
-          DB_USER: ${{ secrets.DB_USER }}
-          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-          APP_LIBRARY_CONTENT_PER_PAGE: ${{ vars.APP_LIBRARY_CONTENT_PER_PAGE }}
-          # bot/.env variables
-          BOT_SENTRY_DSN: ${{ secrets.BOT_SENTRY_DSN }}
-          TELEGRAM_API_ID: ${{ secrets.TELEGRAM_API_ID }}
-          TELEGRAM_API_HASH: ${{ secrets.TELEGRAM_API_HASH }}
-          TELEGRAM_PHONE_NUMBER: ${{ secrets.TELEGRAM_PHONE_NUMBER }}
-          TELEGRAM_USERNAME: ${{ secrets.TELEGRAM_USERNAME }}
-          # bot-manager/.env variables
-          BOT_MANAGER_SENTRY_DSN: ${{ secrets.BOT_MANAGER_SENTRY_DSN }}
         run: |
           ssh -i ~/.ssh/deploy_key -p ${{ secrets.SSH_PORT }} ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "
             # Stop script if any variable is missing instead of failing silently
             set -euo pipefail
           
             # Export .env variables
-            export APP_ENV='${APP_ENV}'
-            export BACKEND_PORT='${BACKEND_PORT}'
-            export SUPERVISOR_USER='${SUPERVISOR_USER}'
-            export SUPERVISOR_PASSWORD='${SUPERVISOR_PASSWORD}'
-            export GRAFANA_PORT='${GRAFANA_PORT}'
-            export GRAFANA_SECURITY_ADMIN_PASSWORD='${GRAFANA_SECURITY_ADMIN_PASSWORD}'
+            export APP_ENV='${{ vars.APP_ENV }}'
+            export BACKEND_PORT='${{ vars.BACKEND_PORT }}'
+            export SUPERVISOR_USER='${{ secrets.SUPERVISOR_USER }}'
+            export SUPERVISOR_PASSWORD='${{ secrets.SUPERVISOR_PASSWORD }}'
+            export GRAFANA_PORT='${{ vars.GRAFANA_PORT }}'
+            export GRAFANA_SECURITY_ADMIN_PASSWORD='${{ secrets.GRAFANA_SECURITY_ADMIN_PASSWORD }}'
             
             # Export backend/.env variables
-            export APP_DEBUG='${ APP_DEBUG}'
-            export APP_SECRET='${APP_SECRET}'
-            export BACKEND_SENTRY_DSN='${BACKEND_SENTRY_DSN}'
-            export DB_HOST='${DB_HOST}'
-            export DB_PORT='${DB_PORT}'
-            export DB_NAME='${DB_NAME}'
-            export DB_USER='${DB_USER}'
-            export DB_PASSWORD='${DB_PASSWORD}'
-            export APP_LIBRARY_CONTENT_PER_PAGE='${APP_LIBRARY_CONTENT_PER_PAGE}'
+            export APP_DEBUG='${{ vars.APP_DEBUG }}'
+            export APP_SECRET='${{ secrets.APP_SECRET }}'
+            export BACKEND_SENTRY_DSN='${{ secrets.BACKEND_SENTRY_DSN }}'
+            export DB_HOST='${{ secrets.DB_HOST }}'
+            export DB_PORT='${{ vars.DB_PORT }}'
+            export DB_NAME='${{ secrets.DB_NAME }}'
+            export DB_USER='${{ secrets.DB_USER }}'
+            export DB_PASSWORD='${{ secrets.DB_PASSWORD }}'
+            export APP_LIBRARY_CONTENT_PER_PAGE='${{ vars.APP_LIBRARY_CONTENT_PER_PAGE }}'
             
             # Export bot/.env variables
-            export BOT_SENTRY_DSN='${BOT_SENTRY_DSN}'
-            export TELEGRAM_API_ID='${TELEGRAM_API_ID}'
-            export TELEGRAM_API_HASH='${TELEGRAM_API_HASH}'
-            export TELEGRAM_PHONE_NUMBER='${TELEGRAM_PHONE_NUMBER}'
-            export TELEGRAM_USERNAME='${TELEGRAM_USERNAME}'
+            export BOT_SENTRY_DSN='${{ secrets.BOT_SENTRY_DSN }}'
+            export TELEGRAM_API_ID='${{ secrets.TELEGRAM_API_ID }}'
+            export TELEGRAM_API_HASH='${{ secrets.TELEGRAM_API_HASH }}'
+            export TELEGRAM_PHONE_NUMBER='${{ secrets.TELEGRAM_PHONE_NUMBER }}'
+            export TELEGRAM_USERNAME='${{ secrets.TELEGRAM_USERNAME }}'
             
             # Export bot-manager/.env variables
-            export BOT_MANAGER_SENTRY_DSN='${BOT_MANAGER_SENTRY_DSN}'
+            export BOT_MANAGER_SENTRY_DSN='${{ secrets.BOT_MANAGER_SENTRY_DSN }}'
           
             # Pull last changes and deploy
             cd /home/tbot/telegram-userbot
