@@ -1,5 +1,12 @@
 name: telegram-userbot
 
+x-shared-env: &shared-env
+  REDIS_STATUS_CHANNEL: ${REDIS_STATUS_CHANNEL}
+  REDIS_PHONE_CODE_STORAGE_KEY: ${REDIS_PHONE_CODE_STORAGE_KEY}
+  SUPERVISOR_CONFIG_PATH: ${SUPERVISOR_CONFIG_PATH}
+  LOG_DIRECTORY: ${LOG_DIRECTORY}
+  LOG_LEVEL: ${LOG_LEVEL}
+
 services:
 
   tusd:
@@ -23,6 +30,7 @@ services:
       dockerfile: backend/Dockerfile
       target: prod
     environment:
+      <<: *shared-env
       APP_DEBUG: ${APP_DEBUG}
       APP_SECRET: ${APP_SECRET}
       BACKEND_SENTRY_DSN: ${BACKEND_SENTRY_DSN}
@@ -43,6 +51,7 @@ services:
       dockerfile: bot-manager/Dockerfile
       target: prod
     environment:
+      <<: *shared-env
       BOT_MANAGER_SENTRY_DSN: ${BOT_MANAGER_SENTRY_DSN}
     volumes:
       - telegram-userbot-logs:/var/log:cached
@@ -52,6 +61,7 @@ services:
       dockerfile: bot/Dockerfile
       target: prod
     environment:
+      <<: *shared-env
       BOT_SENTRY_DSN: ${BOT_SENTRY_DSN}
       TELEGRAM_API_ID: ${TELEGRAM_API_ID}
       TELEGRAM_API_HASH: ${TELEGRAM_API_HASH}
