@@ -1,3 +1,7 @@
+# Export all variables so sub-makes and shell commands inherit them
+export
+
+
 # Load APP_ENV environment variable safely
 -include .env
 APP_ENV ?= prod
