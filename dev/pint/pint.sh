@@ -23,7 +23,7 @@ run_pint() {
 		TEST_FLAG="--test"
 	fi
 
-	echo "🔍 Running pint for '$SERVICE' $TEST_FLAG"
+	echo "🔍 Running pint${TEST_FLAG:+ $TEST_FLAG} for '$SERVICE'"
 
 	# Dynamic codebase path
 	CODE_PATH="/telegram-userbot/$SERVICE"

@@ -7,19 +7,17 @@ export
 APP_ENV ?= prod
 
 
-# File args
+# Base docker-compose file
 DOCKER_COMPOSE := -f docker-compose.yml
 
 
-# Override of the -f and the --env-file options on the docker compose command depending on the environment
+# Override the -f and the --env-file options on the docker compose commands depending on the environment
 ifeq ($(APP_ENV),prod)
     $(info Using production environment -> adding docker-compose.prod.yml)
     DOCKER_COMPOSE += -f docker-compose.prod.yml
-    ENV :=
 else
     $(info Using development environment -> adding docker-compose.dev.yml)
-    DOCKER_COMPOSE += -f docker-compose.dev.yml
-    ENV := --env-file .env --env-file backend/.env --env-file shared/.env
+    DOCKER_COMPOSE += -f docker-compose.dev.yml --env-file .env --env-file backend/.env --env-file shared/.env
 
 	# Load variables from backend/.env file and shared/.env
 	-include backend/.env
@@ -34,38 +32,38 @@ endif
 build:
 	$(eval SERVICE := $(word 2, $(MAKECMDGOALS)))
 	$(if $(SERVICE), \
-		docker compose $(DOCKER_COMPOSE) $(ENV) build --no-cache $(SERVICE), \
-		docker compose $(DOCKER_COMPOSE) $(ENV) build --no-cache backend && \
-		docker compose $(DOCKER_COMPOSE) $(ENV) build --no-cache nginx && \
-		docker compose $(DOCKER_COMPOSE) $(ENV) build --no-cache \
+		docker compose $(DOCKER_COMPOSE) build --no-cache $(SERVICE), \
+		docker compose $(DOCKER_COMPOSE) build --no-cache backend && \
+		docker compose $(DOCKER_COMPOSE) build --no-cache nginx && \
+		docker compose $(DOCKER_COMPOSE) build --no-cache \
 	)
 
 up:
 	$(eval SERVICE := $(word 2, $(MAKECMDGOALS)))
 	$(if $(SERVICE), \
-		docker compose $(DOCKER_COMPOSE) $(ENV) up --remove-orphans $(SERVICE), \
-		docker compose $(DOCKER_COMPOSE) $(ENV) up --remove-orphans \
+		docker compose $(DOCKER_COMPOSE) up --remove-orphans $(SERVICE), \
+		docker compose $(DOCKER_COMPOSE) up --remove-orphans \
 	)
 
 upd:
 	$(eval SERVICE := $(word 2, $(MAKECMDGOALS)))
 	$(if $(SERVICE), \
-		docker compose $(DOCKER_COMPOSE) $(ENV) up -d --remove-orphans $(SERVICE), \
-		docker compose $(DOCKER_COMPOSE) $(ENV) up -d --remove-orphans \
+		docker compose $(DOCKER_COMPOSE) up -d --remove-orphans $(SERVICE), \
+		docker compose $(DOCKER_COMPOSE) up -d --remove-orphans \
 	)
 
 stop:
 	$(eval SERVICE := $(word 2, $(MAKECMDGOALS)))
 	$(if $(SERVICE), \
-		docker compose $(DOCKER_COMPOSE) $(ENV) stop $(SERVICE), \
-		docker compose $(DOCKER_COMPOSE) $(ENV) stop \
+		docker compose $(DOCKER_COMPOSE) stop $(SERVICE), \
+		docker compose $(DOCKER_COMPOSE) stop \
 	)
 
 down:
 	$(eval SERVICE := $(word 2, $(MAKECMDGOALS)))
 	$(if $(SERVICE), \
-		docker compose $(DOCKER_COMPOSE) $(ENV) down $(SERVICE), \
-		docker compose $(DOCKER_COMPOSE) $(ENV) down \
+		docker compose $(DOCKER_COMPOSE) down $(SERVICE), \
+		docker compose $(DOCKER_COMPOSE) down \
 	)
 
 deploy:
@@ -74,12 +72,12 @@ deploy:
 	$(MAKE) build
 	$(MAKE) upd
 	@echo "⏳ Waiting for containers to be ready..."
-	docker compose $(DOCKER_COMPOSE) $(ENV) exec -T postgres sh -c 'until pg_isready -U $$POSTGRES_USER; do sleep 1; done'
-	docker compose $(DOCKER_COMPOSE) $(ENV) exec -T backend sh -c 'until php -r "exit(0);" 2>/dev/null; do sleep 1; done'
+	docker compose $(DOCKER_COMPOSE) exec -T postgres sh -c 'until pg_isready -U $$POSTGRES_USER; do sleep 1; done'
+	docker compose $(DOCKER_COMPOSE) exec -T backend sh -c 'until php -r "exit(0);" 2>/dev/null; do sleep 1; done'
 	@echo "🔄 Running database migrations..."
-	docker compose $(DOCKER_COMPOSE) $(ENV) exec -T backend php bin/console doctrine:migrations:migrate --no-interaction
+	docker compose $(DOCKER_COMPOSE) exec -T backend php bin/console doctrine:migrations:migrate --no-interaction
 	@echo "🧹 Clearing Symfony cache..."
-	docker compose $(DOCKER_COMPOSE) $(ENV) exec -T backend php bin/console cache:clear --env=prod
+	docker compose $(DOCKER_COMPOSE) exec -T backend php bin/console cache:clear --env=prod
 	@echo "✅ Deployment completed successfully!"
 
 # Debug containers
@@ -89,59 +87,59 @@ deploy:
 restart:
 	$(eval SERVICE := $(word 2, $(MAKECMDGOALS)))
 	$(if $(SERVICE),,$(error you must specify a container to restart, for example: make restart backend))
-	docker compose $(DOCKER_COMPOSE) $(ENV) restart $(SERVICE)
+	docker compose $(DOCKER_COMPOSE) restart $(SERVICE)
 
 debug:
 	$(eval SERVICE := $(word 2, $(MAKECMDGOALS)))
 	$(if $(SERVICE),,$(error you must specify a container to debug, for example: make debug backend))
-	docker compose $(DOCKER_COMPOSE) $(ENV) run --rm --entrypoint sh $(SERVICE)
+	docker compose $(DOCKER_COMPOSE) run --rm --entrypoint sh $(SERVICE)
 
 
 # Shell access containers
 .PHONY: alloy backend bot bot-manager dev grafana loki nginx tusd postgres postgres-psql redis vite
 
 alloy:
-	docker compose $(DOCKER_COMPOSE) $(ENV) exec alloy /bin/sh
+	docker compose $(DOCKER_COMPOSE) exec alloy /bin/sh
 
 backend:
-	docker compose $(DOCKER_COMPOSE) $(ENV) exec backend /bin/sh
+	docker compose $(DOCKER_COMPOSE) exec backend /bin/sh
 
 bot:
-	docker compose $(DOCKER_COMPOSE) $(ENV) exec bot /bin/sh
+	docker compose $(DOCKER_COMPOSE) exec bot /bin/sh
 
 bot-manager:
-	docker compose $(DOCKER_COMPOSE) $(ENV) exec bot-manager /bin/sh
+	docker compose $(DOCKER_COMPOSE) exec bot-manager /bin/sh
 
 dev:
-	docker compose $(DOCKER_COMPOSE) $(ENV) exec dev /bin/sh
+	docker compose $(DOCKER_COMPOSE) exec dev /bin/sh
 
 grafana:
-	docker compose $(DOCKER_COMPOSE) $(ENV) exec grafana /bin/sh
+	docker compose $(DOCKER_COMPOSE) exec grafana /bin/sh
 
 loki:
-	docker compose $(DOCKER_COMPOSE) $(ENV) exec loki /bin/sh
+	docker compose $(DOCKER_COMPOSE) exec loki /bin/sh
 
 nginx:
-	docker compose $(DOCKER_COMPOSE) $(ENV) exec nginx /bin/sh
+	docker compose $(DOCKER_COMPOSE) exec nginx /bin/sh
 
 tusd:
-	docker compose $(DOCKER_COMPOSE) $(ENV) exec tusd /bin/sh
+	docker compose $(DOCKER_COMPOSE) exec tusd /bin/sh
 
 postgres:
-	docker compose $(DOCKER_COMPOSE) $(ENV) exec postgres /bin/sh
+	docker compose $(DOCKER_COMPOSE) exec postgres /bin/sh
 
 postgres-psql:
-	docker compose $(DOCKER_COMPOSE) $(ENV) exec -e PGPASSWORD=$(DB_PASSWORD) postgres psql -U $(DB_USER) -d $(DB_NAME)
+	docker compose $(DOCKER_COMPOSE) exec -e PGPASSWORD=$(DB_PASSWORD) postgres psql -U $(DB_USER) -d $(DB_NAME)
 
 redis:
-	docker compose $(DOCKER_COMPOSE) $(ENV) exec redis redis-cli
+	docker compose $(DOCKER_COMPOSE) exec redis redis-cli
 
 vite:
-	docker compose $(DOCKER_COMPOSE) $(ENV) restart vite
+	docker compose $(DOCKER_COMPOSE) restart vite
 
 # Development recipes
 # The -T flag disables TTY, required when running from non-interactive environments like Git hooks
-.PHONY: phpstan pint rector phpunit
+.PHONY: phpstan pint rector phpunit commit
 
 # 1) Converts (bot, bot-manager, backend, shared) to --service=(bot, bot-manager, backend, shared)
 # 2) Converts ci to --ci (it runs phpstan without showing progress)
@@ -152,7 +150,7 @@ phpstan:
 		$(if $(filter ci,$(arg)),\
 			$(eval CI := --ci)))
 	$(eval SERVICE := $(filter-out ci,$(ARGS)))
-	docker compose $(DOCKER_COMPOSE) $(ENV) exec -T dev composer phpstan -- $(if $(SERVICE),--service=$(SERVICE)) $(CI)
+	docker compose $(DOCKER_COMPOSE) exec -T dev composer phpstan -- $(if $(SERVICE),--service=$(SERVICE)) $(CI)
 
 # 1) Converts (bot, bot-manager, backend, shared) to --service=(bot, bot-manager, backend, shared)
 # 2) Converts test to --test (it runs checks without applying linting)
@@ -163,7 +161,7 @@ pint:
 		$(if $(filter test,$(arg)),\
 			$(eval TEST := --test)))
 	$(eval SERVICE := $(filter-out test,$(ARGS)))
-	docker compose $(DOCKER_COMPOSE) $(ENV) exec -T dev composer pint -- $(if $(SERVICE),--service=$(SERVICE)) $(TEST)
+	docker compose $(DOCKER_COMPOSE) exec -T dev composer pint -- $(if $(SERVICE),--service=$(SERVICE)) $(TEST)
 
 # 1) Converts (bot, bot-manager, backend, shared) to --service=(bot, bot-manager, backend, shared)
 # 2) Converts dry-run to --dry-run (it runs checks without applying refactoring)
@@ -174,7 +172,7 @@ rector:
 		$(if $(filter dry-run,$(arg)),\
 			$(eval DRY-RUN := --dry-run)))
 	$(eval SERVICE := $(filter-out dry-run,$(ARGS)))
-	docker compose $(DOCKER_COMPOSE) $(ENV) exec -T dev composer rector -- $(if $(SERVICE),--service=$(SERVICE)) $(DRY-RUN)
+	docker compose $(DOCKER_COMPOSE) exec -T dev composer rector -- $(if $(SERVICE),--service=$(SERVICE)) $(DRY-RUN)
 
 # 1) Converts (bot, bot-manager, backend, shared) to --service=(bot, bot-manager, backend, shared)
 # 2) Converts ci to --ci
@@ -207,7 +205,10 @@ phpunit:
 			)\
 		)\
 	)
-	docker compose $(DOCKER_COMPOSE) $(ENV) exec -T dev composer phpunit -- $(FINAL_ARGS)
+	docker compose $(DOCKER_COMPOSE) exec -T dev composer phpunit -- $(FINAL_ARGS)
+
+commit:
+	docker compose $(DOCKER_COMPOSE) exec -T dev composer validate-commit
 
 # Catch-all pattern rule to prevent Make from complaining about unknown targets
 %:
