@@ -26,8 +26,13 @@ enum Environment: string
         return $this === self::Development;
     }
 
-    public static function load(string $value): self
+    /**
+     * @throws MissingEnvironmentVariableException
+     */
+    public static function load(): self
     {
+        $value = Env::string('APP_ENV');
+
         return self::from($value);
     }
 }

@@ -14,19 +14,18 @@ use Symfony\Component\Dotenv\Dotenv;
 require dirname(__DIR__) . '/vendor/autoload_runtime.php';
 
 /**
- * Load shared env vars
+ * Load shared and backend env vars
  */
-new Dotenv()->bootEnv(dirname(__DIR__, 2) . '/shared/.env');
+$environment = Environment::load();
 
-/**
- * Load backend env vars
- */
-new Dotenv()->bootEnv(dirname(__DIR__) . '/.env', overrideExistingVars: true);
+if ($environment !== Environment::Production) {
+    new Dotenv()->bootEnv(dirname(__DIR__, 2) . '/shared/.env');
+    new Dotenv()->bootEnv(dirname(__DIR__) . '/.env', overrideExistingVars: true);
+}
 
 /**
  * Return instantiated Kernel
  */
-$environment = Environment::load(Env::string('APP_ENV'));
 $debug = Env::nullableBool('APP_DEBUG');
 
 return fn(array $context): Kernel => new Kernel($environment, $debug);
