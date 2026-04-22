@@ -21,6 +21,7 @@ use olml89\TelegramUserbot\BotManager\Websocket\WebSocketConnectionPool;
 use olml89\TelegramUserbot\BotManager\Websocket\WebSocketServer;
 use olml89\TelegramUserbot\BotManager\Websocket\WebSocketServerConfig;
 use olml89\TelegramUserbot\Shared\App\Environment\Env;
+use olml89\TelegramUserbot\Shared\App\Environment\EnvLoader;
 use olml89\TelegramUserbot\Shared\Bot\Command\CompletePhoneLogin\PhoneCodeStorage;
 use olml89\TelegramUserbot\Shared\Bot\Process\ProcessManager;
 use olml89\TelegramUserbot\Shared\Error\SentryConfig;
@@ -49,7 +50,7 @@ $containerBuilder = require dirname(__DIR__, 2) . '/shared/bin/container-builder
 /**
  * Load bot-manager env vars and definitions
  */
-Env::load(dirname(__DIR__));
+$environment = EnvLoader::load(dirname(__DIR__));
 
 $containerBuilder->addDefinitions([
 

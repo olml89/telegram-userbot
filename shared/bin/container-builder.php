@@ -7,7 +7,7 @@ use DI\ContainerBuilder;
 use Monolog\Level;
 use olml89\TelegramUserbot\Shared\App\AppConfig;
 use olml89\TelegramUserbot\Shared\App\Environment\Env;
-use olml89\TelegramUserbot\Shared\App\Environment\Environment;
+use olml89\TelegramUserbot\Shared\App\Environment\EnvLoader;
 use olml89\TelegramUserbot\Shared\Bot\Process\ProcessManager;
 use olml89\TelegramUserbot\Shared\Logger\LoggerConfig;
 use olml89\TelegramUserbot\Shared\Redis\RedisConfig;
@@ -30,13 +30,13 @@ $containerBuilder->useAttributes(true);
 /**
  * Load shared env vars and definitions
  */
-Env::load(dirname(__DIR__));
+$environment = EnvLoader::load(dirname(__DIR__));
 
 return $containerBuilder->addDefinitions([
 
     AppConfig::class => DI\factory(
         fn(): AppConfig => new AppConfig(
-            environment: Environment::load(Env::string('APP_ENV')),
+            environment: $environment,
         ),
     ),
 

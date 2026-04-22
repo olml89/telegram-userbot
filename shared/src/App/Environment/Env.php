@@ -4,28 +4,15 @@ declare(strict_types=1);
 
 namespace olml89\TelegramUserbot\Shared\App\Environment;
 
-use Dotenv\Dotenv;
-use InvalidArgumentException;
-
 /**
  * Wrapper to load environment variables from a .env file, and to get typed environment variables from the environment.
  */
 final readonly class Env
 {
-    public static function load(string $path): void
-    {
-        if (!file_exists($path)) {
-            throw new InvalidArgumentException(sprintf('env file not found at %s', $path));
-        }
-
-        $dotEnv = DotEnv::createImmutable($path);
-        $dotEnv->load();
-    }
-
     public static function get(string $key, bool|int|float|string|null $default): bool|int|float|string|null
     {
         /** @var ?string $value */
-        $value = $_ENV[$key] ?? null;
+        $value = $_ENV[$key] ?? $_SERVER[$key] ?? getenv($key) ?: null;
 
         if (is_null($value)) {
             return $default;
