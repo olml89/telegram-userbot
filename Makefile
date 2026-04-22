@@ -1,3 +1,7 @@
+# Export all variables so sub-makes and shell commands inherit them
+export
+
+
 # Load APP_ENV environment variable safely
 -include .env
 APP_ENV ?= prod
@@ -15,17 +19,12 @@ ifeq ($(APP_ENV),prod)
 else
     $(info Using development environment -> adding docker-compose.dev.yml)
     DOCKER_COMPOSE += -f docker-compose.dev.yml
-    ENV := --env-file .env --env-file backend/.env
+    ENV := --env-file .env --env-file backend/.env --env-file shared/.env
 
-	# Load database variables from backend/.env file
+	# Load variables from backend/.env file and shared/.env
 	-include backend/.env
+	-include shared/.env
 endif
-
-
-# Load database variables safely
-DB_USER ?= postgres
-DB_PASSWORD ?= postgres
-DB_NAME ?= postgres
 
 
 # Build containers
@@ -71,11 +70,9 @@ down:
 
 deploy:
 	@echo "🚀 Starting deployment..."
-	docker compose $(DOCKER_COMPOSE) $(ENV) down
-	docker compose $(DOCKER_COMPOSE) $(ENV) build --no-cache backend
-	docker compose $(DOCKER_COMPOSE) $(ENV) build --no-cache nginx
-	docker compose $(DOCKER_COMPOSE) $(ENV) build --no-cache
-	docker compose $(DOCKER_COMPOSE) $(ENV) up -d --remove-orphans
+	$(MAKE) down
+	$(MAKE) build
+	$(MAKE) upd
 	@echo "⏳ Waiting for containers to be ready..."
 	docker compose $(DOCKER_COMPOSE) $(ENV) exec -T postgres sh -c 'until pg_isready -U $$POSTGRES_USER; do sleep 1; done'
 	docker compose $(DOCKER_COMPOSE) $(ENV) exec -T backend sh -c 'until php -r "exit(0);" 2>/dev/null; do sleep 1; done'
