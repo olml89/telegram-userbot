@@ -1,28 +1,31 @@
-# Load environment variable safely
+# Load APP_ENV environment variable safely
 -include .env
 APP_ENV ?= prod
 
 
-# Load database variables safely
--include backend/.env
-DB_USER ?= postgres
-DB_PASSWORD ?= postgres
-DB_NAME ?= postgres
-
-
 # File args
 DOCKER_COMPOSE := -f docker-compose.yml
-ENV := --env-file .env --env-file backend/.env
 
 
-# Override of the docker compose depending on the environment
+# Override of the -f and the --env-file options on the docker compose command depending on the environment
 ifeq ($(APP_ENV),prod)
     $(info Using production environment -> adding docker-compose.prod.yml)
     DOCKER_COMPOSE += -f docker-compose.prod.yml
+    ENV :=
 else
     $(info Using development environment -> adding docker-compose.dev.yml)
     DOCKER_COMPOSE += -f docker-compose.dev.yml
+    ENV := --env-file .env --env-file backend/.env
+
+	# Load database variables from backend/.env file
+	-include backend/.env
 endif
+
+
+# Load database variables safely
+DB_USER ?= postgres
+DB_PASSWORD ?= postgres
+DB_NAME ?= postgres
 
 
 # Build containers
