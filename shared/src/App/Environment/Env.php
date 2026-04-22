@@ -12,7 +12,7 @@ final readonly class Env
     public static function get(string $key, bool|int|float|string|null $default): bool|int|float|string|null
     {
         /** @var ?string $value */
-        $value = $_ENV[$key] ?? $_SERVER[$key] ?? getenv($key) ?: null;
+        $value = $_ENV[$key] ?? $_SERVER[$key] ?? (getenv($key) !== false ? getenv($key) : null) ?? null;
 
         if (is_null($value)) {
             return $default;

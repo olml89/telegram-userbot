@@ -2,7 +2,7 @@
 set -e
 
 # Sync platform requirements from modules into dev/composer.json
-./sync-platform-reqs.sh
+./bin/commit/sync-platform-reqs.php
 
 echo "🔍 Validating commit..."
 
@@ -24,5 +24,10 @@ if ! composer pint -- --test; then
   exit 1
 fi
 
-echo "✅ All checks have passed. Proceeding with the commit."
+echo "🔍 Checking code refactoring (rector)..."
+if ! composer rector -- --dry-run; then
+  echo "❌ rector checks failed. Run rector refactoring before commiting."
+  exit 1
+fi
+
 exit 0

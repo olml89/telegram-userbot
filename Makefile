@@ -139,7 +139,7 @@ vite:
 
 # Development recipes
 # The -T flag disables TTY, required when running from non-interactive environments like Git hooks
-.PHONY: phpstan pint rector phpunit
+.PHONY: phpstan pint rector phpunit commit
 
 # 1) Converts (bot, bot-manager, backend, shared) to --service=(bot, bot-manager, backend, shared)
 # 2) Converts ci to --ci (it runs phpstan without showing progress)
@@ -206,6 +206,9 @@ phpunit:
 		)\
 	)
 	docker compose $(DOCKER_COMPOSE) exec -T dev composer phpunit -- $(FINAL_ARGS)
+
+commit:
+	docker compose $(DOCKER_COMPOSE) exec -T dev composer validate-commit
 
 # Catch-all pattern rule to prevent Make from complaining about unknown targets
 %:

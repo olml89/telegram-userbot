@@ -23,7 +23,7 @@ run_rector() {
 		DRY_RUN_FLAG="--dry-run"
 	fi
 
-	echo "🔍 Running rector for '$SERVICE' $DRY_RUN_FLAG"
+	echo "🔍 Running rector${DRY_RUN_FLAG:+ $DRY_RUN_FLAG} for '$SERVICE'"
 
 	# Dynamic config file
 	CONFIG="/telegram-userbot/$SERVICE/rector.php"
