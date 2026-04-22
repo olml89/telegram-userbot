@@ -76,8 +76,6 @@ deploy:
 	docker compose $(DOCKER_COMPOSE) $(ENV) exec -T backend sh -c 'until php -r "exit(0);" 2>/dev/null; do sleep 1; done'
 	@echo "🔄 Running database migrations..."
 	docker compose $(DOCKER_COMPOSE) $(ENV) exec -T backend php bin/console doctrine:migrations:migrate --no-interaction
-	@echo "🔄 Seeding database..."
-	docker compose $(DOCKER_COMPOSE) $(ENV) exec -T backend php bin/console app:db:seed
 	@echo "🧹 Clearing Symfony cache..."
 	docker compose $(DOCKER_COMPOSE) $(ENV) exec -T backend php bin/console cache:clear --env=prod
 	@echo "✅ Deployment completed successfully!"
