@@ -1,7 +1,3 @@
-# Export all variables so sub-makes and shell commands inherit them
-export
-
-
 # Load APP_ENV environment variable safely
 -include .env
 APP_ENV ?= prod
@@ -75,9 +71,11 @@ down:
 
 deploy:
 	@echo "🚀 Starting deployment..."
-	$(MAKE) down
-	$(MAKE) build
-	$(MAKE) upd
+	docker compose $(DOCKER_COMPOSE) $(ENV) down
+	docker compose $(DOCKER_COMPOSE) $(ENV) build --no-cache backend
+	docker compose $(DOCKER_COMPOSE) $(ENV) build --no-cache nginx
+	docker compose $(DOCKER_COMPOSE) $(ENV) build --no-cache
+	docker compose $(DOCKER_COMPOSE) $(ENV) up -d --remove-orphans
 	@echo "⏳ Waiting for containers to be ready..."
 	docker compose $(DOCKER_COMPOSE) $(ENV) exec -T postgres sh -c 'until pg_isready -U $$POSTGRES_USER; do sleep 1; done'
 	docker compose $(DOCKER_COMPOSE) $(ENV) exec -T backend sh -c 'until php -r "exit(0);" 2>/dev/null; do sleep 1; done'
