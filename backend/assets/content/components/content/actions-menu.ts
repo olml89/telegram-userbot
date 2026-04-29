@@ -26,7 +26,6 @@ export class ActionsMenu extends CellElement {
     private createActionsMenuDropdown(): HTMLDivElement {
         const actionsMenuDropdown = document.createElement('div');
         actionsMenuDropdown.classList.add('actions-menu-dropdown');
-        actionsMenuDropdown.appendChild(this.createActionItem('preview', '👁️'));
         actionsMenuDropdown.appendChild(this.createActionItem('edit', '📝'));
         actionsMenuDropdown.appendChild(this.createActionItem('duplicate', '🗐'));
         actionsMenuDropdown.appendChild(this.createActionItem('delete', '🗑'));

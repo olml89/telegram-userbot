@@ -7,6 +7,11 @@
     position: relative;
 }
 
+.media-thumb:hover {
+    cursor: pointer;
+    opacity: 0.75;
+}
+
 .media-thumb .media-img {
     width: 100%;
     height: 100%;

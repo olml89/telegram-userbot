@@ -1,11 +1,15 @@
-import { FileContainer } from '../../content';
+import { Content } from '../../content';
 import { File } from '../../file';
 import { CellElement } from './cell-element';
 
 export class MediaThumb extends CellElement {
-    public constructor(files: FileContainer) {
+    private readonly content: Content;
+
+    public constructor(content: Content) {
         super();
 
+        this.content = content;
+        const files = this.content.files;
         const fileCount = files.list.length;
 
         const thumbnailFiles = files
@@ -29,6 +33,15 @@ export class MediaThumb extends CellElement {
         }
 
         this.cell.appendChild(mediaThumb);
+
+        mediaThumb.addEventListener('click', (): void => {
+            const previewContent = new CustomEvent<Content>('content:preview', {
+                detail: this.content,
+                bubbles: true,
+            });
+
+            mediaThumb.dispatchEvent(previewContent);
+        });
     }
 
     private addPlaceholders(mediaThumb: HTMLDivElement, nonThumbnailFiles: File[]): void {

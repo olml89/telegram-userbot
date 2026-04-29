@@ -7,6 +7,7 @@ import { ModeSelect} from '../components/mode-select';
 import { Tag } from '../tag';
 import { Content } from '../content';
 import { ContentAddModal } from '../add/add-modal';
+import  { ContentPreviewModal } from '../preview/preview-modal';
 import { Paginated } from '../../models/pagination';
 import { BackendError } from '../../models/backend-error';
 import { assertImported, querySelector } from '../../utils/importer';
@@ -148,6 +149,7 @@ export class ContentLibrary implements BusyAware {
     private readonly contentList: ContentList;
     private readonly openContentAddModalBtn: HTMLButtonElement;
     private readonly contentAddModal: ContentAddModal;
+    private readonly contentPreviewModal: ContentPreviewModal;
     private isBusy: boolean = false;
 
     public constructor(
@@ -155,11 +157,13 @@ export class ContentLibrary implements BusyAware {
         contentList: ContentList,
         openContentAddModalBtn: HTMLButtonElement,
         contentAddModal: ContentAddModal,
+        contentPreviewModal: ContentPreviewModal,
     ) {
         this.contentQueryFields = contentQueryFields;
         this.contentList = contentList
         this.openContentAddModalBtn = openContentAddModalBtn;
         this.contentAddModal = contentAddModal;
+        this.contentPreviewModal = contentPreviewModal;
 
         this.openContentAddModalBtn.addEventListener('click', (): void => this.contentAddModal.open());
 
@@ -198,12 +202,14 @@ export class ContentLibrary implements BusyAware {
 
         const openContentAddModalBtn = querySelector<HTMLButtonElement>(document, '[data-content-add-open]');
         const contentAddModal = ContentAddModal.from(document.getElementById('contentAddModal') as HTMLDivElement|null);
+        const contentPreviewModal = ContentPreviewModal.from(document.getElementById('contentPreviewModal') as HTMLDivElement|null);
 
         const required = {
             contentList,
             contentQueryFields,
             openContentAddModalBtn,
             contentAddModal,
+            contentPreviewModal,
         };
 
         if (!assertImported('contents-component', required)) {
@@ -215,6 +221,7 @@ export class ContentLibrary implements BusyAware {
             required.contentList,
             required.openContentAddModalBtn,
             required.contentAddModal,
+            required.contentPreviewModal,
         )
     }
 

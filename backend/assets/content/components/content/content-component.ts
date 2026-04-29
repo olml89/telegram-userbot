@@ -34,7 +34,7 @@ export class ContentComponent implements Component<Content>, Highlightable, Html
         /**
          * Thumbnail
          */
-        this.mediaThumb = new MediaThumb(content.files);
+        this.mediaThumb = new MediaThumb(content);
         this.row.appendChild(this.mediaThumb.element());
 
         /**
