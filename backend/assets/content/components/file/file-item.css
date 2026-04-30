@@ -118,3 +118,15 @@
 .file-item.is-warning .file-thumb.is-clickable .file-placeholder:hover {
     background: color-mix(in srgb, var(--warning) 15%, transparent);
 }
+
+/* Responsive fallback */
+@media (max-width: 900px) {
+    .file-item {
+        grid-template-columns: 72px 1fr;
+        grid-auto-rows: auto;
+    }
+
+    .file-item .file-actions {
+        justify-self: start;
+    }
+}
