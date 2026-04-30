@@ -1,7 +1,7 @@
 @import '../content/add/add-modal.css';
 @import '../content/list/content-list.css';
 @import '../content/list/counter.css';
-@import '../content/components/content/content-component.css';
+@import '../content/list/content/content-component.css';
 @import '../content/list/pagination-component.css';
 @import '../content/list/search-input.css';
 @import '../content/preview/preview-modal.css';

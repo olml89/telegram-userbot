@@ -1,6 +1,6 @@
 import { BusyAware, Component, HtmlElementWrapper } from '../../components/contracts';
 import { Content } from '../content';
-import { ContentComponent } from '../components/content/content-component';
+import { ContentComponent } from './content/content-component';
 import { ContentQueryFields } from './content-library';
 import { BackendError } from '../../utils/backend';
 import { assertImported, querySelector } from '../../utils/importer';

@@ -1,17 +1,17 @@
 import { BusyAware, ChangeAware, Component, ErrorAware } from '../../components/contracts';
 import { ValidatableComponent } from '../../components/validatable-component';
 import { TextInput } from '../../components/input/text-input';
-import { ValidatableCategorySelect } from '../components/category-select';
-import { ValidatableLanguageSelect } from '../components/language-select';
-import { ValidatableStatusSelect } from '../components/status-select';
-import { ValidatableModeSelect } from '../components/mode-select';
-import { PriceInput } from '../components/price-input';
-import { IntensityInput } from '../components/intensity-input';
-import { Tag } from '../tag';
-import { TagsComponent } from '../components/tag/tags-component';
-import { File as BackendFile } from '../file';
-import { FilesComponent } from '../components/file/files-component';
+import { ValidatableCategorySelect } from './category-select';
+import { ValidatableLanguageSelect } from './language-select';
+import { ValidatableStatusSelect } from './status-select';
+import { ValidatableModeSelect } from './mode-select';
+import { PriceInput } from './price-input';
+import { IntensityInput } from './intensity-input';
+import { TagsComponent } from './tag/tags-component';
+import { FilesComponent } from './file/files-component';
 import { Content } from '../content';
+import { Tag } from '../tag';
+import { File as BackendFile } from '../file';
 import { BackendError } from '../../utils/backend';
 import { assertImported, querySelector, querySelectorAll } from '../../utils/importer';
 

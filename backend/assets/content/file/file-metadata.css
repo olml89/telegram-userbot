@@ -1,0 +1,80 @@
+.file-item .file-thumb {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 80px;
+    height: 80px;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.file-item .file-thumb.is-clickable {
+    cursor: pointer;
+}
+
+.file-item .file-thumb img {
+    width: 100%;
+    height: 100%;
+    border-radius: 10px;
+    object-fit: cover;
+}
+
+.file-item .file-thumb img:hover {
+    opacity: 0.75;
+}
+
+.file-item .file-thumb .file-placeholder {
+    width: 100%;
+    height: 100%;
+    border-radius: 10px;
+    background: color-mix(in srgb, var(--accent-weak) 10%, transparent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.file-item.is-error .file-thumb .file-placeholder {
+    background: color-mix(in srgb, var(--danger) 10%, transparent);
+}
+
+.file-item.is-warning .file-thumb .file-placeholder {
+    background: color-mix(in srgb, var(--warning) 10%, transparent);
+}
+
+.file-item .file-thumb.is-clickable .file-placeholder:hover {
+    background: color-mix(in srgb, var(--accent-weak) 15%, transparent);
+}
+
+.file-item.is-error .file-thumb.is-clickable .file-placeholder:hover {
+    background: color-mix(in srgb, var(--danger) 15%, transparent);
+}
+
+.file-item.is-warning .file-thumb.is-clickable .file-placeholder:hover {
+    background: color-mix(in srgb, var(--warning) 15%, transparent);
+}
+
+.file-item .file-meta {
+    min-width: 0;
+    overflow: hidden;
+}
+
+.file-item .file-meta .file-title {
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 6px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.file-item .file-meta .file-row {
+    display: flex;
+    gap: 6px;
+    font-size: 12px;
+    color: var(--text-muted);
+}
+
+.file-item .file-meta .file-row .file-label {
+    color: var(--text);
+    font-weight: 600;
+}

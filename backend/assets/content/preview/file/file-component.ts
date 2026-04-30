@@ -1,7 +1,9 @@
 import { BaseComponent } from '../../../components/base-component';
 import { ErrorClearable, HtmlElementWrapper } from '../../../components/contracts';
-import { FileItem } from './file-item';
+
 import { File as BackendFile } from '../../file';
+import { FileItem } from '../../file/file-item';
+import { FileAdapterFactory } from '../../file/file-metadata';
 import { BackendApi, BackendError } from '../../../utils/backend';
 
 export class FileComponent extends BaseComponent<BackendFile> implements ErrorClearable, HtmlElementWrapper {
@@ -14,7 +16,8 @@ export class FileComponent extends BaseComponent<BackendFile> implements ErrorCl
         super();
 
         this.file = file;
-        this.fileItem = new FileItem(file);
+        this.fileItem = new FileItem(FileAdapterFactory.from(file).metadata());
+        this.fileItem.setUploadedState(file);
 
         this.fileItem.onRemove(async(): Promise<void> => {
             this.clearErrors();

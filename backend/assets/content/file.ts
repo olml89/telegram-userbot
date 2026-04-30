@@ -1,7 +1,7 @@
 import { Entity, Payload } from '../models/entity';
-import { Thumbnail } from './components/file/metadata/thumbnail';
-import { Resolution} from './components/file/metadata/resolution';
-import { Duration } from './components/file/metadata/duration';
+import { Thumbnail } from './file/metadata/thumbnail';
+import { Resolution} from './file/metadata/resolution';
+import { Duration } from './file/metadata/duration';
 
 export class Size {
     public bytes: number;
