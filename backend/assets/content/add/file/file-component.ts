@@ -1,8 +1,8 @@
 import { BusyAware, ChangeAware, ErrorClearable, HtmlElementWrapper } from '../../../components/contracts';
 import { BaseComponent } from '../../../components/base-component';
 import { File as BackendFile } from '../../file';
-import { FileItem } from '../../file/file-item';
-import { FileAdapterFactory } from '../../file/file-metadata';
+import { FileItem } from '../../file-item/file-item';
+import { FileAdapterFactory } from '../../file-item/file-metadata';
 import { TusUploader, convertTusErrorToResponse } from './tus-uploader';
 import { BackendError } from '../../../utils/backend';
 

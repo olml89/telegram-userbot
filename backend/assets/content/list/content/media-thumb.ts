@@ -1,7 +1,7 @@
 import { CellElement } from './cell-element';
 import { Content } from '../../content';
 import { File, Image, Video  } from '../../file';
-import { FileAdapterFactory } from '../../file/file-metadata';
+import { FileAdapterFactory } from '../../file-item/file-metadata';
 
 export class MediaThumb extends CellElement {
     private readonly content: Content;

@@ -1,9 +1,8 @@
 import { BaseComponent } from '../../../components/base-component';
 import { ErrorClearable, HtmlElementWrapper } from '../../../components/contracts';
-
 import { File as BackendFile } from '../../file';
-import { FileItem } from '../../file/file-item';
-import { FileAdapterFactory } from '../../file/file-metadata';
+import { FileItem } from '../../file-item/file-item';
+import { FileAdapterFactory } from '../../file-item/file-metadata';
 import { BackendApi, BackendError } from '../../../utils/backend';
 
 export class FileComponent extends BaseComponent<BackendFile> implements ErrorClearable, HtmlElementWrapper {
