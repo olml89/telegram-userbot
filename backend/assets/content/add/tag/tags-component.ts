@@ -4,13 +4,14 @@ import { TagCount } from './tag-count';
 import { TagInput } from './tag-input';
 import { TagDropdown } from './tag-dropdown';
 import { TagComponent } from './tag-component';
-import { BackendError } from '../../../utils/backend';
+import { BackendApi, BackendError } from '../../../utils/backend';
 import { assertImported, querySelector } from '../../../utils/importer';
 
 export class TagsComponent extends CollectionComponent<Tag> {
     private readonly tagInput: TagInput;
     private readonly tagDropdown: TagDropdown;
     private readonly tagCount: TagCount;
+    private readonly backend: BackendApi = new BackendApi();
 
     public constructor(
         heading: HTMLHeadingElement,
@@ -129,47 +130,11 @@ export class TagsComponent extends CollectionComponent<Tag> {
         this.tagCount.clearErrors();
     }
 
-    private async create(name: string): Promise<Tag> {
-        const response = await fetch('/api/tags', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                name,
-            }),
-        });
-
-        if (!response.ok) {
-            throw await BackendError.from(
-                response,
-                'Failed to create tag',
-            );
-        }
-
-        return Tag.from(await response.json());
-    }
-
     public override destroy(): void {
         super.destroy();
 
         this.tagDropdown.clear();
         this.tagCount.destroy();
-    }
-
-    private async fetch(query: string): Promise<Tag[]> {
-        const response = await fetch(`/api/tags?query=${encodeURIComponent(query)}`);
-
-        if (!response.ok) {
-            throw await BackendError.from(
-                response,
-                'Failed to fetch tags',
-            );
-        }
-
-        const payload = await response.json();
-
-        return payload.map((tagPayload: TagPayload): Tag => Tag.from(tagPayload));
     }
 
     public override getValue(): Tag[] {
@@ -200,7 +165,7 @@ export class TagsComponent extends CollectionComponent<Tag> {
         try {
             this.tagInput.setBusy(true);
             this.tagDropdown.creatingTag();
-            const created = await this.create(value);
+            const created = await this.backend.createTag(value);
 
             if (this.tagCount.addTag(created)) {
                 this.tagInput.clear();
@@ -219,7 +184,7 @@ export class TagsComponent extends CollectionComponent<Tag> {
         try {
             this.tagInput.setBusy(true);
             this.tagDropdown.fetchingTags();
-            const tags = await this.fetch(query);
+            const tags = await this.backend.searchTags(query);
 
             this.tagDropdown.show(
                 tags,

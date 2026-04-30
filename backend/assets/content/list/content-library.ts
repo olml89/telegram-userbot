@@ -9,7 +9,7 @@ import { Content } from '../content';
 import { ContentAddModal } from '../add/add-modal';
 import  { ContentPreviewModal } from '../preview/preview-modal';
 import { Paginated } from '../../models/pagination';
-import { BackendError } from '../../utils/backend';
+import { BackendApi, BackendError } from '../../utils/backend';
 import { assertImported, querySelector } from '../../utils/importer';
 
 export class ContentQueryFields implements BusyAware, ChangeAware, Component<string> {
@@ -150,6 +150,8 @@ export class ContentLibrary implements BusyAware {
     private readonly openContentAddModalBtn: HTMLButtonElement;
     private readonly contentAddModal: ContentAddModal;
     private readonly contentPreviewModal: ContentPreviewModal;
+    private readonly backend: BackendApi = new BackendApi();
+
     private isBusy: boolean = false;
 
     public constructor(
@@ -225,21 +227,6 @@ export class ContentLibrary implements BusyAware {
         )
     }
 
-    private async fetch(query: string): Promise<Paginated<Content>> {
-        const response = await fetch(`/api/content${query}`);
-
-        if (!response.ok) {
-            throw await BackendError.from(
-                response,
-                'Failed to fetch content list',
-            );
-        }
-
-        const payload = await response.json();
-
-        return Paginated.from<Content>(payload, Content);
-    }
-
     private async load(): Promise<void> {
         if (this.isBusy) {
             return;
@@ -249,7 +236,7 @@ export class ContentLibrary implements BusyAware {
 
         try {
             const query = this.contentQueryFields.getValue();
-            const paginatedContents = await this.fetch(query);
+            const paginatedContents = await this.backend.searchContents(query);
             this.contentQueryFields.pagination.update(paginatedContents.pagination);
 
             this.contentList.replace(

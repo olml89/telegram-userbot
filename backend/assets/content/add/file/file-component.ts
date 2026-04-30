@@ -4,7 +4,7 @@ import { File as BackendFile } from '../../file';
 import { FileItem } from '../../file-item/file-item';
 import { FileAdapterFactory } from '../../file-item/file-metadata';
 import { TusUploader, convertTusErrorToResponse } from './tus-uploader';
-import { BackendError } from '../../../utils/backend';
+import { BackendApi, BackendError } from '../../../utils/backend';
 
 export type UploadedFile = FileComponent & { backendFile: BackendFile };
 
@@ -14,6 +14,7 @@ export class FileComponent extends BaseComponent<BackendFile|null> implements Bu
     private readonly cancelHandler: () => Promise<void>;
     private readonly uploader: TusUploader;
     private readonly eventTarget: EventTarget = new EventTarget();
+    private readonly backend: BackendApi = new BackendApi();
 
     public backendFile: BackendFile|null = null;
     private isCanceled: boolean = false;
@@ -66,7 +67,7 @@ export class FileComponent extends BaseComponent<BackendFile|null> implements Bu
                 this.fileItem.setSavingState();
 
                 try {
-                    this.backendFile = await this.saveBackendFile(this.uploader.getId());
+                    this.backendFile = await this.backend.saveFile(this.uploader.getId());
                     this.fileItem.setUploadedState(this.backendFile);
                     this.emit('file-item:uploaded', this);
                 } catch (e: any) {
@@ -88,6 +89,10 @@ export class FileComponent extends BaseComponent<BackendFile|null> implements Bu
         });
 
         this.fileItem.onRemove(async(): Promise<void> => {
+            if (this.backendFile === null) {
+                return;
+            }
+
             this.clearErrors();
             this.fileItem.setDeletingState();
 
@@ -104,7 +109,7 @@ export class FileComponent extends BaseComponent<BackendFile|null> implements Bu
             this.emit('file-item:delete:begin');
 
             try {
-                await this.removeBackendFile();
+                await this.backend.deleteFile(this.backendFile);
                 this.removeItem();
             } catch (e: any) {
                 const backendError = e as BackendError;
@@ -217,47 +222,9 @@ export class FileComponent extends BaseComponent<BackendFile|null> implements Bu
         });
     }
 
-    private async removeBackendFile(): Promise<void> {
-        if (this.backendFile === null) {
-            return;
-        }
-
-        const response = await fetch(`/api/files/${this.backendFile.publicId}`, {
-            method: 'DELETE',
-        });
-
-        if (!response.ok) {
-            throw await BackendError.from(
-                response,
-                'Failed to delete file',
-            );
-        }
-    }
-
     private removeItem(): void {
         this.emit('file-item:removed', this);
         this.emit('file-item:cancel:unregister', this.cancelHandler);
-    }
-
-    private async saveBackendFile(uploadId: string): Promise<BackendFile> {
-        const response = await fetch('/api/files', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                uploadId,
-            }),
-        });
-
-        if (!response.ok) {
-            throw await BackendError.from(
-                response,
-                'Failed to save file',
-            );
-        }
-
-        return BackendFile.from(await response.json());
     }
 
     public setBusy(isBusy: boolean): void {
@@ -278,7 +245,7 @@ export class FileComponent extends BaseComponent<BackendFile|null> implements Bu
         this.emit('file-item:upload:begin');
 
         try {
-            await this.validate();
+            await this.backend.validateFile(this.file);
             this.fileItem.setUploadingState();
             this.uploader.start();
         } catch (e: any) {
@@ -287,27 +254,6 @@ export class FileComponent extends BaseComponent<BackendFile|null> implements Bu
             this.fileItem.setUploadErrorState(backendError);
             this.emit('file-item:change');
             this.finalizeUpload();
-        }
-    }
-
-    private async validate(): Promise<void> {
-        const response = await fetch('/api/files/validation', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                originalName: this.file.name,
-                mimeType: this.file.type || null,
-                size: this.file.size,
-            }),
-        });
-
-        if (!response.ok) {
-            throw await BackendError.from(
-                response,
-                'Failed to validate file',
-            );
         }
     }
 }

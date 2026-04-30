@@ -1,4 +1,8 @@
-import { File } from '../content/file';
+import { Content } from '../content/content';
+import { ContentFieldValue } from '../content/add/add-modal';
+import { Tag, TagPayload } from '../content/tag';
+import { File as BackendFile } from '../content/file';
+import { Paginated } from '../models/pagination';
 
 const humanizeError = (field: string, messages: string[]) => {
     const humanizeField = (field: string) => field
@@ -81,38 +85,146 @@ export class BackendError extends Error {
 }
 
 export class BackendApi {
-    private async fetch(method: string, endpoint: string, headers: Record<string, string> = {}, body?: unknown): Promise<Response> {
+    private async fetch(params: {
+        method: string,
+        endpoint: string,
+        headers?: Record<string, string>,
+        body?: unknown,
+    }): Promise<Response> {
         const options: RequestInit = {
-            method: method,
+            method: params.method,
             headers: {
-                ...headers,
+                ...params.headers,
             },
         }
 
-        if (body && method !== 'GET') {
-            options.body = JSON.stringify(body);
+        if (params.body && params.method !== 'GET') {
+            options.body = JSON.stringify(params.body);
             options.headers = {
                 ...options.headers,
                 'Content-Type': 'application/json',
             };
         }
 
-        return fetch(`/api/${endpoint}`, options);
+        return fetch(`/api/${params.endpoint}`, options);
     }
 
-    public async deleteFile(file: File): Promise<void> {
-        const response = await this.fetch(
-            'DELETE',
-            `files/${file.publicId}`,
-            {
-                'Content-Type': 'application/json',
-            },
-        );
+    public async addContent(contentData: Record<string, ContentFieldValue>): Promise<Content> {
+        const response = await this.fetch({
+            method: 'POST',
+            endpoint: 'content',
+            body: contentData,
+        });
+
+        if (!response.ok) {
+            throw await BackendError.from(
+                response,
+                'Failed to add content',
+            );
+        }
+
+        return Content.from(await response.json());
+    }
+
+    public async createTag(name: string): Promise<Tag> {
+        const response = await this.fetch({
+            method: 'POST',
+            endpoint: 'tags',
+            body: { name },
+        });
+
+        if (!response.ok) {
+            throw await BackendError.from(
+                response,
+                'Failed to create tag',
+            );
+        }
+
+        return Tag.from(await response.json());
+    }
+
+    public async deleteFile(file: BackendFile): Promise<void> {
+        const response = await this.fetch({
+            method: 'DELETE',
+            endpoint: `files/${file.publicId}`,
+        });
 
         if (!response.ok) {
             throw await BackendError.from(
                 response,
                 'Failed to delete file',
+            );
+        }
+    }
+
+    public async saveFile(uploadId: string): Promise<BackendFile> {
+        const response = await this.fetch({
+            method: 'POST',
+            endpoint: `files`,
+            body: { uploadId },
+        });
+
+        if (!response.ok) {
+            throw await BackendError.from(
+                response,
+                'Failed to save file',
+            );
+        }
+
+        return BackendFile.from(await response.json());
+    }
+
+    public async searchContents(query: string): Promise<Paginated<Content>> {
+        const response = await this.fetch({
+            method: 'GET',
+            endpoint: `content${query}`,
+        });
+
+        if (!response.ok) {
+            throw await BackendError.from(
+                response,
+                'Failed to fetch content list',
+            );
+        }
+
+        const payload = await response.json();
+
+        return Paginated.from<Content>(payload, Content);
+    }
+
+    public async searchTags(query: string): Promise<Tag[]> {
+        const response = await this.fetch({
+            method: 'GET',
+            endpoint: `tags?query=${encodeURIComponent(query)}`,
+        });
+
+        if (!response.ok) {
+            throw await BackendError.from(
+                response,
+                'Failed to fetch tags',
+            );
+        }
+
+        const payload = await response.json();
+
+        return payload.map((tagPayload: TagPayload): Tag => Tag.from(tagPayload));
+    }
+
+    public async validateFile(file: File): Promise<void> {
+        const response = await this.fetch({
+            method: 'POST',
+            endpoint: `files/validation`,
+            body: {
+                originalName: file.name,
+                mimeType: file.type || null,
+                size: file.size,
+            },
+        });
+
+        if (!response.ok) {
+            throw await BackendError.from(
+                response,
+                'Failed to validate file',
             );
         }
     }

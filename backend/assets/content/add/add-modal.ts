@@ -12,12 +12,12 @@ import { FilesComponent } from './file/files-component';
 import { Content } from '../content';
 import { Tag } from '../tag';
 import { File as BackendFile } from '../file';
-import { BackendError } from '../../utils/backend';
+import { BackendApi, BackendError } from '../../utils/backend';
 import { assertImported, querySelector, querySelectorAll } from '../../utils/importer';
 
 type ContentFieldKey = keyof ContentFields;
 type ContentFieldComponent = ValidatableComponent&BusyAware;
-type ContentFieldValue = ReturnType<ContentFieldComponent['getValue']>;
+export type ContentFieldValue = ReturnType<ContentFieldComponent['getValue']>;
 
 class ContentFields implements BusyAware, ChangeAware, Component<Record<string, ContentFieldValue>>, ErrorAware {
     private readonly title: TextInput;
@@ -254,6 +254,7 @@ export class ContentAddModal implements Component<Content|null> {
     private readonly addBtn: HTMLButtonElement;
     private readonly closeBtns: NodeListOf<HTMLButtonElement>;
     private readonly eventTarget: EventTarget = new EventTarget();
+    private readonly backend: BackendApi = new BackendApi();
 
     private content: Content|null = null;
 
@@ -323,25 +324,6 @@ export class ContentAddModal implements Component<Content|null> {
         );
     }
 
-    private async add(contentFields: ContentFields): Promise<Content> {
-        const response = await fetch('/api/content', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(contentFields.getValue()),
-        });
-
-        if (!response.ok) {
-            throw await BackendError.from(
-                response,
-                'Failed to add content',
-            );
-        }
-
-        return Content.from(await response.json());
-    }
-
     private clearFormError(): void {
         this.formError.textContent = '';
         this.formError.hidden = true;
@@ -400,7 +382,7 @@ export class ContentAddModal implements Component<Content|null> {
         this.setSubmitLoading(true);
 
         try {
-            const content = await this.add(this.contentFields);
+            const content = await this.backend.addContent(this.contentFields.getValue());
             this.eventTarget.dispatchEvent(new CustomEvent('contents-component:add', { detail: content }));
             this.contentFields.destroy();
             this.setAddButtonDisabled(!this.contentFields.validate());

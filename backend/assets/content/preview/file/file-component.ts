@@ -8,8 +8,8 @@ import { BackendApi, BackendError } from '../../../utils/backend';
 export class FileComponent extends BaseComponent<BackendFile> implements ErrorClearable, HtmlElementWrapper {
     private readonly file: BackendFile;
     private readonly fileItem: FileItem;
-    private readonly backend: BackendApi = new BackendApi();
     private readonly eventTarget: EventTarget = new EventTarget();
+    private readonly backend: BackendApi = new BackendApi();
 
     public constructor(file: BackendFile) {
         super();
