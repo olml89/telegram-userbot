@@ -1,8 +1,8 @@
-@import 'content-info/content-info.css';
-@import 'actions-menu.css';
-@import 'bundle.css';
-@import 'media-thumb.css';
-@import 'price-info.css';
+@import './content-info/content-info.css';
+@import './actions-menu.css';
+@import './bundle.css';
+@import './media-thumb.css';
+@import './price-info.css';
 
 tr[data-content-row] {
     animation: fadeIn 0.3s ease-in;

@@ -1,3 +1,3 @@
-.bundle {
+tr[data-content-row] .bundle {
     color: var(--text-muted);
 }

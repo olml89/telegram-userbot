@@ -1,4 +1,4 @@
-.tag-input {
+#contentAddModal .tag-input {
     display: flex;
     flex-direction: column;
     gap: 10px;

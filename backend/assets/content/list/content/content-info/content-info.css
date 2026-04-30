@@ -1,8 +1,8 @@
-@import 'content-description.css';
-@import 'content-title.css';
-@import 'tag-list.css';
+@import './content-description.css';
+@import './content-title.css';
+@import './tag-list.css';
 
-.content-info {
+tr[data-content-row] .content-info {
     display: flex;
     flex-direction: column;
     gap: 4px;

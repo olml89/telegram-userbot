@@ -1,6 +1,6 @@
-import { Component } from '../../../../components/contracts';
-import { TextHighlightable } from './hightlightable';
-import { Tag } from '../../../tag';
+import { Component } from '../../components/contracts';
+import { TextHighlightable } from '../list/content/content-info/hightlightable';
+import { Tag } from '../tag';
 
 export class TagPill extends TextHighlightable implements Component<Tag> {
     private readonly tag: Tag;

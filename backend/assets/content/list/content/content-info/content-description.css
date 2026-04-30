@@ -1,4 +1,4 @@
-.content-description {
+tr[data-content-row] .content-info .content-description {
     color: var(--text-muted);
     font-size: 12px;
 }

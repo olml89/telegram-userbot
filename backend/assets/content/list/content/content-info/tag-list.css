@@ -1,7 +1,5 @@
-.tag-list {
-    display: flex;
-    align-items: center;
+@import '../../../tag/tag-list.css';
+
+tr[data-content-row] .content-info .tag-list {
     justify-content: center;
-    flex-wrap: wrap;
-    gap: 6px;
 }

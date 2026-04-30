@@ -3,13 +3,12 @@ import { CellElement } from '../cell-element';
 import { Highlightable } from './hightlightable';
 import {ContentTitle} from './content-title';
 import {ContentDescription} from './content-description';
-import { TagPill } from './tag-pill';
-import { TagList } from './tag-list';
+import { TagList } from '../../../tag/tag-list';
 
 export class ContentInfo extends CellElement implements Highlightable {
     private readonly contentTitle: ContentTitle;
     private readonly contentDescription: ContentDescription;
-    private readonly tagList: TagList;
+    private readonly tags: TagList;
 
     public constructor(content: Content) {
         super();
@@ -23,8 +22,9 @@ export class ContentInfo extends CellElement implements Highlightable {
         this.contentDescription = new ContentDescription(content.description);
         contentInfo.appendChild(this.contentDescription.element());
 
-        this.tagList = new TagList(content.tags);
-        contentInfo.appendChild(this.tagList.element());
+        this.tags = new TagList();
+        this.tags.setValue(content.tags);
+        contentInfo.appendChild(this.tags.element());
 
         this.cell.appendChild(contentInfo);
     }
@@ -32,6 +32,6 @@ export class ContentInfo extends CellElement implements Highlightable {
     public highlight(searchTerm: string): void {
         this.contentTitle.highlight(searchTerm);
         this.contentDescription.highlight(searchTerm);
-        this.tagList.getValue().forEach((tag: TagPill): void => tag.highlight(searchTerm));
+        this.tags.highLight(searchTerm);
     }
 }

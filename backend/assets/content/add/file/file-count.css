@@ -1,4 +1,4 @@
-.file-upload-card {
+#contentAddModal .file-upload-card {
     width: 100%;
     border: 2px dashed var(--border);
     border-radius: 16px;
@@ -11,29 +11,29 @@
     margin-bottom: 12px;
 }
 
-.file-upload-card:hover,
-.file-upload-card.is-dragover {
+#contentAddModal .file-upload-card:hover,
+#contentAddModal .file-upload-card.is-dragover {
     background: #eaedf2;
 }
 
-.file-upload-card.is-disabled {
+#contentAddModal .file-upload-card.is-disabled {
     cursor: not-allowed;
     opacity: 0.6;
     pointer-events: none;
 }
 
-.file-upload-card.is-error {
+#contentAddModal .file-upload-card.is-error {
     border-color: var(--danger);
 }
 
-.file-upload-card .file-upload-content {
+#contentAddModal .file-upload-card .file-upload-content {
     display: flex;
     flex-direction: column;
     gap: 6px;
     align-items: center;
 }
 
-.file-upload-card .file-upload-icon {
+#contentAddModal .file-upload-card .file-upload-icon {
     width: 52px;
     height: 52px;
     border-radius: 999px;
@@ -44,38 +44,38 @@
     justify-content: center;
 }
 
-.file-upload-card .file-upload-icon svg {
+#contentAddModal .file-upload-card .file-upload-icon svg {
     width: 28px;
     height: 28px;
     fill: currentColor;
 }
 
-.file-upload-card .file-upload-count {
+#contentAddModal .file-upload-card .file-upload-count {
     font-weight: 600;
     color: var(--text);
 }
 
-.file-upload-card.is-error .file-upload-count {
+#contentAddModal .file-upload-card.is-error .file-upload-count {
     color: var(--danger);
 }
 
-.file-upload-card .file-upload-subtext {
+#contentAddModal .file-upload-card .file-upload-subtext {
     font-size: 12px;
     color: var(--text-muted);
 }
 
-.file-upload-card .file-upload-hint {
+#contentAddModal .file-upload-card .file-upload-hint {
     font-size: 11px;
     color: #9aa3b2;
 }
 
-.file-total-size {
+#contentAddModal .file-total-size {
     margin-top: 8px;
     font-size: 11px;
     color: var(--text-muted);
     text-align: center;
 }
 
-.file-input {
+#contentAddModal .file-input {
     display: none;
 }

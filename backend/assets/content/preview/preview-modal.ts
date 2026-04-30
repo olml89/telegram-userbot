@@ -1,7 +1,7 @@
 import { Component } from '../../components/contracts';
 import { LocalDate } from '../../components/local-date';
 import { Content } from '../content';
-import { TagList } from './tag/tag-list';
+import { TagList } from '../tag/tag-list';
 import { FileList } from './file/file-list';
 import { assertImported, querySelector, querySelectorAll } from '../../utils/importer';
 
@@ -60,7 +60,7 @@ class ContentFields implements Component<Content|null> {
         const created = querySelector<HTMLSpanElement>(previewModal, '[data-content-created]');
         const sales = querySelector<HTMLSpanElement>(previewModal, '[data-content-sales]');
         const description = querySelector<HTMLParagraphElement>(previewModal, '[data-content-description]');
-        const tags = TagList.from(querySelector<HTMLDivElement>(previewModal, '[data-content-tags]'));
+        const tags = new TagList(querySelector<HTMLDivElement>(previewModal, '[data-content-tags]'));
 
         const files = FileList.from(
             querySelector<HTMLFormElement>(previewModal, '[data-content-files]'),

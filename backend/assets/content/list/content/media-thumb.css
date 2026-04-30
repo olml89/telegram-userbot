@@ -1,4 +1,4 @@
-.media-thumb {
+tr[data-content-row] .media-thumb {
     width: 64px;
     height: 64px;
     border-radius: 10px;
@@ -7,12 +7,12 @@
     position: relative;
 }
 
-.media-thumb:hover {
+tr[data-content-row] .media-thumb:hover {
     cursor: pointer;
     opacity: 0.75;
 }
 
-.media-thumb .media-img {
+tr[data-content-row] .media-thumb .media-img {
     width: 100%;
     height: 100%;
     object-fit: cover;
@@ -20,7 +20,7 @@
     z-index: 1;
 }
 
-.media-thumb .placeholder {
+tr[data-content-row] .media-thumb .placeholder {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -31,7 +31,7 @@
     height: 100%;
 }
 
-.media-thumb .media-more {
+tr[data-content-row] .media-thumb .media-more {
     position: absolute;
     inset: 0;
     background: rgba(17, 17, 17, 0.65);
@@ -46,35 +46,35 @@
 }
 
 /* 1 file: full tile */
-.media-thumb.media-single .media-img {
+tr[data-content-row] .media-thumb.media-single .media-img {
     width: 100%;
     height: 100%;
 }
 
-.media-thumb.media-single .placeholder {
+tr[data-content-row] .media-thumb.media-single .placeholder {
     border-radius: 10px;
     font-size: 28px;
 }
 
 /* 2 files: side-by-side */
-.media-thumb.media-pair {
+tr[data-content-row] .media-thumb.media-pair {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 2px;
     padding: 2px;
 }
 
-.media-thumb.media-pair .media-img {
+tr[data-content-row] .media-thumb.media-pair .media-img {
     border-radius: 6px;
 }
 
-.media-thumb.media-pair .placeholder {
+tr[data-content-row] .media-thumb.media-pair .placeholder {
     border-radius: 6px;
     font-size: 20px;
 }
 
 /* >= 3–4 files: 2x2 grid */
-.media-thumb.media-grid {
+tr[data-content-row] .media-thumb.media-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     grid-template-rows: repeat(2, 1fr);
@@ -83,7 +83,7 @@
     height: 100%;
 }
 
-.media-thumb.media-grid .media-img {
+tr[data-content-row] .media-thumb.media-grid .media-img {
     border-radius: 6px;
     width: 100%;
     height: 100%;
@@ -91,7 +91,7 @@
     aspect-ratio: 1;
 }
 
-.media-thumb.media-grid .placeholder {
+tr[data-content-row] .media-thumb.media-grid .placeholder {
     border-radius: 6px;
     font-size: 16px;
     aspect-ratio: 1;
