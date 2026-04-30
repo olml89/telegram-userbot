@@ -1,0 +1,25 @@
+.details-grid {
+    display: flex;
+    gap: 18px;
+}
+
+.details-grid .details-panel {
+    flex: 1 1 0;
+    min-width: 0;
+}
+
+.details-grid .details-panel h4 {
+    margin-bottom: 10px;
+}
+
+.details-grid .details-panel .detail-row {
+    font-size: 12px;
+    margin-bottom: 8px;
+}
+
+/* Responsive: stack on small screens */
+@media (max-width: 900px) {
+    .details-grid {
+        grid-template-columns: 1fr;
+    }
+}

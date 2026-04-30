@@ -2,7 +2,7 @@ import { BusyAware, Component, HtmlElementWrapper } from '../../components/contr
 import { Content } from '../content';
 import { ContentComponent } from '../components/content/content-component';
 import { ContentQueryFields } from './content-library';
-import { BackendError } from '../../models/backend-error';
+import { BackendError } from '../../utils/backend';
 import { assertImported, querySelector } from '../../utils/importer';
 
 class ContentNotifications implements HtmlElementWrapper {

@@ -8,7 +8,6 @@ use DateTimeInterface;
 use olml89\TelegramUserbot\Backend\File\Domain\Audio;
 use olml89\TelegramUserbot\Backend\File\Domain\File;
 use olml89\TelegramUserbot\Backend\File\Domain\Image;
-use olml89\TelegramUserbot\Backend\File\Domain\Thumbnail\ThumbnailDisplayer;
 use olml89\TelegramUserbot\Backend\File\Domain\Video;
 use olml89\TelegramUserbot\Backend\Shared\Application\Result\IsResult;
 use olml89\TelegramUserbot\Backend\Shared\Application\Result\Result;
@@ -22,7 +21,6 @@ readonly class FileResult implements Result
     public string $originalName;
     public string $mimeType;
     public int $bytes;
-    public bool $hasThumbnail;
     public string $createdAt;
     public string $updatedAt;
 
@@ -33,7 +31,6 @@ readonly class FileResult implements Result
         $this->originalName = $file->originalName()->value;
         $this->mimeType = $file->mimeType()->value;
         $this->bytes = $file->bytes()->value;
-        $this->hasThumbnail = $file instanceof ThumbnailDisplayer;
         $this->createdAt = $file->createdAt()->format(DateTimeInterface::RFC3339);
         $this->updatedAt = $file->updatedAt()->format(DateTimeInterface::RFC3339);
     }

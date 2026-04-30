@@ -136,7 +136,7 @@ export class FileCount extends BaseComponent<UploadedFile[]>implements BusyAware
 
         const totalSize = Array
             .from(uploadedFiles)
-            .reduce((carry: Size, uploadedFile: UploadedFile) => carry.add(uploadedFile.backendFile.bytes), new Size());
+            .reduce((carry: Size, uploadedFile: UploadedFile) => carry.add(uploadedFile.backendFile.size), new Size());
 
         this.totalSize.textContent = `Total size: ${totalSize.format()}`;
         this.eventTarget.dispatchEvent(new Event('file-count:change'));

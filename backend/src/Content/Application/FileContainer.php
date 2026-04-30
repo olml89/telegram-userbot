@@ -18,7 +18,7 @@ final readonly class FileContainer implements Result
     use IsResult;
 
     public function __construct(
-        public FileCounter $count,
+        public FileTypeCounter $types,
 
         /**
         * @var FileResult[]
@@ -52,7 +52,7 @@ final readonly class FileContainer implements Result
         );
 
         return new self(
-            count: new FileCounter(
+            types: new FileTypeCounter(
                 images: $imageCount,
                 videos: $videoCount,
                 audios: $audioCount,

@@ -1,6 +1,7 @@
-import { Content } from '../../content';
-import { File } from '../../file';
 import { CellElement } from './cell-element';
+import { Content } from '../../content';
+import { File, Image, Video  } from '../../file';
+import { FileAdapterFactory } from '../file/file-metadata';
 
 export class MediaThumb extends CellElement {
     private readonly content: Content;
@@ -11,15 +12,16 @@ export class MediaThumb extends CellElement {
         this.content = content;
         const files = this.content.files;
         const fileCount = files.list.length;
+        const isThumbnailFile = (file: File): file is Image|Video => file instanceof Image || file instanceof Video;
 
         const thumbnailFiles = files
             .list
-            .filter((file: File) => file.hasThumbnail)
+            .filter(isThumbnailFile)
             .slice(0, 4);
 
         const nonThumbnailFiles = files
             .list
-            .filter((file: File) => !file.hasThumbnail)
+            .filter(file => !isThumbnailFile(file))
             .slice(0, 4 - thumbnailFiles.length);
 
         const mediaThumb = document.createElement('div');
@@ -48,16 +50,16 @@ export class MediaThumb extends CellElement {
         nonThumbnailFiles.forEach((nonThumbnailFile: File): void => {
             const placeholder = document.createElement('span');
             placeholder.classList.add('placeholder');
-            placeholder.textContent = this.calculatePlaceholder(nonThumbnailFile);
+            placeholder.textContent = FileAdapterFactory.from(nonThumbnailFile).emoji();
             mediaThumb.appendChild(placeholder);
         });
     }
 
-    private addThumbnails(mediaThumb: HTMLDivElement, thumbnailFiles: File[]): void {
-        thumbnailFiles.forEach((thumbnailFile: File): void => {
+    private addThumbnails(mediaThumb: HTMLDivElement, thumbnailFiles: (Image|Video)[]): void {
+        thumbnailFiles.forEach((thumbnailFile: Image|Video): void => {
             const thumbnail = document.createElement('img');
             thumbnail.classList.add('media-img');
-            thumbnail.src = `/api/files/${thumbnailFile.publicId}/thumbnail`;
+            thumbnail.src = thumbnailFile.thumbnail.url;
             thumbnail.alt = 'Media thumbnail';
             mediaThumb.appendChild(thumbnail);
         });
@@ -76,18 +78,6 @@ export class MediaThumb extends CellElement {
         }
 
         return 'media-grid';
-    }
-
-    private calculatePlaceholder(nonThumbnailFile: File): string {
-        if (nonThumbnailFile.mimeType.startsWith('audio/')) {
-            return '🎵';
-        }
-
-        if (nonThumbnailFile.mimeType.startsWith('text/plain') || nonThumbnailFile.mimeType.startsWith('application/pdf')) {
-            return '📄';
-        }
-
-        return '📦';
     }
 
     private createMediaMore(fileCount: number): HTMLSpanElement {

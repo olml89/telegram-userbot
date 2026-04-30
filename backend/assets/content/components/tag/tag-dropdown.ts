@@ -2,7 +2,7 @@ import { BusyAware, Component, HtmlElementWrapper } from '../../../components/co
 import { Tag } from '../../tag'
 import { TagCount } from './tag-count';
 import { TagInput } from './tag-input';
-import { BackendError } from '../../../models/backend-error';
+import { BackendError } from '../../../utils/backend';
 import { assertImported } from '../../../utils/importer';
 
 abstract class DropdownOption implements HtmlElementWrapper {

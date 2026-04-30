@@ -4,7 +4,7 @@ import { TagCount } from './tag-count';
 import { TagInput } from './tag-input';
 import { TagDropdown } from './tag-dropdown';
 import { TagComponent } from './tag-component';
-import { BackendError } from '../../../models/backend-error';
+import { BackendError } from '../../../utils/backend';
 import { assertImported, querySelector } from '../../../utils/importer';
 
 export class TagsComponent extends CollectionComponent<Tag> {

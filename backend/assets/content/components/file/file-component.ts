@@ -3,7 +3,7 @@ import { BaseComponent } from '../../../components/base-component';
 import { File as BackendFile } from '../../file';
 import { FileItem } from './file-item';
 import { TusUploader, convertTusErrorToResponse } from './tus-uploader';
-import { BackendError } from '../../../models/backend-error';
+import { BackendError } from '../../../utils/backend';
 
 export type UploadedFile = FileComponent & { backendFile: BackendFile };
 

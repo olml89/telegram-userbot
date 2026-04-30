@@ -12,7 +12,7 @@ import { TagsComponent } from '../components/tag/tags-component';
 import { File as BackendFile } from '../file';
 import { FilesComponent } from '../components/file/files-component';
 import { Content } from '../content';
-import { BackendError } from '../../models/backend-error';
+import { BackendError } from '../../utils/backend';
 import { assertImported, querySelector, querySelectorAll } from '../../utils/importer';
 
 type ContentFieldKey = keyof ContentFields;
@@ -291,7 +291,7 @@ export class ContentAddModal implements Component<Content|null> {
          */
         this.contentAddModalElement.addEventListener('click', (event: MouseEvent): void => {
             if ((event.target as HTMLElement) === this.contentAddModalElement) {
-               this.contentAddModalElement.classList.remove('active');
+               this.close();
             }
         });
     }

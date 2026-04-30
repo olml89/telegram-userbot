@@ -7,6 +7,7 @@ namespace olml89\TelegramUserbot\Backend\Content\Application;
 use DateTimeInterface;
 use olml89\TelegramUserbot\Backend\Category\Application\CategoryResult;
 use olml89\TelegramUserbot\Backend\Content\Domain\Content;
+use olml89\TelegramUserbot\Backend\Content\Domain\Language\Language;
 use olml89\TelegramUserbot\Backend\Content\Domain\Mode\Mode;
 use olml89\TelegramUserbot\Backend\Content\Domain\Status\Status;
 use olml89\TelegramUserbot\Backend\Shared\Application\Result\IsResult;
@@ -23,9 +24,11 @@ final readonly class ContentResult implements Result
         public string $title,
         public string $description,
         public float $price,
+        public int $intensity,
         public int $sales,
         public Mode $mode,
         public Status $status,
+        public Language $language,
         public CategoryResult $category,
 
         /** @var TagResult[] */
@@ -49,9 +52,11 @@ final readonly class ContentResult implements Result
             title: $content->title()->value,
             description: $content->description()->value,
             price: $content->price()->value,
+            intensity: $content->intensity()->value,
             sales: $content->sales(),
             mode: $content->mode(),
             status: $content->status(),
+            language: $content->language(),
             category: CategoryResult::category($content->category()),
             tags: $tags,
             files: FileContainer::files($content->files()),

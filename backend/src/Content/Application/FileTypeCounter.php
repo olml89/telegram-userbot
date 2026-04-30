@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace olml89\TelegramUserbot\Backend\Content\Application;
 
-final readonly class FileCounter
+final readonly class FileTypeCounter
 {
     public function __construct(
         public int $images,

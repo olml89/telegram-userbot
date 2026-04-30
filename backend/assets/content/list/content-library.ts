@@ -9,7 +9,7 @@ import { Content } from '../content';
 import { ContentAddModal } from '../add/add-modal';
 import  { ContentPreviewModal } from '../preview/preview-modal';
 import { Paginated } from '../../models/pagination';
-import { BackendError } from '../../models/backend-error';
+import { BackendError } from '../../utils/backend';
 import { assertImported, querySelector } from '../../utils/importer';
 
 export class ContentQueryFields implements BusyAware, ChangeAware, Component<string> {

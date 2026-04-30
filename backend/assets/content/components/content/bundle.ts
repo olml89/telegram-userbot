@@ -12,10 +12,10 @@ export class Bundle extends CellElement {
         const bundle = document.createElement('span');
         bundle.classList.add('bundle');
         bundle.textContent = `
-            Images ${files.count.images} ·
-            Videos ${files.count.videos} ·
-            Audio ${files.count.audios} ·
-            Docs ${files.count.documents}
+            Images ${files.types.images} ·
+            Videos ${files.types.videos} ·
+            Audio ${files.types.audios} ·
+            Docs ${files.types.documents}
         `;
 
         return bundle;
