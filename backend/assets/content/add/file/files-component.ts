@@ -2,7 +2,7 @@ import { CollectionComponent } from '../../../components/collection-component';
 import { File as BackendFile } from '../../file';
 import { FileCount } from './file-count';
 import { FileHandler } from './file-handler';
-import { FileComponent, UploadedFile } from './file-component';
+import { FileComponent, UploadedFileComponent } from './file-component';
 import { assertImported, querySelector } from '../../../utils/importer';
 
 export class FilesComponent extends CollectionComponent<BackendFile> {
@@ -96,8 +96,8 @@ export class FilesComponent extends CollectionComponent<BackendFile> {
         fileComponent.onUploadEnd((): void => this.endUpload());
         fileComponent.onDeleteBegin((): void => this.beginDelete());
         fileComponent.onDeleteEnd((): void => this.endDelete());
-        fileComponent.onUploaded((uploadedFile: UploadedFile): void => this.fileCount.addUploadedFile(uploadedFile));
-        fileComponent.onRemoved((fileComponent: FileComponent): void => this.removeFile(fileComponent));
+        fileComponent.onUploaded((uploadedFileComponent: UploadedFileComponent): void => this.fileCount.add(uploadedFileComponent));
+        fileComponent.onRemoved((fileComponent: FileComponent): void => this.removeFileComponent(fileComponent));
         fileComponent.onChange((): void => this.notifyChange());
 
         return fileComponent;
@@ -121,7 +121,10 @@ export class FilesComponent extends CollectionComponent<BackendFile> {
     }
 
     public override getValue(): BackendFile[] {
-        return this.fileCount.getValue().map((uploadedFile: UploadedFile): BackendFile => uploadedFile.backendFile);
+        return this
+            .fileCount
+            .getValue()
+            .map((uploadedFileComponent: UploadedFileComponent): BackendFile => uploadedFileComponent.backendFile);
     }
 
     private handle(file: File): void {
@@ -137,9 +140,9 @@ export class FilesComponent extends CollectionComponent<BackendFile> {
         this.cancelHandlers.add(handler);
     }
 
-    private removeFile(fileComponent: FileComponent): void {
+    private removeFileComponent(fileComponent: FileComponent): void {
         if (fileComponent.isUploaded()) {
-            this.fileCount.removeUploadedFile(fileComponent);
+            this.fileCount.remove(fileComponent);
         }
 
         this.fileHandler.remove(fileComponent);
@@ -157,7 +160,7 @@ export class FilesComponent extends CollectionComponent<BackendFile> {
     }
 
     public setItemError(publicId: string, message: string): void {
-        this.fileCount.getUploadedFile(publicId)?.setErrors(message);
+        this.fileCount.get(publicId)?.setErrors(message);
     }
 
     private unregisterCancelHandler(handler: () => void): void {

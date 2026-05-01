@@ -1,16 +1,16 @@
 import { BusyAware, ChangeAware, ErrorClearable } from '../../../components/contracts';
 import { Size } from '../../file';
 import { BaseComponent } from '../../../components/base-component';
-import { type UploadedFile } from './file-component';
+import { type UploadedFileComponent } from './file-component';
 import { assertImported } from '../../../utils/importer';
 import { pluralize } from '../../../utils/strings';
 
-export class FileCount extends BaseComponent<UploadedFile[]>implements BusyAware, ChangeAware, ErrorClearable {
+export class FileCount extends BaseComponent<UploadedFileComponent[]>implements BusyAware, ChangeAware, ErrorClearable {
     private readonly fileInput: HTMLInputElement;
     private readonly uploadCard: HTMLDivElement;
     private readonly uploadCount: HTMLDivElement;
     private readonly totalSize: HTMLDivElement;
-    private readonly uploadedFiles: Map<string, UploadedFile> = new Map<string, UploadedFile>();
+    private readonly uploadedFileComponents: Map<string, UploadedFileComponent> = new Map();
     private readonly eventTarget: EventTarget = new EventTarget();
 
     public constructor(
@@ -73,12 +73,12 @@ export class FileCount extends BaseComponent<UploadedFile[]>implements BusyAware
         );
     }
 
-    public addUploadedFile(uploadedFile: UploadedFile): void {
-        if (this.uploadedFiles.has(uploadedFile.backendFile.publicId)) {
+    public add(uploadedFileComponent: UploadedFileComponent): void {
+        if (this.uploadedFileComponents.has(uploadedFileComponent.backendFile.publicId)) {
             return;
         }
 
-        this.uploadedFiles.set(uploadedFile.backendFile.publicId, uploadedFile);
+        this.uploadedFileComponents.set(uploadedFileComponent.backendFile.publicId, uploadedFileComponent);
         this.update();
     }
 
@@ -91,7 +91,9 @@ export class FileCount extends BaseComponent<UploadedFile[]>implements BusyAware
     }
 
     public override destroy() {
-        this.uploadedFiles.forEach((uploadedFile: UploadedFile): void => this.removeUploadedFile(uploadedFile));
+        this
+            .uploadedFileComponents
+            .forEach((uploadedFileComponent: UploadedFileComponent): void => this.remove(uploadedFileComponent));
     }
 
     public onAddedFiles(listener: (files: File[]) => void): void {
@@ -108,20 +110,20 @@ export class FileCount extends BaseComponent<UploadedFile[]>implements BusyAware
         this.uploadCard.classList.add('is-error');
     }
 
-    public getUploadedFile(publicId: string): UploadedFile|null {
-        return this.uploadedFiles.get(publicId) ?? null;
+    public get(publicId: string): UploadedFileComponent|null {
+        return this.uploadedFileComponents.get(publicId) ?? null;
     }
 
-    public override getValue(): UploadedFile[] {
-        return Array.from(this.uploadedFiles.values());
+    public override getValue(): UploadedFileComponent[] {
+        return Array.from(this.uploadedFileComponents.values());
     }
 
-    public removeUploadedFile(uploadedFile: UploadedFile): void {
-        if (!this.uploadedFiles.has(uploadedFile.backendFile.publicId)) {
+    public remove(uploadedFileComponent: UploadedFileComponent): void {
+        if (!this.uploadedFileComponents.has(uploadedFileComponent.backendFile.publicId)) {
             return;
         }
 
-        this.uploadedFiles.delete(uploadedFile.backendFile.publicId);
+        this.uploadedFileComponents.delete(uploadedFileComponent.backendFile.publicId);
         this.update();
     }
 
@@ -136,7 +138,7 @@ export class FileCount extends BaseComponent<UploadedFile[]>implements BusyAware
 
         const totalSize = Array
             .from(uploadedFiles)
-            .reduce((carry: Size, uploadedFile: UploadedFile) => carry.add(uploadedFile.backendFile.size), new Size());
+            .reduce((carry: Size, uploadedFileComponent: UploadedFileComponent) => carry.add(uploadedFileComponent.backendFile.size), new Size());
 
         this.totalSize.textContent = `Total size: ${totalSize.format()}`;
         this.eventTarget.dispatchEvent(new Event('file-count:change'));

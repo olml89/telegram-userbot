@@ -6,7 +6,7 @@ import { FileAdapterFactory } from '../../file-item/file-metadata';
 import { TusUploader, convertTusErrorToResponse } from './tus-uploader';
 import { BackendApi, BackendError } from '../../../utils/backend';
 
-export type UploadedFile = FileComponent & { backendFile: BackendFile };
+export type UploadedFileComponent = FileComponent & { backendFile: BackendFile };
 
 export class FileComponent extends BaseComponent<BackendFile|null> implements BusyAware, ChangeAware, ErrorClearable, HtmlElementWrapper {
     private readonly file: File;
@@ -89,23 +89,18 @@ export class FileComponent extends BaseComponent<BackendFile|null> implements Bu
         });
 
         this.fileItem.onRemove(async(): Promise<void> => {
-            if (this.backendFile === null) {
-                return;
-            }
-
-            this.clearErrors();
-            this.fileItem.setDeletingState();
-
             /**
              * If the API file doesn't exist, just remove the file element in the UI and DO NOT touch tusd
              */
-            if (!this.isUploaded()) {
+            if (!this.backendFile) {
                 this.finalizeUpload();
                 this.removeItem();
 
                 return;
             }
 
+            this.clearErrors();
+            this.fileItem.setDeletingState();
             this.emit('file-item:delete:begin');
 
             try {
@@ -170,7 +165,7 @@ export class FileComponent extends BaseComponent<BackendFile|null> implements Bu
         this.emit('file-item:upload:end');
     }
 
-    public isUploaded(): this is UploadedFile {
+    public isUploaded(): this is UploadedFileComponent {
         return this.backendFile !== null;
     }
 
@@ -212,13 +207,13 @@ export class FileComponent extends BaseComponent<BackendFile|null> implements Bu
         this.eventTarget.addEventListener('file-item:upload:end', (): void => listener());
     }
 
-    public onUploaded(listener: (uploadedFile: UploadedFile) => void): void {
+    public onUploaded(listener: (uploadedFileComponent: UploadedFileComponent) => void): void {
         this.eventTarget.addEventListener('file-item:uploaded', (event: Event): void => {
             if (!this.isUploaded()) {
                 return;
             }
 
-            listener((event as CustomEvent<UploadedFile>).detail);
+            listener((event as CustomEvent<UploadedFileComponent>).detail);
         });
     }
 
