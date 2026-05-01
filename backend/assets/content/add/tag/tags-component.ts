@@ -1,5 +1,5 @@
 import { CollectionComponent } from '../../../components/collection-component';
-import { Tag, TagPayload } from '../../tag';
+import { Tag } from '../../tag';
 import { TagCount } from './tag-count';
 import { TagInput } from './tag-input';
 import { TagDropdown } from './tag-dropdown';
