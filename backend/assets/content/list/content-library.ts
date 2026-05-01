@@ -7,8 +7,7 @@ import { ModeSelect} from '../mode-select';
 import { Tag } from '../tag';
 import { Content } from '../content';
 import { ContentAddModal } from '../add/add-modal';
-import  { ContentPreviewModal } from '../preview/preview-modal';
-import { Paginated } from '../../models/pagination';
+import { ContentPreviewModal } from '../preview/preview-modal';
 import { BackendApi, BackendError } from '../../utils/backend';
 import { assertImported, querySelector } from '../../utils/importer';
 
@@ -173,6 +172,8 @@ export class ContentLibrary implements BusyAware {
             content,
             this.contentQueryFields,
         ));
+
+        this.contentPreviewModal.onDeletedFile((content: Content): void => this.contentList.update(content));
 
         this.contentQueryFields.onChange(async (isFilterChange: boolean): Promise<void> => {
             if (isFilterChange) {

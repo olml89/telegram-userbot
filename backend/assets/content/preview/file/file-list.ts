@@ -7,7 +7,8 @@ export class FileList implements ChangeAware, Component<FileComponent[]> {
     private readonly fileList: HTMLFormElement;
     private readonly fileCount: HTMLSpanElement;
     private readonly totalSize: HTMLSpanElement;
-    private readonly changeListeners: Set<() => void> = new Set<() => void>();
+    private readonly changeListeners: Set<() => void> = new Set();
+    private readonly removedFileListeners: Set<(file: BackendFile) => void> = new Set();
 
     private fileComponents: Set<FileComponent> = new Set<FileComponent>();
     private pendingDeletes: number = 0;
@@ -77,17 +78,26 @@ export class FileList implements ChangeAware, Component<FileComponent[]> {
         return this.pendingDeletes > 0;
     }
 
-    protected notifyChange(): void {
+    private notifyChange(): void {
         this.changeListeners.forEach((listener: () => void): void => listener());
+    }
+
+    private notifyRemovedFile(file: BackendFile): void {
+        this.removedFileListeners.forEach((listener: (file: BackendFile) => void): void => listener(file));
     }
 
     public onChange(listener: () => void): void {
         this.changeListeners.add(listener);
     }
 
+    public onRemovedFile(listener: (file: BackendFile) => void): void {
+        this.removedFileListeners.add(listener);
+    }
+
     private removeFileComponent(fileComponent: FileComponent): void {
         this.fileComponents.delete(fileComponent);
         this.fileList.removeChild(fileComponent.element());
+        this.notifyRemovedFile(fileComponent.getValue());
     }
 
     public setValue(files: BackendFile[]): void {
@@ -99,7 +109,5 @@ export class FileList implements ChangeAware, Component<FileComponent[]> {
             this.fileComponents.add(fileComponent);
             this.fileList.appendChild(fileComponent.element());
         });
-
-        this.notifyChange();
     }
 }

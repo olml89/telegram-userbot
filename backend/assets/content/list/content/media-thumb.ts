@@ -1,6 +1,6 @@
 import { CellElement } from './cell-element';
 import { Content } from '../../content';
-import { File, Image, Video  } from '../../file';
+import { File, Image, Video } from '../../file';
 import { FileAdapterFactory } from '../../file-item/file-metadata';
 
 export class MediaThumb extends CellElement {
@@ -11,17 +11,14 @@ export class MediaThumb extends CellElement {
 
         this.content = content;
         const files = this.content.files;
-        const fileCount = files.list.length;
-        const isThumbnailFile = (file: File): file is Image|Video => file instanceof Image || file instanceof Video;
+        const fileCount = files.length();
 
         const thumbnailFiles = files
-            .list
-            .filter(isThumbnailFile)
+            .withThumbnail()
             .slice(0, 4);
 
         const nonThumbnailFiles = files
-            .list
-            .filter(file => !isThumbnailFile(file))
+            .withoutThumbnail()
             .slice(0, 4 - thumbnailFiles.length);
 
         const mediaThumb = document.createElement('div');
@@ -46,8 +43,8 @@ export class MediaThumb extends CellElement {
         });
     }
 
-    private addPlaceholders(mediaThumb: HTMLDivElement, nonThumbnailFiles: File[]): void {
-        nonThumbnailFiles.forEach((nonThumbnailFile: File): void => {
+    private addPlaceholders(mediaThumb: HTMLDivElement, nonThumbnailFiles: Exclude<File, Image|Video>[]): void {
+        nonThumbnailFiles.forEach((nonThumbnailFile: Exclude<File, Image|Video>): void => {
             const placeholder = document.createElement('span');
             placeholder.classList.add('placeholder');
             placeholder.textContent = FileAdapterFactory.from(nonThumbnailFile).emoji();

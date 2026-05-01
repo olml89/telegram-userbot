@@ -1,6 +1,7 @@
 import { Component } from '../../components/contracts';
 import { LocalDate } from '../../components/local-date';
 import { Content } from '../content';
+import { File as BackendFile } from '../file';
 import { TagList } from '../tag/tag-list';
 import { FileList } from './file/file-list';
 import { assertImported, querySelector, querySelectorAll } from '../../utils/importer';
@@ -117,19 +118,19 @@ class ContentFields implements Component<Content|null> {
         this.content = content;
 
         this.titles.forEach((title: HTMLSpanElement): void => {
-            title.textContent = content?.title ?? '';
+            title.textContent = this.content?.title ?? '';
         });
-        this.category.textContent = content?.category.name ?? '';
-        this.type.textContent = content?.mode.name ?? '';
-        this.price.textContent = content?.price.toString() ?? '';
-        this.intensity.textContent = content?.intensity.toString() ?? '';
-        this.language.textContent = content?.language.name ?? '';
-        this.status.textContent = content?.status.name ?? '';
-        this.created.textContent = LocalDate.from(content?.createdAt)?.format() ?? '';
-        this.sales.textContent = content?.sales.toString() ?? '';
-        this.description.textContent = content?.description ?? '';
-        this.tags.setValue(content?.tags ?? []);
-        this.files.setValue(content?.files.list ?? []);
+        this.category.textContent = this.content?.category.name ?? '';
+        this.type.textContent = this.content?.mode.name ?? '';
+        this.price.textContent = this.content?.price.toString() ?? '';
+        this.intensity.textContent = this.content?.intensity.toString() ?? '';
+        this.language.textContent = this.content?.language.name ?? '';
+        this.status.textContent = this.content?.status.name ?? '';
+        this.created.textContent = LocalDate.from(this.content?.createdAt)?.format() ?? '';
+        this.sales.textContent = this.content?.sales.toString() ?? '';
+        this.description.textContent = this.content?.description ?? '';
+        this.tags.setValue(this.content?.tags ?? []);
+        this.files.setValue(this.content?.files.all() ?? []);
     }
 }
 
@@ -137,6 +138,7 @@ export class ContentPreviewModal implements Component<Content|null> {
     private readonly contentPreviewModalElement: HTMLDivElement;
     private readonly contentFields: ContentFields;
     private readonly closeBtns: NodeListOf<HTMLButtonElement>;
+    private readonly eventTarget: EventTarget = new EventTarget();
 
     public constructor(
         contentPreviewModalElement: HTMLDivElement,
@@ -151,6 +153,16 @@ export class ContentPreviewModal implements Component<Content|null> {
             this.closeBtns.forEach((closeBtn: HTMLButtonElement): void => {
                 closeBtn.disabled = this.contentFields.files.isActive();
             });
+        });
+
+        this.contentFields.files.onRemovedFile((file: BackendFile): void => {
+            const content = this.getValue();
+
+            if (content) {
+                content.files.delete(file);
+                const deletedFile = new CustomEvent('content:preview:deleted-file', { detail: content });
+                this.eventTarget.dispatchEvent(deletedFile);
+            }
         });
 
         this.closeBtns.forEach((closeBtn: HTMLButtonElement): void => {
@@ -203,6 +215,12 @@ export class ContentPreviewModal implements Component<Content|null> {
 
     public getValue(): Content|null {
         return this.contentFields.getValue();
+    }
+
+    public onDeletedFile(listener: (content: Content) => void) {
+        this.eventTarget.addEventListener('content:preview:deleted-file', (event: Event): void => {
+            listener((event as CustomEvent<Content>).detail);
+        });
     }
 
     public open(): void {

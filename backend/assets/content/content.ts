@@ -4,7 +4,7 @@ import { Status } from './status';
 import { Language } from './language';
 import { Category } from './category';
 import { Tag } from './tag';
-import { File, FilePayload, Size } from './file';
+import { File, FilePayload, Image, Size, Video } from './file';
 
 type ContentFileTypesPayload = {
     images: number,
@@ -36,11 +36,27 @@ type ContentPayload = Payload & {
 
 export class FileContainer {
     public readonly types: ContentFileTypesPayload;
-    public readonly list: File[];
+    private readonly list: File[];
 
     public constructor(payload: ContentFilesPayload) {
         this.types = payload.types;
         this.list = payload.list.map((file: FilePayload): File => File.from(file));
+    }
+
+    public all(): File[] {
+        return this.list;
+    }
+
+    public delete(file: File): void {
+        const index = this.list.indexOf(file);
+
+        if (index !== -1) {
+            this.list.splice(this.list.indexOf(file), 1);
+        }
+    }
+
+    public length(): number {
+        return this.list.length;
     }
 
     public size(): Size {
@@ -48,6 +64,18 @@ export class FileContainer {
             (total: Size, file: File): Size => total.add(file.size),
             new Size(),
         );
+    }
+
+    public withThumbnail(): (Image|Video)[] {
+        return this
+            .list
+            .filter((file: File): file is Image|Video => file instanceof Image || file instanceof Video);
+    }
+
+    public withoutThumbnail(): Exclude<File, Image|Video>[] {
+        return this
+            .list
+            .filter((file: File): file is Exclude<File, Image|Video> => !(file instanceof Image || file instanceof Video));
     }
 }
 

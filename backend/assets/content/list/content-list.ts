@@ -47,10 +47,11 @@ class ContentNotifications implements HtmlElementWrapper {
     }
 }
 
-class ContentTable implements BusyAware, Component<Content[]> {
+class ContentTable implements BusyAware, Component<ContentComponent[]> {
     private readonly table: HTMLTableElement;
     private readonly tableBody: HTMLTableSectionElement;
-    private contents: Content[] = [];
+
+    private contentComponents: Map<string, ContentComponent> = new Map<string, ContentComponent>();
 
     public constructor(table: HTMLTableElement, tableBody: HTMLTableSectionElement) {
         this.table = table;
@@ -80,18 +81,19 @@ class ContentTable implements BusyAware, Component<Content[]> {
     }
 
     public clear(): void {
-        this.contents = [];
+        this.contentComponents.clear();
         this.tableBody.innerHTML = '';
     }
 
     private createComponent(content: Content, isNew: boolean = false): ContentComponent {
-        this.contents.push(content);
+        const contentComponent = new ContentComponent(content, isNew);
+        this.contentComponents.set(content.publicId, contentComponent);
 
-        return new ContentComponent(content, isNew);
+        return contentComponent;
     }
 
-    public getValue(): Content[] {
-        return this.contents;
+    public getValue(): ContentComponent[] {
+        return Array.from(this.contentComponents.values());
     }
 
     public prepend(content: Content): ContentComponent {
@@ -104,6 +106,21 @@ class ContentTable implements BusyAware, Component<Content[]> {
 
     public setBusy(isBusy: boolean) {
         this.table.classList.toggle('is-busy', isBusy);
+    }
+
+    public update(content: Content): void {
+        const existingContentComponent = this.contentComponents.get(content.publicId);
+
+        if (!existingContentComponent) {
+            return;
+        }
+
+        const updatedContentComponent = this.createComponent(content, true);
+
+        this.tableBody.replaceChild(
+            updatedContentComponent.element(),
+            existingContentComponent.element(),
+        );
     }
 }
 
@@ -159,7 +176,10 @@ export class ContentList implements BusyAware, Component<Content[]> {
     }
 
     public getValue(): Content[] {
-        return this.contentTable.getValue();
+        return this
+            .contentTable
+            .getValue()
+            .map((contentComponent: ContentComponent): Content => contentComponent.getValue());
     }
 
     public error(error: BackendError): void {
@@ -183,5 +203,9 @@ export class ContentList implements BusyAware, Component<Content[]> {
 
     public setBusy(isBusy: boolean) {
         this.contentTable.setBusy(isBusy);
+    }
+
+    public update(content: Content): void {
+        this.contentTable.update(content);
     }
 }
