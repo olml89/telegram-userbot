@@ -39,10 +39,17 @@ class ContentNotifications implements HtmlElementWrapper {
         this.notifications.appendChild(notification);
     }
 
-    public success(content: Content): void {
+    public successfullyAdded(content: Content): void {
         const notification = document.createElement('div');
         notification.classList.add('alert', 'alert-success');
         notification.innerHTML = `Content <strong>${content.title}</strong> added successfully.`;
+        this.notifications.appendChild(notification);
+    }
+
+    public successfullyDeleted(content: Content): void {
+        const notification = document.createElement('div');
+        notification.classList.add('alert', 'alert-success');
+        notification.innerHTML = `Content <strong>${content.title}</strong> deleted successfully.`;
         this.notifications.appendChild(notification);
     }
 }
@@ -73,8 +80,8 @@ class ContentTable implements BusyAware, Component<ContentComponent[]> {
         return new ContentTable(required.table, required.tableBody);
     }
 
-    public append(content: Content): ContentComponent {
-        const contentComponent = this.createComponent(content);
+    public append(content: Content, delay: number): ContentComponent {
+        const contentComponent = this.createComponent(content).delay(delay);
         this.tableBody.appendChild(contentComponent.element());
 
         return contentComponent;
@@ -85,8 +92,13 @@ class ContentTable implements BusyAware, Component<ContentComponent[]> {
         this.tableBody.innerHTML = '';
     }
 
-    private createComponent(content: Content, isNew: boolean = false): ContentComponent {
-        const contentComponent = new ContentComponent(content, isNew);
+    private createComponent(content: Content): ContentComponent {
+        const contentComponent = new ContentComponent(content);
+
+        contentComponent.onRemove((contentComponent: ContentComponent): void => {
+            this.tableBody.removeChild(contentComponent.element())
+        });
+
         this.contentComponents.set(content.publicId, contentComponent);
 
         return contentComponent;
@@ -97,11 +109,22 @@ class ContentTable implements BusyAware, Component<ContentComponent[]> {
     }
 
     public prepend(content: Content): ContentComponent {
-        const contentComponent = this.createComponent(content, true);
+        const contentComponent = this.createComponent(content).new();
         this.tableBody.lastChild?.remove();
         this.tableBody.prepend(contentComponent.element());
 
         return contentComponent;
+    }
+
+    public remove(content: Content): void {
+        const existingContentComponent = this.contentComponents.get(content.publicId);
+
+        if (!existingContentComponent) {
+            return;
+        }
+
+        this.contentComponents.delete(content.publicId);
+        existingContentComponent.remove();
     }
 
     public setBusy(isBusy: boolean) {
@@ -115,7 +138,7 @@ class ContentTable implements BusyAware, Component<ContentComponent[]> {
             return;
         }
 
-        const updatedContentComponent = this.createComponent(content, true);
+        const updatedContentComponent = this.createComponent(content).new();
 
         this.tableBody.replaceChild(
             updatedContentComponent.element(),
@@ -151,7 +174,7 @@ export class ContentList implements BusyAware, Component<Content[]> {
 
     public add(content: Content, contentQueryFields: ContentQueryFields): void {
         this.contentNotifications.clear();
-        this.contentNotifications.success(content);
+        this.contentNotifications.successfullyAdded(content);
 
         /**
          * A) Content does not match with the current filters
@@ -175,6 +198,12 @@ export class ContentList implements BusyAware, Component<Content[]> {
         contentQueryFields.pagination.increaseTotalCount();
     }
 
+    public delete(content: Content): void {
+        this.contentNotifications.clear();
+        this.contentNotifications.successfullyDeleted(content);
+        this.contentTable.remove(content);
+    }
+
     public getValue(): Content[] {
         return this
             .contentTable
@@ -188,15 +217,16 @@ export class ContentList implements BusyAware, Component<Content[]> {
         this.contentTable.clear();
     }
 
-    public replace(contents: Content[], searchTerm: string|null): void {
+    public load(contents: Content[], highlight: string|null): void {
         this.contentNotifications.clear();
         this.contentTable.clear();
 
-        contents.forEach((content: Content): void => {
-            const contentComponent = this.contentTable.append(content);
+        contents.forEach((content: Content, index: number): void => {
+            const delay = index * 30;
+            const contentComponent = this.contentTable.append(content, delay);
 
-            if (searchTerm) {
-                contentComponent.highlight(searchTerm);
+            if (highlight) {
+                contentComponent.highlight(highlight);
             }
         });
     }

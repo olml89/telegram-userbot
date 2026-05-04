@@ -17,24 +17,6 @@ export class FileComponent extends BaseComponent<BackendFile> implements ErrorCl
         this.file = file;
         this.fileItem = new FileItem(FileAdapterFactory.from(file).metadata());
         this.fileItem.setUploadedState(file);
-
-        this.fileItem.onRemove(async(): Promise<void> => {
-            this.clearErrors();
-            this.fileItem.setDeletingState();
-
-            this.emit('file-item:delete:begin');
-
-            try {
-                await this.backend.deleteFile(this.file);
-                this.emit('file-item:removed', this);
-            } catch (e: any) {
-                const backendError = e as BackendError;
-                console.error(backendError.consoleMessage);
-                this.fileItem.setDeleteRetryState(backendError);
-            } finally {
-                this.emit('file-item:delete:end');
-            }
-        });
     }
 
     public clearErrors(): void {
@@ -62,9 +44,31 @@ export class FileComponent extends BaseComponent<BackendFile> implements ErrorCl
         this.eventTarget.addEventListener('file-item:delete:end', (): void => listener());
     }
 
+    public onRemove(listener: (fileComponent: FileComponent) => void): void {
+        this.fileItem.onRemove((): void => listener(this));
+    }
+
     public onRemoved(listener: (fileComponent: FileComponent) => void): void {
         this.eventTarget.addEventListener('file-item:removed', (event: Event): void => {
             listener((event as CustomEvent<FileComponent>).detail);
         });
+    }
+
+    public async remove(): Promise<void> {
+        this.clearErrors();
+        this.fileItem.setDeletingState();
+
+        this.emit('file-item:delete:begin');
+
+        try {
+            await this.backend.deleteFile(this.file);
+            this.emit('file-item:removed', this);
+        } catch (e: any) {
+            const backendError = e as BackendError;
+            console.error(backendError.consoleMessage);
+            this.fileItem.setDeleteRetryState(backendError);
+        } finally {
+            this.emit('file-item:delete:end');
+        }
     }
 }

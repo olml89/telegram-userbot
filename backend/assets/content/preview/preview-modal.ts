@@ -1,12 +1,15 @@
 import { Component } from '../../components/contracts';
 import { LocalDate } from '../../components/local-date';
+import { MessageBox } from '../../components/message-box/message-box';
 import { Content } from '../content';
 import { File as BackendFile } from '../file';
 import { TagList } from '../tag/tag-list';
 import { FileList } from './file/file-list';
+import { FileComponent } from './file/file-component';
+import { BackendApi } from '../../utils/backend';
 import { assertImported, querySelector, querySelectorAll } from '../../utils/importer';
 
-class ContentFields implements Component<Content|null> {
+class ContentPreviewFields implements Component<BackendFile[]> {
     private readonly titles: NodeListOf<HTMLSpanElement>;
     private readonly category: HTMLSpanElement;
     private readonly type: HTMLSpanElement;
@@ -19,8 +22,6 @@ class ContentFields implements Component<Content|null> {
     private readonly description: HTMLParagraphElement;
     private readonly tags: TagList;
     public readonly files: FileList;
-
-    private content: Content|null = null;
 
     public constructor(
         titles: NodeListOf<HTMLSpanElement>,
@@ -50,7 +51,7 @@ class ContentFields implements Component<Content|null> {
         this.files = files;
     }
 
-    public static from(previewModal: HTMLElement|null): ContentFields|null {
+    public static from(previewModal: HTMLElement|null): ContentPreviewFields|null {
         const titles = querySelectorAll<HTMLSpanElement>(previewModal, '[data-content-title]');
         const category = querySelector<HTMLSpanElement>(previewModal, '[data-content-category]');
         const type = querySelector<HTMLSpanElement>(previewModal, '[data-content-mode]');
@@ -89,7 +90,7 @@ class ContentFields implements Component<Content|null> {
             return null;
         }
 
-        return new ContentFields(
+        return new ContentPreviewFields(
             required.titles,
             required.category,
             required.type,
@@ -105,76 +106,105 @@ class ContentFields implements Component<Content|null> {
         );
     }
 
-    public destroy(): void {
-        this.content = null;
-        this.setValue(null);
-    }
-
-    public getValue(): Content | null {
-        return this.content;
+    public getValue(): BackendFile[] {
+        return this.files.getValue();
     }
 
     public setValue(content: Content|null): void {
-        this.content = content;
-
         this.titles.forEach((title: HTMLSpanElement): void => {
-            title.textContent = this.content?.title ?? '';
+            title.textContent = content?.title ?? '';
         });
-        this.category.textContent = this.content?.category.name ?? '';
-        this.type.textContent = this.content?.mode.name ?? '';
-        this.price.textContent = this.content?.price.toString() ?? '';
-        this.intensity.textContent = this.content?.intensity.toString() ?? '';
-        this.language.textContent = this.content?.language.name ?? '';
-        this.status.textContent = this.content?.status.name ?? '';
-        this.created.textContent = LocalDate.from(this.content?.createdAt)?.format() ?? '';
-        this.sales.textContent = this.content?.sales.toString() ?? '';
-        this.description.textContent = this.content?.description ?? '';
-        this.tags.setValue(this.content?.tags ?? []);
-        this.files.setValue(this.content?.files.all() ?? []);
+        this.category.textContent = content?.category.name ?? '';
+        this.type.textContent = content?.mode.name ?? '';
+        this.price.textContent = content?.price.toString() ?? '';
+        this.intensity.textContent = content?.intensity.toString() ?? '';
+        this.language.textContent = content?.language.name ?? '';
+        this.status.textContent = content?.status.name ?? '';
+        this.created.textContent = LocalDate.from(content?.createdAt)?.format() ?? '';
+        this.sales.textContent = content?.sales.toString() ?? '';
+        this.description.textContent = content?.description ?? '';
+        this.tags.setValue(content?.tags ?? []);
+        this.files.setValue(content?.files.all() ?? []);
     }
 }
 
 export class ContentPreviewModal implements Component<Content|null> {
     private readonly contentPreviewModalElement: HTMLDivElement;
-    private readonly contentFields: ContentFields;
+    private readonly contentPreviewFields: ContentPreviewFields;
     private readonly closeBtns: NodeListOf<HTMLButtonElement>;
     private readonly eventTarget: EventTarget = new EventTarget();
+    private readonly backend: BackendApi = new BackendApi();
+
+    private content: Content|null = null;
 
     public constructor(
         contentPreviewModalElement: HTMLDivElement,
-        contentFields: ContentFields,
+        contentPreviewFields: ContentPreviewFields,
         closeBtns: NodeListOf<HTMLButtonElement>,
     ) {
         this.contentPreviewModalElement = contentPreviewModalElement;
-        this.contentFields = contentFields;
+        this.contentPreviewFields = contentPreviewFields;
         this.closeBtns = closeBtns;
 
-        this.contentFields.files.onChange((): void => {
+        this.contentPreviewFields.files.onChange((): void => {
             this.closeBtns.forEach((closeBtn: HTMLButtonElement): void => {
-                closeBtn.disabled = this.contentFields.files.isActive();
+                closeBtn.disabled = this.contentPreviewFields.files.isActive();
             });
         });
 
-        this.contentFields.files.onRemovedFile((file: BackendFile): void => {
-            const content = this.getValue();
-
-            if (content) {
-                content.files.delete(file);
-                const deletedFile = new CustomEvent('content:preview:deleted-file', { detail: content });
-                this.eventTarget.dispatchEvent(deletedFile);
+        this.contentPreviewFields.files.onRemoveFileComponent(async (fileComponent: FileComponent): Promise<void> => {
+            if (!this.content) {
+                return;
             }
+
+            if (this.contentPreviewFields.files.length() === 1) {
+                const content = this.content;
+
+                const deletedContent = await MessageBox.confirmAsync(
+                    'The content has only one file',
+                    'Deleting the last file will also delete the content. Do you wish to delete this content?',
+                    'Deleting...',
+                    (): Promise<void> => this.backend.deleteContent(content),
+                );
+
+                if (deletedContent) {
+                    const deletedContent = new CustomEvent('content:preview:deleted-content', { detail: content });
+                    this.eventTarget.dispatchEvent(deletedContent);
+
+                    this.setValue(null);
+                    this.close();
+                }
+
+                return;
+            }
+
+            await fileComponent.remove();
+        });
+
+        this.contentPreviewFields.files.onRemovedFile((file: BackendFile): void => {
+            if (!this.content) {
+                return;
+            }
+
+            this.content.files.delete(file);
+            const deletedFile = new CustomEvent('content:preview:deleted-file', { detail: this.content });
+            this.eventTarget.dispatchEvent(deletedFile);
         });
 
         this.closeBtns.forEach((closeBtn: HTMLButtonElement): void => {
-            closeBtn.addEventListener('click', (): void => this.close());
+            closeBtn.addEventListener('click', (): void => {
+                this.close()
+                this.setValue(null);
+            });
         });
 
         /**
          * Automatically close modal if we click the backdrop
          */
         this.contentPreviewModalElement.addEventListener('click', (event: MouseEvent): void => {
-            if ((event.target as HTMLElement) === this.contentPreviewModalElement && !this.contentFields.files.isActive()) {
+            if ((event.target as HTMLElement) === this.contentPreviewModalElement && !this.contentPreviewFields.files.isActive()) {
                 this.close();
+                this.setValue(null);
             }
         });
 
@@ -188,12 +218,12 @@ export class ContentPreviewModal implements Component<Content|null> {
     }
 
     public static from(contentPreviewModalElement: HTMLDivElement|null): ContentPreviewModal|null {
-        const contentFields = ContentFields.from(contentPreviewModalElement);
+        const contentPreviewFields = ContentPreviewFields.from(contentPreviewModalElement);
         const closeBtns = querySelectorAll<HTMLButtonElement>(contentPreviewModalElement, '[data-preview-content-close]');
 
         const required = {
             contentPreviewModalElement,
-            contentFields,
+            contentPreviewFields,
             closeBtns,
         }
 
@@ -203,18 +233,23 @@ export class ContentPreviewModal implements Component<Content|null> {
 
         return new ContentPreviewModal(
             required.contentPreviewModalElement,
-            required.contentFields,
+            required.contentPreviewFields,
             required.closeBtns,
         );
     }
 
     public close(): void {
         this.contentPreviewModalElement.classList.remove('is-active');
-        this.setValue(null);
     }
 
     public getValue(): Content|null {
-        return this.contentFields.getValue();
+        return this.content;
+    }
+
+    public onDeletedContent(listener: (content: Content) => void) {
+        this.eventTarget.addEventListener('content:preview:deleted-content', (event: Event): void => {
+            listener((event as CustomEvent<Content>).detail);
+        });
     }
 
     public onDeletedFile(listener: (content: Content) => void) {
@@ -228,6 +263,7 @@ export class ContentPreviewModal implements Component<Content|null> {
     }
 
     public setValue(content: Content|null): void {
-        this.contentFields.setValue(content);
+        this.content = content;
+        this.contentPreviewFields.setValue(content);
     }
 }

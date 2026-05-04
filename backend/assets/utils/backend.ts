@@ -143,6 +143,20 @@ export class BackendApi {
         return Tag.from(await response.json());
     }
 
+    public async deleteContent(content: Content): Promise<void> {
+        const response = await this.fetch({
+            method: 'DELETE',
+            endpoint: `content/${content.publicId}`,
+        });
+
+        if (!response.ok) {
+            throw await BackendError.from(
+                response,
+                'Failed to delete content',
+            );
+        }
+    }
+
     public async deleteFile(file: BackendFile): Promise<void> {
         const response = await this.fetch({
             method: 'DELETE',

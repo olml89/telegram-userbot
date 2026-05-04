@@ -173,6 +173,10 @@ export class ContentLibrary implements BusyAware {
             this.contentQueryFields,
         ));
 
+        this.contentPreviewModal.onDeletedContent((content: Content): void => {
+            this.contentList.delete(content)
+        });
+
         this.contentPreviewModal.onDeletedFile((content: Content): void => this.contentList.update(content));
 
         this.contentQueryFields.onChange(async (isFilterChange: boolean): Promise<void> => {
@@ -240,7 +244,7 @@ export class ContentLibrary implements BusyAware {
             const paginatedContents = await this.backend.searchContents(query);
             this.contentQueryFields.pagination.update(paginatedContents.pagination);
 
-            this.contentList.replace(
+            this.contentList.load(
                 paginatedContents.list,
                 this.contentQueryFields.searchInput.getValue(),
             );

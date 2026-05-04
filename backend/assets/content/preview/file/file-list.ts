@@ -3,11 +3,12 @@ import { File as BackendFile, Size } from '../../file';
 import { FileComponent } from './file-component';
 import { assertImported } from '../../../utils/importer';
 
-export class FileList implements ChangeAware, Component<FileComponent[]> {
+export class FileList implements ChangeAware, Component<BackendFile[]> {
     private readonly fileList: HTMLFormElement;
     private readonly fileCount: HTMLSpanElement;
     private readonly totalSize: HTMLSpanElement;
     private readonly changeListeners: Set<() => void> = new Set();
+    private readonly removeFileComponentListeners: Set<(fileComponent: FileComponent) => void> = new Set();
     private readonly removedFileListeners: Set<(file: BackendFile) => void> = new Set();
 
     private fileComponents: Set<FileComponent> = new Set<FileComponent>();
@@ -60,6 +61,7 @@ export class FileList implements ChangeAware, Component<FileComponent[]> {
         const fileComponent = new FileComponent(file);
         fileComponent.onDeleteBegin((): void => this.beginDelete());
         fileComponent.onDeleteEnd((): void => this.endDelete());
+        fileComponent.onRemove((fileComponent: FileComponent): void => this.notifyRemoveFileComponent(fileComponent));
         fileComponent.onRemoved((fileComponent: FileComponent): void => this.removeFileComponent(fileComponent));
 
         return fileComponent;
@@ -70,16 +72,26 @@ export class FileList implements ChangeAware, Component<FileComponent[]> {
         this.notifyChange();
     }
 
-    public getValue(): FileComponent[] {
-        return Array.from(this.fileComponents);
+    public getValue(): BackendFile[] {
+        const fileComponents = Array.from(this.fileComponents);
+
+        return fileComponents.map((fileComponent: FileComponent): BackendFile => fileComponent.getValue());
     }
 
     public isActive(): boolean {
         return this.pendingDeletes > 0;
     }
 
+    public length(): number {
+        return this.fileComponents.size;
+    }
+
     private notifyChange(): void {
         this.changeListeners.forEach((listener: () => void): void => listener());
+    }
+
+    private notifyRemoveFileComponent(fileComponent: FileComponent): void {
+        this.removeFileComponentListeners.forEach((listener: (fileComponent: FileComponent) => void): void => listener(fileComponent));
     }
 
     private notifyRemovedFile(file: BackendFile): void {
@@ -88,6 +100,10 @@ export class FileList implements ChangeAware, Component<FileComponent[]> {
 
     public onChange(listener: () => void): void {
         this.changeListeners.add(listener);
+    }
+
+    public onRemoveFileComponent(listener: (fileComponent: FileComponent) => void): void {
+        this.removeFileComponentListeners.add(listener);
     }
 
     public onRemovedFile(listener: (file: BackendFile) => void): void {

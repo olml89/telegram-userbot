@@ -24,12 +24,13 @@ export class ContentComponent implements Component<Content>, Highlightable, Html
     private readonly row: HTMLTableRowElement;
     private readonly content: Content;
 
-    public constructor(content: Content, isNew: boolean) {
+    private readonly removeListeners: Set<(contentComponent: ContentComponent) => void> = new Set();
+
+    public constructor(content: Content) {
         this.content = content;
         this.row = document.createElement('tr');
         this.row.classList.add('content-row');
         this.row.setAttribute('data-content-row', '');
-        this.row.classList.toggle('is-new', isNew);
 
         /**
          * Thumbnail
@@ -86,6 +87,12 @@ export class ContentComponent implements Component<Content>, Highlightable, Html
         this.row.appendChild(this.actionsMenu.element());
     }
 
+    public delay(delay: number): this {
+        this.row.style.animationDelay = `${delay}ms`;
+
+        return this;
+    }
+
     public element(): HTMLTableRowElement {
         return this.row;
     }
@@ -96,5 +103,23 @@ export class ContentComponent implements Component<Content>, Highlightable, Html
 
     public highlight(searchTerm: string): void {
         this.contentInfo.highlight(searchTerm);
+    }
+
+    public new(): this {
+        this.row.classList.add('is-new');
+
+        return this;
+    }
+
+    public onRemove(listener: (contentComponent: ContentComponent) => void): void {
+        this.removeListeners.add(listener);
+    }
+
+    public remove(): void {
+        this.row.classList.add('is-removing');
+
+        this.row.addEventListener('animationend', (): void => {
+            this.removeListeners.forEach((listener: (contentComponent: ContentComponent) => void): void => listener(this));
+        }, { once: true });
     }
 }

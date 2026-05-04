@@ -12,7 +12,7 @@
     display: flex;
 }
 
-.modal-content {
+.modal .modal-content {
     background: #ffffff;
     border-radius: 16px;
     border: 1px solid var(--border);
@@ -20,7 +20,7 @@
     padding: 20px;
 }
 
-.modal-header {
+.modal .modal-content .modal-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -28,11 +28,11 @@
     margin-bottom: 14px;
 }
 
-.modal-header h3 {
+.modal .modal-content .modal-header h3 {
     margin: 0;
 }
 
-.close-modal {
+.modal .modal-content .modal-header .close-modal {
     background: transparent;
     border: none;
     font-size: 24px;
@@ -43,11 +43,11 @@
 /**
  * It is not a .btn, so we have to repeat the styling
  */
-.close-modal:disabled {
+.modal .modal-content .modal-header .close-modal:disabled {
     cursor: not-allowed;
     opacity: 0.6;
 }
 
-.close-modal:hover {
+.modal .modal-content .modal-header .close-modal:hover {
     color: color-mix(in srgb, var(--text) 60%, transparent);
 }

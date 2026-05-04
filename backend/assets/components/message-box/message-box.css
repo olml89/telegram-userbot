@@ -1,0 +1,45 @@
+.msgbox-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.25);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+}
+
+.msgbox {
+    background: #ffffff;
+    padding: 20px;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    min-width: 320px;
+    max-width: 420px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.msgbox .msgbox-title {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.msgbox .msgbox-message {
+    margin: 0;
+    line-height: 1.5;
+    color: var(--text);
+}
+
+.msgbox .msgbox-status.is-error {
+    color: var(--danger);
+    font-size: 14px;
+}
+
+.msgbox .msgbox-actions {
+    margin-top: 15px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
