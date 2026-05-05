@@ -1,8 +1,8 @@
-import { Content } from '../content/content';
+import { Content, FindContentParams } from '../content/content';
 import { ContentFieldValue } from '../content/add/add-modal';
 import { Tag, TagPayload } from '../content/tag';
 import { File as BackendFile } from '../content/file';
-import { Paginated } from '../models/pagination';
+import { Paginated, Pagination } from '../models/pagination';
 
 const humanizeError = (field: string, messages: string[]) => {
     const humanizeField = (field: string) => field
@@ -171,6 +171,24 @@ export class BackendApi {
         }
     }
 
+    public async findContent(params: FindContentParams, pagination: Pagination): Promise<Paginated<Content>> {
+        const response = await this.fetch({
+            method: 'GET',
+            endpoint: `content${params.build(pagination)}`,
+        });
+
+        if (!response.ok) {
+            throw await BackendError.from(
+                response,
+                'Failed to fetch content list',
+            );
+        }
+
+        const payload = await response.json();
+
+        return Paginated.from<Content>(payload, Content);
+    }
+
     public async saveFile(uploadId: string): Promise<BackendFile> {
         const response = await this.fetch({
             method: 'POST',
@@ -186,24 +204,6 @@ export class BackendApi {
         }
 
         return BackendFile.from(await response.json());
-    }
-
-    public async searchContents(query: string): Promise<Paginated<Content>> {
-        const response = await this.fetch({
-            method: 'GET',
-            endpoint: `content${query}`,
-        });
-
-        if (!response.ok) {
-            throw await BackendError.from(
-                response,
-                'Failed to fetch content list',
-            );
-        }
-
-        const payload = await response.json();
-
-        return Paginated.from<Content>(payload, Content);
     }
 
     public async searchTags(query: string): Promise<Tag[]> {

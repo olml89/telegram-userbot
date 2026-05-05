@@ -1,7 +1,6 @@
 import { BusyAware, Component, HtmlElementWrapper } from '../../components/contracts';
-import { Content } from '../content';
 import { ContentComponent } from './content/content-component';
-import { ContentQueryFields } from './content-library';
+import { Content } from '../content';
 import { BackendError } from '../../utils/backend';
 import { assertImported, querySelector } from '../../utils/importer';
 
@@ -80,7 +79,7 @@ class ContentTable implements BusyAware, Component<ContentComponent[]> {
         return new ContentTable(required.table, required.tableBody);
     }
 
-    public append(content: Content, delay: number): ContentComponent {
+    public append(content: Content, delay: number = 0): ContentComponent {
         const contentComponent = this.createComponent(content).delay(delay);
         this.tableBody.appendChild(contentComponent.element());
 
@@ -172,36 +171,14 @@ export class ContentList implements BusyAware, Component<Content[]> {
         return new ContentList(required.contentNotifications, required.contentTable);
     }
 
-    public add(content: Content, contentQueryFields: ContentQueryFields): void {
-        this.contentNotifications.clear();
-        this.contentNotifications.successfullyAdded(content);
-
-        /**
-         * A) Content does not match with the current filters
-         * B) Content matches with the current filters, but pagination is not set on the first page
-         *
-         * - Reload to fetch the latest content
-         */
-        if (!contentQueryFields.matches(content) || !contentQueryFields.pagination.isFirstPage()) {
-            contentQueryFields.pagination.restart();
-
-            return;
-        }
-
-        /**
-         * Optimistic addition
-         *
-         * - Add the content to the top of the current table and discard the last one
-         * - Increase the total count
-         */
-        this.contentTable.prepend(content);
-        contentQueryFields.pagination.increaseTotalCount();
-    }
-
-    public delete(content: Content): void {
+    public delete(content: Content, nextPageFirstContent?: Content|null): void {
         this.contentNotifications.clear();
         this.contentNotifications.successfullyDeleted(content);
         this.contentTable.remove(content);
+
+        if (nextPageFirstContent) {
+            this.contentTable.append(nextPageFirstContent);
+        }
     }
 
     public getValue(): Content[] {
@@ -212,12 +189,10 @@ export class ContentList implements BusyAware, Component<Content[]> {
     }
 
     public error(error: BackendError): void {
-        this.contentNotifications.clear();
         this.contentNotifications.error(error);
-        this.contentTable.clear();
     }
 
-    public load(contents: Content[], highlight: string|null): void {
+    public load(contents: Content[] = [], highlight: string|null = null): void {
         this.contentNotifications.clear();
         this.contentTable.clear();
 
@@ -229,6 +204,12 @@ export class ContentList implements BusyAware, Component<Content[]> {
                 contentComponent.highlight(highlight);
             }
         });
+    }
+
+    public prepend(content: Content): void {
+        this.contentNotifications.clear();
+        this.contentNotifications.successfullyAdded(content);
+        this.contentTable.prepend(content);
     }
 
     public setBusy(isBusy: boolean) {

@@ -17,6 +17,16 @@ final readonly class PaginateContentQuery
         )]
         public ?int $page,
 
+        #[Validation\GreaterThanOrEqual(
+            value: 1,
+            message: 'The perPage must be at least 1',
+        )]
+        #[Validation\LessThanOrEqual(
+            value: 10,
+            message: 'The perPage must be at most 10',
+        )]
+        public ?int $perPage,
+
         public ?string $search,
 
         #[Validation\Uuid(message: 'The categoryId is invalid')]
@@ -31,6 +41,7 @@ final readonly class PaginateContentQuery
 
         return new PaginateContentCommand(
             $this->page,
+            $this->perPage,
             $this->search,
             $categoryId,
             $this->mode,

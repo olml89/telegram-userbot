@@ -44,7 +44,11 @@ final readonly class PaginateContentCommandHandler
             mode: $mode,
         );
 
-        return $this->contentPaginator->paginate($command->page, $query);
+        return $this->contentPaginator->paginate(
+            $command->page,
+            $command->perPage,
+            $query,
+        );
     }
 
     private function buildCategory(ValidationException $validationException, PaginateContentCommand $command): ?Category

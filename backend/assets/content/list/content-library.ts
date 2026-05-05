@@ -1,50 +1,32 @@
 import { BusyAware, ChangeAware, Component } from '../../components/contracts';
+import { Pagination } from '../../models/pagination';
 import { SearchInput } from './search-input';
 import { PaginationComponent } from './pagination-component';
 import { ContentList } from './content-list';
 import { CategorySelect } from '../category-select';
 import { ModeSelect} from '../mode-select';
-import { Tag } from '../tag';
-import { Content } from '../content';
+import { Content, FindContentParams } from '../content';
 import { ContentAddModal } from '../add/add-modal';
 import { ContentPreviewModal } from '../preview/preview-modal';
 import { BackendApi, BackendError } from '../../utils/backend';
 import { assertImported, querySelector } from '../../utils/importer';
 
-export class ContentQueryFields implements BusyAware, ChangeAware, Component<string> {
-    public readonly searchInput: SearchInput;
-    private readonly category: CategorySelect;
-    private readonly mode: ModeSelect;
-    public readonly pagination: PaginationComponent;
-    private readonly changeListeners: Set<(isFilterChange: boolean) => void> = new Set();
-
+class ContentQueryFields implements BusyAware, ChangeAware, Component<FindContentParams> {
     public constructor(
-        searchInput: SearchInput,
-        category: CategorySelect,
-        mode: ModeSelect,
-        pagination: PaginationComponent,
-    ) {
-        this.searchInput = searchInput;
-        this.category = category;
-        this.mode = mode;
-        this.pagination = pagination;
-    }
+        private readonly searchInput: SearchInput,
+        private readonly category: CategorySelect,
+        private readonly mode: ModeSelect,
+    ) {}
 
-    public static from(
-        libraryFilters: HTMLDivElement|null,
-        libraryCounter: HTMLDivElement|null,
-        libraryPagination: HTMLDivElement|null,
-    ): ContentQueryFields|null {
+    public static from(libraryFilters: HTMLDivElement|null): ContentQueryFields|null {
         const searchInput = SearchInput.from(querySelector<HTMLInputElement>(libraryFilters, '[data-content-search]'));
         const category = CategorySelect.from(querySelector<HTMLLabelElement>(libraryFilters, '[data-library-category]'));
         const mode = ModeSelect.from(querySelector<HTMLLabelElement>(libraryFilters, '[data-library-mode]'));
-        const pagination = PaginationComponent.from(libraryCounter, libraryPagination);
 
         const required = {
             searchInput,
             category,
             mode,
-            pagination,
         };
 
         if (!assertImported('content-query-fields', required)) {
@@ -55,96 +37,33 @@ export class ContentQueryFields implements BusyAware, ChangeAware, Component<str
             required.searchInput,
             required.category,
             required.mode,
-            required.pagination,
         );
     }
 
-    public getValue(): string {
-        const search = this.searchInput.getValue();
-        const categoryId = this.category.getValue()?.publicId;
-        const mode = this.mode.getValue()?.value;
-        const page = this.pagination.getValue()?.page;
-        const params = new URLSearchParams();
-
-        if (search) {
-            params.set('search', search);
-        }
-
-        if (categoryId) {
-            params.set('categoryId', categoryId);
-        }
-
-        if (mode) {
-            params.set('mode', mode);
-        }
-
-        if (page) {
-            params.set('page', page.toString());
-        }
-
-        const query = params.toString();
-
-        return query ? `?${query}` : '';
+    public getValue(): FindContentParams {
+        return new FindContentParams(
+            this.searchInput.getValue(),
+            this.category.getValue(),
+            this.mode.getValue(),
+        );
     }
 
-    public matches(content: Content): boolean {
-        const category = this.category.getValue();
-
-        if (category && !category.equals(content.category)) {
-            return false;
-        }
-
-        const mode = this.mode.getValue();
-
-        if (mode && mode.equals(content.mode)) {
-            return false;
-        }
-
-        const searchTerm = this.searchInput.getValue()?.toLowerCase();
-
-        if (searchTerm) {
-            return content.title.toLowerCase().includes(searchTerm)
-                || content.description.toLowerCase().includes(searchTerm)
-                || content.tags.some((tag: Tag) => tag.name.toLowerCase().includes(searchTerm));
-        }
-
-        return true;
-    }
-
-    public onChange(listener: (isFilterChange: boolean) => void): void {
-        this.changeListeners.add(listener);
-
-        /**
-         * Register filters listeners
-         */
-        const filterListener = (): void => this.changeListeners.forEach(
-            (listener: (isFilterChange: boolean) => void): void => listener(true),
-        );
-
-        this.searchInput.onChange(filterListener);
-        this.category.onChange(filterListener);
-        this.mode.onChange(filterListener);
-
-        /**
-         * Register pagination listeners
-         */
-        const paginationListener = (): void => this.changeListeners.forEach(
-            (listener: (isFilterChange: boolean) => void): void => listener(false),
-        );
-
-        this.pagination.onChange(paginationListener);
+    public onChange(listener: () => void): void {
+        this.searchInput.onChange((): void => listener());
+        this.category.onChange((): void => listener());
+        this.mode.onChange((): void => listener());
     }
 
     public setBusy(isBusy: boolean) {
         this.searchInput.setBusy(isBusy);
         this.category.setBusy(isBusy);
         this.mode.setBusy(isBusy);
-        this.pagination.setBusy(isBusy);
     }
 }
 
 export class ContentLibrary implements BusyAware {
     private readonly contentQueryFields: ContentQueryFields;
+    private readonly paginationComponent: PaginationComponent;
     private readonly contentList: ContentList;
     private readonly openContentAddModalBtn: HTMLButtonElement;
     private readonly contentAddModal: ContentAddModal;
@@ -155,44 +74,47 @@ export class ContentLibrary implements BusyAware {
 
     public constructor(
         contentQueryFields: ContentQueryFields,
+        paginationComponent: PaginationComponent,
         contentList: ContentList,
         openContentAddModalBtn: HTMLButtonElement,
         contentAddModal: ContentAddModal,
         contentPreviewModal: ContentPreviewModal,
     ) {
         this.contentQueryFields = contentQueryFields;
+        this.paginationComponent = paginationComponent;
         this.contentList = contentList
         this.openContentAddModalBtn = openContentAddModalBtn;
         this.contentAddModal = contentAddModal;
         this.contentPreviewModal = contentPreviewModal;
 
-        this.openContentAddModalBtn.addEventListener('click', (): void => this.contentAddModal.open());
-
-        this.contentAddModal.onAddedContent((content: Content): void => this.contentList.add(
-            content,
-            this.contentQueryFields,
-        ));
-
-        this.contentPreviewModal.onDeletedContent((content: Content): void => {
-            this.contentList.delete(content)
+        this.openContentAddModalBtn.addEventListener('click', (): void => {
+            this.contentAddModal.open()
         });
 
-        this.contentPreviewModal.onDeletedFile((content: Content): void => this.contentList.update(content));
+        this.contentAddModal.onAddedContent((content: Content): void => {
+            this.add(content)
+        });
 
-        this.contentQueryFields.onChange(async (isFilterChange: boolean): Promise<void> => {
-            if (isFilterChange) {
-                this.contentQueryFields.pagination.restart();
+        this.contentPreviewModal.onDeletedContent(async (content: Content): Promise<void> => {
+            await this.delete(content)
+        });
 
-                return;
-            }
+        this.contentPreviewModal.onDeletedFile((content: Content): void => {
+            this.contentList.update(content)
+        });
 
-            await this.load();
+        this.contentQueryFields.onChange((): void => {
+            this.paginationComponent.restart();
+        });
+
+        this.paginationComponent.onChange(async (pagination: Pagination): Promise<void> => {
+            await this.load(pagination);
         });
 
         /**
          * Initial content rendering
          */
-        void this.load();
+        void this.load(this.paginationComponent.getValue());
     }
 
     public static create(): ContentLibrary|null {
@@ -203,6 +125,9 @@ export class ContentLibrary implements BusyAware {
 
         const contentQueryFields = ContentQueryFields.from(
             querySelector<HTMLDivElement>(document, '[data-library-filters]'),
+        );
+
+        const paginationComponent = PaginationComponent.from(
             querySelector<HTMLDivElement>(document, '[data-library-counter]'),
             querySelector<HTMLDivElement>(document, '[data-library-pagination]'),
         );
@@ -214,6 +139,7 @@ export class ContentLibrary implements BusyAware {
         const required = {
             contentList,
             contentQueryFields,
+            paginationComponent,
             openContentAddModalBtn,
             contentAddModal,
             contentPreviewModal,
@@ -225,14 +151,51 @@ export class ContentLibrary implements BusyAware {
 
         return new ContentLibrary(
             required.contentQueryFields,
+            required.paginationComponent,
             required.contentList,
             required.openContentAddModalBtn,
             required.contentAddModal,
             required.contentPreviewModal,
-        )
+        );
     }
 
-    private async load(): Promise<void> {
+    private add(content: Content): void {
+        /**
+         * A) Content does not match with the current filters
+         * B) Content matches with the current filters, but pagination is not set on the first page
+         *
+         * - Reload to fetch the latest content
+         */
+        if (!this.contentQueryFields.getValue().matches(content) || !this.paginationComponent.isFirstPage()) {
+            this.paginationComponent.restart();
+
+            return;
+        }
+
+        this.contentList.prepend(content);
+        this.paginationComponent.firstPage();
+        this.paginationComponent.increaseTotalCount();
+    }
+
+    private async delete(content: Content): Promise<void> {
+        try {
+            const nextPageContents = await this.backend.findContent(
+                this.contentQueryFields.getValue(),
+                this.paginationComponent.getValue().nextPage(),
+            );
+
+            this.contentList.delete(content, nextPageContents.first());
+        } catch (e: any) {
+            const backendError = e as BackendError;
+            console.log(backendError);
+            this.contentList.delete(content);
+            this.contentList.error(backendError);
+        } finally {
+            this.paginationComponent.decreaseTotalCount();
+        }
+    }
+
+    private async load(pagination: Pagination): Promise<void> {
         if (this.isBusy) {
             return;
         }
@@ -240,19 +203,21 @@ export class ContentLibrary implements BusyAware {
         this.setBusy(true);
 
         try {
-            const query = this.contentQueryFields.getValue();
-            const paginatedContents = await this.backend.searchContents(query);
-            this.contentQueryFields.pagination.update(paginatedContents.pagination);
+            const findContentParams = this.contentQueryFields.getValue()
 
-            this.contentList.load(
-                paginatedContents.list,
-                this.contentQueryFields.searchInput.getValue(),
+            const paginatedContents = await this.backend.findContent(
+                findContentParams,
+                pagination,
             );
+
+            this.contentList.load(paginatedContents.list, findContentParams.search);
+            this.paginationComponent.update(paginatedContents.pagination);
         } catch (e: any) {
             const backendError = e as BackendError;
             console.log(backendError);
+            this.contentList.load();
             this.contentList.error(backendError);
-            this.contentQueryFields.pagination.reset();
+            this.paginationComponent.reset();
         } finally {
             this.setBusy(false);
         }
@@ -262,5 +227,6 @@ export class ContentLibrary implements BusyAware {
         this.isBusy = isBusy;
         this.contentList.setBusy(isBusy);
         this.contentQueryFields.setBusy(isBusy);
+        this.paginationComponent.setBusy(isBusy);
     }
 }

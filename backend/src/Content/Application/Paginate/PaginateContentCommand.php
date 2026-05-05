@@ -10,6 +10,7 @@ final readonly class PaginateContentCommand
 {
     public function __construct(
         public ?int $page,
+        public ?int $perPage,
         public ?string $search,
         public ?Uuid $categoryId,
         public ?string $mode,

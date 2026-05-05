@@ -24,10 +24,10 @@ final readonly class ContentPaginator
      *
      * @throws PaginationException
      */
-    public function paginate(?int $page = null, ?ContentQuery $query = null): PaginationResult
+    public function paginate(?int $page = null, ?int $perPage = null, ?ContentQuery $query = null): PaginationResult
     {
         $query ??= new ContentQuery();
-        $pagination = new Pagination($this->perPage, $page ?? 1);
+        $pagination = new Pagination($perPage ?? $this->perPage, $page ?? 1);
         $contents = $this->contentRepository->paginate($query, $pagination);
 
         return new PaginationResult(

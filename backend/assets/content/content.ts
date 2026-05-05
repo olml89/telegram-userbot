@@ -1,4 +1,5 @@
 import { Entity, Payload } from '../models/entity';
+import { Pagination } from '../models/pagination';
 import { Mode} from './mode';
 import { Status } from './status';
 import { Language } from './language';
@@ -76,6 +77,56 @@ export class FileContainer {
         return this
             .list
             .filter((file: File): file is Exclude<File, Image|Video> => !(file instanceof Image || file instanceof Video));
+    }
+}
+
+export class FindContentParams {
+    public constructor(
+        public readonly search: string|null = null,
+        public readonly category: Category|null = null,
+        public readonly mode: Mode|null = null,
+    ) {}
+
+    public matches(content: Content): boolean {
+        if (this.category && !this.category.equals(content.category)) {
+            return false;
+        }
+
+        if (this.mode && !this.mode.equals(content.mode)) {
+            return false;
+        }
+
+        const search = this.search?.toLowerCase();
+
+        if (search) {
+            return content.title.toLowerCase().includes(search)
+                || content.description.toLowerCase().includes(search)
+                || content.tags.some((tag: Tag) => tag.name.toLowerCase().includes(search));
+        }
+
+        return true;
+    }
+
+    public build(pagination: Pagination): string {
+        const params = new URLSearchParams();
+
+        if (this.search) {
+            params.set('search', this.search);
+        }
+
+        if (this.category) {
+            params.set('categoryId', this.category.publicId);
+        }
+
+        if (this.mode) {
+            params.set('mode', this.mode.value);
+        }
+
+        params.set('page', pagination.page.toString());
+        params.set('perPage', pagination.perPage.toString());
+        const query = params.toString();
+
+        return query ? `?${query}` : '';
     }
 }
 
