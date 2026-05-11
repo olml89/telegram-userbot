@@ -176,6 +176,11 @@ final class Content implements Entity, EventSource, Timestampable
         return $contentFile->detach();
     }
 
+    public function removed(): self
+    {
+        return $this->record(new ContentRemoved($this));
+    }
+
     public function stored(): self
     {
         return $this->record(new ContentStored($this));

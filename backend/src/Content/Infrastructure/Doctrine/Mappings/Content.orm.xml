@@ -89,11 +89,10 @@
             </join-table>
         </many-to-many>
 
+        <!-- No orphan-removal: we manually remove related contentFiles in the ContentListener -->
         <one-to-many field="contentFiles"
                      target-entity="olml89\TelegramUserbot\Backend\Content\Domain\ContentFile\ContentFile"
                      mapped-by="content"
-                     cascade="persist,remove"
-                     orphan-removal="true"
                      fetch="LAZY"/>
 
     </entity>

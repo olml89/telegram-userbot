@@ -97,6 +97,11 @@ final class DoctrineContentRepository extends DoctrineRepository implements Cont
         );
     }
 
+    public function remove(Content $content): void
+    {
+        $this->removeEntity($content);
+    }
+
     public function store(Content $content): void
     {
         $this->storeEntity($content);

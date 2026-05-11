@@ -12,5 +12,6 @@ interface ContentRepository
     public function get(Uuid $publicId): ?Content;
     public function getByTitle(string $title): ?Content;
     public function paginate(ContentQuery $query, Pagination $pagination): PaginatedContentCollection;
+    public function remove(Content $content): void;
     public function store(Content $content): void;
 }

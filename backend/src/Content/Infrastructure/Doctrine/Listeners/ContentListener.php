@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace olml89\TelegramUserbot\Backend\Content\Infrastructure\Doctrine\Listeners;
 
+use Doctrine\Bundle\DoctrineBundle\Attribute\AsDoctrineListener;
 use Doctrine\Bundle\DoctrineBundle\Attribute\AsEntityListener;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
@@ -27,8 +28,9 @@ use Throwable;
  */
 #[AsEntityListener(event: Events::postLoad, entity: Content::class)]
 #[AsEntityListener(event: Events::prePersist, entity: Content::class)]
+#[AsEntityListener(event: Events::preRemove, entity: Content::class)]
 #[AsEntityListener(event: Events::preFlush, entity: Content::class)]
-#[AsEntityListener(event: Events::postFlush, entity: Content::class)]
+#[AsDoctrineListener(event: Events::postFlush)]
 final readonly class ContentListener
 {
     public function __construct(
@@ -174,7 +176,7 @@ final readonly class ContentListener
         }
     }
 
-    private function convertToPersistentCollection(Content $content): void
+    private function convertToPersistentCollections(Content $content): void
     {
         try {
             $contentFilesProperty = $this->getProperty($content, 'contentFiles');
@@ -217,7 +219,9 @@ final readonly class ContentListener
     }
 
     /**
-     * When Content is about to be persisted for the first time, we need to persist the new ContentFile entities first.
+     * Before Content is persisted: persist all ContentFiles.
+     *
+     * When a ContentFile is created for the first time, it is not yet managed by Doctrine, so we need to persist it.
      */
     public function prePersist(Content $content): void
     {
@@ -244,16 +248,42 @@ final readonly class ContentListener
     }
 
     /**
-     * Before any flush (insert or update): convert to ArrayCollection
+     * Before Content is removed: explicitly remove all associated ContentFiles.
+     *
+     * Doctrine validates the metadata of the orphan ContentFiles BEFORE executing any event, so ContentFileManager
+     * can't be swapped with a PersistentCollection at that point, and it raises a MappingError because
+     * ContentFileManager is not a mapped entity. So orphan-removal has to be disabled and the ContentFiles
+     * manually removed.
+     */
+    public function preRemove(Content $content): void
+    {
+        try {
+            $contentFilesProperty = $this->getProperty($content, 'contentFiles');
+            $contentFiles = $contentFilesProperty->getValue($content);
+
+            if ($contentFiles instanceof ContentFileManager) {
+                $items = $this->getReadonlyArrayCollectionItems($contentFiles);
+
+                foreach ($items as $contentFile) {
+                    $this->entityManager->remove($contentFile);
+                }
+            }
+        } catch (Throwable) {
+
+        }
+    }
+
+    /**
+     * Before any flush (insert or update): convert ContentFileManager and TagManager to PersistentCollections.
      * This is called ONCE per flush, regardless of operation type
      */
     public function preFlush(Content $content): void
     {
-        $this->convertToPersistentCollection($content);
+        $this->convertToPersistentCollections($content);
     }
 
     /**
-     * postFlush: convert to Domain Collections again
+     * postFlush: convert to PersistentCollections to ContentFileManager and TagManager back again.
      */
     public function postFlush(PostFlushEventArgs $args): void
     {
