@@ -157,28 +157,31 @@ export class ContentPreviewModal implements Component<Content|null> {
                 return;
             }
 
-            if (this.contentPreviewFields.files.length() === 1) {
-                const content = this.content;
-
-                const deletedContent = await MessageBox.confirmAsync(
-                    'The content has only one file',
-                    'Deleting the last file will also delete the content. Do you wish to delete this content?',
-                    'Deleting...',
-                    (): Promise<void> => this.backend.deleteContent(content),
-                );
-
-                if (deletedContent) {
-                    const deletedContent = new CustomEvent('content:preview:deleted-content', { detail: content });
-                    this.eventTarget.dispatchEvent(deletedContent);
-
-                    this.setValue(null);
-                    this.close();
-                }
+            if (this.contentPreviewFields.files.length() > 1) {
+                await fileComponent.removeFrom(this.content);
 
                 return;
             }
 
-            await fileComponent.remove();
+            /**
+             * an async function needs re-assignment to make sure content is still not null when processing
+             */
+            const content = this.content;
+
+            const deletedContent = await MessageBox.confirmAsync(
+                'The content has only one file',
+                'Deleting the last file will also delete the content. Do you wish to delete this content?',
+                'Deleting...',
+                (): Promise<void> => this.backend.deleteContent(content),
+            );
+
+            if (deletedContent) {
+                const deletedContent = new CustomEvent('content:preview:deleted-content', { detail: content });
+                this.eventTarget.dispatchEvent(deletedContent);
+
+                this.setValue(null);
+                this.close();
+            }
         });
 
         this.contentPreviewFields.files.onRemovedFile((file: BackendFile): void => {

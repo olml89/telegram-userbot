@@ -9,18 +9,16 @@ use olml89\TelegramUserbot\Backend\File\Domain\Duration\Duration;
 final class Audio extends File
 {
     public function __construct(
-        File $file,
+        UnattachedFile $unattachedFile,
         private readonly Duration $duration,
     ) {
         parent::__construct(
-            $file->publicId(),
-            $file->fileName(),
-            $file->originalName(),
-            $file->mimeType(),
-            $file->bytes(),
+            $unattachedFile->file()->publicId(),
+            $unattachedFile->file()->fileName(),
+            $unattachedFile->file()->originalName(),
+            $unattachedFile->file()->mimeType(),
+            $unattachedFile->file()->bytes(),
         );
-
-        $this->copyEvents($file);
     }
 
     public function duration(): Duration

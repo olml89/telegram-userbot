@@ -13,7 +13,7 @@ use olml89\TelegramUserbot\Backend\File\Domain\Upload\UploadConsumptionException
 interface FileManager
 {
     /** @throws UploadConsumptionException */
-    public function consume(File $file, Upload $upload): void;
+    public function consume(UnattachedFile $unattachedFile, Upload $upload): void;
 
     /** @throws StorageFileNotReadableException */
     public function storageFile(File|FileName $subject): StorageFile;

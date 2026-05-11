@@ -10,17 +10,15 @@ use olml89\TelegramUserbot\Backend\File\Domain\PdfComplexityChecker\PdfReadingEx
 
 final class Pdf extends File
 {
-    public function __construct(File $file)
+    public function __construct(UnattachedFile $unattachedFile)
     {
         parent::__construct(
-            $file->publicId(),
-            $file->fileName(),
-            $file->originalName(),
-            $file->mimeType(),
-            $file->bytes(),
+            $unattachedFile->file()->publicId(),
+            $unattachedFile->file()->fileName(),
+            $unattachedFile->file()->originalName(),
+            $unattachedFile->file()->mimeType(),
+            $unattachedFile->file()->bytes(),
         );
-
-        $this->copyEvents($file);
     }
 
     /**

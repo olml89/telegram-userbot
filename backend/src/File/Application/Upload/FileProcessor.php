@@ -10,6 +10,7 @@ use olml89\TelegramUserbot\Backend\File\Domain\FileMetadataStripper\FileMetadata
 use olml89\TelegramUserbot\Backend\File\Domain\FileMetadataStripper\FileMetadataStrippingException;
 use olml89\TelegramUserbot\Backend\File\Domain\FileSpecializer\FileSpecializationException;
 use olml89\TelegramUserbot\Backend\File\Domain\FileSpecializer\FileSpecializer;
+use olml89\TelegramUserbot\Backend\File\Domain\UnattachedFile;
 
 final readonly class FileProcessor
 {
@@ -23,17 +24,17 @@ final readonly class FileProcessor
      * @throws FileSpecializationException
      * @throws FileMetadataStrippingException
      */
-    public function process(File $file): File
+    public function process(UnattachedFile $unattachedFile): UnattachedFile
     {
         try {
-            $file = $this->fileSpecializer->specialize($file);
+            $unattachedFile = $this->fileSpecializer->specialize($unattachedFile);
 
-            return $this->fileMetadataStripper->strip($file);
+            return $this->fileMetadataStripper->strip($unattachedFile);
         } catch (FileSpecializationException|FileMetadataStrippingException $e) {
             /**
              * Rollback: delete the StorageFile if there's an error while trying to process the File
              */
-            $this->fileManager->remove($file);
+            $this->fileManager->remove($unattachedFile->file());
 
             throw $e;
         }

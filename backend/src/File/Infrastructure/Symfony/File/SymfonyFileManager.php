@@ -9,6 +9,7 @@ use olml89\TelegramUserbot\Backend\File\Domain\FileManager;
 use olml89\TelegramUserbot\Backend\File\Domain\FileName\FileName;
 use olml89\TelegramUserbot\Backend\File\Domain\StorageFile\StorageFile;
 use olml89\TelegramUserbot\Backend\File\Domain\StorageFile\StorageFileNotReadableException;
+use olml89\TelegramUserbot\Backend\File\Domain\UnattachedFile;
 use olml89\TelegramUserbot\Backend\File\Domain\Upload\Upload;
 use olml89\TelegramUserbot\Backend\File\Domain\Upload\UploadConsumptionException;
 use Symfony\Component\Filesystem\Filesystem;
@@ -23,10 +24,10 @@ final readonly class SymfonyFileManager implements FileManager
     /**
      * @throws UploadConsumptionException
      */
-    public function consume(File $file, Upload $upload): void
+    public function consume(UnattachedFile $unattachedFile, Upload $upload): void
     {
-        $upload->move($this->contentDirectory, $file);
-        $file->uploadConsumed($upload);
+        $upload->move($this->contentDirectory, $unattachedFile);
+        $unattachedFile->uploadConsumed($upload);
     }
 
     public function exists(File $file): bool

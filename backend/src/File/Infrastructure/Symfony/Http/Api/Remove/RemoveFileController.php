@@ -6,6 +6,7 @@ namespace olml89\TelegramUserbot\Backend\File\Infrastructure\Symfony\Http\Api\Re
 
 use olml89\TelegramUserbot\Backend\File\Application\Remove\RemoveFileCommand;
 use olml89\TelegramUserbot\Backend\File\Application\Remove\RemoveFileCommandHandler;
+use olml89\TelegramUserbot\Backend\File\Domain\FileAlreadyAttachedException;
 use olml89\TelegramUserbot\Backend\File\Domain\FileNotFoundException;
 use olml89\TelegramUserbot\Backend\File\Domain\FileStorageException;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -27,6 +28,7 @@ final readonly class RemoveFileController
 
     /**
      * @throws FileNotFoundException
+     * @throws FileAlreadyAttachedException
      * @throws FileStorageException
      */
     public function __invoke(Uuid $publicId): JsonResponse

@@ -67,7 +67,6 @@
         <many-to-one field="category"
                      target-entity="olml89\TelegramUserbot\Backend\Category\Domain\Category"
                      inversed-by="contents"
-                     cascade="persist"
                      fetch="LAZY">
             <join-column name="category_id"
                          referenced-column-name="id"
@@ -80,16 +79,18 @@
                       fetch="LAZY">
             <join-table name="content_tag">
                 <join-columns>
-                    <join-column name="content_id" referenced-column-name="id"/>
+                    <join-column name="content_id"
+                                 referenced-column-name="id"/>
                 </join-columns>
                 <inverse-join-columns>
-                    <join-column name="tag_id" referenced-column-name="id"/>
+                    <join-column name="tag_id"
+                                 referenced-column-name="id"/>
                 </inverse-join-columns>
             </join-table>
         </many-to-many>
 
-        <one-to-many field="files"
-                     target-entity="olml89\TelegramUserbot\Backend\File\Domain\File"
+        <one-to-many field="contentFiles"
+                     target-entity="olml89\TelegramUserbot\Backend\Content\Domain\ContentFile\ContentFile"
                      mapped-by="content"
                      cascade="persist,remove"
                      orphan-removal="true"

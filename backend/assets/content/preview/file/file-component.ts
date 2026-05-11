@@ -1,6 +1,7 @@
 import { BaseComponent } from '../../../components/base-component';
 import { ErrorClearable, HtmlElementWrapper } from '../../../components/contracts';
 import { File as BackendFile } from '../../file';
+import { Content } from '../../content';
 import { FileItem } from '../../file-item/file-item';
 import { FileAdapterFactory } from '../../file-item/file-metadata';
 import { BackendApi, BackendError } from '../../../utils/backend';
@@ -54,14 +55,14 @@ export class FileComponent extends BaseComponent<BackendFile> implements ErrorCl
         });
     }
 
-    public async remove(): Promise<void> {
+    public async removeFrom(content: Content): Promise<void> {
         this.clearErrors();
         this.fileItem.setDeletingState();
 
         this.emit('file-item:delete:begin');
 
         try {
-            await this.backend.deleteFile(this.file);
+            await this.backend.deleteContentFile(content, this.file);
             this.emit('file-item:removed', this);
         } catch (e: any) {
             const backendError = e as BackendError;

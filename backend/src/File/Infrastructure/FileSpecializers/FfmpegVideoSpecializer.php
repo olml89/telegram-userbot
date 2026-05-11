@@ -11,7 +11,6 @@ use InvalidArgumentException;
 use LogicException;
 use olml89\TelegramUserbot\Backend\File\Domain\Duration\Duration;
 use olml89\TelegramUserbot\Backend\File\Domain\Duration\DurationException;
-use olml89\TelegramUserbot\Backend\File\Domain\File;
 use olml89\TelegramUserbot\Backend\File\Domain\FileManager;
 use olml89\TelegramUserbot\Backend\File\Domain\FileName\FileName;
 use olml89\TelegramUserbot\Backend\File\Domain\FileName\FileNameLengthException;
@@ -20,6 +19,7 @@ use olml89\TelegramUserbot\Backend\File\Domain\FileSpecializer\VideoSpecializer;
 use olml89\TelegramUserbot\Backend\File\Domain\Resolution\Resolution;
 use olml89\TelegramUserbot\Backend\File\Domain\Resolution\ResolutionException;
 use olml89\TelegramUserbot\Backend\File\Domain\StorageFile\StorageFile;
+use olml89\TelegramUserbot\Backend\File\Domain\UnattachedFile;
 use olml89\TelegramUserbot\Backend\File\Domain\Video;
 use RuntimeException;
 use Throwable;
@@ -34,10 +34,10 @@ final readonly class FfmpegVideoSpecializer implements VideoSpecializer
     /**
      * @throws FileSpecializationException
      */
-    public function specialize(File $file): Video
+    public function specialize(UnattachedFile $unattachedFile): Video
     {
         try {
-            $storageFile = $this->fileManager->storageFile($file);
+            $storageFile = $this->fileManager->storageFile($unattachedFile->file());
             $ffmpegVideoFile = $this->ffmpeg->open($storageFile->getPathname());
 
             if (!$ffmpegVideoFile instanceof FFMpegVideo) {
@@ -45,8 +45,8 @@ final readonly class FfmpegVideoSpecializer implements VideoSpecializer
             }
 
             return new Video(
-                file: $file,
-                thumbnail: $this->getThumbnail($file, $ffmpegVideoFile),
+                unattachedFile: $unattachedFile,
+                thumbnail: $this->getThumbnail($unattachedFile, $ffmpegVideoFile),
                 duration: $this->getDuration($storageFile),
                 resolution: $this->getResolution($ffmpegVideoFile),
             );
@@ -59,10 +59,10 @@ final readonly class FfmpegVideoSpecializer implements VideoSpecializer
      * @throws RuntimeException
      * @throws FileNameLengthException
      */
-    private function getThumbnail(File $file, FFMpegVideo $ffmpegVideoFile): FileName
+    private function getThumbnail(UnattachedFile $unattachedFile, FFMpegVideo $ffmpegVideoFile): FileName
     {
         $thumbnail = FileName::from(
-            name: $file->publicId(),
+            name: $unattachedFile->file()->publicId(),
             extension: 'jpg',
         );
 

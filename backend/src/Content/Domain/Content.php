@@ -4,20 +4,25 @@ declare(strict_types=1);
 
 namespace olml89\TelegramUserbot\Backend\Content\Domain;
 
+use ArrayAccess;
+use Countable;
+use IteratorAggregate;
 use olml89\TelegramUserbot\Backend\Category\Domain\Category;
+use olml89\TelegramUserbot\Backend\Content\Domain\ContentFile\ContentFile;
+use olml89\TelegramUserbot\Backend\Content\Domain\ContentFile\ContentFileManager;
 use olml89\TelegramUserbot\Backend\Content\Domain\Description\Description;
-use olml89\TelegramUserbot\Backend\Content\Domain\File\FileCollection;
 use olml89\TelegramUserbot\Backend\Content\Domain\Language\Language;
 use olml89\TelegramUserbot\Backend\Content\Domain\Mode\Mode;
 use olml89\TelegramUserbot\Backend\Content\Domain\Price\Price;
 use olml89\TelegramUserbot\Backend\Content\Domain\Status\Status;
-use olml89\TelegramUserbot\Backend\Content\Domain\Tag\TagCollection;
+use olml89\TelegramUserbot\Backend\Content\Domain\Tag\TagManager;
 use olml89\TelegramUserbot\Backend\Content\Domain\Title\Title;
-use olml89\TelegramUserbot\Backend\File\Domain\File;
-use olml89\TelegramUserbot\Backend\File\Domain\FileAlreadyAttachedException;
-use olml89\TelegramUserbot\Backend\File\Domain\FileAttached;
-use olml89\TelegramUserbot\Backend\Shared\Domain\Collection\Collection;
-use olml89\TelegramUserbot\Backend\Shared\Domain\Collection\GenericCollection;
+use olml89\TelegramUserbot\Backend\File\Domain\FileNotFoundException;
+use olml89\TelegramUserbot\Backend\File\Domain\UnattachedFile;
+use olml89\TelegramUserbot\Backend\File\Domain\UnattachedFileCollection;
+use olml89\TelegramUserbot\Backend\Shared\Domain\Collection\ReadonlyArrayCollection;
+use olml89\TelegramUserbot\Backend\Shared\Domain\Collection\ReadonlyCollection;
+use olml89\TelegramUserbot\Backend\Shared\Domain\Entity\Entity;
 use olml89\TelegramUserbot\Backend\Shared\Domain\Entity\EventSource\EventSource;
 use olml89\TelegramUserbot\Backend\Shared\Domain\Entity\EventSource\HasEvents;
 use olml89\TelegramUserbot\Backend\Shared\Domain\Entity\HasIdentity;
@@ -27,9 +32,11 @@ use olml89\TelegramUserbot\Backend\Shared\Domain\Exception\Invariant\CollectionC
 use olml89\TelegramUserbot\Backend\Shared\Domain\ValueObject\Percentage\Percentage;
 use olml89\TelegramUserbot\Backend\Shared\Domain\ValueObject\Timestamps\Timestamps;
 use olml89\TelegramUserbot\Backend\Tag\Domain\Tag;
+use olml89\TelegramUserbot\Backend\Tag\Domain\TagCollection;
+use olml89\TelegramUserbot\Backend\Tag\Domain\TagCollectionCountException;
 use Symfony\Component\Uid\Uuid;
 
-final class Content implements EventSource, Timestampable
+final class Content implements Entity, EventSource, Timestampable
 {
     use HasIdentity;
     use HasEvents;
@@ -38,14 +45,14 @@ final class Content implements EventSource, Timestampable
     private int $sales = 0;
 
     /**
-     * @var iterable<Tag>
+     * @var TagManager $tags
      */
-    private iterable $tags;
+    private ArrayAccess&Countable&IteratorAggregate $tags;
 
     /**
-     * @var iterable<File>
+     * @var ContentFileManager $contentFiles
      */
-    private iterable $files;
+    private ArrayAccess&Countable&IteratorAggregate $contentFiles;
 
     public function __construct(
         protected readonly Uuid $publicId,
@@ -58,14 +65,16 @@ final class Content implements EventSource, Timestampable
         private Status $status,
         private Category $category,
         TagCollection $tags,
-        FileCollection $files,
+        UnattachedFileCollection $unattachedFiles,
         protected readonly Timestamps $timestamps = new Timestamps(),
     ) {
-        $this->tags = $tags->toArray();
+        $this->tags = new TagManager(...$tags);
 
-        $this->files = $files
-            ->each(fn(File $file) => $this->attachFile($file))
-            ->toArray();
+        $contentFiles = $unattachedFiles->map(
+            fn(UnattachedFile $unattachedFile): ContentFile => $this->attachFile($unattachedFile),
+        );
+
+        $this->contentFiles = new ContentFileManager(...$contentFiles);
     }
 
     public function title(): Title
@@ -114,50 +123,57 @@ final class Content implements EventSource, Timestampable
     }
 
     /**
-     * @return Collection<Tag>
+     * @return ReadonlyCollection<int, Tag>
      */
-    public function tags(): Collection
+    public function tags(): ReadonlyCollection
     {
-        return new GenericCollection(...$this->tags);
+        return new ReadonlyArrayCollection(iterator_to_array($this->tags, preserve_keys: false));
+    }
+
+    /**
+     * @throws TagCollectionCountException
+     */
+    public function addTag(Tag $tag): Tag
+    {
+        return $this->tags->add($tag);
+    }
+
+    /**
+     * @return ReadonlyCollection<int, ContentFile>
+     */
+    public function contentFiles(): ReadonlyCollection
+    {
+        return new ReadonlyArrayCollection(iterator_to_array($this->contentFiles, preserve_keys: false));
     }
 
     /**
      * @throws CollectionCountException
      */
-    public function addTag(Tag $tag): self
+    public function addFile(UnattachedFile $unattachedFile): ContentFile
     {
-        $this->tags = new TagCollection(...$this->tags)->add($tag)->toArray();
+        $contentFile = $this->attachFile($unattachedFile);
 
-        return $this;
+        return $this->contentFiles->add($contentFile);
     }
 
-    /**
-     * @return Collection<File>
-     */
-    public function files(): Collection
+    private function attachFile(UnattachedFile $unattachedFile): ContentFile
     {
-        return new GenericCollection(...$this->files);
+        $contentFile = $unattachedFile->attach($this)->attached();
+        $this->record(...$contentFile->pullEvents());
+
+        return $contentFile;
     }
 
     /**
      * @throws CollectionCountException
-     * @throws FileAlreadyAttachedException
+     * @throws FileNotFoundException
      */
-    public function addFile(File $file): self
+    public function removeFile(Uuid $fileId): UnattachedFile
     {
-        $this->files = new FileCollection(...$this->files)->add($file)->toArray();
-        $this->attachFile($file);
+        $contentFile = $this->contentFiles->remove($fileId)->removed();
+        $this->record(...$contentFile->pullEvents());
 
-        return $this;
-    }
-
-    /**
-     * @throws FileAlreadyAttachedException
-     */
-    private function attachFile(File $file): void
-    {
-        $file->attach($this);
-        $this->record(new FileAttached($this, $file));
+        return $contentFile->detach();
     }
 
     public function stored(): self

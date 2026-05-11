@@ -16,6 +16,7 @@ use olml89\TelegramUserbot\Backend\File\Domain\OriginalName\OriginalName;
 use olml89\TelegramUserbot\Backend\File\Domain\OriginalName\OriginalNameLengthException;
 use olml89\TelegramUserbot\Backend\File\Domain\Size\Size;
 use olml89\TelegramUserbot\Backend\File\Domain\Size\SizeException;
+use olml89\TelegramUserbot\Backend\File\Domain\UnattachedFile;
 use olml89\TelegramUserbot\Backend\File\Domain\Upload\Upload;
 use olml89\TelegramUserbot\Backend\File\Domain\Upload\UploadConsumptionException;
 use olml89\TelegramUserbot\Backend\File\Domain\Upload\UploadFinder;
@@ -44,7 +45,7 @@ final readonly class FileBuilder
      * @throws FileSpecializationException
      * @throws FileMetadataStrippingException
      */
-    public function build(UploadFileCommand $command): File
+    public function build(UploadFileCommand $command): UnattachedFile
     {
         $upload = $this->uploadFinder->find($command->uploadId);
         $file = $this->consumeUpload($upload);
@@ -59,7 +60,7 @@ final readonly class FileBuilder
      * @throws UploadConsumptionException
      * @throws UploadRemovalException
      */
-    private function consumeUpload(Upload $upload): File
+    private function consumeUpload(Upload $upload): UnattachedFile
     {
         $file = $this->buildFile($upload);
         $this->fileManager->consume($file, $upload);
@@ -73,7 +74,7 @@ final readonly class FileBuilder
      * @throws ValidationException
      * @throws UploadRemovalException
      */
-    private function buildFile(Upload $upload): File
+    private function buildFile(Upload $upload): UnattachedFile
     {
         $validationException = new ValidationException();
         $fileId = Uuid::v4();
@@ -93,13 +94,15 @@ final readonly class FileBuilder
              * @var OriginalName $originalName
              * @var Size $size
              */
-            return new File(
+            $file = new File(
                 publicId: $fileId,
                 fileName: $fileName,
                 originalName: $originalName,
                 mimeType: $mimeType,
                 bytes: $size,
             );
+
+            return new UnattachedFile($file);
         } catch (UploadReadingException|UnsupportedResourceException|ValidationException $e) {
             /**
              * Rollback: delete Upload data if there's an error while trying to build File

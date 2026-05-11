@@ -9,10 +9,10 @@ use FFMpeg\FFProbe\DataMapping\Stream;
 use olml89\TelegramUserbot\Backend\File\Domain\Audio;
 use olml89\TelegramUserbot\Backend\File\Domain\Duration\Duration;
 use olml89\TelegramUserbot\Backend\File\Domain\Duration\DurationException;
-use olml89\TelegramUserbot\Backend\File\Domain\File;
 use olml89\TelegramUserbot\Backend\File\Domain\FileManager;
 use olml89\TelegramUserbot\Backend\File\Domain\FileSpecializer\AudioSpecializer;
 use olml89\TelegramUserbot\Backend\File\Domain\FileSpecializer\FileSpecializationException;
+use olml89\TelegramUserbot\Backend\File\Domain\UnattachedFile;
 use RuntimeException;
 use Throwable;
 
@@ -26,10 +26,10 @@ final readonly class FfmpegAudioSpecializer implements AudioSpecializer
     /**
      * @throws FileSpecializationException
      */
-    public function specialize(File $file): Audio
+    public function specialize(UnattachedFile $unattachedFile): Audio
     {
         try {
-            $storageFile = $this->fileManager->storageFile($file);
+            $storageFile = $this->fileManager->storageFile($unattachedFile->file());
             $audioStream = $this->ffmpeg->open($storageFile->getPathname())->getStreams()->audios()->first();
 
             if (is_null($audioStream)) {
@@ -37,7 +37,7 @@ final readonly class FfmpegAudioSpecializer implements AudioSpecializer
             }
 
             return new Audio(
-                file: $file,
+                unattachedFile: $unattachedFile,
                 duration: $this->getDuration($audioStream),
             );
         } catch (Throwable $e) {

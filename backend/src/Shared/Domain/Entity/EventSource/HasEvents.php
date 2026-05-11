@@ -16,9 +16,11 @@ trait HasEvents
      */
     private array $events = [];
 
-    final protected function record(Event $event): static
+    final protected function record(Event ...$events): static
     {
-        $this->events[] = $event;
+        foreach ($events as $event) {
+            $this->events[] = $event;
+        }
 
         return $this;
     }

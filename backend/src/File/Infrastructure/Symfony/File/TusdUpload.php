@@ -6,6 +6,7 @@ namespace olml89\TelegramUserbot\Backend\File\Infrastructure\Symfony\File;
 
 use LogicException;
 use olml89\TelegramUserbot\Backend\File\Domain\File;
+use olml89\TelegramUserbot\Backend\File\Domain\UnattachedFile;
 use olml89\TelegramUserbot\Backend\File\Domain\Upload\Upload;
 use olml89\TelegramUserbot\Backend\File\Domain\Upload\UploadConsumptionException;
 use olml89\TelegramUserbot\Backend\File\Domain\Upload\UploadReadingException;
@@ -136,20 +137,20 @@ final readonly class TusdUpload implements Upload
      *
      * @throws UploadConsumptionException
      */
-    public function move(string $destinationDirectory, File $file): void
+    public function move(string $destinationDirectory, UnattachedFile $unattachedFile): void
     {
         /**
          * Move the uploaded file to the content directory with the correct name and extension
          */
         try {
-            $moved = $this->upload->move($destinationDirectory, $file);
+            $moved = $this->upload->move($destinationDirectory, $unattachedFile);
         } catch (FileException $uploadMovingException) {
             /**
              * Move of the uploaded file failed, try to remove both files
              */
             $exception = new UploadConsumptionException(
                 originPath: $this->upload->path(),
-                destinationPath: $file->filePath($destinationDirectory),
+                destinationPath: $unattachedFile->file()->filePath($destinationDirectory),
                 previous: $uploadMovingException,
             );
 
@@ -189,7 +190,7 @@ final readonly class TusdUpload implements Upload
              */
             $exception = new UploadConsumptionException(
                 originPath: $this->upload->path(),
-                destinationPath: $file->filePath($destinationDirectory),
+                destinationPath: $unattachedFile->file()->filePath($destinationDirectory),
                 previous: $infoRemovalException,
             );
 

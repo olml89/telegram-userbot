@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace olml89\TelegramUserbot\Backend\File\Infrastructure\FileSpecializers;
 
-use olml89\TelegramUserbot\Backend\File\Domain\File;
 use olml89\TelegramUserbot\Backend\File\Domain\FileManager;
 use olml89\TelegramUserbot\Backend\File\Domain\FileSpecializer\FileSpecializationException;
 use olml89\TelegramUserbot\Backend\File\Domain\FileSpecializer\ImageSpecializer;
@@ -12,6 +11,7 @@ use olml89\TelegramUserbot\Backend\File\Domain\Image;
 use olml89\TelegramUserbot\Backend\File\Domain\Resolution\Resolution;
 use olml89\TelegramUserbot\Backend\File\Domain\Resolution\ResolutionException;
 use olml89\TelegramUserbot\Backend\File\Domain\StorageFile\StorageFile;
+use olml89\TelegramUserbot\Backend\File\Domain\UnattachedFile;
 use RuntimeException;
 use Throwable;
 
@@ -24,13 +24,13 @@ final readonly class PhpImageSpecializer implements ImageSpecializer
     /**
      * @throws FileSpecializationException
      */
-    public function specialize(File $file): Image
+    public function specialize(UnattachedFile $unattachedFile): Image
     {
         try {
-            $storageFile = $this->fileManager->storageFile($file);
+            $storageFile = $this->fileManager->storageFile($unattachedFile->file());
 
             return new Image(
-                file: $file,
+                unattachedFile: $unattachedFile,
                 resolution: $this->getResolution($storageFile),
             );
         } catch (Throwable $e) {

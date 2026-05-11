@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<doctrine-mapping xmlns="https://doctrine-project.org/schemas/orm/doctrine-mapping"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="https://doctrine-project.org/schemas/orm/doctrine-mapping
+                  https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+
+    <entity name="olml89\TelegramUserbot\Backend\Content\Domain\ContentFile\ContentFile"
+            table="content_files">
+
+        <!-- Identity -->
+        <id name="id" type="integer">
+            <generator strategy="IDENTITY"/>
+        </id>
+
+        <field name="publicId"
+               column="public_id"
+               type="uuid"
+               unique="true"
+               nullable="false"/>
+
+        <!-- Timestamps -->
+        <embedded name="timestamps"
+                  class="olml89\TelegramUserbot\Backend\Shared\Domain\ValueObject\Timestamps\Timestamps"
+                  use-column-prefix="false"/>
+
+        <!-- Relationships -->
+        <many-to-one field="content"
+                     target-entity="olml89\TelegramUserbot\Backend\Content\Domain\Content"
+                     inversed-by="contentFiles">
+            <join-column name="content_id"
+                         nullable="false"/>
+        </many-to-one>
+
+        <one-to-one field="file"
+                    target-entity="olml89\TelegramUserbot\Backend\File\Domain\File"
+                    unique="true">
+            <join-column name="file_id"
+                         nullable="false"
+                         unique="true"/>
+        </one-to-one>
+
+    </entity>
+
+</doctrine-mapping>

@@ -34,17 +34,18 @@ final readonly class ContentResult implements Result
         /** @var TagResult[] */
         public array $tags,
 
-        public FileContainer $files,
+        public ContentFileContainer $files,
         public string $createdAt,
         public string $updatedAt,
     ) {}
 
     public static function content(Content $content): self
     {
-        /** @var TagResult[] $tags */
-        $tags = $content
+        /** @var TagResult[] $tagResults */
+        $tagResults = $content
             ->tags()
             ->map(fn(Tag $tag): TagResult => TagResult::tag($tag))
+            ->values()
             ->toArray();
 
         return new self(
@@ -58,8 +59,8 @@ final readonly class ContentResult implements Result
             status: $content->status(),
             language: $content->language(),
             category: CategoryResult::category($content->category()),
-            tags: $tags,
-            files: FileContainer::files($content->files()),
+            tags: $tagResults,
+            files: ContentFileContainer::files($content->contentFiles()),
             createdAt: $content->createdAt()->format(DateTimeInterface::RFC3339),
             updatedAt: $content->updatedAt()->format(DateTimeInterface::RFC3339),
         );

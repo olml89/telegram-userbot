@@ -6,8 +6,8 @@ namespace olml89\TelegramUserbot\Backend\Category\Infrastructure\Doctrine;
 
 use olml89\TelegramUserbot\Backend\Category\Domain\Category;
 use olml89\TelegramUserbot\Backend\Category\Domain\CategoryRepository;
-use olml89\TelegramUserbot\Backend\Shared\Domain\Collection\Collection;
-use olml89\TelegramUserbot\Backend\Shared\Domain\Collection\GenericCollection;
+use olml89\TelegramUserbot\Backend\Shared\Domain\Collection\ReadonlyArrayCollection;
+use olml89\TelegramUserbot\Backend\Shared\Domain\Collection\ReadonlyCollection;
 use olml89\TelegramUserbot\Backend\Shared\Infrastructure\Doctrine\DoctrineRepository;
 use Symfony\Component\Uid\Uuid;
 
@@ -22,11 +22,11 @@ final class DoctrineCategoryRepository extends DoctrineRepository implements Cat
     }
 
     /**
-     * @return Collection<Category>
+     * @return ReadonlyCollection<int, Category>
      */
-    public function all(): Collection
+    public function all(): ReadonlyCollection
     {
-        return new GenericCollection(...$this->findAll());
+        return new ReadonlyArrayCollection($this->findAll());
     }
 
     public function get(Uuid $publicId): ?Category

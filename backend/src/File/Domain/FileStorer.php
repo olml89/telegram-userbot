@@ -9,25 +9,25 @@ use Throwable;
 final readonly class FileStorer
 {
     public function __construct(
-        private FileRepository $fileRepository,
-        private FileManager $fileManager,
+        private UnattachedFileRepository $fileRepository,
+        private FileManager              $fileManager,
     ) {}
 
     /**
      * @throws FileStorageException
      */
-    public function store(File $file): void
+    public function store(UnattachedFile $unattachedFile): void
     {
         try {
-            $this->fileRepository->store($file);
-            $file->stored();
+            $this->fileRepository->store($unattachedFile);
+            $unattachedFile->stored();
         } catch (Throwable $e) {
             /**
              * Rollback: delete File data if there's an error while trying to store File
              */
-            $this->fileManager->remove($file);
+            $this->fileManager->remove($unattachedFile->file());
 
-            throw FileStorageException::store($file, $e);
+            throw FileStorageException::store($unattachedFile, $e);
         }
     }
 }

@@ -12,8 +12,6 @@ use olml89\TelegramUserbot\Backend\Content\Domain\ContentFinder;
 use olml89\TelegramUserbot\Backend\Content\Domain\ContentNotFoundException;
 use olml89\TelegramUserbot\Backend\Content\Domain\Description\Description;
 use olml89\TelegramUserbot\Backend\Content\Domain\Description\DescriptionLengthException;
-use olml89\TelegramUserbot\Backend\Content\Domain\File\FileCollection;
-use olml89\TelegramUserbot\Backend\Content\Domain\File\FileCollectionCountException;
 use olml89\TelegramUserbot\Backend\Content\Domain\Language\Language;
 use olml89\TelegramUserbot\Backend\Content\Domain\Language\UnsupportedLanguageException;
 use olml89\TelegramUserbot\Backend\Content\Domain\Mode\Mode;
@@ -22,18 +20,20 @@ use olml89\TelegramUserbot\Backend\Content\Domain\Price\Price;
 use olml89\TelegramUserbot\Backend\Content\Domain\Price\PriceException;
 use olml89\TelegramUserbot\Backend\Content\Domain\Status\Status;
 use olml89\TelegramUserbot\Backend\Content\Domain\Status\UnsupportedStatusException;
-use olml89\TelegramUserbot\Backend\Content\Domain\Tag\TagCollection;
-use olml89\TelegramUserbot\Backend\Content\Domain\Tag\TagCollectionCountException;
 use olml89\TelegramUserbot\Backend\Content\Domain\Title\Title;
 use olml89\TelegramUserbot\Backend\Content\Domain\Title\TitleLengthException;
-use olml89\TelegramUserbot\Backend\File\Domain\File;
 use olml89\TelegramUserbot\Backend\File\Domain\FileAlreadyAttachedException;
-use olml89\TelegramUserbot\Backend\File\Domain\FileFinder;
+use olml89\TelegramUserbot\Backend\File\Domain\FileCollectionCountException;
 use olml89\TelegramUserbot\Backend\File\Domain\FileNotFoundException;
+use olml89\TelegramUserbot\Backend\File\Domain\UnattachedFile;
+use olml89\TelegramUserbot\Backend\File\Domain\UnattachedFileCollection;
+use olml89\TelegramUserbot\Backend\File\Domain\UnattachedFileFinder;
 use olml89\TelegramUserbot\Backend\Shared\Application\Validation\ValidationException;
 use olml89\TelegramUserbot\Backend\Shared\Domain\ValueObject\Percentage\Percentage;
 use olml89\TelegramUserbot\Backend\Shared\Domain\ValueObject\Percentage\PercentageException;
 use olml89\TelegramUserbot\Backend\Tag\Domain\Tag;
+use olml89\TelegramUserbot\Backend\Tag\Domain\TagCollection;
+use olml89\TelegramUserbot\Backend\Tag\Domain\TagCollectionCountException;
 use olml89\TelegramUserbot\Backend\Tag\Domain\TagFinder;
 use olml89\TelegramUserbot\Backend\Tag\Domain\TagNotFoundException;
 use Symfony\Component\Uid\Uuid;
@@ -44,7 +44,7 @@ final readonly class ContentBuilder
         private ContentFinder $contentFinder,
         private CategoryFinder $categoryFinder,
         private TagFinder $tagFinder,
-        private FileFinder $fileFinder,
+        private UnattachedFileFinder $unattachedFileFinder,
     ) {}
 
     /**
@@ -78,7 +78,7 @@ final readonly class ContentBuilder
          * @var Status $status
          * @var Category $category
          * @var TagCollection $tags
-         * @var FileCollection $files
+         * @var UnattachedFileCollection $files
          */
         return new Content(
             publicId: Uuid::v4(),
@@ -91,7 +91,7 @@ final readonly class ContentBuilder
             status: $status,
             category: $category,
             tags: $tags,
-            files: $files,
+            unattachedFiles: $files,
         );
     }
 
@@ -222,18 +222,18 @@ final readonly class ContentBuilder
         }
     }
 
-    private function buildFiles(ValidationException $validationException, StoreContentCommand $command): ?FileCollection
+    private function buildFiles(ValidationException $validationException, StoreContentCommand $command): ?UnattachedFileCollection
     {
         try {
-            $files = [];
+            $unattachedFiles = [];
 
             foreach ($command->fileIds as $fileId) {
-                if (!is_null($file = $this->buildFile($validationException, $fileId))) {
-                    $files[] = $file;
+                if (!is_null($unattachedFile = $this->buildFile($validationException, $fileId))) {
+                    $unattachedFiles[] = $unattachedFile;
                 }
             }
 
-            return new FileCollection(...$files);
+            return new UnattachedFileCollection(...$unattachedFiles);
         } catch (FileCollectionCountException $e) {
             $validationException->addError('fileIds', $e->getMessage());
 
@@ -241,10 +241,10 @@ final readonly class ContentBuilder
         }
     }
 
-    private function buildFile(ValidationException $validationException, Uuid $fileId): ?File
+    private function buildFile(ValidationException $validationException, Uuid $fileId): ?UnattachedFile
     {
         try {
-            return $this->fileFinder->find($fileId)->assertNotAttached();
+            return $this->unattachedFileFinder->find($fileId);
         } catch (FileNotFoundException|FileAlreadyAttachedException $e) {
             $validationException->addError('fileIds', $e->getMessage());
 

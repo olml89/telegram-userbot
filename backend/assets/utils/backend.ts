@@ -157,6 +157,20 @@ export class BackendApi {
         }
     }
 
+    public async deleteContentFile(content: Content, file: BackendFile): Promise<void> {
+        const response = await this.fetch({
+            method: 'DELETE',
+            endpoint: `content/${content.publicId}/files/${file.publicId}`,
+        });
+
+        if (!response.ok) {
+            throw await BackendError.from(
+                response,
+                'Failed to delete content file',
+            );
+        }
+    }
+
     public async deleteFile(file: BackendFile): Promise<void> {
         const response = await this.fetch({
             method: 'DELETE',

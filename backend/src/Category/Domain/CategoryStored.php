@@ -21,12 +21,4 @@ final readonly class CategoryStored implements Event
     {
         return $this->category;
     }
-
-    /**
-     * @return array<string, mixed>
-     */
-    public function jsonSerialize(): array
-    {
-        return [];
-    }
 }

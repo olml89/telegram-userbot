@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace olml89\TelegramUserbot\Backend\File\Domain;
 
-use olml89\TelegramUserbot\Backend\Shared\Domain\Exception\InvariantException;
+use olml89\TelegramUserbot\Backend\Shared\Domain\Exception\NotAllowedException;
 
-final class FileAlreadyAttachedException extends InvariantException
+final class FileAlreadyAttachedException extends NotAllowedException
 {
     public function __construct(File $file)
     {

@@ -9,22 +9,21 @@ use Throwable;
 final readonly class FileRemover
 {
     public function __construct(
-        private FileRepository $fileRepository,
-        private FileManager $fileManager,
+        private UnattachedFileRepository $fileRepository,
+        private FileManager              $fileManager,
     ) {}
 
     /**
      * @throws FileStorageException
      */
-    public function remove(File $file): void
+    public function remove(UnattachedFile $unattachedFile): void
     {
         try {
-            $snapshot = clone $file;
-            $this->fileRepository->remove($file);
-            $this->fileManager->remove($file);
-            $snapshot->removed();
+            $this->fileRepository->remove($unattachedFile);
+            $this->fileManager->remove($unattachedFile->file());
+            $unattachedFile->removed();
         } catch (Throwable $e) {
-            throw FileStorageException::remove($file, $e);
+            throw FileStorageException::remove($unattachedFile, $e);
         }
     }
 }

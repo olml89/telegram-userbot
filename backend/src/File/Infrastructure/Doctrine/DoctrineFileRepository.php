@@ -21,18 +21,6 @@ final class DoctrineFileRepository extends DoctrineRepository implements FileRep
 
     public function get(Uuid $publicId): ?File
     {
-        return $this->findOneBy([
-            'publicId' => $publicId,
-        ]);
-    }
-
-    public function remove(File $file): void
-    {
-        $this->removeEntity($file);
-    }
-
-    public function store(File $file): void
-    {
-        $this->storeEntity($file);
+        return $this->findOneBy(['publicId' => $publicId]);
     }
 }

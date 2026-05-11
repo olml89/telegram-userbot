@@ -22,12 +22,4 @@ final readonly class ContentStored implements Event
     {
         return $this->content;
     }
-
-    /**
-     * @return array<string, mixed>
-     */
-    public function jsonSerialize(): array
-    {
-        return [];
-    }
 }
