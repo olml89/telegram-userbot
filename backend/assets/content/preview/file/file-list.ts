@@ -19,15 +19,7 @@ export class FileList implements ChangeAware, Component<BackendFile[]> {
         this.fileCount = fileCount;
         this.totalSize = totalSize;
 
-        this.onChange((): void => {
-            this.fileCount.textContent = String(this.fileComponents.size);
-
-            const totalSize = Array
-                .from(this.fileComponents)
-                .reduce((carry: Size, fileComponent: FileComponent) => carry.add(fileComponent.getValue().size), new Size());
-
-            this.totalSize.textContent = totalSize.format();
-        });
+        this.onRemovedFile((): void => this.printFilesSummary());
     }
 
     public static from(
@@ -110,6 +102,16 @@ export class FileList implements ChangeAware, Component<BackendFile[]> {
         this.removedFileListeners.add(listener);
     }
 
+    private printFilesSummary(): void {
+        this.fileCount.textContent = String(this.fileComponents.size);
+
+        const totalSize = Array
+            .from(this.fileComponents)
+            .reduce((carry: Size, fileComponent: FileComponent) => carry.add(fileComponent.getValue().size), new Size());
+
+        this.totalSize.textContent = totalSize.format();
+    }
+
     private removeFileComponent(fileComponent: FileComponent): void {
         this.fileComponents.delete(fileComponent);
         this.fileList.removeChild(fileComponent.element());
@@ -125,5 +127,7 @@ export class FileList implements ChangeAware, Component<BackendFile[]> {
             this.fileComponents.add(fileComponent);
             this.fileList.appendChild(fileComponent.element());
         });
+
+        this.printFilesSummary();
     }
 }

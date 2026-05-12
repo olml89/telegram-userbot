@@ -12,7 +12,7 @@ import { assertImported, querySelector, querySelectorAll } from '../../utils/imp
 class ContentPreviewFields implements Component<BackendFile[]> {
     private readonly titles: NodeListOf<HTMLSpanElement>;
     private readonly category: HTMLSpanElement;
-    private readonly type: HTMLSpanElement;
+    private readonly mode: HTMLSpanElement;
     private readonly price: HTMLSpanElement;
     private readonly intensity: HTMLSpanElement;
     private readonly language: HTMLSpanElement;
@@ -26,7 +26,7 @@ class ContentPreviewFields implements Component<BackendFile[]> {
     public constructor(
         titles: NodeListOf<HTMLSpanElement>,
         category: HTMLSpanElement,
-        type: HTMLSpanElement,
+        mode: HTMLSpanElement,
         price: HTMLSpanElement,
         intensity: HTMLSpanElement,
         language: HTMLSpanElement,
@@ -39,7 +39,7 @@ class ContentPreviewFields implements Component<BackendFile[]> {
     ) {
         this.titles = titles;
         this.category = category;
-        this.type = type;
+        this.mode = mode;
         this.price = price;
         this.intensity = intensity;
         this.language = language;
@@ -54,7 +54,7 @@ class ContentPreviewFields implements Component<BackendFile[]> {
     public static from(previewModal: HTMLElement|null): ContentPreviewFields|null {
         const titles = querySelectorAll<HTMLSpanElement>(previewModal, '[data-content-title]');
         const category = querySelector<HTMLSpanElement>(previewModal, '[data-content-category]');
-        const type = querySelector<HTMLSpanElement>(previewModal, '[data-content-mode]');
+        const mode = querySelector<HTMLSpanElement>(previewModal, '[data-content-mode]');
         const price = querySelector<HTMLSpanElement>(previewModal, '[data-content-price]');
         const intensity = querySelector<HTMLSpanElement>(previewModal, '[data-content-intensity]');
         const language = querySelector<HTMLSpanElement>(previewModal, '[data-content-language]');
@@ -74,7 +74,7 @@ class ContentPreviewFields implements Component<BackendFile[]> {
             previewModal,
             titles,
             category,
-            type,
+            mode,
             price,
             intensity,
             language,
@@ -93,7 +93,7 @@ class ContentPreviewFields implements Component<BackendFile[]> {
         return new ContentPreviewFields(
             required.titles,
             required.category,
-            required.type,
+            required.mode,
             required.price,
             required.intensity,
             required.language,
@@ -115,7 +115,7 @@ class ContentPreviewFields implements Component<BackendFile[]> {
             title.textContent = content?.title ?? '';
         });
         this.category.textContent = content?.category.name ?? '';
-        this.type.textContent = content?.mode.name ?? '';
+        this.mode.textContent = content?.mode.name ?? '';
         this.price.textContent = content?.price.toString() ?? '';
         this.intensity.textContent = content?.intensity.toString() ?? '';
         this.language.textContent = content?.language.name ?? '';
