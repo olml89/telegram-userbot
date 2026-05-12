@@ -1,0 +1,5 @@
+@import '../tag/tag-list.css';
+
+#contentPreviewModal .tag-list {
+    justify-content: left;
+}

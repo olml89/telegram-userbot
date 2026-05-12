@@ -1,0 +1,17 @@
+.file-item .file-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 6px;
+}
+
+.file-item .file-actions .btn {
+    width: 100%;
+}
+
+/* Responsive fallback */
+@media (max-width: 900px) {
+    .file-item .file-actions {
+        justify-self: start;
+    }
+}

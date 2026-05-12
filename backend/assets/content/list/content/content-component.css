@@ -1,0 +1,75 @@
+@import './content-info/content-info.css';
+@import './actions-menu.css';
+@import './bundle.css';
+@import './media-thumb.css';
+@import './price-info.css';
+
+/**
+ * Animation when loading as list
+ */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/**
+ * Animation when loading as optimistic-addition (single component)
+ */
+@keyframes slideInFromTop {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/**
+ * Animation when removing
+ */
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+}
+
+tr[data-content-row] {
+    will-change: transform, opacity;
+    animation: fadeIn 0.3s ease-in;
+}
+
+/**
+ * Optimistic addition animation - overrides the default fadeIn
+ */
+tr[data-content-row].is-new {
+    animation: slideInFromTop 0.4s ease-out !important;
+    animation-delay: 0ms !important;
+}
+
+tr[data-content-row].is-removing {
+    animation: fadeOut 0.3s ease-in forwards;
+}
+
+/* Accessibility preferences */
+@media (prefers-reduced-motion: reduce) {
+    tr[data-content-row],
+    tr[data-content-row].is-new,
+    tr[data-content-row].is-removing {
+        animation: none !important;
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

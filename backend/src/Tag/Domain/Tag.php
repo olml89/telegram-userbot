@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace olml89\TelegramUserbot\Backend\Tag\Domain;
 
+use olml89\TelegramUserbot\Backend\Shared\Domain\Entity\Entity;
 use olml89\TelegramUserbot\Backend\Shared\Domain\Entity\EventSource\EventSource;
 use olml89\TelegramUserbot\Backend\Shared\Domain\Entity\EventSource\HasEvents;
 use olml89\TelegramUserbot\Backend\Shared\Domain\Entity\HasIdentity;
@@ -13,7 +14,7 @@ use olml89\TelegramUserbot\Backend\Shared\Domain\ValueObject\Name\Name;
 use olml89\TelegramUserbot\Backend\Shared\Domain\ValueObject\Timestamps\Timestamps;
 use Symfony\Component\Uid\Uuid;
 
-final class Tag implements EventSource, Timestampable
+final class Tag implements Entity, EventSource, Timestampable
 {
     use HasIdentity;
     use HasEvents;
@@ -21,7 +22,7 @@ final class Tag implements EventSource, Timestampable
 
     public function __construct(
         protected readonly Uuid $publicId,
-        private Name $name,
+        private readonly Name $name,
         protected readonly Timestamps $timestamps = new Timestamps(),
     ) {}
 

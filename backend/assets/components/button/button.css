@@ -59,11 +59,11 @@ button {
     border: 1px solid #111111;
 }
 
-.btn-outline:hover {
+.btn-outline:not(:disabled):hover {
     background: #f5f5f5;
 }
 
 /* Imitates the :hover effect of .btn-outline without the border */
-.btn-hover-outline:hover {
+.btn-hover-outline:not(:disabled):hover {
     background: #f5f5f5;
 }

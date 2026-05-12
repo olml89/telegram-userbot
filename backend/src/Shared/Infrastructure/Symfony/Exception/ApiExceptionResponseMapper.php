@@ -7,11 +7,13 @@ namespace olml89\TelegramUserbot\Backend\Shared\Infrastructure\Symfony\Exception
 use olml89\TelegramUserbot\Backend\Shared\Application\Validation\ValidationException;
 use olml89\TelegramUserbot\Backend\Shared\Domain\Exception\ExceptionAggregator;
 use olml89\TelegramUserbot\Backend\Shared\Domain\Exception\ExceptionChainBuilder;
+use olml89\TelegramUserbot\Backend\Shared\Domain\Exception\NotAllowedException;
 use olml89\TelegramUserbot\Backend\Shared\Domain\Exception\UnsupportedResourceException;
 use olml89\TelegramUserbot\Backend\Shared\Domain\Exception\NotFoundException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -61,6 +63,10 @@ final readonly class ApiExceptionResponseMapper
     {
         return match (true) {
             $exception instanceof HttpExceptionInterface => $exception,
+            $exception instanceof NotAllowedException => new AccessDeniedHttpException(
+                message: $exception->getMessage(),
+                previous: $exception,
+            ),
             $exception instanceof NotFoundException => new NotFoundHttpException(
                 message: $exception->getMessage(),
                 previous: $exception,

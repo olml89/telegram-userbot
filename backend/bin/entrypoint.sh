@@ -24,7 +24,7 @@ fi
 CACHE="/telegram-userbot/backend/var/cache"
 echo "🔧 Creating ${CACHE}..."
 mkdir -p "${CACHE}"
-chown -R www-data:www-data "${CACHE}"
+chown -R www-data:www-data /telegram-userbot/backend/var
 
 LOG="/var/log/backend"
 echo "🔧 Creating ${LOG}..."

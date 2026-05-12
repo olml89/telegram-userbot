@@ -1,0 +1,8 @@
+#contentAddModal [data-intensity-range] {
+    cursor: pointer;
+    accent-color: var(--accent);
+}
+
+#contentAddModal [data-intensity-range]:hover {
+    accent-color: var(--accent-weak);
+}

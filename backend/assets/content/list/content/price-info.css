@@ -1,0 +1,11 @@
+tr[data-content-row] .price-info {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    gap: 6px;
+}
+
+tr[data-content-row] .price-info .price-value {
+    font-weight: 600;
+    color: var(--text);
+}

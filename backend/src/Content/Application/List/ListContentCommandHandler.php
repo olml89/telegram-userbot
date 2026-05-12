@@ -19,13 +19,15 @@ final readonly class ListContentCommandHandler
 
     public function handle(): ListContentResult
     {
-        $categories = $this
+        /** @var CategoryResult[] $categoryResults */
+        $categoryResults = $this
             ->categoryRepository
             ->all()
-            ->map(fn(Category $category): CategoryResult => CategoryResult::category($category));
+            ->map(fn(Category $category): CategoryResult => CategoryResult::category($category))
+            ->toArray();
 
         return new ListContentResult(
-            categories: $categories->toArray(),
+            categories: $categoryResults,
             modes: Mode::cases(),
             statuses: Status::cases(),
             languages: Language::cases(),

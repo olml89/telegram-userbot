@@ -11,6 +11,7 @@ use olml89\TelegramUserbot\Backend\Content\Domain\ContentRepository;
 use olml89\TelegramUserbot\Backend\Content\Domain\PaginatedContentCollection;
 use olml89\TelegramUserbot\Backend\Shared\Domain\Pagination\Pagination;
 use olml89\TelegramUserbot\Backend\Shared\Infrastructure\Doctrine\DoctrineRepository;
+use Symfony\Component\Uid\Uuid;
 
 /**
  * @extends DoctrineRepository<Content>
@@ -20,6 +21,13 @@ final class DoctrineContentRepository extends DoctrineRepository implements Cont
     protected static function entityClass(): string
     {
         return Content::class;
+    }
+
+    public function get(Uuid $publicId): ?Content
+    {
+        return $this->findOneBy([
+            'publicId' => $publicId,
+        ]);
     }
 
     public function getByTitle(string $title): ?Content
@@ -87,6 +95,11 @@ final class DoctrineContentRepository extends DoctrineRepository implements Cont
             $totalContentsCount,
             ...$contents,
         );
+    }
+
+    public function remove(Content $content): void
+    {
+        $this->removeEntity($content);
     }
 
     public function store(Content $content): void

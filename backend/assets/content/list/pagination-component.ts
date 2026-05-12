@@ -3,14 +3,14 @@ import { Pagination } from '../../models/pagination';
 import { Counter } from './counter';
 import { assertImported, querySelector } from '../../utils/importer';
 
-export class PaginationComponent implements BusyAware, ChangeAware, Component<Pagination|null> {
+export class PaginationComponent implements BusyAware, ChangeAware, Component<Pagination> {
     private readonly counter: Counter;
     private readonly paginationPanel: HTMLDivElement;
     private readonly pageSpan: HTMLSpanElement;
     private readonly previousPageBtn: HTMLButtonElement;
     private readonly nextPageBtn: HTMLButtonElement;
-    private readonly changeListeners: Set<() => void> = new Set<() => void>();
-    private pagination: Pagination|null = null;
+    private readonly changeListeners: Set<(pagination: Pagination) => void> = new Set();
+    private pagination: Pagination = new Pagination(1, 10, 0);
 
     public constructor(
         counter: Counter,
@@ -59,12 +59,26 @@ export class PaginationComponent implements BusyAware, ChangeAware, Component<Pa
     }
 
     private checkVisibility(): void {
-        this.paginationPanel.classList.toggle('is-hidden', this.isEmpty());
+        this.paginationPanel.classList.toggle('is-hidden', this.pagination.isEmpty());
         this.previousPageBtn.disabled = this.isFirstPage();
-        this.nextPageBtn.disabled = this.isLastPage();
+        this.nextPageBtn.disabled = this.pagination.isLastPage();
     }
 
-    public getValue(): Pagination|null {
+    /**
+     * On content delete
+     *
+     * 1. Decrease totalCount
+     * 2. Update UI
+     */
+    public decreaseTotalCount(): void {
+        this.update(this.pagination.decreaseTotalCount());
+    }
+
+    public firstPage(): void {
+        this.update(this.pagination.firstPage());
+    }
+
+    public getValue(): Pagination {
         return this.pagination;
     }
 
@@ -75,63 +89,39 @@ export class PaginationComponent implements BusyAware, ChangeAware, Component<Pa
      * 2. Update UI
      */
     public increaseTotalCount(): void {
-        if (!this.pagination) {
-            return;
-        }
-
-        this.update(this.pagination.firstPage().increaseTotalCount());
-    }
-
-    private isEmpty(): boolean {
-        return this.pagination?.isEmpty() ?? true;
+        this.update(this.pagination.increaseTotalCount());
     }
 
     public isFirstPage(): boolean {
-        return this.pagination?.isFirstPage() ?? true;
-    }
-
-    private isLastPage(): boolean {
-        return this.pagination?.isLastPage() ?? true;
+        return this.pagination.isFirstPage();
     }
 
     /**
      * On nextPageBtn click
      *
-     * 1. Set nextPage
-     * 2. Update UI
-     * 3. Trigger change event
+     * 1. Trigger change event with the next page
+     * 2. The listener updates the UI after the fetch through this.update()
      */
     private next(): void {
-        if (!this.pagination) {
-            return;
-        }
-
-        this.update(this.pagination.nextPage());
-        this.notifyChange();
+        this.notifyChange(this.pagination.nextPage());
     }
 
-    private notifyChange(): void {
-        this.changeListeners.forEach((listener: () => void): void => listener());
+    private notifyChange(pagination: Pagination): void {
+        this.changeListeners.forEach((listener: (pagination: Pagination) => void): void => listener(pagination));
     }
 
-    public onChange(listener: () => void): void {
+    public onChange(listener: (pagination: Pagination) => void): void {
         this.changeListeners.add(listener);
     }
 
     /**
      * On previousPageBtn click
      *
-     * 1. Set previousPage
-     * 2. Update UI
-     * 3. Trigger change event
+     * 1. Trigger change event with the previous page
+     * 2. The listener updates the UI after the fetch through this.update()
      */
-    public previous(): void {
-        if (!this.pagination) {
-            return;
-        }
-
-        this.pagination = this.pagination.previousPage();
-        this.notifyChange();
+    private previous(): void {
+        this.notifyChange(this.pagination.previousPage());
     }
 
     /**
@@ -141,31 +131,22 @@ export class PaginationComponent implements BusyAware, ChangeAware, Component<Pa
      * 2. Update UI
      */
     public reset(): void {
-        if (!this.pagination) {
-            return;
-        }
-
         this.update(this.pagination.firstPage().resetTotalCount());
     }
 
     /**
      * On filter change event
      *
-     * 1. Set firstPage
-     * 2. Trigger change event
+     * 1. Trigger change event with the first page
+     * 2. The listener updates the UI after the fetch through this.update()
      */
     public restart(): void {
-        if (!this.pagination) {
-            return;
-        }
-
-        this.pagination = this.pagination.firstPage();
-        this.notifyChange();
+        this.notifyChange(this.pagination.firstPage());
     }
 
     public setBusy(isBusy: boolean): void {
         this.previousPageBtn.disabled = isBusy || this.isFirstPage();
-        this.nextPageBtn.disabled = isBusy || this.isLastPage();
+        this.nextPageBtn.disabled = isBusy || this.pagination.isLastPage();
     }
 
     /**

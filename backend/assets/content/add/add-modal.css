@@ -1,10 +1,10 @@
 @import '../../components/input/input-component.css';
 @import '../../components/select/select.css';
 @import '../../components/input/text-input.css';
-@import '../components/intensity-input.css';
-@import '../components/price-input.css';
-@import '../components/file/files-component.css';
-@import '../components/tag/tags-component.css';
+@import '../add/intensity-input.css';
+@import '../add/price-input.css';
+@import '../add/file/files-component.css';
+@import '../add/tag/tags-component.css';
 
 /* ===== CONTENT ADDITION MODAL ===== */
 #contentAddModal .modal-content {
@@ -116,14 +116,3 @@ body,
     border-color: transparent;
 }
 
-/* Responsive fallback */
-@media (max-width: 900px) {
-    #contentAddModal .file-item {
-        grid-template-columns: 72px 1fr;
-        grid-auto-rows: auto;
-    }
-
-    #contentAddModal .file-actions {
-        justify-self: start;
-    }
-}

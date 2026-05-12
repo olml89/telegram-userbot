@@ -13,20 +13,12 @@ final readonly class FileStored implements Event
     use IsEvent;
 
     public function __construct(
-        private File $file,
+        private UnattachedFile $unattachedFile,
         protected DateTimeImmutable $occurredAt = new DateTimeImmutable(),
     ) {}
 
     public function entity(): File
     {
-        return $this->file;
-    }
-
-    /**
-     * @return array<string, mixed>
-     */
-    public function jsonSerialize(): array
-    {
-        return [];
+        return $this->unattachedFile->file();
     }
 }

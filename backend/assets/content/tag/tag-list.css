@@ -1,0 +1,7 @@
+.tag-list {
+    display: flex;
+    align-items: center;
+    justify-content: left;
+    flex-wrap: wrap;
+    gap: 6px;
+}

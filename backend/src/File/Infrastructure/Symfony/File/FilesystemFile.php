@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace olml89\TelegramUserbot\Backend\File\Infrastructure\Symfony\File;
 
 use LogicException;
-use olml89\TelegramUserbot\Backend\File\Domain\File;
+use olml89\TelegramUserbot\Backend\File\Domain\UnattachedFile;
 use RuntimeException;
 use Symfony\Component\Filesystem\Exception\FileNotFoundException;
 use Symfony\Component\Filesystem\Exception\IOException;
@@ -54,11 +54,13 @@ final readonly class FilesystemFile
     /**
      * @throws FileException
      */
-    public function move(string $directory, File $file): self
+    public function move(string $directory, UnattachedFile $unattachedFile): self
     {
+        $fileName = $unattachedFile->file()->fileName();
+
         $movedSymfonyFile = $this->file->move(
-            directory: $file->fileName()->directoryPath($directory),
-            name: $file->fileName()->value,
+            directory: $fileName->directoryPath($directory),
+            name: $fileName->value,
         );
 
         return new self($movedSymfonyFile);

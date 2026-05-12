@@ -1,23 +1,23 @@
 import { BusyAware, ChangeAware, Component, ErrorAware } from '../../components/contracts';
 import { ValidatableComponent } from '../../components/validatable-component';
 import { TextInput } from '../../components/input/text-input';
-import { ValidatableCategorySelect } from '../components/category-select';
-import { ValidatableLanguageSelect } from '../components/language-select';
-import { ValidatableStatusSelect } from '../components/status-select';
-import { ValidatableModeSelect } from '../components/mode-select';
-import { PriceInput } from '../components/price-input';
-import { IntensityInput } from '../components/intensity-input';
-import { Tag } from '../tag';
-import { TagsComponent } from '../components/tag/tags-component';
-import { File as BackendFile } from '../file';
-import { FilesComponent } from '../components/file/files-component';
+import { ValidatableCategorySelect } from './category-select';
+import { ValidatableLanguageSelect } from './language-select';
+import { ValidatableStatusSelect } from './status-select';
+import { ValidatableModeSelect } from './mode-select';
+import { PriceInput } from './price-input';
+import { IntensityInput } from './intensity-input';
+import { TagsComponent } from './tag/tags-component';
+import { FilesComponent } from './file/files-component';
 import { Content } from '../content';
-import { BackendError } from '../../models/backend-error';
+import { Tag } from '../tag';
+import { File as BackendFile } from '../file';
+import { BackendApi, BackendError } from '../../utils/backend';
 import { assertImported, querySelector, querySelectorAll } from '../../utils/importer';
 
 type ContentFieldKey = keyof ContentFields;
 type ContentFieldComponent = ValidatableComponent&BusyAware;
-type ContentFieldValue = ReturnType<ContentFieldComponent['getValue']>;
+export type ContentFieldValue = ReturnType<ContentFieldComponent['getValue']>;
 
 class ContentFields implements BusyAware, ChangeAware, Component<Record<string, ContentFieldValue>>, ErrorAware {
     private readonly title: TextInput;
@@ -254,6 +254,7 @@ export class ContentAddModal implements Component<Content|null> {
     private readonly addBtn: HTMLButtonElement;
     private readonly closeBtns: NodeListOf<HTMLButtonElement>;
     private readonly eventTarget: EventTarget = new EventTarget();
+    private readonly backend: BackendApi = new BackendApi();
 
     private content: Content|null = null;
 
@@ -291,7 +292,7 @@ export class ContentAddModal implements Component<Content|null> {
          */
         this.contentAddModalElement.addEventListener('click', (event: MouseEvent): void => {
             if ((event.target as HTMLElement) === this.contentAddModalElement) {
-               this.contentAddModalElement.classList.remove('active');
+               this.close();
             }
         });
     }
@@ -321,25 +322,6 @@ export class ContentAddModal implements Component<Content|null> {
             required.addBtn,
             required.closeBtns,
         );
-    }
-
-    private async add(contentFields: ContentFields): Promise<Content> {
-        const response = await fetch('/api/content', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(contentFields.getValue()),
-        });
-
-        if (!response.ok) {
-            throw await BackendError.from(
-                response,
-                'Failed to add content',
-            );
-        }
-
-        return Content.from(await response.json());
     }
 
     private clearFormError(): void {
@@ -400,7 +382,7 @@ export class ContentAddModal implements Component<Content|null> {
         this.setSubmitLoading(true);
 
         try {
-            const content = await this.add(this.contentFields);
+            const content = await this.backend.addContent(this.contentFields.getValue());
             this.eventTarget.dispatchEvent(new CustomEvent('contents-component:add', { detail: content }));
             this.contentFields.destroy();
             this.setAddButtonDisabled(!this.contentFields.validate());

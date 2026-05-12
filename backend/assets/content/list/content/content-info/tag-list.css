@@ -1,0 +1,5 @@
+@import '../../../tag/tag-list.css';
+
+tr[data-content-row] .content-info .tag-list {
+    justify-content: center;
+}

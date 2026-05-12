@@ -1,8 +1,7 @@
 import { BusyAware, Component, HtmlElementWrapper } from '../../components/contracts';
+import { ContentComponent } from './content/content-component';
 import { Content } from '../content';
-import { ContentComponent } from '../components/content/content-component';
-import { ContentQueryFields } from './content-library';
-import { BackendError } from '../../models/backend-error';
+import { BackendError } from '../../utils/backend';
 import { assertImported, querySelector } from '../../utils/importer';
 
 class ContentNotifications implements HtmlElementWrapper {
@@ -39,18 +38,26 @@ class ContentNotifications implements HtmlElementWrapper {
         this.notifications.appendChild(notification);
     }
 
-    public success(content: Content): void {
+    public successfullyAdded(content: Content): void {
         const notification = document.createElement('div');
         notification.classList.add('alert', 'alert-success');
         notification.innerHTML = `Content <strong>${content.title}</strong> added successfully.`;
         this.notifications.appendChild(notification);
     }
+
+    public successfullyDeleted(content: Content): void {
+        const notification = document.createElement('div');
+        notification.classList.add('alert', 'alert-success');
+        notification.innerHTML = `Content <strong>${content.title}</strong> deleted successfully.`;
+        this.notifications.appendChild(notification);
+    }
 }
 
-class ContentTable implements BusyAware, Component<Content[]> {
+class ContentTable implements BusyAware, Component<ContentComponent[]> {
     private readonly table: HTMLTableElement;
     private readonly tableBody: HTMLTableSectionElement;
-    private contents: Content[] = [];
+
+    private contentComponents: Map<string, ContentComponent> = new Map<string, ContentComponent>();
 
     public constructor(table: HTMLTableElement, tableBody: HTMLTableSectionElement) {
         this.table = table;
@@ -72,38 +79,70 @@ class ContentTable implements BusyAware, Component<Content[]> {
         return new ContentTable(required.table, required.tableBody);
     }
 
-    public append(content: Content): ContentComponent {
-        const contentComponent = this.createComponent(content);
+    public append(content: Content, delay: number = 0): ContentComponent {
+        const contentComponent = this.createComponent(content).delay(delay);
         this.tableBody.appendChild(contentComponent.element());
 
         return contentComponent;
     }
 
     public clear(): void {
-        this.contents = [];
+        this.contentComponents.clear();
         this.tableBody.innerHTML = '';
     }
 
-    private createComponent(content: Content, isNew: boolean = false): ContentComponent {
-        this.contents.push(content);
+    private createComponent(content: Content): ContentComponent {
+        const contentComponent = new ContentComponent(content);
 
-        return new ContentComponent(content, isNew);
+        contentComponent.onRemove((contentComponent: ContentComponent): void => {
+            this.tableBody.removeChild(contentComponent.element())
+        });
+
+        this.contentComponents.set(content.publicId, contentComponent);
+
+        return contentComponent;
     }
 
-    public getValue(): Content[] {
-        return this.contents;
+    public getValue(): ContentComponent[] {
+        return Array.from(this.contentComponents.values());
     }
 
     public prepend(content: Content): ContentComponent {
-        const contentComponent = this.createComponent(content, true);
+        const contentComponent = this.createComponent(content).new();
         this.tableBody.lastChild?.remove();
         this.tableBody.prepend(contentComponent.element());
 
         return contentComponent;
     }
 
+    public remove(content: Content): void {
+        const existingContentComponent = this.contentComponents.get(content.publicId);
+
+        if (!existingContentComponent) {
+            return;
+        }
+
+        this.contentComponents.delete(content.publicId);
+        existingContentComponent.remove();
+    }
+
     public setBusy(isBusy: boolean) {
         this.table.classList.toggle('is-busy', isBusy);
+    }
+
+    public update(content: Content): void {
+        const existingContentComponent = this.contentComponents.get(content.publicId);
+
+        if (!existingContentComponent) {
+            return;
+        }
+
+        const updatedContentComponent = this.createComponent(content).new();
+
+        this.tableBody.replaceChild(
+            updatedContentComponent.element(),
+            existingContentComponent.element(),
+        );
     }
 }
 
@@ -132,56 +171,52 @@ export class ContentList implements BusyAware, Component<Content[]> {
         return new ContentList(required.contentNotifications, required.contentTable);
     }
 
-    public add(content: Content, contentQueryFields: ContentQueryFields): void {
+    public delete(content: Content, nextPageFirstContent?: Content|null): void {
         this.contentNotifications.clear();
-        this.contentNotifications.success(content);
+        this.contentNotifications.successfullyDeleted(content);
+        this.contentTable.remove(content);
 
-        /**
-         * A) Content does not match with the current filters
-         * B) Content matches with the current filters, but pagination is not set on the first page
-         *
-         * - Reload to fetch the latest content
-         */
-        if (!contentQueryFields.matches(content) || !contentQueryFields.pagination.isFirstPage()) {
-            contentQueryFields.pagination.restart();
-
-            return;
+        if (nextPageFirstContent) {
+            this.contentTable.append(nextPageFirstContent);
         }
-
-        /**
-         * Optimistic addition
-         *
-         * - Add the content to the top of the current table and discard the last one
-         * - Increase the total count
-         */
-        this.contentTable.prepend(content);
-        contentQueryFields.pagination.increaseTotalCount();
     }
 
     public getValue(): Content[] {
-        return this.contentTable.getValue();
+        return this
+            .contentTable
+            .getValue()
+            .map((contentComponent: ContentComponent): Content => contentComponent.getValue());
     }
 
     public error(error: BackendError): void {
-        this.contentNotifications.clear();
         this.contentNotifications.error(error);
-        this.contentTable.clear();
     }
 
-    public replace(contents: Content[], searchTerm: string|null): void {
+    public load(contents: Content[] = [], highlight: string|null = null): void {
         this.contentNotifications.clear();
         this.contentTable.clear();
 
-        contents.forEach((content: Content): void => {
-            const contentComponent = this.contentTable.append(content);
+        contents.forEach((content: Content, index: number): void => {
+            const delay = index * 30;
+            const contentComponent = this.contentTable.append(content, delay);
 
-            if (searchTerm) {
-                contentComponent.highlight(searchTerm);
+            if (highlight) {
+                contentComponent.highlight(highlight);
             }
         });
     }
 
+    public prepend(content: Content): void {
+        this.contentNotifications.clear();
+        this.contentNotifications.successfullyAdded(content);
+        this.contentTable.prepend(content);
+    }
+
     public setBusy(isBusy: boolean) {
         this.contentTable.setBusy(isBusy);
+    }
+
+    public update(content: Content): void {
+        this.contentTable.update(content);
     }
 }

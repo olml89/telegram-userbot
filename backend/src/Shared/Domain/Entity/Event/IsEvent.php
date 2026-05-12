@@ -17,4 +17,12 @@ trait IsEvent
     {
         return $this->occurredAt;
     }
+
+    /**
+     * @return array<string, mixed>
+     */
+    public function jsonSerialize(): array
+    {
+        return [];
+    }
 }

@@ -20,6 +20,10 @@ export class Pagination {
             throw Error('perPage must be greater than 0');
         }
 
+        if (perPage > 10) {
+            throw Error('perPage cannot be greater than 10');
+        }
+
         if (totalCount < 0) {
             throw Error('totalCount cannot be negative');
         }
@@ -27,6 +31,14 @@ export class Pagination {
         this.page = page;
         this.perPage = perPage;
         this.totalCount = totalCount;
+    }
+
+    public decreaseTotalCount(): Pagination {
+        return new Pagination(
+            this.page,
+            this.perPage,
+            this.totalCount - 1,
+        );
     }
 
     public firstPage(): Pagination {
@@ -122,5 +134,9 @@ export class Paginated<T extends Entity = Entity> {
             ),
             payload.list.map((item: TPayload) => entityFactory.from(item)),
         );
+    }
+
+    public first(): T|null {
+        return this.list[0] ?? null;
     }
 }

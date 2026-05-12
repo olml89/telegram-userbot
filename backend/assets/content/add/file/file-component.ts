@@ -1,0 +1,254 @@
+import { BusyAware, ChangeAware, ErrorClearable, HtmlElementWrapper } from '../../../components/contracts';
+import { BaseComponent } from '../../../components/base-component';
+import { File as BackendFile } from '../../file';
+import { FileItem } from '../../file-item/file-item';
+import { FileAdapterFactory } from '../../file-item/file-metadata';
+import { TusUploader, convertTusErrorToResponse } from './tus-uploader';
+import { BackendApi, BackendError } from '../../../utils/backend';
+
+export type UploadedFileComponent = FileComponent & { backendFile: BackendFile };
+
+export class FileComponent extends BaseComponent<BackendFile|null> implements BusyAware, ChangeAware, ErrorClearable, HtmlElementWrapper {
+    private readonly file: File;
+    private readonly fileItem: FileItem;
+    private readonly cancelHandler: () => Promise<void>;
+    private readonly uploader: TusUploader;
+    private readonly eventTarget: EventTarget = new EventTarget();
+    private readonly backend: BackendApi = new BackendApi();
+
+    public backendFile: BackendFile|null = null;
+    private isCanceled: boolean = false;
+    private isFinalized: boolean = false;
+
+    public constructor(file: File) {
+        super();
+
+        this.file = file;
+        this.fileItem = new FileItem(FileAdapterFactory.from(this.file).metadata());
+
+        this.cancelHandler = async(): Promise<void> => await this.cancelUpload();
+        this.emit('file-item:cancel:register', this.cancelHandler);
+
+        this.uploader = new TusUploader(this.file, {
+            endpoint: `${window.location.origin}/tus/uploads`,
+            chunkSize: 5 * 1024 * 1024,
+            retryDelays: [],
+            metadata: {
+                filename: this.file.name,
+                filetype: this.file.type || '',
+            },
+            onProgress: (bytesSent: number, bytesTotal: number): void => {
+                if (this.isCanceled) {
+                    return;
+                }
+
+                const uploadStartedAt = this.uploader.getUploadStartedAt();
+                this.fileItem.updateProgress(bytesSent, bytesTotal, uploadStartedAt);
+            },
+            onError: async(error: unknown): Promise<void> => {
+                if (this.isCanceled) {
+                    return;
+                }
+
+                const response = await convertTusErrorToResponse(error);
+                const parsedError = await BackendError.from(response, 'Failed to upload file');
+
+                console.error(parsedError.consoleMessage);
+                this.fileItem.setUploadErrorState(parsedError);
+
+                this.emit('file-item:change');
+                this.finalizeUpload();
+            },
+            onSuccess: async(): Promise<void> => {
+                if (this.isCanceled) {
+                    return;
+                }
+
+                this.fileItem.setSavingState();
+
+                try {
+                    this.backendFile = await this.backend.saveFile(this.uploader.getId());
+                    this.fileItem.setUploadedState(this.backendFile);
+                    this.emit('file-item:uploaded', this);
+                } catch (e: any) {
+                    const backendError = e as BackendError;
+                    console.error(e.consoleMessage);
+                    this.fileItem.setUploadErrorState(backendError);
+                    this.emit('file-item:change');
+                } finally {
+                    this.finalizeUpload();
+                }
+            },
+        });
+
+        this.fileItem.onCancel(async(): Promise<void> => await this.cancelUpload());
+
+        this.fileItem.onRetry((): void => {
+            this.clearErrors();
+            void this.startUpload();
+        });
+
+        this.fileItem.onRemove(async(): Promise<void> => {
+            /**
+             * If the API file doesn't exist, just remove the file element in the UI and DO NOT touch tusd
+             */
+            if (!this.backendFile) {
+                this.finalizeUpload();
+                this.removeItem();
+
+                return;
+            }
+
+            this.clearErrors();
+            this.fileItem.setDeletingState();
+            this.emit('file-item:delete:begin');
+
+            try {
+                await this.backend.deleteFile(this.backendFile);
+                this.removeItem();
+            } catch (e: any) {
+                const backendError = e as BackendError;
+                console.error(backendError.consoleMessage);
+                this.fileItem.setDeleteRetryState(backendError);
+                this.finalizeUpload();
+            } finally {
+                this.emit('file-item:delete:end');
+            }
+        });
+    }
+
+    private async cancelUpload(): Promise<void> {
+        if (this.isUploaded()) {
+            return;
+        }
+
+        this.isCanceled = true;
+
+        try {
+            await this.uploader.remove();
+        } catch (e: any) {
+            const response = await convertTusErrorToResponse(e);
+            const parsedError = await BackendError.from(
+                response,
+                'Failed to delete file remains after upload cancellation',
+            );
+            console.error(parsedError.consoleMessage);
+        } finally {
+            this.finalizeUpload();
+            this.removeItem();
+        }
+    }
+
+    public clearErrors(): void {
+        this.errorHandler.clearErrors();
+        this.fileItem.clearErrors();
+    }
+
+    public override getValue(): BackendFile|null {
+        return this.backendFile;
+    }
+
+    public element(): HTMLElement {
+        return this.fileItem.element();
+    }
+
+    private emit<T>(name: string, detail?: T): void {
+        this.eventTarget.dispatchEvent(new CustomEvent(name, { detail }));
+    }
+
+    private finalizeUpload(): void {
+        if (this.isFinalized) {
+            return;
+        }
+
+        this.isFinalized = true;
+        this.emit('file-item:upload:end');
+    }
+
+    public isUploaded(): this is UploadedFileComponent {
+        return this.backendFile !== null;
+    }
+
+    public onChange(listener: () => void): void {
+        this.eventTarget.addEventListener('file-item:change', (): void => listener());
+    }
+
+    public onCancelRegister(listener: (handler: () => void) => void): void {
+        this.eventTarget.addEventListener('file-item:cancel:register', (event: Event): void => {
+            listener((event as CustomEvent<() => void>).detail);
+        });
+    }
+
+    public onCancelUnregister(listener: (handler: () => void) => void): void {
+        this.eventTarget.addEventListener('file-item:cancel:unregister', (event: Event): void => {
+            listener((event as CustomEvent<() => void>).detail);
+        });
+    }
+
+    public onDeleteBegin(listener: () => void): void {
+        this.eventTarget.addEventListener('file-item:delete:begin', (): void => listener());
+    }
+
+    public onDeleteEnd(listener: () => void): void {
+        this.eventTarget.addEventListener('file-item:delete:end', (): void => listener());
+    }
+
+    public onRemoved(listener: (fileComponent: FileComponent) => void): void {
+        this.eventTarget.addEventListener('file-item:removed', (event: Event): void => {
+            listener((event as CustomEvent<FileComponent>).detail);
+        });
+    }
+
+    public onUploadBegin(listener: () => void): void {
+        this.eventTarget.addEventListener('file-item:upload:begin', (): void => listener());
+    }
+
+    public onUploadEnd(listener: () => void): void {
+        this.eventTarget.addEventListener('file-item:upload:end', (): void => listener());
+    }
+
+    public onUploaded(listener: (uploadedFileComponent: UploadedFileComponent) => void): void {
+        this.eventTarget.addEventListener('file-item:uploaded', (event: Event): void => {
+            if (!this.isUploaded()) {
+                return;
+            }
+
+            listener((event as CustomEvent<UploadedFileComponent>).detail);
+        });
+    }
+
+    private removeItem(): void {
+        this.emit('file-item:removed', this);
+        this.emit('file-item:cancel:unregister', this.cancelHandler);
+    }
+
+    public setBusy(isBusy: boolean): void {
+        this.fileItem.setBusy(isBusy);
+    }
+
+    public override setErrors(...errorMessages: string[]): void {
+        super.setErrors(...errorMessages);
+
+        this.fileItem.setErrors(...errorMessages);
+    }
+
+    public async startUpload(): Promise<void> {
+        this.isCanceled = false;
+        this.isFinalized = false;
+
+        this.fileItem.setValidatingState();
+        this.emit('file-item:upload:begin');
+
+        try {
+            await this.backend.validateFile(this.file);
+            this.fileItem.setUploadingState();
+            this.uploader.start();
+        } catch (e: any) {
+            const backendError = e as BackendError;
+            console.error(backendError.consoleMessage);
+            this.fileItem.setUploadErrorState(backendError);
+            this.emit('file-item:change');
+            this.finalizeUpload();
+        }
+    }
+}

@@ -38,10 +38,10 @@ final readonly class UploadFileCommandHandler
      */
     public function handle(UploadFileCommand $command): FileResult
     {
-        $file = $this->fileBuilder->build($command);
-        $this->fileStorer->store($file);
-        $this->eventDispatcher->dispatch(...$file->pullEvents());
+        $unattachedFile = $this->fileBuilder->build($command);
+        $this->fileStorer->store($unattachedFile);
+        $this->eventDispatcher->dispatch(...$unattachedFile->pullEvents());
 
-        return FileResult::file($file);
+        return FileResult::file($unattachedFile->file());
     }
 }
