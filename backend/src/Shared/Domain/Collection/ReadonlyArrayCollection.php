@@ -49,6 +49,19 @@ class ReadonlyArrayCollection implements ReadonlyCollection
     }
 
     /**
+     * @param callable(TValue): bool $callback
+     */
+    public function exists(callable $callback): bool
+    {
+        return array_any(
+            $this->items,
+            /** @param TValue $item */
+            fn(mixed $item): bool => $callback($item),
+        );
+
+    }
+
+    /**
      * @param ?callable(TValue): bool $callback
      *
      * @return ReadonlyCollection<TKey, TValue>

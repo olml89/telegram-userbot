@@ -61,7 +61,7 @@ final readonly class GhostScriptMetadataStripper implements PdfMetadataStripper
                 $storageFile->getPathname(),
             ]);
 
-            $this->run($ghostscript, fn() => $this->fileManager->remove($tmpFile));
+            $this->run($ghostscript, onError: fn() => $this->fileManager->remove($tmpFile));
             $tmpFile->move($storageFile);
 
             return true;

@@ -27,8 +27,6 @@ use Throwable;
  * maintaining the Content domain clean.
  */
 #[AsEntityListener(event: Events::postLoad, entity: Content::class)]
-#[AsEntityListener(event: Events::prePersist, entity: Content::class)]
-#[AsEntityListener(event: Events::preRemove, entity: Content::class)]
 #[AsEntityListener(event: Events::preFlush, entity: Content::class)]
 #[AsDoctrineListener(event: Events::postFlush)]
 final readonly class ContentListener
@@ -216,61 +214,6 @@ final readonly class ContentListener
     public function postLoad(Content $content): void
     {
         $this->convertToDomainCollections($content);
-    }
-
-    /**
-     * Before Content is persisted: persist all ContentFiles.
-     *
-     * When a ContentFile is created for the first time, it is not yet managed by Doctrine, so we need to persist it.
-     */
-    public function prePersist(Content $content): void
-    {
-        try {
-            $contentFilesProperty = $this->getProperty($content, 'contentFiles');
-            $contentFiles = $contentFilesProperty->getValue($content);
-
-            if ($contentFiles instanceof ContentFileManager) {
-                $items = $this->getReadonlyArrayCollectionItems($contentFiles);
-
-                /**
-                 * Persist new ContentFile entities before Doctrine tries to cascade.
-                 * This ensures they're managed before we convert to PersistentCollection.
-                 */
-                foreach ($items as $contentFile) {
-                    if (!$this->entityManager->contains($contentFile)) {
-                        $this->entityManager->persist($contentFile);
-                    }
-                }
-            }
-        } catch (Throwable) {
-
-        }
-    }
-
-    /**
-     * Before Content is removed: explicitly remove all associated ContentFiles.
-     *
-     * Doctrine validates the metadata of the orphan ContentFiles BEFORE executing any event, so ContentFileManager
-     * can't be swapped with a PersistentCollection at that point, and it raises a MappingError because
-     * ContentFileManager is not a mapped entity. So orphan-removal has to be disabled and the ContentFiles
-     * manually removed.
-     */
-    public function preRemove(Content $content): void
-    {
-        try {
-            $contentFilesProperty = $this->getProperty($content, 'contentFiles');
-            $contentFiles = $contentFilesProperty->getValue($content);
-
-            if ($contentFiles instanceof ContentFileManager) {
-                $items = $this->getReadonlyArrayCollectionItems($contentFiles);
-
-                foreach ($items as $contentFile) {
-                    $this->entityManager->remove($contentFile);
-                }
-            }
-        } catch (Throwable) {
-
-        }
     }
 
     /**

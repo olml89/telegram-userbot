@@ -41,7 +41,7 @@ final readonly class FfmpegMetadataStripper implements AudioMetadataStripper, Vi
                 $tmpFile->getPathname(),
             ]);
 
-            $this->run($ffmpeg, fn() => $this->fileManager->remove($storageFile));
+            $this->run($ffmpeg, onError: fn() => $this->fileManager->remove($tmpFile));
             $tmpFile->move($storageFile);
 
             return true;

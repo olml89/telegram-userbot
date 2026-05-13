@@ -34,30 +34,35 @@ final readonly class FileName extends StringValueObject
 
     private function sharding(): string
     {
+        $shardBase = str_replace('-', '', $this->value);
+
+        /**
+         * Improved sharding: 2-level sharding path using UUID hex characters.
+         *
+         * Distributes files across 65,536 (256×256) possible combinations by extracting consecutive hex pairs.
+         * This approach:
+         * - Provides uniform distribution across filesystem
+         * - Prevents directory clustering
+         * - Scales efficiently without reorganization
+         *
+         * Example: UUID 550e8400-e29b-41d4-a716-446655440000
+         *          Result: /55/0e/550e8400e29b41d4a716446655440000
+         */
         return implode(
             separator: '/',
-            array: array_slice(
-                array: explode('-', $this->value),
-                offset: 0,
-                length: 2,
-            ),
+            array: [
+                substr($shardBase, offset: 0, length: 2),
+                substr($shardBase, offset: 2, length: 2),
+            ],
         );
     }
 
-    public function directoryPath(string $contentDirectory): string
+    public function filePath(string $baseDirectory): string
     {
         return sprintf(
-            '%s/%s',
-            $contentDirectory,
+            '%s/%s/%s',
+            $baseDirectory,
             $this->sharding(),
-        );
-    }
-
-    public function filePath(string $contentDirectory): string
-    {
-        return sprintf(
-            '%s/%s',
-            $this->directoryPath($contentDirectory),
             $this->value,
         );
     }
