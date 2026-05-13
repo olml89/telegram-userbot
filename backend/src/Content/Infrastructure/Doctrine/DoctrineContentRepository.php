@@ -101,6 +101,13 @@ final class DoctrineContentRepository extends DoctrineRepository implements Cont
 
     public function remove(Content $content): void
     {
+        /**
+         * Remove all ContentFiles
+         */
+        foreach ($content->contentFiles() as $contentFile) {
+            $this->getEntityManager()->remove($contentFile);
+        }
+
         $this->removeEntity($content);
     }
 
