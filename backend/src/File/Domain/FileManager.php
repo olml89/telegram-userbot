@@ -17,6 +17,5 @@ interface FileManager
 
     /** @throws StorageFileNotReadableException */
     public function storageFile(File|FileName $subject): StorageFile;
-    public function path(File|FileName $subject): string;
     public function remove(File|StorageFile $file): void;
 }

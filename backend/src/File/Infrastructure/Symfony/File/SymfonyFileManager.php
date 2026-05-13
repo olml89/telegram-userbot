@@ -30,32 +30,20 @@ final readonly class SymfonyFileManager implements FileManager
         $unattachedFile->uploadConsumed($upload);
     }
 
-    public function exists(File $file): bool
-    {
-        return $this->filesystem->exists($file->filePath($this->contentDirectory));
-    }
-
     /**
      * @throws StorageFileNotReadableException
      */
     public function storageFile(File|FileName $subject): StorageFile
     {
-        $path = $this->path($subject);
+        $path = $subject->filePath($this->contentDirectory);
 
         return new StorageFile($path)->assertExists();
     }
 
-    public function path(File|FileName $subject): string
-    {
-        return $subject->filePath($this->contentDirectory);
-    }
-
     public function remove(File|StorageFile $file): void
     {
-        $path = $file instanceof File
-            ? $file->filePath($this->contentDirectory)
-            : $file->getPathname();
+        $storageFile = $file instanceof StorageFile ? $file : $this->storageFile($file);
 
-        $this->filesystem->remove($path);
+        $this->filesystem->remove($storageFile->getPathname());
     }
 }

@@ -67,7 +67,8 @@ final readonly class FfmpegVideoSpecializer implements VideoSpecializer
         );
 
         $timeCode = TimeCode::fromSeconds(0);
-        $ffmpegVideoFile->frame($timeCode)->save($this->fileManager->path($thumbnail));
+        $thumbnailPath = $this->fileManager->storageFile($thumbnail)->getPathname();
+        $ffmpegVideoFile->frame($timeCode)->save($thumbnailPath);
 
         return $thumbnail;
     }
