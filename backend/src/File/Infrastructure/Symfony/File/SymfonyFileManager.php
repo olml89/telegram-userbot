@@ -9,6 +9,7 @@ use olml89\TelegramUserbot\Backend\File\Domain\FileManager;
 use olml89\TelegramUserbot\Backend\File\Domain\FileName\FileName;
 use olml89\TelegramUserbot\Backend\File\Domain\StorageFile\StorageFile;
 use olml89\TelegramUserbot\Backend\File\Domain\StorageFile\StorageFileNotReadableException;
+use olml89\TelegramUserbot\Backend\File\Domain\Thumbnail\ThumbnailDisplayer;
 use olml89\TelegramUserbot\Backend\File\Domain\UnattachedFile;
 use olml89\TelegramUserbot\Backend\File\Domain\Upload\Upload;
 use olml89\TelegramUserbot\Backend\File\Domain\Upload\UploadConsumptionException;
@@ -45,10 +46,38 @@ final readonly class SymfonyFileManager implements FileManager
 
     public function remove(File|StorageFile $file): void
     {
-        $path = $file instanceof File
-            ? $file->filePath($this->contentDirectory)
-            : $file->getPathname();
+        if ($file instanceof StorageFile) {
+            $this->filesystem->remove($file->getPathname());
 
+            return;
+        }
+
+        $path = $this->path($file);
         $this->filesystem->remove($path);
+
+        /**
+         * Remove also the thumbnail, if any
+         */
+        if ($file instanceof ThumbnailDisplayer) {
+            $thumbnail = $file->thumbnail();
+            $this->filesystem->remove($this->path($thumbnail));
+        }
+
+        /**
+         * Remove also the file sharded directories, if empty
+         */
+        $directory = dirname($path);
+
+        while ($directory !== $this->contentDirectory && $this->isEmpty($directory)) {
+            $this->filesystem->remove($directory);
+            $directory = dirname($directory);
+        }
+    }
+
+    private function isEmpty(string $directory): bool
+    {
+        $scanDir = scandir($directory);
+
+        return $scanDir !== false && count($scanDir) === 2;
     }
 }

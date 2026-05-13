@@ -59,7 +59,7 @@ final readonly class FilesystemFile
         $fileName = $unattachedFile->file()->fileName();
 
         $movedSymfonyFile = $this->file->move(
-            directory: $fileName->directoryPath($directory),
+            directory: dirname($fileName->filePath($directory)),
             name: $fileName->value,
         );
 
