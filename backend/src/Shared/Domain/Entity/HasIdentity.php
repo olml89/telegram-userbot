@@ -28,4 +28,10 @@ trait HasIdentity
     {
         return $this->publicId;
     }
+
+    public function equals(Entity $entity): bool
+    {
+        return $entity instanceof static
+            && $this->publicId()->equals($entity->publicId());
+    }
 }

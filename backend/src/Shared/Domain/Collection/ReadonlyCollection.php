@@ -23,6 +23,11 @@ interface ReadonlyCollection extends Countable, IteratorAggregate
     public function each(callable $callback): self;
 
     /**
+     * @param callable(TValue): bool $callback
+     */
+    public function exists(callable $callback): bool;
+
+    /**
      * @param null|callable(TValue): bool $callback
      *
      * @return ReadonlyCollection<TKey, TValue>

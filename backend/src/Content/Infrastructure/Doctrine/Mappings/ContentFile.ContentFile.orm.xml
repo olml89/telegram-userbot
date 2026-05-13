@@ -31,9 +31,17 @@
                          nullable="false"/>
         </many-to-one>
 
+        <!--
+            cascade=remove: Files are automatically removed when ContentFile is removed.
+                            persist is not needed as ContentFiles are created for already existing Files.
+            orphan-removal=true: Not needed, as once a File is attached to a ContentFile, this association
+                            cannot be broken until ContentFile is removed (a File can never be orphaned from a ContentFile).
+         -->
         <one-to-one field="file"
                     target-entity="olml89\TelegramUserbot\Backend\File\Domain\File"
-                    unique="true">
+                    unique="true"
+                    cascade="remove"
+                    orphan-removal="true">
             <join-column name="file_id"
                          nullable="false"
                          unique="true"/>
