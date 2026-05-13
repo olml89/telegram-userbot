@@ -14,7 +14,6 @@ use olml89\TelegramUserbot\Backend\Content\Domain\PaginatedContentCollection;
 use olml89\TelegramUserbot\Backend\Shared\Domain\Pagination\Pagination;
 use olml89\TelegramUserbot\Backend\Shared\Infrastructure\Doctrine\DoctrineRepository;
 use Symfony\Component\Uid\Uuid;
-use Traversable;
 
 /**
  * @extends DoctrineRepository<Content>
@@ -107,6 +106,15 @@ final class DoctrineContentRepository extends DoctrineRepository implements Cont
 
     public function store(Content $content): void
     {
+        /**
+         * Persist new ContentFiles
+         */
+        foreach ($content->contentFiles() as $contentFile) {
+            if (!$this->getEntityManager()->contains($contentFile)) {
+                $this->getEntityManager()->persist($contentFile);
+            }
+        }
+
         /**
          * Remove orphaned ContentFiles
          */
