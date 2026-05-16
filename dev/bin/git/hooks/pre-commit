@@ -1,4 +1,5 @@
 #!/bin/sh
+set -eu
 
 # Execute the pre-commit script inside the container, that launches validate-commit.sh
 if ! make validate-commit; then

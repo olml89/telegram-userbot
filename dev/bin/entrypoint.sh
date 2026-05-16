@@ -1,5 +1,5 @@
 #!/bin/sh
-set -e
+set -eu
 
 echo "🔧 Loading pre-commit git hook..."
 cp bin/git/hooks/pre-commit /telegram-userbot/.git/hooks/pre-commit

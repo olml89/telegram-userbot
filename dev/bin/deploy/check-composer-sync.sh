@@ -1,5 +1,5 @@
 #!/bin/sh
-set -e
+set -eu
 
 FAILED=0
 

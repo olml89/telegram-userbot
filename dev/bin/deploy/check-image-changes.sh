@@ -1,5 +1,5 @@
 #!/bin/sh
-set -e
+set -eu
 
 # Checks if any image-affecting files changed between two commits.
 #
