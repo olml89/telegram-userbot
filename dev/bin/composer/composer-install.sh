@@ -11,9 +11,11 @@ if [ "$APP_ENV" != "prod" ]; then
             	WORKING_DIR="/telegram-userbot/$SERVICE";
 
 				if [ -d "$WORKING_DIR/vendor" ]; then
+					echo "✅ Dependencies already installed in $SERVICE"
 					continue;
 				fi
 
+				echo "🔧 Installing dependencies in $SERVICE"
 				COMPOSER_CMD="composer install --no-interaction --no-progress --optimize-autoloader --prefer-dist --working-dir=$WORKING_DIR"
 
 				if [ "$APP_ENV" = "ci" ]; then
@@ -31,5 +33,5 @@ if [ "$APP_ENV" != "prod" ]; then
     done
 fi
 
-echo "✅ Dependencies already installed"
+echo "✅ Dependencies successfully installed"
 exit 0
