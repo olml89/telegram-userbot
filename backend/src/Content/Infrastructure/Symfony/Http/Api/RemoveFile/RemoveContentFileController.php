@@ -7,8 +7,8 @@ namespace olml89\TelegramUserbot\Backend\Content\Infrastructure\Symfony\Http\Api
 use olml89\TelegramUserbot\Backend\Content\Application\RemoveFile\RemoveContentFileCommand;
 use olml89\TelegramUserbot\Backend\Content\Application\RemoveFile\RemoveContentFileCommandHandler;
 use olml89\TelegramUserbot\Backend\Content\Domain\ContentNotFoundException;
+use olml89\TelegramUserbot\Backend\Content\Domain\ContentStorageException;
 use olml89\TelegramUserbot\Backend\File\Domain\FileNotFoundException;
-use olml89\TelegramUserbot\Backend\File\Domain\FileStorageException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -29,7 +29,7 @@ final readonly class RemoveContentFileController
     /**
      * @throws ContentNotFoundException
      * @throws FileNotFoundException
-     * @throws FileStorageException
+     * @throws ContentStorageException
      */
     public function __invoke(Uuid $contentId, Uuid $fileId): JsonResponse
     {

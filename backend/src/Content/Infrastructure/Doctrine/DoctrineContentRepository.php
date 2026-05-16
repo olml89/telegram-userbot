@@ -4,11 +4,15 @@ declare(strict_types=1);
 
 namespace olml89\TelegramUserbot\Backend\Content\Infrastructure\Doctrine;
 
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\QueryBuilder;
+use IteratorAggregate;
 use olml89\TelegramUserbot\Backend\Content\Domain\Content;
+use olml89\TelegramUserbot\Backend\Content\Domain\ContentFile\ContentFile;
 use olml89\TelegramUserbot\Backend\Content\Domain\ContentQuery;
 use olml89\TelegramUserbot\Backend\Content\Domain\ContentRepository;
 use olml89\TelegramUserbot\Backend\Content\Domain\PaginatedContentCollection;
+use olml89\TelegramUserbot\Backend\File\Domain\FileManager;
 use olml89\TelegramUserbot\Backend\Shared\Domain\Pagination\Pagination;
 use olml89\TelegramUserbot\Backend\Shared\Infrastructure\Doctrine\DoctrineRepository;
 use Symfony\Component\Uid\Uuid;
@@ -18,6 +22,13 @@ use Symfony\Component\Uid\Uuid;
  */
 final class DoctrineContentRepository extends DoctrineRepository implements ContentRepository
 {
+    public function __construct(
+        private readonly FileManager $fileManager,
+        EntityManagerInterface $entityManager,
+    ) {
+        parent::__construct($entityManager);
+    }
+
     protected static function entityClass(): string
     {
         return Content::class;
@@ -99,11 +110,55 @@ final class DoctrineContentRepository extends DoctrineRepository implements Cont
 
     public function remove(Content $content): void
     {
+        /**
+         * Remove all ContentFiles
+         */
+        foreach ($content->contentFiles() as $contentFile) {
+            $this->removeContentFile($contentFile);
+        }
+
         $this->removeEntity($content);
     }
 
     public function store(Content $content): void
     {
+        /**
+         * Persist new ContentFiles
+         */
+        foreach ($content->contentFiles() as $contentFile) {
+            if (!$this->getEntityManager()->contains($contentFile)) {
+                $this->getEntityManager()->persist($contentFile);
+            }
+        }
+
+        /**
+         * Remove orphaned ContentFiles
+         */
+        $uow = $this->getEntityManager()->getUnitOfWork();
+        $originalData = $uow->getOriginalEntityData($content);
+
+        if (isset($originalData['contentFiles'])) {
+            /** @var IteratorAggregate<ContentFile> $originalContentFiles */
+            $originalContentFiles = $originalData['contentFiles'];
+
+            /**
+             * @var ContentFile $originalContentFile
+             */
+            foreach ($originalContentFiles as $originalContentFile) {
+                $exists = fn(ContentFile $contentFile): bool => $contentFile->equals($originalContentFile);
+
+                if (!$content->contentFiles()->exists($exists)) {
+                    $this->removeContentFile($originalContentFile);
+                }
+            }
+        }
+
         $this->storeEntity($content);
+    }
+
+    private function removeContentFile(ContentFile $contentFile): void
+    {
+        $this->getEntityManager()->remove($contentFile);
+        $this->fileManager->remove($contentFile->file());
     }
 }

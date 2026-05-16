@@ -54,8 +54,8 @@ class File implements Entity, Timestampable
         $this->bytes = $bytes;
     }
 
-    public function filePath(string $contentDirectory): string
+    public function filePath(string $baseDirectory): string
     {
-        return $this->fileName()->filePath($contentDirectory);
+        return $this->fileName()->filePath($baseDirectory);
     }
 }

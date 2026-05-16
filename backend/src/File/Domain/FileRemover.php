@@ -10,7 +10,7 @@ final readonly class FileRemover
 {
     public function __construct(
         private UnattachedFileRepository $fileRepository,
-        private FileManager              $fileManager,
+        private FileManager $fileManager,
     ) {}
 
     /**

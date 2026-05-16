@@ -10,4 +10,5 @@ interface Entity
 {
     public function id(): int;
     public function publicId(): Uuid;
+    public function equals(Entity $entity): bool;
 }

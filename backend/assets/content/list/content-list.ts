@@ -123,7 +123,7 @@ class ContentTable implements BusyAware, Component<ContentComponent[]> {
         }
 
         this.contentComponents.delete(content.publicId);
-        existingContentComponent.remove();
+        this.tableBody.removeChild(existingContentComponent.element());
     }
 
     public setBusy(isBusy: boolean) {
