@@ -10,9 +10,9 @@ use olml89\TelegramUserbot\BotManager\Bot\Command\CommandHandler;
 use olml89\TelegramUserbot\BotManager\Bot\Command\HandlesCommand;
 use olml89\TelegramUserbot\BotManager\Bot\Command\InvalidCommandException;
 use olml89\TelegramUserbot\BotManager\Bot\Status\StatusManager;
+use olml89\TelegramUserbot\BotRuntime\Bot\Process\Process;
 use olml89\TelegramUserbot\BotRuntime\Bot\Process\ProcessManager;
 use olml89\TelegramUserbot\BotRuntime\Bot\Process\ProcessNotStartedException;
-use olml89\TelegramUserbot\BotRuntime\Bot\Process\Process;
 use olml89\TelegramUserbot\BotRuntime\Bot\Status\InvalidStatusException;
 
 #[HandlesCommand(LogoutCommand::class)]

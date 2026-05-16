@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use DI\Container;
 use DI\ContainerBuilder;
+use olml89\TelegramUserbot\Application\Environment\Env;
 use olml89\TelegramUserbot\BotManager\Bot\Command\CommandBus;
 use olml89\TelegramUserbot\BotManager\Bot\Command\Handler\BroadcastStatusHandler;
 use olml89\TelegramUserbot\BotManager\Bot\Command\Handler\CompletePhoneLoginHandler;
@@ -14,7 +15,6 @@ use olml89\TelegramUserbot\BotManager\Bot\Command\Handler\StartHandler;
 use olml89\TelegramUserbot\BotManager\Bot\Command\Handler\StopHandler;
 use olml89\TelegramUserbot\BotManager\Redis\ReactRedisSubscriber;
 use olml89\TelegramUserbot\BotManager\Websocket\WebSocketServerConfig;
-use olml89\TelegramUserbot\Application\Environment\Env;
 use olml89\TelegramUserbot\BotRuntime\App\EnvLoader;
 use olml89\TelegramUserbot\BotRuntime\Error\SentryConfig;
 use olml89\TelegramUserbot\BotRuntime\Redis\PhpRedis\PhpRedisPublisher;

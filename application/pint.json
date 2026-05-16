@@ -1,6 +1,12 @@
 {
     "preset": "per",
     "rules": {
-        "method_argument_space": false
-    }
+        "ordered_imports": {
+            "sort_algorithm": "alpha"
+        }
+    },
+    "exclude": [
+        "var",
+        "vendor"
+    ]
 }

@@ -7,8 +7,8 @@ namespace olml89\TelegramUserbot\Backend\File\Infrastructure\Doctrine;
 use olml89\TelegramUserbot\Backend\Content\Domain\ContentFile\ContentFile;
 use olml89\TelegramUserbot\Backend\File\Domain\File;
 use olml89\TelegramUserbot\Backend\File\Domain\FileAlreadyAttachedException;
-use olml89\TelegramUserbot\Backend\File\Domain\UnattachedFileRepository;
 use olml89\TelegramUserbot\Backend\File\Domain\UnattachedFile;
+use olml89\TelegramUserbot\Backend\File\Domain\UnattachedFileRepository;
 use olml89\TelegramUserbot\Backend\Shared\Infrastructure\Doctrine\DoctrineRepository;
 use Symfony\Component\Uid\Uuid;
 

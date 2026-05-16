@@ -7,8 +7,8 @@ namespace olml89\TelegramUserbot\Backend\Content\Domain\ContentFile;
 use olml89\TelegramUserbot\Backend\File\Domain\FileCollectionCountException;
 use olml89\TelegramUserbot\Backend\File\Domain\FileNotFoundException;
 use olml89\TelegramUserbot\Backend\Shared\Domain\Collection\Collection;
-use olml89\TelegramUserbot\Backend\Shared\Domain\Collection\HasCollectionInvariants;
 use olml89\TelegramUserbot\Backend\Shared\Domain\Collection\HasArrayAccess;
+use olml89\TelegramUserbot\Backend\Shared\Domain\Collection\HasCollectionInvariants;
 use olml89\TelegramUserbot\Backend\Shared\Domain\Collection\ReadonlyArrayCollection;
 use Symfony\Component\Uid\Uuid;
 
