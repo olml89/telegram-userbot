@@ -1,36 +1,62 @@
 name: telegram-userbot
 
-x-shared-env: &shared-env
+x-bot-runtime-env: &bot-runtime-env
   REDIS_STATUS_CHANNEL: ${REDIS_STATUS_CHANNEL}
   REDIS_PHONE_CODE_STORAGE_KEY: ${REDIS_PHONE_CODE_STORAGE_KEY}
   SUPERVISOR_CONFIG_PATH: ${SUPERVISOR_CONFIG_PATH}
-  LOG_DIRECTORY: ${LOG_DIRECTORY}
-  LOG_LEVEL: ${LOG_LEVEL}
 
 services:
 
-  tusd:
+  # Infrastructure layers
+  alloy:
     build:
-      dockerfile: tusd/Dockerfile
+      dockerfile: alloy/Dockerfile
       target: prod
     volumes:
-      - telegram-userbot-uploads:/var/uploads:cached
-      - telegram-userbot-logs:/var/log:cached
+      - /var/run/docker.sock:/var/run/docker.sock
 
-  nginx:
+  redis:
     build:
-      dockerfile: nginx/Dockerfile
+      dockerfile: redis/Dockerfile
       target: prod
     volumes:
-      - telegram-userbot-assets:/telegram-userbot/backend/public/build:ro
-      - telegram-userbot-logs:/var/log:cached
+      - telegram-userbot-redis:/data:cached
+
+  postgres:
+    build:
+      dockerfile: postgres/Dockerfile
+      target: prod
+    volumes:
+      - telegram-userbot-db:/var/lib/postgresql/data:cached
+
+  # Application layers
+  bot:
+    build:
+      dockerfile: bot/Dockerfile
+      target: prod
+    environment:
+      <<: *bot-runtime-env
+      BOT_SENTRY_DSN: ${BOT_SENTRY_DSN}
+      TELEGRAM_API_ID: ${TELEGRAM_API_ID}
+      TELEGRAM_API_HASH: ${TELEGRAM_API_HASH}
+      TELEGRAM_PHONE_NUMBER: ${TELEGRAM_PHONE_NUMBER}
+      TELEGRAM_USERNAME: ${TELEGRAM_USERNAME}
+    user: www-data
+
+  bot-manager:
+    build:
+      dockerfile: bot-manager/Dockerfile
+      target: prod
+    environment:
+      <<: *bot-runtime-env
+      BOT_MANAGER_SENTRY_DSN: ${BOT_MANAGER_SENTRY_DSN}
+    user: www-data
 
   backend:
     build:
       dockerfile: backend/Dockerfile
       target: prod
     environment:
-      <<: *shared-env
       APP_DEBUG: ${APP_DEBUG}
       APP_SECRET: ${APP_SECRET}
       BACKEND_SENTRY_DSN: ${BACKEND_SENTRY_DSN}
@@ -40,61 +66,28 @@ services:
       DB_USER: ${DB_USER}
       DB_PASSWORD: ${DB_PASSWORD}
       APP_LIBRARY_CONTENT_PER_PAGE: ${APP_LIBRARY_CONTENT_PER_PAGE}
+    user: www-data
     volumes:
       - telegram-userbot-assets:/telegram-userbot/backend/public/build:cached
       - telegram-userbot-uploads:/var/uploads:cached
       - telegram-userbot-content:/var/content:cached
-      - telegram-userbot-logs:/var/log:cached
 
-  bot-manager:
+  tusd:
     build:
-      dockerfile: bot-manager/Dockerfile
+      dockerfile: tusd/Dockerfile
       target: prod
-    environment:
-      <<: *shared-env
-      BOT_MANAGER_SENTRY_DSN: ${BOT_MANAGER_SENTRY_DSN}
+    user: www-data
     volumes:
-      - telegram-userbot-logs:/var/log:cached
+      - telegram-userbot-uploads:/var/uploads:cached
 
-  bot:
+  nginx:
     build:
-      dockerfile: bot/Dockerfile
-      target: prod
-    environment:
-      <<: *shared-env
-      BOT_SENTRY_DSN: ${BOT_SENTRY_DSN}
-      TELEGRAM_API_ID: ${TELEGRAM_API_ID}
-      TELEGRAM_API_HASH: ${TELEGRAM_API_HASH}
-      TELEGRAM_PHONE_NUMBER: ${TELEGRAM_PHONE_NUMBER}
-      TELEGRAM_USERNAME: ${TELEGRAM_USERNAME}
-    volumes:
-      - telegram-userbot-logs:/var/log:cached
-
-  redis:
-    build:
-      dockerfile: redis/Dockerfile
+      dockerfile: nginx/Dockerfile
       target: prod
     volumes:
-      - telegram-userbot-redis:/data:cached
-      - telegram-userbot-logs:/var/log:cached
-
-  postgres:
-    build:
-      dockerfile: postgres/Dockerfile
-      target: prod
-    volumes:
-      - telegram-userbot-db:/var/lib/postgresql/data:cached
-      - telegram-userbot-logs:/var/log:cached
-
-  alloy:
-    build:
-      dockerfile: alloy/Dockerfile
-      target: prod
-    volumes:
-      - telegram-userbot-logs:/var/log:cached
+      - telegram-userbot-assets:/telegram-userbot/backend/public/build:ro
 
 volumes:
-  telegram-userbot-logs:
   telegram-userbot-assets:
   telegram-userbot-uploads:
   telegram-userbot-content:

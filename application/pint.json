@@ -1,0 +1,6 @@
+{
+    "preset": "per",
+    "rules": {
+        "method_argument_space": false
+    }
+}

@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace olml89\TelegramUserbot\Bot\Action;
 
-use olml89\TelegramUserbot\Shared\Bot\Process\Process;
-use olml89\TelegramUserbot\Shared\Bot\Process\ProcessManager;
-use olml89\TelegramUserbot\Shared\Bot\Process\ProcessNotStartedException;
-use olml89\TelegramUserbot\Shared\Logger\LogRecord\ErrorLogRecord;
-use olml89\TelegramUserbot\Shared\Logger\LogRecord\LoggableLogger;
+use olml89\TelegramUserbot\BotRuntime\Bot\Process\Process;
+use olml89\TelegramUserbot\BotRuntime\Bot\Process\ProcessManager;
+use olml89\TelegramUserbot\BotRuntime\Bot\Process\ProcessNotStartedException;
+use olml89\TelegramUserbot\BotRuntime\Logger\LogRecord\ErrorLogRecord;
+use olml89\TelegramUserbot\BotRuntime\Logger\LogRecord\LoggableLogger;
 
 /**
  * It recovers the API state and broadcasts the current status to the bot-manager, launching the request-status script

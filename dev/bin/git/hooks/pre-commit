@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # Execute the pre-commit script inside the container, that launches validate-commit.sh
-if ! make commit; then
+if ! make validate-commit; then
     echo "❌ Pre-commit checks failed. Commit aborted."
     exit 1
 fi

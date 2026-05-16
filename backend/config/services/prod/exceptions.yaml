@@ -1,14 +1,14 @@
 services:
 
-  # Register SentryExceptionReportingSubscriber
-  olml89\TelegramUserbot\Backend\Shared\Infrastructure\Symfony\EventSubscribers\SentryExceptionReportingSubscriber:
+  # Register ExceptionSentryReporterSubscriber
+  olml89\TelegramUserbot\Backend\Shared\Infrastructure\Symfony\EventSubscribers\ExceptionSentryReporterSubscriber:
     autowire: true
     autoconfigure: true
     arguments:
       $exceptionSentryReporter: '@olml89\TelegramUserbot\Backend\Shared\Infrastructure\Symfony\Exception\ExceptionSentryReporter'
 
-  # ExceptionHandlerPipeline: logs to the app channel, reports to Sentry
-  olml89\TelegramUserbot\Backend\Shared\Domain\Exception\Handler\ExceptionHandlerPipeline:
+  # CaughtExceptionHandler: logs to the errors channel, reports to Sentry
+  olml89\TelegramUserbot\Backend\Shared\Domain\Exception\Handler\CaughtExceptionHandler:
     arguments:
       $exceptionHandlers:
         - '@olml89\TelegramUserbot\Backend\Shared\Infrastructure\Symfony\Exception\ExceptionLogger'

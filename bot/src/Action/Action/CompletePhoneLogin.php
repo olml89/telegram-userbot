@@ -5,14 +5,17 @@ declare(strict_types=1);
 namespace olml89\TelegramUserbot\Bot\Action\Action;
 
 use olml89\TelegramUserbot\Bot\Action\Action;
+use olml89\TelegramUserbot\Bot\Action\IsAction;
 use olml89\TelegramUserbot\Bot\MadelineProto\ApiWrapper;
 use olml89\TelegramUserbot\Bot\MadelineProto\IpcWorkerOutputCatcherFactory;
-use olml89\TelegramUserbot\Shared\Bot\Command\CompletePhoneLogin\InvalidPhoneCodeException;
-use olml89\TelegramUserbot\Shared\Bot\Command\CompletePhoneLogin\PhoneCodeStorage;
-use olml89\TelegramUserbot\Shared\Redis\RedisStorageException;
+use olml89\TelegramUserbot\BotRuntime\Bot\Command\CompletePhoneLogin\InvalidPhoneCodeException;
+use olml89\TelegramUserbot\BotRuntime\Bot\Command\CompletePhoneLogin\PhoneCodeStorage;
+use olml89\TelegramUserbot\BotRuntime\Redis\RedisStorageException;
 
 final readonly class CompletePhoneLogin implements Action
 {
+    use IsAction;
+
     public function __construct(
         private PhoneCodeStorage $phoneCodeStorage,
         private IpcWorkerOutputCatcherFactory $ipcWorkerOutputCatcherFactory,

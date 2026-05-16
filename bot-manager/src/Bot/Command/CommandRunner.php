@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace olml89\TelegramUserbot\BotManager\Bot\Command;
 
 use olml89\TelegramUserbot\BotManager\Bot\Command\LogRecord\HandlingCommand;
-use olml89\TelegramUserbot\Shared\Logger\LogRecord\ErrorLogRecord;
-use olml89\TelegramUserbot\Shared\Logger\LogRecord\LoggableLogger;
+use olml89\TelegramUserbot\BotRuntime\Logger\LogRecord\ErrorLogRecord;
+use olml89\TelegramUserbot\BotRuntime\Logger\LogRecord\LoggableLogger;
 use Throwable;
 
 /**

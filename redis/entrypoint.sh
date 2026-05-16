@@ -1,10 +1,5 @@
-#!/usr/bin/env sh
+#!/bin/sh
 set -eu
-
-LOG="/var/log/redis"
-echo "🔧 Creating ${LOG}..."
-mkdir -p ${LOG}
-chown -R redis:redis ${LOG}
 
 CONF="/usr/local/etc/redis/redis.conf"
 echo "✅ Container up [redis-server]."

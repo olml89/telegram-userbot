@@ -1,0 +1,9 @@
+includes:
+    - /telegram-userbot/dev/bin/phpstan/phpstan.neon
+    - phpstan.integration.neon
+
+parameters:
+    tmpDir: var/.phpstan.cache
+
+    paths:
+        - ../application/src

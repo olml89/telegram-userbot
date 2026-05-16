@@ -7,7 +7,7 @@ namespace olml89\TelegramUserbot\Bot\MadelineProto;
 use Closure;
 use olml89\TelegramUserbot\Bot\Bot\BotLogFile;
 use olml89\TelegramUserbot\Bot\Bot\Status\StatusBroadcaster;
-use olml89\TelegramUserbot\Shared\Logger\LogRecord\LoggableLogger;
+use olml89\TelegramUserbot\BotRuntime\Logger\LogRecord\LoggableLogger;
 
 final readonly class IpcWorkerOutputCatcherFactory
 {

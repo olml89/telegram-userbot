@@ -1,0 +1,15 @@
+includes:
+    - /telegram-userbot/dev/bin/phpstan/phpstan.neon
+    - phpstan.integration.neon
+
+parameters:
+    tmpDir: var/.phpstan.cache
+
+    ignoreErrors:
+        -
+            identifier: trait.unused
+            path: src/IsJsonSerializable.php
+
+        -
+            identifier: trait.unused
+            path: src/IsStringable.php

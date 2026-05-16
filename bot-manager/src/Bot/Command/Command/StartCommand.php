@@ -7,7 +7,7 @@ namespace olml89\TelegramUserbot\BotManager\Bot\Command\Command;
 use olml89\TelegramUserbot\BotManager\Bot\Command\CommandType;
 use olml89\TelegramUserbot\BotManager\Bot\Command\IsStatusRestrictedCommand;
 use olml89\TelegramUserbot\BotManager\Bot\Command\StatusRestrictedCommand;
-use olml89\TelegramUserbot\Shared\Bot\Status\StatusType;
+use olml89\TelegramUserbot\BotRuntime\Bot\Status\StatusType;
 
 final readonly class StartCommand implements StatusRestrictedCommand
 {

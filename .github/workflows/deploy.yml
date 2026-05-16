@@ -48,8 +48,6 @@ jobs:
             # Export .env variables
             export APP_ENV='${{ vars.APP_ENV }}'
             export BACKEND_PORT='${{ vars.BACKEND_PORT }}'
-            export SUPERVISOR_USER='${{ secrets.SUPERVISOR_USER }}'
-            export SUPERVISOR_PASSWORD='${{ secrets.SUPERVISOR_PASSWORD }}'
             export GRAFANA_PORT='${{ vars.GRAFANA_PORT }}'
             export GRAFANA_SECURITY_ADMIN_PASSWORD='${{ secrets.GRAFANA_SECURITY_ADMIN_PASSWORD }}'
             
@@ -74,17 +72,12 @@ jobs:
             # Export bot-manager/.env variables
             export BOT_MANAGER_SENTRY_DSN='${{ secrets.BOT_MANAGER_SENTRY_DSN }}'
           
-            # Export shared/.env variables
+            # Export bot-runtime/.env variables
             export REDIS_STATUS_CHANNEL='${{ vars.REDIS_STATUS_CHANNEL }}'
             export REDIS_PHONE_CODE_STORAGE_KEY='${{ vars.REDIS_PHONE_CODE_STORAGE_KEY }}'
             export SUPERVISOR_CONFIG_PATH='${{ vars.SUPERVISOR_CONFIG_PATH }}'
-            export LOG_DIRECTORY='${{ vars.LOG_DIRECTORY }}'
-            export LOG_LEVEL='${{ vars.LOG_LEVEL }}'
-          
-            # Pull last changes and deploy
-            cd /home/tbot/telegram-userbot
-            git fetch --all
-            git reset --hard origin/main
+            export SUPERVISOR_USER='${{ secrets.SUPERVISOR_USER }}'
+            export SUPERVISOR_PASSWORD='${{ secrets.SUPERVISOR_PASSWORD }}'
           
             # Run deploy script
             make deploy

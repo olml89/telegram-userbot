@@ -19,7 +19,7 @@ final readonly class ExceptionSentryReporter implements ExceptionHandler
         private HubInterface $sentry,
     ) {}
 
-    public function handle(Throwable $exception, bool $handled = true): void
+    public function handle(Throwable $exception, bool $handled): void
     {
         if (!$this->isCritical($exception)) {
             return;

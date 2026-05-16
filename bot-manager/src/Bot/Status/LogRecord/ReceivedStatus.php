@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace olml89\TelegramUserbot\BotManager\Bot\Status\LogRecord;
 
-use olml89\TelegramUserbot\Shared\Bot\Status\Status;
-use olml89\TelegramUserbot\Shared\Logger\LogRecord\InfoLogRecord;
+use olml89\TelegramUserbot\BotRuntime\Bot\Status\Status;
+use olml89\TelegramUserbot\BotRuntime\Logger\LogRecord\InfoLogRecord;
 
 final readonly class ReceivedStatus extends InfoLogRecord
 {

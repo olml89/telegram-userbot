@@ -9,9 +9,9 @@ use olml89\TelegramUserbot\BotManager\Bot\Command\Command\RequestStatusCommand;
 use olml89\TelegramUserbot\BotManager\Bot\Command\CommandHandler;
 use olml89\TelegramUserbot\BotManager\Bot\Command\HandlesCommand;
 use olml89\TelegramUserbot\BotManager\Bot\Command\InvalidCommandException;
-use olml89\TelegramUserbot\Shared\Bot\Process\ProcessManager;
-use olml89\TelegramUserbot\Shared\Bot\Process\ProcessNotStartedException;
-use olml89\TelegramUserbot\Shared\Bot\Process\Process;
+use olml89\TelegramUserbot\BotRuntime\Bot\Process\ProcessManager;
+use olml89\TelegramUserbot\BotRuntime\Bot\Process\ProcessNotStartedException;
+use olml89\TelegramUserbot\BotRuntime\Bot\Process\Process;
 
 #[HandlesCommand(RequestStatusCommand::class)]
 final readonly class RequestStatusHandler implements CommandHandler

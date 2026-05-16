@@ -42,15 +42,14 @@ FROM base AS prod
 # Copy the backend codebase to the container
 COPY backend/ ./
 
-# Copy shared codebase to the container
-COPY shared/ /telegram-userbot/shared/
+# Copy application codebase to the container
+COPY application/ /telegram-userbot/application/
 
 # Copy built assets from assets stage to a compiled intermediate directory
 COPY --from=assets /telegram-userbot/backend/public/build /telegram-userbot/backend/var/build
 
-# Create writable cache dir for Symfony
-RUN mkdir -p /telegram-userbot/backend/var/cache  &&  \
-    chown -R www-data:www-data /telegram-userbot/backend/var
+# Copy production PHP-FPM configuration
+COPY backend/php-fpm/www.prod.conf /usr/local/etc/php-fpm.d/www.conf
 
 # In PHP 8.5 Opcache is already integrated into the core. Copy the Opcache configuration
 COPY docker-php-ext-opcache.ini /usr/local/etc/php/docker-php-ext-opcache.ini
@@ -61,8 +60,8 @@ RUN apk add --no-cache curl bash && \
     curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
 # Install PHP dependencies (without require-dev, optimized autoload)
-RUN composer install --no-dev --optimize-autoloader --no-interaction --no-progress --working-dir=/telegram-userbot/shared && \
-    composer install --no-dev --optimize-autoloader --no-interaction --no-progress
+RUN composer install --no-dev --no-interaction --no-progress --optimize-autoloader --working-dir=/telegram-userbot/application && \
+    composer install --no-dev --no-interaction --no-progress --optimize-autoloader
 
 # Clear composer, curl, bash and extensions installer
 RUN rm /usr/local/bin/composer && \

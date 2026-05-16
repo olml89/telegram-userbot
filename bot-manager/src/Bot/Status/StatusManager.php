@@ -6,9 +6,9 @@ namespace olml89\TelegramUserbot\BotManager\Bot\Status;
 
 use olml89\TelegramUserbot\BotManager\Bot\Status\LogRecord\ReceivedStatus;
 use olml89\TelegramUserbot\BotManager\Websocket\WebSocketConnectionPool;
-use olml89\TelegramUserbot\Shared\App\AppConfig;
-use olml89\TelegramUserbot\Shared\Bot\Status\Status;
-use olml89\TelegramUserbot\Shared\Logger\LogRecord\LoggableLogger;
+use olml89\TelegramUserbot\BotRuntime\App\AppConfig;
+use olml89\TelegramUserbot\BotRuntime\Bot\Status\Status;
+use olml89\TelegramUserbot\BotRuntime\Logger\LogRecord\LoggableLogger;
 use Throwable;
 
 /**
@@ -33,7 +33,7 @@ final readonly class StatusManager
     }
 
     /**
-     * Logs, stores and emits a received status
+     * Logs, stores, and emits a received status
      */
     public function record(Status $status): void
     {

@@ -5,7 +5,7 @@ echo "🔧 Loading pre-commit git hook..."
 cp bin/git/hooks/pre-commit /telegram-userbot/.git/hooks/pre-commit
 
 # Install dev dependencies
-/telegram-userbot/shared/bin/composer-install.sh dev shared backend bot bot-manager
+/telegram-userbot/dev/bin/composer/composer-install.sh dev bot-runtime bot bot-manager backend
 
 # Maintain the container always up with tail
 echo "✅ Container up [tail -f /dev/null]."

@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace olml89\TelegramUserbot\BotManager\Websocket;
 
-use olml89\TelegramUserbot\Shared\Bot\Status\LogRecord\EmittedStatus;
-use olml89\TelegramUserbot\Shared\Bot\Status\Status;
-use olml89\TelegramUserbot\Shared\Bot\Status\StatusEmitter;
-use olml89\TelegramUserbot\Shared\Logger\LogRecord\LoggableLogger;
+use olml89\TelegramUserbot\BotRuntime\Bot\Status\LogRecord\EmittedStatus;
+use olml89\TelegramUserbot\BotRuntime\Bot\Status\Status;
+use olml89\TelegramUserbot\BotRuntime\Bot\Status\StatusEmitter;
+use olml89\TelegramUserbot\BotRuntime\Logger\LogRecord\LoggableLogger;
 use Ratchet\ConnectionInterface;
 use WeakMap;
 

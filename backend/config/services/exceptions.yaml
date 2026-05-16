@@ -1,25 +1,24 @@
 services:
 
-  # Don't register SentryExceptionReportingSubscriber
-  olml89\TelegramUserbot\Backend\Shared\Infrastructure\Symfony\EventSubscribers\SentryExceptionReportingSubscriber:
+  # ExceptionLogger: errors channel
+  olml89\TelegramUserbot\Backend\Shared\Infrastructure\Symfony\Exception\ExceptionLogger:
+    arguments:
+      $logger: '@monolog.logger.errors'
+
+  # Don't register ExceptionSentryReporterSubscriber
+  olml89\TelegramUserbot\Backend\Shared\Infrastructure\Symfony\EventSubscribers\ExceptionSentryReporterSubscriber:
     autowire: false
     autoconfigure: false
     public: false
-
-  # ApiExceptionResponseSubscriber: registered through automatic bindings
-
-  # Bind ExceptionHandler to ExceptionHandlerPipeline
-  olml89\TelegramUserbot\Backend\Shared\Domain\Exception\Handler\ExceptionHandler:
-    alias: olml89\TelegramUserbot\Backend\Shared\Domain\Exception\Handler\ExceptionHandlerPipeline
-
-  # ExceptionHandlerPipeline: logs to the app channel
-  olml89\TelegramUserbot\Backend\Shared\Domain\Exception\Handler\ExceptionHandlerPipeline:
-    arguments:
-      $exceptionHandlers:
-        - '@olml89\TelegramUserbot\Backend\Shared\Infrastructure\Symfony\Exception\ExceptionLogger'
 
   # ApiExceptionResponseMapper
   olml89\TelegramUserbot\Backend\Shared\Infrastructure\Symfony\Exception\ApiExceptionResponseMapper:
     arguments:
       $debug: '%kernel.debug%'
       $exceptionChainBuilder: '@olml89\TelegramUserbot\Backend\Shared\Domain\Exception\ExceptionChainBuilder'
+
+  # CaughtExceptionHandler: logs to the errors channel
+  olml89\TelegramUserbot\Backend\Shared\Domain\Exception\Handler\CaughtExceptionHandler:
+    arguments:
+      $exceptionHandlers:
+        - '@olml89\TelegramUserbot\Backend\Shared\Infrastructure\Symfony\Exception\ExceptionLogger'

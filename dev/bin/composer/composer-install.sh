@@ -1,0 +1,35 @@
+#!/bin/sh
+set -eu
+
+echo "🔧 Installing dependencies..."
+echo "🔧 Environment: ${APP_ENV}..."
+
+if [ "$APP_ENV" != "prod" ]; then
+	for SERVICE in "$@"; do
+        case "$SERVICE" in
+            application|bot-runtime|bot|bot-manager|backend|dev)
+            	WORKING_DIR="/telegram-userbot/$SERVICE";
+
+				if [ -d "$WORKING_DIR/vendor" ]; then
+					continue;
+				fi
+
+				COMPOSER_CMD="composer install --no-interaction --no-progress --optimize-autoloader --prefer-dist --working-dir=$WORKING_DIR"
+
+				if [ "$APP_ENV" = "ci" ]; then
+					COMPOSER_CMD="$COMPOSER_CMD --ignore-platform-reqs --no-dev"
+				fi
+
+				echo "🔧 $COMPOSER_CMD"
+				eval "$COMPOSER_CMD"
+                ;;
+            *)
+                echo "❌ Unknown service: $SERVICE"
+                exit 1
+                ;;
+        esac
+    done
+fi
+
+echo "✅ Dependencies already installed"
+exit 0

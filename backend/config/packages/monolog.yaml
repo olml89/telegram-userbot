@@ -1,30 +1,35 @@
 monolog:
+  channels:
+    - app
+    - warnings
+    - errors
+
   handlers:
 
     # Main app logger (debug, info, notice)
+    # It is also the default channel, as it is the first one defined
     app:
-      type: filter
-      handler: app_stream
-      min_level: debug
-      max_level: notice
-      formatter: monolog.formatter.json
-      channels:
-        - '!event'
-
-    app_stream:
       type: stream
-      path: /var/log/backend/app.log
+      path: php://stdout
+      level: debug
+      channels:
+        - app
+      formatter: monolog.formatter.json
+
+    warnings:
+      type: stream
+      path: php://stderr
+      level: warning
+      max_level: warning
+      channels:
+        - warnings
+      formatter: monolog.formatter.json
 
     # Error logger (error, critical, alert, emergency)
-    error:
-      type: filter
-      handler: error_stream
-      min_level: error
-      max_level: emergency
-      formatter: monolog.formatter.json
-      channels:
-        - '!event'
-
-    error_stream:
+    errors:
       type: stream
-      path: /var/log/backend/error.log
+      path: php://stderr
+      level: error
+      channels:
+        - errors
+      formatter: monolog.formatter.json

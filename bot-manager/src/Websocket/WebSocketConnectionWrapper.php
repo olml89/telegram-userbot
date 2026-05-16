@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace olml89\TelegramUserbot\BotManager\Websocket;
 
-use olml89\TelegramUserbot\Shared\Bot\Status\Status;
+use olml89\TelegramUserbot\BotRuntime\Bot\Status\Status;
 use Ratchet\ConnectionInterface;
 
 final readonly class WebSocketConnectionWrapper

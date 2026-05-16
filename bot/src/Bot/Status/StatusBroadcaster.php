@@ -6,10 +6,10 @@ namespace olml89\TelegramUserbot\Bot\Bot\Status;
 
 use olml89\TelegramUserbot\Bot\MadelineProto\ApiWrapper;
 use olml89\TelegramUserbot\Bot\Output\Output;
-use olml89\TelegramUserbot\Shared\Bot\Status\LogRecord\EmittedStatus;
-use olml89\TelegramUserbot\Shared\Bot\Status\Status;
-use olml89\TelegramUserbot\Shared\Bot\Status\StatusEmitter;
-use olml89\TelegramUserbot\Shared\Logger\LogRecord\LoggableLogger;
+use olml89\TelegramUserbot\BotRuntime\Bot\Status\LogRecord\EmittedStatus;
+use olml89\TelegramUserbot\BotRuntime\Bot\Status\Status;
+use olml89\TelegramUserbot\BotRuntime\Bot\Status\StatusEmitter;
+use olml89\TelegramUserbot\BotRuntime\Logger\LogRecord\LoggableLogger;
 
 /**
  * It gets the current Status and broadcasts it to a StatusSubscriber in bot-manager (in the practice, a

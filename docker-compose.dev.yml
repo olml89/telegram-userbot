@@ -1,65 +1,14 @@
 services:
 
-  tusd:
+  #Infrastructure layers
+  alloy:
     build:
-      dockerfile: tusd/Dockerfile
+      dockerfile: alloy/Dockerfile
       target: dev
     volumes:
-      - ./tusd/entrypoint.sh:/entrypoint.sh:cached
-      - ./.runtime/uploads:/var/uploads:cached
-      - ./.runtime/log/tusd:/var/log/tusd:cached
-
-  nginx:
-    build:
-      dockerfile: nginx/Dockerfile
-      target: dev
-    volumes:
-      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:cached
-      - ./nginx/entrypoint.sh:/entrypoint.sh:cached
-      - ./.runtime/log/nginx:/var/log/nginx:cached
-
-  backend:
-    build:
-      dockerfile: ./backend/Dockerfile
-      target: dev
-      args:
-        XDEBUG_PORT: ${XDEBUG_BACKEND_PORT}
-    environment:
-      PHP_IDE_CONFIG: "serverName=${PHP_SERVER_NAME}"
-    volumes:
-      - ./shared:/telegram-userbot/shared:cached
-      - ./backend:/telegram-userbot/backend:cached
-      - ./.runtime/uploads:/var/uploads:cached
-      - ./.runtime/content:/var/content:cached
-      - ./.runtime/log/backend:/var/log/backend:cached
-
-  bot-manager:
-    build:
-      dockerfile: bot-manager/Dockerfile
-      target: dev
-      args:
-        XDEBUG_PORT: ${XDEBUG_BOT_MANAGER_PORT}
-    environment:
-      PHP_IDE_CONFIG: "serverName=${PHP_SERVER_NAME}"
-    volumes:
-      - ./shared:/telegram-userbot/shared:cached
-      - ./bot-manager:/telegram-userbot/bot-manager:cached
-      - ./bot-manager/supervisor:/etc/supervisor:cached
-      - ./.runtime/log/bot-manager:/var/log/bot-manager:cached
-
-  bot:
-    build:
-      dockerfile: bot/Dockerfile
-      target: dev
-      args:
-        XDEBUG_PORT: ${XDEBUG_BOT_PORT}
-    environment:
-      PHP_IDE_CONFIG: "serverName=${PHP_SERVER_NAME}"
-    volumes:
-      - ./shared:/telegram-userbot/shared:cached
-      - ./bot:/telegram-userbot/bot:cached
-      - ./bot/supervisor:/etc/supervisor:cached
-      - ./.runtime/log/bot:/var/log/bot:cached
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./alloy/config.alloy:/etc/alloy/config.alloy:cached
+      - ./alloy/entrypoint.sh:/entrypoint.sh:cached
 
   redis:
     build:
@@ -69,30 +18,86 @@ services:
       - telegram-userbot-redis:/data:cached
       - ./redis/redis.conf:/usr/local/etc/redis/redis.conf:cached
       - ./redis/entrypoint.sh:/usr/local/bin/entrypoint.sh:cached
-      - ./.runtime/log/redis:/var/log/redis:cached
 
-  # Expose the database port to the outside: only during development
   postgres:
     build:
       dockerfile: postgres/Dockerfile
       target: dev
-    ports:
+    ports: # Expose the database port to the outside: only during development
       - ${POSTGRES_PORT}:${DB_PORT}
     volumes:
       - telegram-userbot-db:/var/lib/postgresql/data:cached
       - ./postgres/postgresql.conf:/etc/postgresql/postgresql.conf:cached
       - ./postgres/entrypoint.sh:/usr/local/bin/entrypoint.sh:cached
-      - ./.runtime/log/postgres:/var/log/postgres:cached
 
-  alloy:
+  # Application layers
+  bot:
     build:
-      dockerfile: alloy/Dockerfile
+      dockerfile: bot/Dockerfile
+      target: dev
+      args:
+        XDEBUG_PORT: ${XDEBUG_BOT_PORT}
+    environment:
+      PHP_IDE_CONFIG: "serverName=${PHP_SERVER_NAME}"
+    user: ${UID}:${GID}
+    volumes:
+      - ./application:/telegram-userbot/application:cached
+      - ./bot-runtime:/telegram-userbot/bot-runtime:cached
+      - ./bot:/telegram-userbot/bot:cached
+      - ./bot/supervisor:/etc/supervisor:cached
+      - ./dev/bin/composer/composer-install.sh:/telegram-userbot/dev/bin/composer/composer-install.sh:cached
+
+  bot-manager:
+    build:
+      dockerfile: bot-manager/Dockerfile
+      target: dev
+      args:
+        XDEBUG_PORT: ${XDEBUG_BOT_MANAGER_PORT}
+    environment:
+      PHP_IDE_CONFIG: "serverName=${PHP_SERVER_NAME}"
+    user: ${UID}:${GID}
+    volumes:
+      - ./application:/telegram-userbot/application:cached
+      - ./bot-runtime:/telegram-userbot/bot-runtime:cached
+      - ./bot-manager:/telegram-userbot/bot-manager:cached
+      - ./bot-manager/supervisor:/etc/supervisor:cached
+      - ./dev/bin/composer/composer-install.sh:/telegram-userbot/dev/bin/composer/composer-install.sh:cached
+
+  backend:
+    build:
+      dockerfile: ./backend/Dockerfile
+      target: dev
+      args:
+        XDEBUG_PORT: ${XDEBUG_BACKEND_PORT}
+    environment:
+      PHP_IDE_CONFIG: "serverName=${PHP_SERVER_NAME}"
+    user: ${UID}:${GID}
+    volumes:
+      - ./application:/telegram-userbot/application:cached
+      - ./backend:/telegram-userbot/backend:cached
+      - ./backend/php-fpm/www.dev.conf:/usr/local/etc/php-fpm.d/www.conf:cached
+      - ./dev/bin/composer/composer-install.sh:/telegram-userbot/dev/bin/composer/composer-install.sh:cached
+      - ./.runtime/uploads:/var/uploads:cached
+      - ./.runtime/content:/var/content:cached
+
+  tusd:
+    build:
+      dockerfile: tusd/Dockerfile
+      target: dev
+    user: ${UID}:${GID}
+    volumes:
+      - ./tusd/entrypoint.sh:/entrypoint.sh:cached
+      - ./.runtime/uploads:/var/uploads:cached
+
+  nginx:
+    build:
+      dockerfile: nginx/Dockerfile
       target: dev
     volumes:
-      - ./alloy/config.alloy:/etc/alloy/config.alloy:cached
-      - ./alloy/entrypoint.sh:/entrypoint.sh:cached
-      - ./.runtime/log:/var/log:cached
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:cached
+      - ./nginx/entrypoint.sh:/entrypoint.sh:cached
 
+  # Monitoring layers
   grafana:
     volumes:
       - ./grafana/provisioning:/etc/grafana/provisioning:cached
@@ -102,11 +107,15 @@ services:
     container_name: telegram_userbot_vite
     image: node:20-alpine
     depends_on:
-      - backend
+      alloy:
+        condition: service_started
+      backend:
+        condition: service_started
     working_dir: /telegram-userbot/backend
     command: sh -c "npm install && npm run dev -- --host 0.0.0.0 --port 5173"
     ports:
       - ${VITE_PORT}:5173
+    user: ${UID}:${GID}
     volumes:
       - ./backend:/telegram-userbot/backend:cached
 
@@ -114,9 +123,8 @@ services:
   dev:
     container_name: telegram_userbot_dev
     depends_on:
-      - backend
-      - bot
-      - bot-manager
+      alloy:
+        condition: service_started
     build:
       dockerfile: dev/Dockerfile
       target: dev
@@ -130,10 +138,12 @@ services:
       APP_ENV: ${APP_ENV}
       PHP_IDE_CONFIG: "serverName=${PHP_SERVER_NAME}"
       COMPOSER_PROCESS_TIMEOUT: 0
+    user: ${UID}:${GID}
     volumes:
       - ./.git:/telegram-userbot/.git:cached
-      - ./dev:/telegram-userbot/dev:cached
-      - ./shared:/telegram-userbot/shared:cached
-      - ./backend:/telegram-userbot/backend:cached
-      - ./bot-manager:/telegram-userbot/bot-manager:cached
+      - ./application:/telegram-userbot/application:cached
+      - ./bot-runtime:/telegram-userbot/bot-runtime:cached
       - ./bot:/telegram-userbot/bot:cached
+      - ./bot-manager:/telegram-userbot/bot-manager:cached
+      - ./backend:/telegram-userbot/backend:cached
+      - ./dev:/telegram-userbot/dev:cached

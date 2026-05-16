@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace olml89\TelegramUserbot\Bot\Redis;
 
 use Amp;
-use olml89\TelegramUserbot\Shared\Redis\RedisConfig;
-use olml89\TelegramUserbot\Shared\Redis\RedisPublisher;
+use olml89\TelegramUserbot\BotRuntime\Redis\RedisConfig;
+use olml89\TelegramUserbot\BotRuntime\Redis\RedisPublisher;
 
 final readonly class AmphpRedisPublisher implements RedisPublisher
 {

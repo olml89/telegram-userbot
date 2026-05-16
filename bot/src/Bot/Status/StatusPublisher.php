@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace olml89\TelegramUserbot\Bot\Bot\Status;
 
-use olml89\TelegramUserbot\Shared\Bot\Status\Status;
-use olml89\TelegramUserbot\Shared\Redis\RedisConfig;
-use olml89\TelegramUserbot\Shared\Redis\RedisPublisher;
+use olml89\TelegramUserbot\BotRuntime\Bot\Status\Status;
+use olml89\TelegramUserbot\BotRuntime\Redis\RedisConfig;
+use olml89\TelegramUserbot\BotRuntime\Redis\RedisPublisher;
 
 /**
  * It publishes Status updates to Redis, to be handled by a StatusHandler

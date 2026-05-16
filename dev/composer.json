@@ -31,10 +31,10 @@
         "rector/rector": "^2.3"
     },
     "scripts": {
-        "rector": "rector/rector.sh",
-        "pint": "pint/pint.sh",
-        "phpstan": "phpstan/phpstan.sh",
-        "phpunit": "phpunit/phpunit.sh",
-        "validate-commit": "bin/commit/validate-commit.sh"
+        "rector": "bin/rector/rector.sh",
+        "pint": "bin/pint/pint.sh",
+        "phpstan": "bin/phpstan/phpstan.sh",
+        "phpunit": "bin/phpunit/phpunit.sh",
+        "validate-commit": "bin/git/commit/validate-commit.sh"
     }
 }

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Test\Bot\Unit\Output;
+namespace Tests\Bot\Unit\Output;
 
 use olml89\TelegramUserbot\Bot\Output\MadelineProtoFileLoggerOutput;
 use PHPUnit\Framework\Attributes\CoversClass;
