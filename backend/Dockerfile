@@ -29,7 +29,7 @@ RUN apk add --no-cache nodejs npm
 
 # Install npm packages (vite)
 COPY backend/package.json backend/package-lock.json ./
-RUN npm ci --include=dev
+RUN npm ci
 
 # Copy the assets and the vite config and run build to generate the assets in public/build
 COPY backend/assets ./assets
@@ -72,9 +72,6 @@ FROM base AS dev
 
 # Install composer and xdebug and clear extensions installer
 RUN install-php-extensions xdebug @composer && rm /usr/local/bin/install-php-extensions
-
-# Add Node.js + npm for Vite (to bundle assets on dev environment)
-RUN apk add --no-cache nodejs npm
 
 # Copy xdebug configuration file
 COPY docker-php-ext-xdebug.ini /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini

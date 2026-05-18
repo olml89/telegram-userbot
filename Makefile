@@ -26,7 +26,7 @@ endif
 
 
 # Build containers
-.PHONY: build up upd stop down setup deploy
+.PHONY: build up upd stop down setup reset deploy
 
 # Guarantee build order: backend and nginx first (backend builds assets), then the rest
 build:
@@ -69,6 +69,10 @@ down:
 # This is run to properly set up the application after git cloning the repository
 setup:
 	@bash dev/bin/setup/setup.sh
+
+# This stops the microservices and leaves the application in a factory reset state, like after git cloning
+reset: down
+	@bash dev/bin/setup/reset.sh
 
 # This is used on CI/CD to deploy to a remote server through SSH
 deploy:
@@ -129,7 +133,7 @@ redis-cli:
 	docker compose $(DOCKER_COMPOSE) exec redis redis-cli
 
 vite:
-	docker compose $(DOCKER_COMPOSE) restart vite
+	docker compose $(DOCKER_COMPOSE) exec vite /bin/sh
 
 # Development recipes
 # The -T flag disables TTY, required when running from non-interactive environments like Git hooks
