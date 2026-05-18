@@ -5,27 +5,21 @@ services:
   # Infrastructure layers
   alloy:
     container_name: telegram_userbot_alloy
-    build:
-      dockerfile: alloy/Dockerfile
-    entrypoint: [sh, /entrypoint.sh]
+    command: [run, /etc/alloy/config.alloy]
     networks:
       - telegram-userbot-grafana-network
 
   redis:
     container_name: telegram_userbot_redis
-    build:
-      dockerfile: redis/Dockerfile
     depends_on:
       alloy:
         condition: service_started
-    entrypoint: [sh, /usr/local/bin/entrypoint.sh]
+    command: [redis-server, /usr/local/etc/redis/redis.conf]
     networks:
       - telegram-userbot-network
 
   postgres:
     container_name: telegram_userbot_postgres
-    build:
-      dockerfile: postgres/Dockerfile
     depends_on:
       alloy:
         condition: service_started
@@ -33,7 +27,6 @@ services:
       POSTGRES_DB: ${DB_NAME}
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
-    entrypoint: [sh, /usr/local/bin/entrypoint.sh]
     command: [-c, config_file=/etc/postgresql/postgresql.conf]
     networks:
       - telegram-userbot-network
@@ -112,8 +105,7 @@ services:
 
   tusd:
     container_name: telegram_userbot_tusd
-    build:
-      dockerfile: tusd/Dockerfile
+    image: tusproject/tusd:latest
     depends_on:
       alloy:
         condition: service_started
@@ -123,11 +115,12 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
-    environment:
-      TUSD_UPLOAD_ENDPOINT: /tus/uploads
-      TUSD_UPLOAD_DIR: /var/uploads
-      API_VALIDATION_ENDPOINT: /api/files/validation
-    entrypoint: [sh, /entrypoint.sh]
+    command:
+      - -base-path=/tus/uploads
+      - -upload-dir=/var/uploads
+      - -hooks-http=http://nginx/api/files/validation
+      - -hooks-enabled-events=pre-create
+      - -behind-proxy
     networks:
       - telegram-userbot-network
 
@@ -142,7 +135,6 @@ services:
         condition: service_healthy
       backend:
         condition: service_healthy
-    entrypoint: [sh, /entrypoint.sh]
     ports:
       - ${BACKEND_PORT}:80
     networks:
@@ -165,8 +157,6 @@ services:
         condition: service_started
       loki:
         condition: service_started
-    build:
-      dockerfile: grafana/Dockerfile
     environment:
       GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_SECURITY_ADMIN_PASSWORD}
     ports:

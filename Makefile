@@ -123,6 +123,9 @@ postgres-psql:
 	docker compose $(DOCKER_COMPOSE) exec -e PGPASSWORD=$(DB_PASSWORD) postgres psql -U $(DB_USER) -d $(DB_NAME)
 
 redis:
+	docker compose $(DOCKER_COMPOSE) exec redis /bin/sh
+
+redis-cli:
 	docker compose $(DOCKER_COMPOSE) exec redis redis-cli
 
 vite:
