@@ -1,6 +1,17 @@
 #!/bin/sh
 set -eu
 
+# Normalize all files from CRLF to LF
+FILES=$(git diff --cached --name-only | grep -v '^\.git/')
+
+for file in $FILES; do
+    if [ -f "$file" ] && grep -q "$(printf '\r')" "$file"; then
+        echo "🔄 Converting '$file' from CRLF to LF line ending..."
+        sed -i 's/\r$//' "$file"
+        git add "$file"
+    fi
+done
+
 # Execute the pre-commit script inside the container, that launches validate-commit.sh
 if ! make validate-commit; then
     echo "❌ Pre-commit checks failed. Commit aborted."
