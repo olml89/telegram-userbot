@@ -87,6 +87,14 @@ services:
     volumes:
       - telegram-userbot-assets:/telegram-userbot/backend/public/build:ro
 
+  # Monitoring layers
+  loki:
+    build:
+      dockerfile: loki/Dockerfile
+      target: prod
+    volumes:
+      - telegram-userbot-loki:/loki
+
 volumes:
   telegram-userbot-assets:
   telegram-userbot-uploads:

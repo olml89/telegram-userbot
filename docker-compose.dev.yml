@@ -98,6 +98,14 @@ services:
       - ./nginx/entrypoint.sh:/entrypoint.sh:cached
 
   # Monitoring layers
+  loki:
+    build:
+      dockerfile: loki/Dockerfile
+      target: dev
+    volumes:
+      - telegram-userbot-loki:/loki
+      - ./loki/local-config.yaml:/etc/loki/local-config.yaml
+
   grafana:
     volumes:
       - ./grafana/provisioning:/etc/grafana/provisioning:cached

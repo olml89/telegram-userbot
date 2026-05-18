@@ -154,7 +154,7 @@ services:
     depends_on:
       alloy:
         condition: service_started
-    image: grafana/loki:latest
+    command: [-config.file=/etc/loki/local-config.yaml]
     networks:
       - telegram-userbot-grafana-network
 
@@ -177,6 +177,7 @@ services:
 volumes:
   telegram-userbot-db:
   telegram-userbot-redis:
+  telegram-userbot-loki:
 
 networks:
   telegram-userbot-network:

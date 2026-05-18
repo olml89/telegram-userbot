@@ -90,7 +90,7 @@ debug:
 
 
 # Shell access containers
-.PHONY: alloy backend bot bot-manager dev grafana loki nginx tusd postgres postgres-psql redis vite
+.PHONY: alloy backend bot bot-manager dev grafana nginx tusd postgres postgres-psql redis vite
 
 alloy:
 	docker compose $(DOCKER_COMPOSE) exec alloy /bin/sh
@@ -109,9 +109,6 @@ dev:
 
 grafana:
 	docker compose $(DOCKER_COMPOSE) exec grafana /bin/sh
-
-loki:
-	docker compose $(DOCKER_COMPOSE) exec loki /bin/sh
 
 nginx:
 	docker compose $(DOCKER_COMPOSE) exec nginx /bin/sh
