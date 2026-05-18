@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace olml89\TelegramUserbot\Bot\MadelineProto;
 
 use danog\MadelineProto\API;
-use olml89\TelegramUserbot\Shared\Bot\Process\Process;
-use olml89\TelegramUserbot\Shared\Bot\Process\ProcessManager;
-use olml89\TelegramUserbot\Shared\Bot\Status\Status;
-use olml89\TelegramUserbot\Shared\Bot\Status\StatusType;
+use olml89\TelegramUserbot\BotRuntime\Bot\Process\Process;
+use olml89\TelegramUserbot\BotRuntime\Bot\Process\ProcessManager;
+use olml89\TelegramUserbot\BotRuntime\Bot\Status\Status;
+use olml89\TelegramUserbot\BotRuntime\Bot\Status\StatusType;
 
 final readonly class ApiStatusCalculator
 {

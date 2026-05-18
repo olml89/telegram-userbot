@@ -1,0 +1,38 @@
+{
+    "name": "olml89/telegram-userbot-bot-runtime",
+    "description": "Shared utilities between bot and bot-manager microservices",
+    "type": "library",
+    "version": "1.0.0",
+    "license": "proprietary",
+    "authors": [
+        {
+            "name": "olml89"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require": {
+        "php": "^8.5",
+        "olml89/telegram-userbot-application": "*",
+        "php-di/php-di": "^7.0",
+        "monolog/monolog": "^3.9",
+        "sentry/sentry": "^4.19"
+    },
+    "require-dev": {
+        "vlucas/phpdotenv": "^5.6"
+    },
+    "repositories": [
+        {
+            "type": "path",
+            "url": "../application",
+            "options": {
+                "symlink": true
+            }
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "olml89\\TelegramUserbot\\BotRuntime\\": "src/",
+            "Tests\\BotRuntime\\": "tests/"
+        }
+    }
+}

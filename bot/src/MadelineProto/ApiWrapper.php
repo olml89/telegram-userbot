@@ -6,8 +6,8 @@ namespace olml89\TelegramUserbot\Bot\MadelineProto;
 
 use danog\MadelineProto\API;
 use danog\MadelineProto\EventHandler;
-use olml89\TelegramUserbot\Shared\Bot\Command\CompletePhoneLogin\PhoneCode;
-use olml89\TelegramUserbot\Shared\Bot\Status\Status;
+use olml89\TelegramUserbot\BotRuntime\Bot\Command\CompletePhoneLogin\PhoneCode;
+use olml89\TelegramUserbot\BotRuntime\Bot\Status\Status;
 
 final class ApiWrapper
 {

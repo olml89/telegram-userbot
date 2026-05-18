@@ -15,13 +15,20 @@
         "ext-pcntl": "*",
         "ext-posix": "*",
         "ext-ffi": "*",
-        "olml89/telegram-userbot-shared": "*",
+        "olml89/telegram-userbot-bot-runtime": "*",
         "danog/madelineproto": "^8.4"
     },
     "repositories": [
         {
             "type": "path",
-            "url": "../shared",
+            "url": "../application",
+            "options": {
+                "symlink": true
+            }
+        },
+        {
+            "type": "path",
+            "url": "../bot-runtime",
             "options": {
                 "symlink": true
             }
@@ -30,7 +37,7 @@
     "autoload": {
         "psr-4": {
             "olml89\\TelegramUserbot\\Bot\\": "src/",
-            "Test\\Bot\\Unit\\": "tests/Unit"
+            "Tests\\Bot\\": "tests/"
         }
     }
 }

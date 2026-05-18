@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace olml89\TelegramUserbot\Backend\Content\Application;
 
 use JsonSerializable;
+use olml89\TelegramUserbot\Application\IsJsonSerializable;
 use olml89\TelegramUserbot\Backend\File\Application\AudioResult;
 use olml89\TelegramUserbot\Backend\File\Application\FileResult;
 use olml89\TelegramUserbot\Backend\File\Application\ImageResult;
 use olml89\TelegramUserbot\Backend\File\Application\VideoResult;
-use olml89\TelegramUserbot\Shared\App\IsJsonSerializable;
 
 final class ContentFileTypeCounter implements JsonSerializable
 {

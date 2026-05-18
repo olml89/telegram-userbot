@@ -1,0 +1,27 @@
+<?php
+
+declare(strict_types=1);
+
+namespace olml89\TelegramUserbot\Application;
+
+use JsonSerializable;
+
+/**
+ * @mixin JsonSerializable
+ */
+trait IsJsonSerializable
+{
+    /**
+     * @return array<string, mixed>
+     */
+    public function jsonSerialize(): array
+    {
+        /** @var array<string, mixed> $filtered */
+        $filtered = array_filter(
+            get_object_vars($this),
+            fn(mixed $property): bool => !is_null($property),
+        );
+
+        return $filtered;
+    }
+}

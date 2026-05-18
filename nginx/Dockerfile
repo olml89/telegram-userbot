@@ -1,11 +1,6 @@
-FROM nginx:stable-alpine AS base
+FROM nginx:stable-alpine AS dev
 
-FROM base AS prod
+FROM dev AS prod
 
 # Copy redis configuration
 COPY nginx/default.conf /etc/nginx/conf.d/default.conf
-
-# Copy entrypoint.sh
-COPY nginx/entrypoint.sh /entrypoint.sh
-
-FROM base AS dev

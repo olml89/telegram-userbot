@@ -6,9 +6,9 @@ namespace olml89\TelegramUserbot\Backend\Shared\Infrastructure\Symfony;
 
 use Doctrine\Bundle\DoctrineBundle\DoctrineBundle;
 use Doctrine\Bundle\MigrationsBundle\DoctrineMigrationsBundle;
-use olml89\TelegramUserbot\Backend\Shared\Infrastructure\Symfony\Configuration\ServiceConfigurator;
+use olml89\TelegramUserbot\Application\Environment\Environment;
 use olml89\TelegramUserbot\Backend\Shared\Infrastructure\Symfony\Configuration\RouteConfigurator;
-use olml89\TelegramUserbot\Shared\App\Environment\Environment;
+use olml89\TelegramUserbot\Backend\Shared\Infrastructure\Symfony\Configuration\ServiceConfigurator;
 use Pentatrion\ViteBundle\PentatrionViteBundle;
 use Sentry\SentryBundle\SentryBundle;
 use Symfony\Bundle\FrameworkBundle\FrameworkBundle;

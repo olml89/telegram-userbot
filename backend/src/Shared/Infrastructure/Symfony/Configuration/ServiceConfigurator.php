@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace olml89\TelegramUserbot\Backend\Shared\Infrastructure\Symfony\Configuration;
 
-use olml89\TelegramUserbot\Shared\App\Environment\Environment;
+use olml89\TelegramUserbot\Application\Environment\Environment;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
 
 final readonly class ServiceConfigurator

@@ -15,7 +15,7 @@
         "ext-intl": "*",
         "ext-pgsql": "*",
         "ext-pdo_pgsql": "*",
-        "olml89/telegram-userbot-shared": "*",
+        "olml89/telegram-userbot-application": "*",
         "symfony/framework-bundle": "^8.0",
         "symfony/runtime": "^8.0",
         "symfony/yaml": "^8.0",
@@ -43,7 +43,7 @@
     "repositories": [
         {
             "type": "path",
-            "url": "../shared",
+            "url": "../application",
             "options": {
                 "symlink": true
             }
@@ -52,7 +52,7 @@
     "autoload": {
         "psr-4": {
             "olml89\\TelegramUserbot\\Backend\\": "src/",
-            "Test\\Backend\\Unit\\": "tests/Unit"
+            "Tests\\Backend\\": "tests/"
         }
     },
     "config": {

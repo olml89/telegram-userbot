@@ -11,8 +11,8 @@ use olml89\TelegramUserbot\BotManager\Bot\Command\Command\LogoutCommand;
 use olml89\TelegramUserbot\BotManager\Bot\Command\Command\PhoneLoginCommand;
 use olml89\TelegramUserbot\BotManager\Bot\Command\Command\StartCommand;
 use olml89\TelegramUserbot\BotManager\Bot\Command\Command\StopCommand;
-use olml89\TelegramUserbot\Shared\Bot\Command\CompletePhoneLogin\InvalidPhoneCodeException;
-use olml89\TelegramUserbot\Shared\Bot\Command\CompletePhoneLogin\PhoneCode;
+use olml89\TelegramUserbot\BotRuntime\Bot\Command\CompletePhoneLogin\InvalidPhoneCodeException;
+use olml89\TelegramUserbot\BotRuntime\Bot\Command\CompletePhoneLogin\PhoneCode;
 
 final readonly class CommandFactory
 {

@@ -23,6 +23,9 @@ RUN printf '\nxdebug.client_port=%s\n' ${XDEBUG_PORT} >> /usr/local/etc/php/dock
 
 FROM base AS ci
 
+# Set CI environment
+ENV APP_ENV=ci
+
 # Install git (needed to install dependencies on Github when dist fails due to rate limiting HTTP/2 429)
 RUN apk add --no-cache git
 
@@ -33,4 +36,4 @@ COPY dev/docker-php-ext-xdebug.ci.ini /usr/local/etc/php/docker-php-ext-xdebug.i
 COPY . /telegram-userbot/
 
 # Pre-install PHP dependencies to cache them in the image
-RUN /telegram-userbot/shared/bin/composer-install.sh dev shared backend bot bot-manager
+RUN /telegram-userbot/dev/bin/composer/composer-install.sh application bot-runtime bot bot-manager backend dev

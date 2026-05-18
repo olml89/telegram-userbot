@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace olml89\TelegramUserbot\BotManager\Redis;
 
 use Clue\React\Redis\RedisClient;
-use olml89\TelegramUserbot\Shared\Redis\RedisConfig;
-use olml89\TelegramUserbot\Shared\Redis\RedisSubscriber;
+use olml89\TelegramUserbot\BotRuntime\Redis\RedisConfig;
+use olml89\TelegramUserbot\BotRuntime\Redis\RedisSubscriber;
 
 final readonly class ReactRedisSubscriber implements RedisSubscriber
 {

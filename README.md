@@ -71,10 +71,6 @@ providing log collection, aggregation, and visualization.
 
 ## Build Phase
 
-Shared common code and dependencies used by core the business logic services reside in the **shared** domain. 
-This shared code is not a standalone service but is installed inside the containers of the services that 
-depend on it.
-
 Each of the core business logic services has its own Dockerfile using a multi-stage build process.
 **bot-manager** and **bot** are based on the `php:8.5-alpine` image, while **backend** is based on the
 `php:8.5-fpm-alpine` image.
@@ -91,6 +87,11 @@ image. This avoids double builds and guarantees consistency.
 - **Development stage**: installs `xdebug` and `composer` inside the container. Instead of copying code, volumes 
 mount the local codebases via Docker Compose. On container start, `composer install` runs dynamically to allow 
 live dependency management during development.
+
+Shared common code used across multiple services resides in the **application** domain.
+Also, the **bot** and the **bot-manager** services share a common **bot-runtime** domain.
+Those are not standalone services but are installed inside the containers of the services that
+depend on them.
 
 ## Application Management
 

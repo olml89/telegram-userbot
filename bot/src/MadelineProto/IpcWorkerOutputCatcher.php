@@ -10,8 +10,8 @@ use danog\MadelineProto\API;
 use olml89\TelegramUserbot\Bot\Bot\Status\StatusBroadcaster;
 use olml89\TelegramUserbot\Bot\Output\ExceptionOutput;
 use olml89\TelegramUserbot\Bot\Output\MadelineProtoFileLoggerOutput;
-use olml89\TelegramUserbot\Shared\Logger\LogRecord\ErrorLogRecord;
-use olml89\TelegramUserbot\Shared\Logger\LogRecord\LoggableLogger;
+use olml89\TelegramUserbot\BotRuntime\Logger\LogRecord\ErrorLogRecord;
+use olml89\TelegramUserbot\BotRuntime\Logger\LogRecord\LoggableLogger;
 use Throwable;
 
 /**

@@ -17,16 +17,16 @@ ifeq ($(APP_ENV),prod)
     DOCKER_COMPOSE += -f docker-compose.prod.yml
 else
     $(info Using development environment -> adding docker-compose.dev.yml)
-    DOCKER_COMPOSE += -f docker-compose.dev.yml --env-file .env --env-file backend/.env --env-file shared/.env
+    DOCKER_COMPOSE += -f docker-compose.dev.yml --env-file .env --env-file bot-runtime/.env --env-file backend/.env
 
-	# Load variables from backend/.env file and shared/.env
+	# Load variables from bot-runtime/.env and backend/.env files
+	-include bot-runtime/.env
 	-include backend/.env
-	-include shared/.env
 endif
 
 
 # Build containers
-.PHONY: build up upd stop down deploy
+.PHONY: build up upd stop down setup deploy
 
 # Guarantee build order: backend and nginx first (backend builds assets), then the rest
 build:
@@ -38,14 +38,14 @@ build:
 		docker compose $(DOCKER_COMPOSE) build --no-cache \
 	)
 
-up:
+up: setup
 	$(eval SERVICE := $(word 2, $(MAKECMDGOALS)))
 	$(if $(SERVICE), \
 		docker compose $(DOCKER_COMPOSE) up --remove-orphans $(SERVICE), \
 		docker compose $(DOCKER_COMPOSE) up --remove-orphans \
 	)
 
-upd:
+upd: setup
 	$(eval SERVICE := $(word 2, $(MAKECMDGOALS)))
 	$(if $(SERVICE), \
 		docker compose $(DOCKER_COMPOSE) up -d --remove-orphans $(SERVICE), \
@@ -66,19 +66,13 @@ down:
 		docker compose $(DOCKER_COMPOSE) down \
 	)
 
+# This is run to properly set up the application after git cloning the repository
+setup:
+	@bash dev/bin/setup/setup.sh
+
+# This is used on CI/CD to deploy to a remote server through SSH
 deploy:
-	@echo "🚀 Starting deployment..."
-	$(MAKE) down
-	$(MAKE) build
-	$(MAKE) upd
-	@echo "⏳ Waiting for containers to be ready..."
-	docker compose $(DOCKER_COMPOSE) exec -T postgres sh -c 'until pg_isready -U $$POSTGRES_USER; do sleep 1; done'
-	docker compose $(DOCKER_COMPOSE) exec -T backend sh -c 'until php -r "exit(0);" 2>/dev/null; do sleep 1; done'
-	@echo "🔄 Running database migrations..."
-	docker compose $(DOCKER_COMPOSE) exec -T backend php bin/console doctrine:migrations:migrate --no-interaction
-	@echo "🧹 Clearing Symfony cache..."
-	docker compose $(DOCKER_COMPOSE) exec -T backend php bin/console cache:clear --env=prod
-	@echo "✅ Deployment completed successfully!"
+	@bash dev/bin/deploy/deploy.sh
 
 # Debug containers
 # Make syntax, to avoid dependence on bash/unix
@@ -96,7 +90,7 @@ debug:
 
 
 # Shell access containers
-.PHONY: alloy backend bot bot-manager dev grafana loki nginx tusd postgres postgres-psql redis vite
+.PHONY: alloy backend bot bot-manager dev grafana nginx tusd postgres postgres-psql redis vite
 
 alloy:
 	docker compose $(DOCKER_COMPOSE) exec alloy /bin/sh
@@ -116,9 +110,6 @@ dev:
 grafana:
 	docker compose $(DOCKER_COMPOSE) exec grafana /bin/sh
 
-loki:
-	docker compose $(DOCKER_COMPOSE) exec loki /bin/sh
-
 nginx:
 	docker compose $(DOCKER_COMPOSE) exec nginx /bin/sh
 
@@ -132,6 +123,9 @@ postgres-psql:
 	docker compose $(DOCKER_COMPOSE) exec -e PGPASSWORD=$(DB_PASSWORD) postgres psql -U $(DB_USER) -d $(DB_NAME)
 
 redis:
+	docker compose $(DOCKER_COMPOSE) exec redis /bin/sh
+
+redis-cli:
 	docker compose $(DOCKER_COMPOSE) exec redis redis-cli
 
 vite:
@@ -141,7 +135,7 @@ vite:
 # The -T flag disables TTY, required when running from non-interactive environments like Git hooks
 .PHONY: phpstan pint rector phpunit commit
 
-# 1) Converts (bot, bot-manager, backend, shared) to --service=(bot, bot-manager, backend, shared)
+# 1) Converts (application, bot-runtime, bot, bot-manager, backend) to --service=(application, bot-runtime, bot, bot-manager, backend)
 # 2) Converts ci to --ci (it runs phpstan without showing progress)
 phpstan:
 	$(eval ARGS := $(wordlist 2, $(words $(MAKECMDGOALS)), $(MAKECMDGOALS)))
@@ -152,7 +146,7 @@ phpstan:
 	$(eval SERVICE := $(filter-out ci,$(ARGS)))
 	docker compose $(DOCKER_COMPOSE) exec -T dev composer phpstan -- $(if $(SERVICE),--service=$(SERVICE)) $(CI)
 
-# 1) Converts (bot, bot-manager, backend, shared) to --service=(bot, bot-manager, backend, shared)
+# 1) Converts (application, bot-runtime, bot, bot-manager, backend) to --service=(application, bot-runtime, bot, bot-manager, backend)
 # 2) Converts test to --test (it runs checks without applying linting)
 pint:
 	$(eval ARGS := $(wordlist 2, $(words $(MAKECMDGOALS)), $(MAKECMDGOALS)))
@@ -163,7 +157,7 @@ pint:
 	$(eval SERVICE := $(filter-out test,$(ARGS)))
 	docker compose $(DOCKER_COMPOSE) exec -T dev composer pint -- $(if $(SERVICE),--service=$(SERVICE)) $(TEST)
 
-# 1) Converts (bot, bot-manager, backend, shared) to --service=(bot, bot-manager, backend, shared)
+# 1) Converts (application, bot-runtime, bot, bot-manager, backend) to --service=(application, bot-runtime, bot, bot-manager, backend)
 # 2) Converts dry-run to --dry-run (it runs checks without applying refactoring)
 rector:
 	$(eval ARGS := $(wordlist 2, $(words $(MAKECMDGOALS)), $(MAKECMDGOALS)))
@@ -174,7 +168,7 @@ rector:
 	$(eval SERVICE := $(filter-out dry-run,$(ARGS)))
 	docker compose $(DOCKER_COMPOSE) exec -T dev composer rector -- $(if $(SERVICE),--service=$(SERVICE)) $(DRY-RUN)
 
-# 1) Converts (bot, bot-manager, backend, shared) to --service=(bot, bot-manager, backend, shared)
+# 1) Converts (application, bot-runtime, bot, bot-manager, backend) to --service=(application, bot-runtime, bot, bot-manager, backend)
 # 2) Converts ci to --ci
 # 3) Converts coverage to --coverage
 # 4) Converts debug to --debug
@@ -191,7 +185,7 @@ phpunit:
 	$(eval ARGS := $(filter-out $@,$(MAKECMDGOALS)))
 	$(eval FINAL_ARGS :=)
 	$(foreach arg,$(ARGS),\
-		$(if $(filter bot bot-manager backend shared,$(arg)),\
+		$(if $(filter application bot-runtime bot bot-manager backend,$(arg)),\
 			$(eval FINAL_ARGS += --service=$(arg)),\
 			$(if $(filter ci,$(arg)),\
 				$(eval FINAL_ARGS += --ci),\
@@ -207,7 +201,7 @@ phpunit:
 	)
 	docker compose $(DOCKER_COMPOSE) exec -T dev composer phpunit -- $(FINAL_ARGS)
 
-commit:
+validate-commit:
 	docker compose $(DOCKER_COMPOSE) exec -T dev composer validate-commit
 
 # Catch-all pattern rule to prevent Make from complaining about unknown targets

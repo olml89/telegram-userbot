@@ -21,14 +21,23 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v6
         with:
-          fetch-depth: 2
+          fetch-depth: 0
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 8.5
 
       - name: Check if composer.json files are in sync with their composer.lock counterparts
         run: dev/bin/deploy/check-composer-sync.sh
 
-      - name: Check if image-affecting files changed
+      - name: Check if dev image affecting files changed
         id: check
-        run: dev/bin/deploy/check-image-changes.sh "${{ github.event_name }}" "${{ github.event.before }}" "${{ github.sha }}" "$GITHUB_OUTPUT"
+        run: |
+          dev/bin/deploy/check-dev-image-changes.sh \
+            "${{ github.event_name }}" \
+            "${{ github.event.pull_request.head.sha }}" \
+            "$GITHUB_OUTPUT"
 
       - name: Validate dev/Dockerfile and dev/composer.json consistency
         if: steps.check.outputs.rebuild == 'true'
@@ -68,7 +77,7 @@ jobs:
             -e APP_ENV=ci \
             -w /telegram-userbot/dev \
             ghcr.io/olml89/telegram-userbot-dev:ci \
-            ./phpstan/phpstan.sh --ci
+            ./bin/phpstan/phpstan.sh --ci
 
   phpunit:
     needs: build-image
@@ -86,7 +95,7 @@ jobs:
             -e APP_ENV=ci \
             -w /telegram-userbot/dev \
             ghcr.io/olml89/telegram-userbot-dev:ci \
-            ./phpunit/phpunit.sh --ci
+            ./bin/phpunit/phpunit.sh --ci
 
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v6
@@ -109,7 +118,7 @@ jobs:
             -e APP_ENV=ci \
             -w /telegram-userbot/dev \
             ghcr.io/olml89/telegram-userbot-dev:ci \
-            ./pint/pint.sh --test
+            ./bin/pint/pint.sh --test
 
   rector:
     needs: build-image
@@ -127,7 +136,7 @@ jobs:
             -e APP_ENV=ci \
             -w /telegram-userbot/dev \
             ghcr.io/olml89/telegram-userbot-dev:ci \
-            ./rector/rector.sh --dry-run
+            ./bin/rector/rector.sh --dry-run
 
   summary:
     runs-on: ubuntu-latest

@@ -1,0 +1,22 @@
+{
+    "name": "olml89/telegram-userbot-application",
+    "description": "Common functionalities shared between microservices, without dependencies",
+    "type": "library",
+    "version": "1.0.0",
+    "license": "proprietary",
+    "authors": [
+        {
+            "name": "olml89"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require": {
+        "php": "^8.5"
+    },
+    "autoload": {
+        "psr-4": {
+            "olml89\\TelegramUserbot\\Application\\": "src/",
+            "Tests\\Application\\": "tests/"
+        }
+    }
+}

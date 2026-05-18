@@ -16,7 +16,7 @@ final readonly class ExceptionLogger implements ExceptionHandler
         private LoggerInterface $logger,
     ) {}
 
-    public function handle(Throwable $exception, bool $handled = true): void
+    public function handle(Throwable $exception, bool $handled): void
     {
         $errorMessage = sprintf(
             '%s PHP Exception %s: "%s" at %s line %s',

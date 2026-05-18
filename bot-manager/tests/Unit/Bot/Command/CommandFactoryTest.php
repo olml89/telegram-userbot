@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Test\BotManager\Unit\Bot\Command;
+namespace Tests\BotManager\Unit\Bot\Command;
 
 use JsonException;
 use olml89\TelegramUserbot\BotManager\Bot\Command\Command;
@@ -16,7 +16,7 @@ use olml89\TelegramUserbot\BotManager\Bot\Command\CommandFactory;
 use olml89\TelegramUserbot\BotManager\Bot\Command\CommandType;
 use olml89\TelegramUserbot\BotManager\Bot\Command\DisallowedCommandTypeException;
 use olml89\TelegramUserbot\BotManager\Bot\Command\InvalidCommandTypeException;
-use olml89\TelegramUserbot\Shared\Bot\Command\CompletePhoneLogin\PhoneCode;
+use olml89\TelegramUserbot\BotRuntime\Bot\Command\CompletePhoneLogin\PhoneCode;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;

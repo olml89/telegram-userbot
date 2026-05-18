@@ -15,8 +15,8 @@ use olml89\TelegramUserbot\Bot\Bot\BotSession;
 use olml89\TelegramUserbot\Bot\Bot\Status\StatusBroadcaster;
 use olml89\TelegramUserbot\Bot\Output\ExceptionOutput;
 use olml89\TelegramUserbot\Bot\Output\MadelineProtoCallableLoggerOutput;
-use olml89\TelegramUserbot\Shared\Logger\LogRecord\ErrorLogRecord;
-use olml89\TelegramUserbot\Shared\Logger\LogRecord\LoggableLogger;
+use olml89\TelegramUserbot\BotRuntime\Logger\LogRecord\ErrorLogRecord;
+use olml89\TelegramUserbot\BotRuntime\Logger\LogRecord\LoggableLogger;
 use Stringable;
 
 /**
@@ -42,14 +42,10 @@ final readonly class ApiInitializer
             $loggerSettings = new Logger()
                 ->setType(MadelineProtoLogger::CALLABLE_LOGGER)
                 ->setExtra(
-                    function (string|Stringable $output) use ($apiWrapper): void {
-                        echo $output . PHP_EOL;
-
-                        $this->statusBroadcaster->broadcast(
-                            $apiWrapper,
-                            new MadelineProtoCallableLoggerOutput($output),
-                        );
-                    },
+                    fn(string|Stringable $output) => $this->statusBroadcaster->broadcast(
+                        $apiWrapper,
+                        new MadelineProtoCallableLoggerOutput($output),
+                    ),
                 );
 
             $settings = new Settings()

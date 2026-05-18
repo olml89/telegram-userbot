@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace olml89\TelegramUserbot\BotManager\Bot\Status;
 
-use olml89\TelegramUserbot\Shared\Bot\Status\Status;
-use olml89\TelegramUserbot\Shared\Bot\Status\StatusType;
+use olml89\TelegramUserbot\BotRuntime\Bot\Status\Status;
+use olml89\TelegramUserbot\BotRuntime\Bot\Status\StatusType;
 
 final class StatusVault
 {

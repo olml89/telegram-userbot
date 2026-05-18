@@ -6,12 +6,12 @@ namespace olml89\TelegramUserbot\BotManager\Bot\Status;
 
 use JsonException;
 use olml89\TelegramUserbot\BotManager\Bot\Status\LogRecord\SubscribedToChannel;
-use olml89\TelegramUserbot\Shared\Bot\Status\InvalidStatusTypeException;
-use olml89\TelegramUserbot\Shared\Bot\Status\StatusFactory;
-use olml89\TelegramUserbot\Shared\Logger\LogRecord\ErrorLogRecord;
-use olml89\TelegramUserbot\Shared\Logger\LogRecord\LoggableLogger;
-use olml89\TelegramUserbot\Shared\Redis\RedisConfig;
-use olml89\TelegramUserbot\Shared\Redis\RedisSubscriber;
+use olml89\TelegramUserbot\BotRuntime\Bot\Status\InvalidStatusTypeException;
+use olml89\TelegramUserbot\BotRuntime\Bot\Status\StatusFactory;
+use olml89\TelegramUserbot\BotRuntime\Logger\LogRecord\ErrorLogRecord;
+use olml89\TelegramUserbot\BotRuntime\Logger\LogRecord\LoggableLogger;
+use olml89\TelegramUserbot\BotRuntime\Redis\RedisConfig;
+use olml89\TelegramUserbot\BotRuntime\Redis\RedisSubscriber;
 
 /**
  * It subscribes to Status updates from Redis, published by a StatusEmitter

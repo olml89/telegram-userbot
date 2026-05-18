@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace olml89\TelegramUserbot\BotManager\Bot\Command;
 
-use olml89\TelegramUserbot\Shared\App\IsJsonSerializable;
-use olml89\TelegramUserbot\Shared\App\IsStringable;
+use olml89\TelegramUserbot\Application\IsJsonSerializable;
+use olml89\TelegramUserbot\Application\IsStringable;
 
 /**
  * @mixin Command

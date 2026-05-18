@@ -7,10 +7,10 @@ namespace olml89\TelegramUserbot\Bot\Action;
 use Amp\SignalException;
 use olml89\TelegramUserbot\Bot\Action\LogRecord\ActionFinished;
 use olml89\TelegramUserbot\Bot\Bot\Status\StatusBroadcaster;
-use olml89\TelegramUserbot\Shared\Bot\Status\Status;
-use olml89\TelegramUserbot\Shared\Error\SentryReporter;
-use olml89\TelegramUserbot\Shared\Logger\LogRecord\ErrorLogRecord;
-use olml89\TelegramUserbot\Shared\Logger\LogRecord\LoggableLogger;
+use olml89\TelegramUserbot\BotRuntime\Bot\Status\Status;
+use olml89\TelegramUserbot\BotRuntime\Error\SentryReporter;
+use olml89\TelegramUserbot\BotRuntime\Logger\LogRecord\ErrorLogRecord;
+use olml89\TelegramUserbot\BotRuntime\Logger\LogRecord\LoggableLogger;
 use Throwable;
 
 /**

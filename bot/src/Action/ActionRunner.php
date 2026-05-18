@@ -8,7 +8,7 @@ use olml89\TelegramUserbot\Bot\Action\LogRecord\ActionFinished;
 use olml89\TelegramUserbot\Bot\Action\LogRecord\ActionStarted;
 use olml89\TelegramUserbot\Bot\MadelineProto\ApiInitializer;
 use olml89\TelegramUserbot\Bot\MadelineProto\ApiWrapper;
-use olml89\TelegramUserbot\Shared\Logger\LogRecord\LoggableLogger;
+use olml89\TelegramUserbot\BotRuntime\Logger\LogRecord\LoggableLogger;
 use Throwable;
 
 /**
