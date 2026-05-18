@@ -37,4 +37,3 @@ COPY . /telegram-userbot/
 
 # Pre-install PHP dependencies to cache them in the image
 RUN /telegram-userbot/dev/bin/composer/composer-install.sh bot-runtime bot bot-manager backend dev
-
