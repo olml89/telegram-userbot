@@ -1,36 +1,44 @@
 #!/bin/sh
 set -eu
 
-FAILED=0
+PROJECT_ROOT="$(cd "$(dirname "$0")/../../.." && pwd)"
+EXIT=0
 
 check_composer() {
-  DIR="/telegram-userbot/$1"
+  	SERVICE="$PROJECT_ROOT/$1"
+    echo "🔍 Checking $SERVICE..."
 
-  if [ -f "$DIR/composer.json" ]; then
-    echo "🔍 Checking $DIR..."
+    if [ ! -f "$SERVICE/composer.json" ]; then
+        echo "❌ $SERVICE missing composer.json"
+        EXIT=1
 
-    if [ ! -f "$DIR/composer.lock" ]; then
-      echo "❌ $DIR missing composer.lock"
-      FAILED=1
-      return
+        return
+    fi
+
+    if [ ! -f "$SERVICE/composer.lock" ]; then
+        echo "❌ $SERVICE missing composer.lock"
+        EXIT=1
+
+        return
     fi
 
     if ! composer install \
-      --dry-run \
-      --no-interaction \
-      --working-dir="$DIR" > /dev/null 2>&1; then
-
-      echo "❌ $DIR/composer.json is not in sync with $DIR/composer.lock"
-      FAILED=1
+        --dry-run \
+        --no-interaction \
+        --working-dir="$SERVICE"
+    then
+        echo "❌ $SERVICE/composer.json is not in sync with $SERVICE/composer.lock"
+        EXIT=1
     else
-      echo "✅ $DIR/composer.json is in sync with $DIR/composer.lock"
+        echo "✅ $SERVICE/composer.json is in sync with $SERVICE/composer.lock"
     fi
-  fi
 }
 
-check_composer "backend"
+check_composer "application"
+check_composer "bot-runtime"
 check_composer "bot"
 check_composer "bot-manager"
+check_composer "backend"
 check_composer "dev"
 
-exit $FAILED
+exit $EXIT

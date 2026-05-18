@@ -541,16 +541,16 @@
         },
         {
             "name": "amphp/http-client",
-            "version": "v5.3.5",
+            "version": "v5.3.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/amphp/http-client.git",
-                "reference": "90005b86255fa87a705671a769ec8d0451b3c61a"
+                "reference": "ca155026acafa74a612d776a97202d53077fee86"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/amphp/http-client/zipball/90005b86255fa87a705671a769ec8d0451b3c61a",
-                "reference": "90005b86255fa87a705671a769ec8d0451b3c61a",
+                "url": "https://api.github.com/repos/amphp/http-client/zipball/ca155026acafa74a612d776a97202d53077fee86",
+                "reference": "ca155026acafa74a612d776a97202d53077fee86",
                 "shasum": ""
             },
             "require": {
@@ -626,7 +626,7 @@
             ],
             "support": {
                 "issues": "https://github.com/amphp/http-client/issues",
-                "source": "https://github.com/amphp/http-client/tree/v5.3.5"
+                "source": "https://github.com/amphp/http-client/tree/v5.3.6"
             },
             "funding": [
                 {
@@ -634,7 +634,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2026-05-13T23:17:50+00:00"
+            "time": "2026-05-15T23:29:38+00:00"
         },
         {
             "name": "amphp/http-client-cookies",
@@ -886,16 +886,16 @@
         },
         {
             "name": "amphp/mysql",
-            "version": "v3.1.0",
+            "version": "v3.1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/amphp/mysql.git",
-                "reference": "dd4ba25a92a3eb030da72c3052c4387407170239"
+                "reference": "ea3a5e07dc3dddc267669337ded2a98f02d86223"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/amphp/mysql/zipball/dd4ba25a92a3eb030da72c3052c4387407170239",
-                "reference": "dd4ba25a92a3eb030da72c3052c4387407170239",
+                "url": "https://api.github.com/repos/amphp/mysql/zipball/ea3a5e07dc3dddc267669337ded2a98f02d86223",
+                "reference": "ea3a5e07dc3dddc267669337ded2a98f02d86223",
                 "shasum": ""
             },
             "require": {
@@ -908,7 +908,7 @@
                 "php": ">=8.1"
             },
             "require-dev": {
-                "amphp/file": "^3",
+                "amphp/file": "^3 | ^4",
                 "amphp/php-cs-fixer-config": "^2",
                 "amphp/phpunit-util": "^3",
                 "amphp/process": "^2",
@@ -944,7 +944,7 @@
             "description": "Asynchronous MySQL client for PHP based on Amp.",
             "support": {
                 "issues": "https://github.com/amphp/mysql/issues",
-                "source": "https://github.com/amphp/mysql/tree/v3.1.0"
+                "source": "https://github.com/amphp/mysql/tree/v3.1.1"
             },
             "funding": [
                 {
@@ -952,7 +952,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2026-05-10T14:40:34+00:00"
+            "time": "2026-05-16T19:09:29+00:00"
         },
         {
             "name": "amphp/parallel",
@@ -4267,16 +4267,16 @@
         },
         {
             "name": "revolt/event-loop",
-            "version": "v1.0.8",
+            "version": "v1.0.9",
             "source": {
                 "type": "git",
                 "url": "https://github.com/revoltphp/event-loop.git",
-                "reference": "b6fc06dce8e9b523c9946138fa5e62181934f91c"
+                "reference": "44061cf513e53c6200372fc935ac42271566295d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/revoltphp/event-loop/zipball/b6fc06dce8e9b523c9946138fa5e62181934f91c",
-                "reference": "b6fc06dce8e9b523c9946138fa5e62181934f91c",
+                "url": "https://api.github.com/repos/revoltphp/event-loop/zipball/44061cf513e53c6200372fc935ac42271566295d",
+                "reference": "44061cf513e53c6200372fc935ac42271566295d",
                 "shasum": ""
             },
             "require": {
@@ -4286,7 +4286,7 @@
                 "ext-json": "*",
                 "jetbrains/phpstorm-stubs": "^2019.3",
                 "phpunit/phpunit": "^9",
-                "psalm/phar": "^5.15"
+                "psalm/phar": "6.16.*"
             },
             "type": "library",
             "extra": {
@@ -4333,9 +4333,9 @@
             ],
             "support": {
                 "issues": "https://github.com/revoltphp/event-loop/issues",
-                "source": "https://github.com/revoltphp/event-loop/tree/v1.0.8"
+                "source": "https://github.com/revoltphp/event-loop/tree/v1.0.9"
             },
-            "time": "2025-08-27T21:33:23+00:00"
+            "time": "2026-05-16T17:55:38+00:00"
         },
         {
             "name": "sentry/sentry",
