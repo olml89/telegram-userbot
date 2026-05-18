@@ -1,8 +1,7 @@
 #!/bin/sh
 set -eu
 
-echo "🔧 Installing dependencies..."
-echo "🔧 Environment: ${APP_ENV}..."
+echo "🔧 Installing dependencies (environment: ${APP_ENV})"
 
 if [ "$APP_ENV" != "prod" ]; then
 	for SERVICE in "$@"; do
@@ -15,7 +14,7 @@ if [ "$APP_ENV" != "prod" ]; then
 					continue;
 				fi
 
-				echo "🔧 Installing dependencies in $SERVICE"
+				echo "🔧 Installing dependencies in $SERVICE..."
 				COMPOSER_CMD="composer install --no-interaction --no-progress --optimize-autoloader --prefer-dist --working-dir=$WORKING_DIR"
 
 				if [ "$APP_ENV" = "ci" ]; then
