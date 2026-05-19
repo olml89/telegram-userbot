@@ -69,7 +69,9 @@ RUN rm /usr/local/bin/composer && \
     rm /usr/local/bin/install-php-extensions
 
 # Set the user
-RUN chown -R www-data:www-data /telegram-userbot
+RUN adduser -D -u 33 -s /sbin/nologin www-data && \
+    chown -R www-data:www-data /telegram-userbot
+
 USER www-data
 
 FROM base AS dev
