@@ -68,7 +68,6 @@ RUN rm /usr/local/bin/composer && \
     apk del curl bash && \
     rm /usr/local/bin/install-php-extensions
 
-# www-data already exists in php:8.5-fpm-alpine
 # Set the ownership of the container to www-data
 RUN chown -R www-data:www-data /telegram-userbot
 USER www-data
