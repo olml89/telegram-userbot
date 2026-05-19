@@ -26,13 +26,15 @@ endif
 
 
 # Build containers
-.PHONY: build up upd stop down install deploy
+.PHONY: build up upd stop down install setup deploy
 
 # Guarantee build order: backend and nginx first (backend builds assets), then the rest
 build:
 	$(eval SERVICE := $(word 2, $(MAKECMDGOALS)))
 	$(if $(SERVICE), \
+		@echo "🔨 Building $(SERVICE)..." && \
 		docker compose $(DOCKER_COMPOSE) build --no-cache $(SERVICE), \
+		@echo "🔨 Building containers..." && \
 		docker compose $(DOCKER_COMPOSE) build --no-cache backend && \
 		docker compose $(DOCKER_COMPOSE) build --no-cache nginx && \
 		docker compose $(DOCKER_COMPOSE) build --no-cache \
@@ -41,28 +43,36 @@ build:
 up:
 	$(eval SERVICE := $(word 2, $(MAKECMDGOALS)))
 	$(if $(SERVICE), \
+		@echo "🟢 Starting $(SERVICE)..." && \
 		docker compose $(DOCKER_COMPOSE) up --remove-orphans $(SERVICE), \
+		@echo "🟢 Starting containers..." && \
 		docker compose $(DOCKER_COMPOSE) up --remove-orphans \
 	)
 
 upd:
 	$(eval SERVICE := $(word 2, $(MAKECMDGOALS)))
 	$(if $(SERVICE), \
+		@echo "🟢 [DETACHED] Starting $(SERVICE)..." && \
 		docker compose $(DOCKER_COMPOSE) up -d --remove-orphans $(SERVICE), \
+		@echo "🟢 [DETACHED] Starting containers..." && \
 		docker compose $(DOCKER_COMPOSE) up -d --remove-orphans \
 	)
 
 stop:
 	$(eval SERVICE := $(word 2, $(MAKECMDGOALS)))
 	$(if $(SERVICE), \
+		@echo "⛔ Stopping $(SERVICE)..." && \
 		docker compose $(DOCKER_COMPOSE) stop $(SERVICE), \
+		@echo "⛔ Stopping containers..." && \
 		docker compose $(DOCKER_COMPOSE) stop \
 	)
 
 down:
 	$(eval SERVICE := $(word 2, $(MAKECMDGOALS)))
 	$(if $(SERVICE), \
+		@echo "🛑 Shutting down and removing $(SERVICE)..." && \
 		docker compose $(DOCKER_COMPOSE) down $(SERVICE), \
+		@echo "🛑 Shutting down and removing containers..." && \
 		docker compose $(DOCKER_COMPOSE) down \
 	)
 
@@ -71,6 +81,15 @@ down:
 # --reset forces deleting the local node_modules, var, vendor, etc..., on local development
 install:
 	@bash dev/bin/install/install.sh $(wordlist 2, $(words $(MAKECMDGOALS)), $(MAKECMDGOALS))
+
+setup:
+	@echo "⏳ Waiting for containers to be ready..." && \
+    docker compose $(DOCKER_COMPOSE) exec -T postgres sh -c 'until pg_isready -U $POSTGRES_USER; do sleep 1; done' && \
+    docker compose $(DOCKER_COMPOSE) exec -T backend sh -c 'until php -r "exit(0);" 2>/dev/null; do sleep 1; done' && \
+    @echo "🔄 Running database migrations..." && \
+    docker compose $(DOCKER_COMPOSE) exec -T backend bin/console doctrine:migrations:migrate --no-interaction && \
+    @echo "🧹 Clearing Symfony cache..." && \
+    docker compose $(DOCKER_COMPOSE) exec -T backend bin/console cache:clear --env=prod
 
 # This is used on CI/CD to deploy to a remote server through SSH
 deploy:

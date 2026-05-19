@@ -8,17 +8,8 @@ git fetch origin
 git checkout "$BRANCH"
 git reset --hard origin/"$BRANCH"
 
-# Run installation recipe
+# Install: build and spin up the containers
 make install
 
-echo "⏳ Waiting for containers to be ready..."
-docker compose exec -T postgres sh -c 'until pg_isready -U $POSTGRES_USER; do sleep 1; done'
-docker compose exec -T backend sh -c 'until php -r "exit(0);" 2>/dev/null; do sleep 1; done'
-
-echo "🔄 Running database migrations..."
-docker compose exec -T backend bin/console doctrine:migrations:migrate --no-interaction
-
-echo "🧹 Clearing Symfony cache..."
-docker compose exec -T backend bin/console cache:clear --env=prod
-
-echo "✅ Deployment completed successfully!"
+# Setup: run database migrations and clean Symfony cache
+make setup
