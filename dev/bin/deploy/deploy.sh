@@ -3,11 +3,6 @@ set -eu
 
 echo "🚀 Starting deployment..."
 
-# Pull last changes and deploy
-cd /home/tbot/telegram-userbot
-git fetch --all
-git reset --hard origin/main
-
 # Restart containers
 make down
 make build

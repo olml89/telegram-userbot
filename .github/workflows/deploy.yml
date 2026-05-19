@@ -79,6 +79,11 @@ jobs:
             export SUPERVISOR_USER='${{ secrets.SUPERVISOR_USER }}'
             export SUPERVISOR_PASSWORD='${{ secrets.SUPERVISOR_PASSWORD }}'
           
+            # Pull last changes
+            cd /home/tbot/telegram-userbot
+            git fetch --all
+            git reset --hard origin/main
+  
             # Run deploy script
             make deploy
           "
