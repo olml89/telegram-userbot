@@ -35,13 +35,16 @@ jobs:
         id: check
         run: |
           if [ "${{ github.event_name }}" = "push" ]; then
-            SHA="${{ github.event.after }}"
+            BEFORE="${{ github.event.before }}"
+            AFTER="${{ github.event.after }}"
           else
-            SHA="${{ github.event.pull_request.head.sha }}"
+            BEFORE="${{ github.event.pull_request.base.sha }}"
+            AFTER="${{ github.event.pull_request.head.sha }}"
           fi
           dev/bin/ci/check-dev-image-changes.sh \
             "${{ github.event_name }}" \
-            "$SHA" \
+            "$BEFORE" \
+            "$AFTER" \
             "$GITHUB_OUTPUT"
 
       - name: Validate dev/Dockerfile and dev/composer.json consistency
