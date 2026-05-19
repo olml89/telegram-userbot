@@ -21,6 +21,8 @@ for arg in "$@"; do
 done
 
 setup_runtime_directories() {
+    echo "🔧 Initializing runtime directories..."
+
     # Service var directories
     DIRECTORIES="bot/var"
     DIRECTORIES="${DIRECTORIES} bot-manager/var"
@@ -48,6 +50,8 @@ setup_runtime_directories() {
 }
 
 reset_mounted_directories() {
+    echo "🔧 Setting application in a factory reset state..."
+
     SERVICES="application bot-runtime bot bot-manager backend vite dev"
     DIRECTORIES="composer.lock node_modules var vendor"
 
@@ -62,21 +66,16 @@ reset_mounted_directories() {
     done
 }
 
-echo "🔧 Stopping containers..."
 make down
 
 if [ "$APP_ENV" != "prod" ] && [ "$RESET" = true ]; then
-    echo "🔧 Setting application in a factory reset state..."
     reset_mounted_directories
 fi
 
-echo "🔧 Initializing runtime directories..."
 setup_runtime_directories
 
 if [ "$APP_ENV" = "prod" ] || [ "$BUILD" = true ]; then
-    echo "🔧 Re-building containers..."
     make build
 fi
 
-echo "🔧 Starting containers..."
 make upd
