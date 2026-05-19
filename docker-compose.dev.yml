@@ -111,6 +111,8 @@ services:
       context: .
       dockerfile: grafana/Dockerfile
       target: dev
+    environment:
+      GF_SERVER_ROOT_URL: http://localhost:${BACKEND_PORT}/grafana/
     volumes:
       - ./grafana/provisioning:/etc/grafana/provisioning:cached
 
