@@ -68,10 +68,9 @@ RUN rm /usr/local/bin/composer && \
     apk del curl bash && \
     rm /usr/local/bin/install-php-extensions
 
-# Set the user
-RUN adduser -D -u 33 -s /sbin/nologin www-data && \
-    chown -R www-data:www-data /telegram-userbot
-
+# www-data already exists in php:8.5-fpm-alpine
+# Set the ownership of the container to www-data
+RUN chown -R www-data:www-data /telegram-userbot
 USER www-data
 
 FROM base AS dev
