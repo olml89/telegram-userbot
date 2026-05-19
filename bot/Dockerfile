@@ -74,6 +74,10 @@ RUN rm /usr/local/bin/composer && \
     apk del curl bash && \
     rm /usr/local/bin/install-php-extensions
 
+# Set the user
+RUN chown -R www-data:www-data /telegram-userbot
+USER www-data
+
 FROM base AS dev
 
 # Install composer and xdebug and clear extensions installer

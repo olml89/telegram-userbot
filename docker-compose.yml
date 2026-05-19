@@ -105,7 +105,6 @@ services:
 
   tusd:
     container_name: telegram_userbot_tusd
-    image: tusproject/tusd:latest
     depends_on:
       alloy:
         condition: service_started

@@ -73,11 +73,6 @@ fi
 echo "🔧 Initializing runtime directories..."
 setup_runtime_directories
 
-if [ "$APP_ENV" = "prod" ]; then
-    echo "🔑 Setting ownership to www-data..."
-    chown -R www-data:www-data .
-fi
-
 if [ "$APP_ENV" = "prod" ] || [ "$BUILD" = true ]; then
     echo "🔧 Re-building containers..."
     make build
