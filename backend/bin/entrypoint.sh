@@ -3,7 +3,7 @@ set -eu
 
 # In production environment, copy built assets from the intermediate directory to the public build
 if [ "$APP_ENV" = "prod" ]; then
-	COMPILED="${VAR}/build"
+	COMPILED="/telegram-userbot/backend/var/build"
 	BUILD="/telegram-userbot/backend/public/build"
 	echo "🔧 Copying compiled assets from ${COMPILED} to ${BUILD}..."
 

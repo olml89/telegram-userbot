@@ -83,9 +83,6 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GHCR_TOKEN }}
 
-      - name: Pull image
-        run: dev/bin/ci/docker-pull-with-retry.sh ghcr.io/olml89/telegram-userbot-dev:ci
-
       - name: Run PHPStan
         run: |
           docker run --rm \
@@ -107,9 +104,6 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GHCR_TOKEN }}
-
-      - name: Pull image
-        run: dev/bin/ci/docker-pull-with-retry.sh ghcr.io/olml89/telegram-userbot-dev:ci
 
       - name: Run PHPUnit
         run: |
@@ -138,9 +132,6 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GHCR_TOKEN }}
 
-      - name: Pull image
-        run: dev/bin/ci/docker-pull-with-retry.sh ghcr.io/olml89/telegram-userbot-dev:ci
-
       - name: Run Pint
         run: |
           docker run --rm \
@@ -162,9 +153,6 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GHCR_TOKEN }}
-
-      - name: Pull image
-        run: dev/bin/ci/docker-pull-with-retry.sh ghcr.io/olml89/telegram-userbot-dev:ci
 
       - name: Run Rector
         run: |
