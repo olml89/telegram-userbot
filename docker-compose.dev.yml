@@ -3,6 +3,7 @@ services:
   #Infrastructure layers
   alloy:
     build:
+      context: .
       dockerfile: alloy/Dockerfile
       target: dev
     volumes:
@@ -11,6 +12,7 @@ services:
 
   redis:
     build:
+      context: .
       dockerfile: redis/Dockerfile
       target: dev
     volumes:
@@ -19,17 +21,19 @@ services:
 
   postgres:
     build:
+      context: .
       dockerfile: postgres/Dockerfile
       target: dev
     ports: # Expose the database port to the outside: only during development
       - ${POSTGRES_PORT}:${DB_PORT}
     volumes:
-      - telegram-userbot-db:/var/lib/postgresql/data:cached
+      - telegram-userbot-postgres:/var/lib/postgresql/data:cached
       - ./postgres/postgresql.conf:/etc/postgresql/postgresql.conf:cached
 
   # Application layers
   bot:
     build:
+      context: .
       dockerfile: bot/Dockerfile
       target: dev
       args:
@@ -46,6 +50,7 @@ services:
 
   bot-manager:
     build:
+      context: .
       dockerfile: bot-manager/Dockerfile
       target: dev
       args:
@@ -62,6 +67,7 @@ services:
 
   backend:
     build:
+      context: .
       dockerfile: ./backend/Dockerfile
       target: dev
       args:
@@ -84,6 +90,7 @@ services:
 
   nginx:
     build:
+      context: .
       dockerfile: nginx/Dockerfile
       target: dev
     volumes:
@@ -92,6 +99,7 @@ services:
   # Monitoring layers
   loki:
     build:
+      context: .
       dockerfile: loki/Dockerfile
       target: dev
     volumes:
@@ -100,6 +108,7 @@ services:
 
   grafana:
     build:
+      context: .
       dockerfile: grafana/Dockerfile
       target: dev
     volumes:
@@ -109,6 +118,7 @@ services:
   vite:
     container_name: telegram_userbot_vite
     build:
+      context: .
       dockerfile: vite/Dockerfile
     depends_on:
       alloy:
@@ -128,16 +138,17 @@ services:
   # dev container to run code quality tools
   dev:
     container_name: telegram_userbot_dev
+    build:
+      context: .
+      dockerfile: dev/Dockerfile
+      target: dev
+      args:
+        XDEBUG_PORT: ${XDEBUG_DEV_PORT}
     depends_on:
       alloy:
         condition: service_started
       backend:
         condition: service_healthy
-    build:
-      dockerfile: dev/Dockerfile
-      target: dev
-      args:
-        XDEBUG_PORT: ${XDEBUG_DEV_PORT}
     cpus: 12
     mem_limit: 24g
     tty: true

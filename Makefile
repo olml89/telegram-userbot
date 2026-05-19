@@ -82,14 +82,16 @@ down:
 install:
 	@bash dev/bin/install/install.sh $(wordlist 2, $(words $(MAKECMDGOALS)), $(MAKECMDGOALS))
 
+# Executing with the -it flag to provide interactive TTY and colored output
+# Run migrations and clear Symfony cache
 setup:
 	@echo "⏳ Waiting for containers to be ready..." && \
-    docker compose $(DOCKER_COMPOSE) exec -T postgres sh -c 'until pg_isready -U $POSTGRES_USER; do sleep 1; done' && \
-    docker compose $(DOCKER_COMPOSE) exec -T backend sh -c 'until php -r "exit(0);" 2>/dev/null; do sleep 1; done' && \
-    @echo "🔄 Running database migrations..." && \
-    docker compose $(DOCKER_COMPOSE) exec -T backend bin/console doctrine:migrations:migrate --no-interaction && \
-    @echo "🧹 Clearing Symfony cache..." && \
-    docker compose $(DOCKER_COMPOSE) exec -T backend bin/console cache:clear --env=prod
+    docker compose $(DOCKER_COMPOSE) exec -it postgres sh -c 'until pg_isready -U $POSTGRES_USER; do sleep 1; done' && \
+    docker compose $(DOCKER_COMPOSE) exec -it backend sh -c 'until php -r "exit(0);" 2>/dev/null; do sleep 1; done' && \
+    echo "🔄 Running database migrations..." && \
+    docker compose $(DOCKER_COMPOSE) exec -it backend bin/console doctrine:migrations:migrate --no-interaction && \
+    echo "🧹 Clearing Symfony cache..." && \
+    docker compose $(DOCKER_COMPOSE) exec -it backend bin/console cache:clear --env=prod
 
 # This is used on CI/CD to deploy to a remote server through SSH
 deploy:
@@ -154,7 +156,6 @@ vite:
 	docker compose $(DOCKER_COMPOSE) exec vite /bin/sh
 
 # Development recipes
-# The -T flag disables TTY, required when running from non-interactive environments like Git hooks
 .PHONY: phpstan pint rector phpunit commit
 
 # 1) Converts (application, bot-runtime, bot, bot-manager, backend) to --service=(application, bot-runtime, bot, bot-manager, backend)
