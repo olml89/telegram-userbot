@@ -1,6 +1,11 @@
 #!/bin/sh
 set -eu
 
+if [ "$APP_ENV" = "prod" ]; then
+    echo "❌ This command cannot be run in prod";
+    exit 1;
+fi
+
 echo "🔧 Setting application in a factory reset state..."
 
 SERVICES="application bot-runtime bot bot-manager backend vite dev"
