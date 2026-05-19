@@ -70,9 +70,6 @@ services:
       - telegram-userbot-content:/var/content:cached
 
   tusd:
-    build:
-      dockerfile: tusd/Dockerfile
-      target: prod
     volumes:
       - telegram-userbot-uploads:/var/uploads:cached
 
