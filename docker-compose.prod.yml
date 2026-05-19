@@ -101,6 +101,8 @@ services:
       context: .
       dockerfile: grafana/Dockerfile
       target: prod
+    environment:
+      GF_SERVER_SERVE_FROM_SUB_PATH: true
 
 volumes:
   telegram-userbot-assets:
