@@ -29,19 +29,19 @@ jobs:
           php-version: 8.5
 
       - name: Check if composer.json files are in sync with their composer.lock counterparts
-        run: dev/bin/deploy/check-composer-sync.sh
+        run: dev/bin/ci/check-composer-sync.sh
 
       - name: Check if dev image affecting files changed
         id: check
         run: |
-          dev/bin/deploy/check-dev-image-changes.sh \
+          dev/bin/ci/check-dev-image-changes.sh \
             "${{ github.event_name }}" \
             "${{ github.event.pull_request.head.sha }}" \
             "$GITHUB_OUTPUT"
 
       - name: Validate dev/Dockerfile and dev/composer.json consistency
         if: steps.check.outputs.rebuild == 'true'
-        run: dev/bin/deploy/validate-image-consistency.php
+        run: dev/bin/ci/check-dev-image-consistency.php
 
       - name: Login to GHCR
         if: steps.check.outputs.rebuild == 'true'
