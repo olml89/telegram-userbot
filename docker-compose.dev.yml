@@ -78,9 +78,6 @@ services:
       - ./.runtime/content:/var/content:cached
 
   tusd:
-    build:
-      dockerfile: tusd/Dockerfile
-      target: dev
     user: ${UID}:${GID}
     volumes:
       - ./.runtime/uploads:/var/uploads:cached
