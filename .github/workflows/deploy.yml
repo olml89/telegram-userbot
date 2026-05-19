@@ -79,10 +79,10 @@ jobs:
             export SUPERVISOR_USER='${{ secrets.SUPERVISOR_USER }}'
             export SUPERVISOR_PASSWORD='${{ secrets.SUPERVISOR_PASSWORD }}'
           
-            # Pull last changes
+            # Recreate a working copy from scratch to ensure a clean and up-to-date state
+            rm -rf /home/tbot/telegram-userbot
+            git clone -b main git@github.com:olml89/telegram-userbot.git /home/tbot/telegram-userbot
             cd /home/tbot/telegram-userbot
-            git fetch --all
-            git reset --hard origin/main
   
             # Run deploy script
             make deploy
