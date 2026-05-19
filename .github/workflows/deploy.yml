@@ -49,6 +49,7 @@ jobs:
             export APP_ENV='${{ vars.APP_ENV }}'
             export BACKEND_PORT='${{ vars.BACKEND_PORT }}'
             export GRAFANA_SECURITY_ADMIN_PASSWORD='${{ secrets.GRAFANA_SECURITY_ADMIN_PASSWORD }}'
+            export GRAFANA_ROOT_URL='${{ vars.GRAFANA_ROOT_URL }}'
             
             # Export backend/.env variables
             export APP_DEBUG='${{ vars.APP_DEBUG }}'
