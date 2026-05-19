@@ -26,7 +26,7 @@ endif
 
 
 # Build containers
-.PHONY: build up upd stop down setup reset deploy
+.PHONY: build up upd stop down install deploy
 
 # Guarantee build order: backend and nginx first (backend builds assets), then the rest
 build:
@@ -38,14 +38,14 @@ build:
 		docker compose $(DOCKER_COMPOSE) build --no-cache \
 	)
 
-up: setup
+up:
 	$(eval SERVICE := $(word 2, $(MAKECMDGOALS)))
 	$(if $(SERVICE), \
 		docker compose $(DOCKER_COMPOSE) up --remove-orphans $(SERVICE), \
 		docker compose $(DOCKER_COMPOSE) up --remove-orphans \
 	)
 
-upd: setup
+upd:
 	$(eval SERVICE := $(word 2, $(MAKECMDGOALS)))
 	$(if $(SERVICE), \
 		docker compose $(DOCKER_COMPOSE) up -d --remove-orphans $(SERVICE), \
@@ -66,13 +66,11 @@ down:
 		docker compose $(DOCKER_COMPOSE) down \
 	)
 
-# This is run to properly set up the application after git cloning the repository
-setup:
-	@bash dev/bin/setup/setup.sh
-
-# This stops the microservices and leaves the application in a factory reset state, like after git cloning
-reset: down
-	@bash dev/bin/setup/reset.sh
+# This is used both on development and deployment to set the application in a deterministic state
+# --build forces re-building the Docker images on local development
+# --reset forces deleting the local node_modules, var, vendor, etc..., on local development
+install:
+	@bash dev/bin/install/install.sh $(wordlist 2, $(words $(MAKECMDGOALS)), $(MAKECMDGOALS))
 
 # This is used on CI/CD to deploy to a remote server through SSH
 deploy:
