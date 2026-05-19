@@ -45,8 +45,8 @@ COPY backend/ ./
 # Copy application codebase to the container
 COPY application/ /telegram-userbot/application/
 
-# Copy built assets from assets stage to a compiled intermediate directory
-COPY --from=assets /telegram-userbot/backend/public/build /telegram-userbot/backend/var/build
+# Copy built assets from assets stage directly to public/build, overwriting anything there
+COPY --from=assets /telegram-userbot/backend/public/build /telegram-userbot/backend/public/build
 
 # Copy production PHP-FPM configuration
 COPY backend/php-fpm/www.prod.conf /usr/local/etc/php-fpm.d/www.conf
