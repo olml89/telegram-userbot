@@ -10,8 +10,9 @@ set -eu
 # When run without arguments, compares HEAD~1..HEAD and prints the result to stdout.
 
 EVENT_NAME="${1:-local}"
-HEAD_SHA="${2:-}"
-GITHUB_OUTPUT="${3:-}"
+BEFORE_SHA="${2:-}"
+AFTER_SHA="${3:-}"
+GITHUB_OUTPUT="${4:-}"
 
 PROJECT_ROOT="$(cd "$(dirname "$0")/../../.." && pwd)"
 IMAGE_PATHS="dev/Dockerfile dev/composer.json dev/docker-php-ext-opcache.ini"
@@ -26,8 +27,8 @@ if [ "$EVENT_NAME" = "local" ]; then
         }
     )
 else
-    # CI: only last commit (no PR history, no merge commits)
-    DIFF_COMMANDS=$(git -C "$PROJECT_ROOT" diff-tree --no-commit-id --name-only -r "$HEAD_SHA")
+    # CI: analyze all commits in the push (BEFORE_SHA..AFTER_SHA)
+    DIFF_COMMANDS=$(git -C "$PROJECT_ROOT" diff --name-only "$BEFORE_SHA..$AFTER_SHA")
 fi
 
 CHANGED_FILES=$(echo "$DIFF_COMMANDS" | sort -u)
