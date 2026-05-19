@@ -44,6 +44,9 @@ COPY --from=build /tmp/PrimeModule-ext/src/primemodule-ffi.h /usr/include/
 COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/local/bin/
 RUN install-php-extensions pcntl posix ffi
 
+# In PHP 8.5 Opcache is already integrated into the core. Copy the Opcache configuration
+COPY docker-php-ext-opcache.ini /usr/local/etc/php/docker-php-ext-opcache.ini
+
 FROM base AS prod
 
 # Copy the bot codebase to the container
@@ -56,9 +59,6 @@ COPY bot-runtime/ /telegram-userbot/bot-runtime/
 # Copy supervisord config files during the build phase, before the docker volume is mounted
 COPY bot/supervisor/supervisord.conf /etc/supervisor/supervisord.conf
 COPY bot/supervisor/conf.d/*.conf /etc/supervisor/conf.d/
-
-# In PHP 8.5 Opcache is already integrated into the core. Copy the Opcache configuration
-COPY docker-php-ext-opcache.ini /usr/local/etc/php/docker-php-ext-opcache.ini
 
 # Install composer
 # - curl, bash, composer: needed to install dependencies during the build phase, don't keep it in the container

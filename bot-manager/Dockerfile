@@ -11,6 +11,9 @@ RUN apk add --no-cache supervisor
 COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/local/bin/
 RUN install-php-extensions redis
 
+# In PHP 8.5 Opcache is already integrated into the core. Copy the Opcache configuration
+COPY docker-php-ext-opcache.ini /usr/local/etc/php/docker-php-ext-opcache.ini
+
 FROM base AS prod
 
 # Copy the bot-manager codebase to the container
@@ -22,9 +25,6 @@ COPY bot-runtime/ /telegram-userbot/bot-runtime/
 
 # Copy supervisord config files
 COPY bot-manager/supervisor/supervisord.conf /etc/supervisor/supervisord.conf
-
-# In PHP 8.5 Opcache is already integrated into the core. Copy the Opcache configuration
-COPY docker-php-ext-opcache.ini /usr/local/etc/php/docker-php-ext-opcache.ini
 
 # Install composer
 # - curl, bash, composer: needed to install dependencies during the build phase, don't keep it in the container
