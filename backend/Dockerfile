@@ -20,6 +20,9 @@ RUN apk add --no-cache \
 COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/local/bin/
 RUN install-php-extensions intl pgsql pdo_pgsql
 
+# In PHP 8.5 Opcache is already integrated into the core. Copy the Opcache configuration
+COPY docker-php-ext-opcache.ini /usr/local/etc/php/docker-php-ext-opcache.ini
+
 FROM base AS assets
 
 WORKDIR /telegram-userbot/backend
@@ -50,9 +53,6 @@ COPY --from=assets /telegram-userbot/backend/public/build /telegram-userbot/back
 
 # Copy production PHP-FPM configuration
 COPY backend/php-fpm/www.prod.conf /usr/local/etc/php-fpm.d/www.conf
-
-# In PHP 8.5 Opcache is already integrated into the core. Copy the Opcache configuration
-COPY docker-php-ext-opcache.ini /usr/local/etc/php/docker-php-ext-opcache.ini
 
 # Install composer
 # - curl, bash, composer: needed to install dependencies during the build phase, don't keep them in the container
