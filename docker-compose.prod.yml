@@ -27,7 +27,7 @@ services:
       dockerfile: postgres/Dockerfile
       target: prod
     volumes:
-      - telegram-userbot-db:/var/lib/postgresql/data:cached
+      - telegram-userbot-postgres:/var/lib/postgresql/data:cached
 
   # Application layers
   bot:
@@ -94,6 +94,9 @@ services:
       target: prod
 
 volumes:
+  telegram-userbot-redis:
+  telegram-userbot-postgres:
+  telegram-userbot-loki:
   telegram-userbot-assets:
   telegram-userbot-uploads:
   telegram-userbot-content:

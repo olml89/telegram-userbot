@@ -14,7 +14,7 @@ services:
       dockerfile: redis/Dockerfile
       target: dev
     volumes:
-      - telegram-userbot-redis:/data:cached
+      - ./.runtime/redis:/data:cached
       - ./redis/redis.conf:/usr/local/etc/redis/redis.conf:cached
 
   postgres:
@@ -24,7 +24,7 @@ services:
     ports: # Expose the database port to the outside: only during development
       - ${POSTGRES_PORT}:${DB_PORT}
     volumes:
-      - telegram-userbot-db:/var/lib/postgresql/data:cached
+      - ./.runtime/postgres:/var/lib/postgresql/data:cached
       - ./postgres/postgresql.conf:/etc/postgresql/postgresql.conf:cached
 
   # Application layers
@@ -95,7 +95,7 @@ services:
       dockerfile: loki/Dockerfile
       target: dev
     volumes:
-      - telegram-userbot-loki:/loki
+      - ./.runtime/loki:/loki
       - ./loki/local-config.yaml:/etc/loki/local-config.yaml
 
   grafana:

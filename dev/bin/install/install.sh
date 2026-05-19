@@ -5,7 +5,6 @@ BUILD=false
 RESET=false
 
 for arg in "$@"; do
-    echo "DEBUG arg=$arg"
     case "$arg" in
         --build)
             BUILD=true
@@ -29,9 +28,8 @@ setup_runtime_directories() {
     DIRECTORIES="${DIRECTORIES} backend/var backend/var/cache"
 
     if [ "$APP_ENV" != "prod" ]; then
-        # File runtime directories. On prod they are on telegram-userbot-uploads and telegram-userbot-content
-        # named volumes
-        DIRECTORIES="${DIRECTORIES} .runtime/uploads .runtime/content"
+        # Runtime directories. On prod they are on named volumes
+        DIRECTORIES="${DIRECTORIES} .runtime/uploads .runtime/content .runtime/redis .runtime/postgres .runtime/loki"
 
     	# Var directories for libraries, needed for static analysis on local development
     	DIRECTORIES="${DIRECTORIES} application/var"
@@ -49,7 +47,7 @@ setup_runtime_directories() {
     done
 }
 
-reset_mounted_directories() {
+reset_cache_directories() {
     echo "🔧 Setting application in a factory reset state..."
 
     SERVICES="application bot-runtime bot bot-manager backend vite dev"
@@ -69,7 +67,7 @@ reset_mounted_directories() {
 make down
 
 if [ "$APP_ENV" != "prod" ] && [ "$RESET" = true ]; then
-    reset_mounted_directories
+    reset_cache_directories
 fi
 
 setup_runtime_directories
