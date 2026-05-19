@@ -41,7 +41,6 @@ services:
       TELEGRAM_API_HASH: ${TELEGRAM_API_HASH}
       TELEGRAM_PHONE_NUMBER: ${TELEGRAM_PHONE_NUMBER}
       TELEGRAM_USERNAME: ${TELEGRAM_USERNAME}
-    user: www-data
 
   bot-manager:
     build:
@@ -50,7 +49,6 @@ services:
     environment:
       <<: *bot-runtime-env
       BOT_MANAGER_SENTRY_DSN: ${BOT_MANAGER_SENTRY_DSN}
-    user: www-data
 
   backend:
     build:
@@ -66,14 +64,15 @@ services:
       DB_USER: ${DB_USER}
       DB_PASSWORD: ${DB_PASSWORD}
       APP_LIBRARY_CONTENT_PER_PAGE: ${APP_LIBRARY_CONTENT_PER_PAGE}
-    user: www-data
     volumes:
       - telegram-userbot-assets:/telegram-userbot/backend/public/build:cached
       - telegram-userbot-uploads:/var/uploads:cached
       - telegram-userbot-content:/var/content:cached
 
   tusd:
-    user: www-data
+    build:
+      dockerfile: tusd/Dockerfile
+      target: prod
     volumes:
       - telegram-userbot-uploads:/var/uploads:cached
 
