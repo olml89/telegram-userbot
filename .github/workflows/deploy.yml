@@ -80,5 +80,6 @@ jobs:
             export SUPERVISOR_PASSWORD='${{ secrets.SUPERVISOR_PASSWORD }}'
   
             # Run deploy script
+            cd /home/tbot/telegram-userbot
             make deploy
           "
