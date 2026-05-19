@@ -103,9 +103,6 @@ services:
       target: prod
 
 volumes:
-  telegram-userbot-redis:
-  telegram-userbot-postgres:
-  telegram-userbot-loki:
   telegram-userbot-assets:
   telegram-userbot-uploads:
   telegram-userbot-content:

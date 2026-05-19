@@ -29,7 +29,7 @@ setup_runtime_directories() {
 
     if [ "$APP_ENV" != "prod" ]; then
         # Runtime directories. On prod they are on named volumes
-        DIRECTORIES="${DIRECTORIES} .runtime/uploads .runtime/content .runtime/redis .runtime/postgres .runtime/loki"
+        DIRECTORIES="${DIRECTORIES} .runtime/uploads .runtime/content"
 
     	# Var directories for libraries, needed for static analysis on local development
     	DIRECTORIES="${DIRECTORIES} application/var"

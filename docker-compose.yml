@@ -164,6 +164,11 @@ services:
     networks:
       - telegram-userbot-grafana-network
 
+volumes:
+  telegram-userbot-redis:
+  telegram-userbot-postgres:
+  telegram-userbot-loki:
+
 networks:
   telegram-userbot-network:
   telegram-userbot-grafana-network:
