@@ -159,8 +159,6 @@ services:
         condition: service_started
     environment:
       GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_SECURITY_ADMIN_PASSWORD}
-    ports:
-      - ${GRAFANA_PORT}:3000
     networks:
       - telegram-userbot-grafana-network
 
