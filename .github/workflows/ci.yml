@@ -34,9 +34,14 @@ jobs:
       - name: Check if dev image affecting files changed
         id: check
         run: |
+          if [ "${{ github.event_name }}" = "push" ]; then
+            SHA="${{ github.event.after }}"
+          else
+            SHA="${{ github.event.pull_request.head.sha }}"
+          fi
           dev/bin/ci/check-dev-image-changes.sh \
             "${{ github.event_name }}" \
-            "${{ github.event.pull_request.head.sha }}" \
+            "$SHA" \
             "$GITHUB_OUTPUT"
 
       - name: Validate dev/Dockerfile and dev/composer.json consistency
