@@ -8,8 +8,12 @@ git fetch origin
 git checkout "$BRANCH"
 git reset --hard origin/"$BRANCH"
 
-# Install: build and spin up the containers
-make install
+# Install: re-create the containers
+if [ "$APP_ENV" = "prod" ]; then
+    make install --build
+else
+    make install --reset
+fi
 
 # Setup: run database migrations and clean Symfony cache
 make setup

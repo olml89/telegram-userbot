@@ -1,6 +1,10 @@
 #!/bin/sh
 set -eu
 
+# It destroys the containers, creates the needed runtime directories and starts the containers again
+# --reset: it will remove the mounted composer.lock, vendor, node_modules and var (not applicable on prod)
+# --build: it will also rebuild the containers before starting them
+
 BUILD=false
 RESET=false
 
@@ -10,6 +14,10 @@ for arg in "$@"; do
             BUILD=true
             ;;
         --reset)
+            if [ "$APP_ENV" = "prod" ]; then
+                echo "❌ The --reset flag cannot be applied on production"
+                exit 1
+            fi
             RESET=true
             ;;
         *)
@@ -66,13 +74,13 @@ reset_cache_directories() {
 
 make down
 
-if [ "$APP_ENV" != "prod" ] && [ "$RESET" = true ]; then
+if [ "$RESET" = true ]; then
     reset_cache_directories
 fi
 
 setup_runtime_directories
 
-if [ "$APP_ENV" = "prod" ] || [ "$BUILD" = true ]; then
+if [ "$BUILD" = true ]; then
     make build
 fi
 
