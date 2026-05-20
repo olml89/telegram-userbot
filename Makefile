@@ -2,26 +2,44 @@
 export
 
 
-# Load APP_ENV environment variable safely
--include .env
+# Load generic variables safely
+ifeq (,$(wildcard .env))
+$(error ❌ .env is required)
+endif
+include .env
+
+
+# Default variables
 APP_ENV ?= prod
-
-
-# Base docker-compose file
 DOCKER_COMPOSE := -f docker-compose.yml
 
 
 # Override the -f and the --env-file options on the docker compose commands depending on the environment
 ifeq ($(APP_ENV),prod)
     $(info Using production environment -> adding docker-compose.prod.yml)
-    DOCKER_COMPOSE += -f docker-compose.prod.yml
+
+    # In prod we use a centralized .env and we inject its variables directly into the containers that need
+    # them in docker-compose.prod.yml. No service-based .env files
+    DOCKER_COMPOSE += -f docker-compose.prod.yml --env-file .env
 else
     $(info Using development environment -> adding docker-compose.dev.yml)
-    DOCKER_COMPOSE += -f docker-compose.dev.yml --env-file .env --env-file bot-runtime/.env --env-file backend/.env
 
-	# Load variables from bot-runtime/.env and backend/.env files
-	-include bot-runtime/.env
-	-include backend/.env
+    # On dev we use service-based .env files. Those files are volume-mounted inside the containers that need
+    # them and dynamically parsed with phpdotenv.
+
+	# Load bot-runtime variables safely
+    ifeq (,$(wildcard bot-runtime/.env))
+    $(error ❌ bot-runtime/.env is required)
+    endif
+    include bot-runtime/.env
+
+	# Load backend variables safely
+    ifeq (,$(wildcard backend/.env))
+    $(error ❌ backend/.env is required)
+    endif
+    include backend/.env
+
+    DOCKER_COMPOSE += -f docker-compose.dev.yml --env-file .env --env-file bot-runtime/.env --env-file backend/.env
 endif
 
 
@@ -95,7 +113,7 @@ setup:
 
 # This is used on CI/CD to deploy to a remote server through SSH
 deploy:
-	@bash dev/bin/deploy/deploy.sh
+	@bash dev/bin/deploy/deploy.sh $(filter-out $@,$(MAKECMDGOALS))
 
 
 # Debug containers
