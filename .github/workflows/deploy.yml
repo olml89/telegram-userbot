@@ -52,7 +52,7 @@ jobs:
           # Stop script if any variable is missing instead of failing silently
           set -euo pipefail
           
-          cat .env << EOF
+          cat << EOF > .env
             # .env variables
             APP_ENV=${{ vars.APP_ENV }}
             BACKEND_PORT=${{ vars.BACKEND_PORT }}
