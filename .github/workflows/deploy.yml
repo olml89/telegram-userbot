@@ -11,6 +11,11 @@ on:
     branches:
       - main
   workflow_dispatch:  # Allows manual deployment
+    inputs:
+      branch:
+        required: true
+        description: 'Branch to deploy'
+        default: 'main'
 
 jobs:
   deploy:
@@ -23,11 +28,14 @@ jobs:
       )
     environment: staging
 
+    env:
+      BRANCH: ${{ github.event.inputs.branch || github.event.workflow_run.head_branch || 'main' }}
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
         with:
-          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+          ref: ${{ env.BRANCH }}
 
       - name: Set up SSH
         run: |
@@ -39,47 +47,67 @@ jobs:
         run: |
           ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
 
-      - name: Deploy to server
+      - name: Generate .env file
         run: |
-          ssh -i ~/.ssh/deploy_key -p ${{ secrets.SSH_PORT }} ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "
-            # Stop script if any variable is missing instead of failing silently
-            set -euo pipefail
+          # Stop script if any variable is missing instead of failing silently
+          set -euo pipefail
           
-            # Export .env variables
-            export APP_ENV='${{ vars.APP_ENV }}'
-            export BACKEND_PORT='${{ vars.BACKEND_PORT }}'
-            export GRAFANA_SECURITY_ADMIN_PASSWORD='${{ secrets.GRAFANA_SECURITY_ADMIN_PASSWORD }}'
-            export GRAFANA_ROOT_URL='${{ vars.GRAFANA_ROOT_URL }}'
-            
-            # Export backend/.env variables
-            export APP_DEBUG='${{ vars.APP_DEBUG }}'
-            export APP_SECRET='${{ secrets.APP_SECRET }}'
-            export BACKEND_SENTRY_DSN='${{ secrets.BACKEND_SENTRY_DSN }}'
-            export DB_HOST='${{ secrets.DB_HOST }}'
-            export DB_PORT='${{ vars.DB_PORT }}'
-            export DB_NAME='${{ secrets.DB_NAME }}'
-            export DB_USER='${{ secrets.DB_USER }}'
-            export DB_PASSWORD='${{ secrets.DB_PASSWORD }}'
-            export APP_LIBRARY_CONTENT_PER_PAGE='${{ vars.APP_LIBRARY_CONTENT_PER_PAGE }}'
-            
-            # Export bot/.env variables
-            export BOT_SENTRY_DSN='${{ secrets.BOT_SENTRY_DSN }}'
-            export TELEGRAM_API_ID='${{ secrets.TELEGRAM_API_ID }}'
-            export TELEGRAM_API_HASH='${{ secrets.TELEGRAM_API_HASH }}'
-            export TELEGRAM_PHONE_NUMBER='${{ secrets.TELEGRAM_PHONE_NUMBER }}'
-            export TELEGRAM_USERNAME='${{ secrets.TELEGRAM_USERNAME }}'
-            
+          cat .env << EOF
+            # .env variables
+            APP_ENV=${{ vars.APP_ENV }}
+            BACKEND_PORT=${{ vars.BACKEND_PORT }}
+            GRAFANA_SECURITY_ADMIN_PASSWORD=${{ secrets.GRAFANA_SECURITY_ADMIN_PASSWORD }}
+            GRAFANA_ROOT_URL=${{ vars.GRAFANA_ROOT_URL }}
+
+            # backend/.env variables
+            APP_DEBUG=${{ vars.APP_DEBUG }}
+            APP_SECRET=${{ secrets.APP_SECRET }}
+            BACKEND_SENTRY_DSN=${{ secrets.BACKEND_SENTRY_DSN }}
+            DB_HOST=${{ secrets.DB_HOST }}
+            DB_PORT=${{ vars.DB_PORT }}
+            DB_NAME=${{ secrets.DB_NAME }}
+            DB_USER=${{ secrets.DB_USER }}
+            DB_PASSWORD=${{ secrets.DB_PASSWORD }}
+            APP_LIBRARY_CONTENT_PER_PAGE=${{ vars.APP_LIBRARY_CONTENT_PER_PAGE }}
+
+            # bot/.env variables
+            BOT_SENTRY_DSN=${{ secrets.BOT_SENTRY_DSN }}
+            TELEGRAM_API_ID=${{ secrets.TELEGRAM_API_ID }}
+            TELEGRAM_API_HASH=${{ secrets.TELEGRAM_API_HASH }}
+            TELEGRAM_PHONE_NUMBER=${{ secrets.TELEGRAM_PHONE_NUMBER }}
+            TELEGRAM_USERNAME=${{ secrets.TELEGRAM_USERNAME }}
+
             # Export bot-manager/.env variables
-            export BOT_MANAGER_SENTRY_DSN='${{ secrets.BOT_MANAGER_SENTRY_DSN }}'
-          
+            BOT_MANAGER_SENTRY_DSN=${{ secrets.BOT_MANAGER_SENTRY_DSN }}
+
             # Export bot-runtime/.env variables
-            export REDIS_STATUS_CHANNEL='${{ vars.REDIS_STATUS_CHANNEL }}'
-            export REDIS_PHONE_CODE_STORAGE_KEY='${{ vars.REDIS_PHONE_CODE_STORAGE_KEY }}'
-            export SUPERVISOR_CONFIG_PATH='${{ vars.SUPERVISOR_CONFIG_PATH }}'
-            export SUPERVISOR_USER='${{ secrets.SUPERVISOR_USER }}'
-            export SUPERVISOR_PASSWORD='${{ secrets.SUPERVISOR_PASSWORD }}'
-  
-            # Run deploy script
-            cd /home/tbot/telegram-userbot
-            make deploy
-          "
+            REDIS_STATUS_CHANNEL=${{ vars.REDIS_STATUS_CHANNEL }}
+            REDIS_PHONE_CODE_STORAGE_KEY=${{ vars.REDIS_PHONE_CODE_STORAGE_KEY }}
+            SUPERVISOR_CONFIG_PATH=${{ vars.SUPERVISOR_CONFIG_PATH }}
+            SUPERVISOR_USER=${{ secrets.SUPERVISOR_USER }}
+            SUPERVISOR_PASSWORD=${{ secrets.SUPERVISOR_PASSWORD }}
+          EOF
+          
+          # Set permissions to .env file Only the owner can read or write
+          chmod 600 .env
+
+      - name: Upload .env to the server and remove it
+        run: |
+          trap 'rm -f .env' EXIT
+          
+          scp \
+            -i ~/.ssh/deploy_key \
+            -P ${{ secrets.SSH_PORT }} \
+            .env \
+            ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/home/tbot/telegram-userbot/.env
+
+      - name: Run deploy script in the server using the specified branch
+        run: |
+          ssh \
+            -i ~/.ssh/deploy_key \
+            -p ${{ secrets.SSH_PORT }} \
+            ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << EOF
+              cd /home/tbot/telegram-userbot
+              chmod 600 .env
+              make deploy "${{ env.BRANCH }}"           
+            EOF
