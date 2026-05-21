@@ -1,11 +1,11 @@
 #!/bin/sh
 set -eu
 
-# Checks if any dev image affecting files changed between two commits.
+# Checks if any dev image file changed between two commits.
 #
 # Usage:
-#   CI:    check-image-changes.sh <event_name> <before_sha> <current_sha> <github_output_file>
-#   Local: check-image-changes.sh
+#   CI:    check-dev-image-changes.sh <event_name> <before_sha> <current_sha> <github_output_file>
+#   Local: check-dev-image-changes.sh
 #
 # When run without arguments, compares HEAD~1..HEAD and prints the result to stdout.
 
@@ -15,7 +15,6 @@ AFTER_SHA="${3:-}"
 GITHUB_OUTPUT="${4:-}"
 
 PROJECT_ROOT="$(cd "$(dirname "$0")/../../.." && pwd)"
-IMAGE_PATHS="dev/Dockerfile dev/composer.json dev/docker-php-ext-opcache.ini"
 REBUILD=false
 
 if [ "$EVENT_NAME" = "local" ]; then
@@ -36,21 +35,18 @@ CHANGED_FILES=$(echo "$DIFF_COMMANDS" | sort -u)
 echo "Changed files:"
 echo "$CHANGED_FILES"
 
-for path in $IMAGE_PATHS; do
-    if echo "$CHANGED_FILES" | grep -q "^${path}$"; then
-        echo "🔄 Changed: $path"
-        REBUILD=true
-    fi
+for file in $CHANGED_FILES; do
+    case "$file" in
+        dev/*)
+            echo "🔄 Changed in dev image: $file"
+            REBUILD=true
+            ;;
+    esac
 done
 
-if [ "$REBUILD" = "true" ]; then
-    REBUILD_STATUS="✅"
-else
-    REBUILD_STATUS="⚪"
-fi
-
+$REBUILD && REBUILD_STATUS="✅" || REBUILD_STATUS="⚪"
 echo "$REBUILD_STATUS rebuild=$REBUILD"
 
 if [ -n "$GITHUB_OUTPUT" ]; then
-    echo "$REBUILD_STATUS rebuild=$REBUILD" >> "$GITHUB_OUTPUT"
+    echo "rebuild=$REBUILD" >> "$GITHUB_OUTPUT"
 fi

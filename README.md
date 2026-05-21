@@ -20,12 +20,82 @@ with the MTProto API, similarly to an official app, using
 
 ## Table of Contents
 
+- [Prerequisites](#prerequisites)
+  - [Required tools](#required-tools)
+  - [Local environment configuration](#local-environment-configuration)
+  - [direnv setup (recommended)](#direnv-setup-recommended)
+
 - [Architecture](#architecture)
-- [Build Phase](#build-phase)
+  - [Infrastructure services](#infrastructure-services)
+    - nginx
+    - tusd
+    - redis
+    - postgres
+  - [Core application services](#core-application-logic-services)
+    - backend
+    - bot-manager
+    - bot
+  - [Logging and monitoring services](#logging-and-monitoring-services)
+    - alloy
+    - loki
+    - grafana
+  - [Development environment services](#development-environment-services)
+    - dev
+    - vite
+
+- [Build phases](#build-phases)
+
 - [Application Management](#application-management)
-    - [Starting the Application](#starting-the-application)
-    - [Development](#development)
-    - [Debugging](#debugging)
+  - [Installation and setup](#installation-and-setup)
+  - [Container lifecycle](#container-lifecycle)
+  - [Debugging](#debugging)
+  - [Code quality](#code-quality)
+
+## Prerequisites
+
+### Required tools
+
+This project uses a `Justfile` as the main task runner for local development and common workflows and on 
+CI/CD pipelines to automate the deployment process.
+
+Before getting started, make sure the following tools are installed on your system:
+
+- [just](https://github.com/casey/just) — command runner used throughout the project
+- [direnv](https://direnv.net/) *(optional but recommended)* — automatically loads the project environment variables from `.envrc`
+
+### Local environment configuration
+
+Before running any `just` command, local environment files must be created from the provided `.env.example` templates.
+
+Copy and adjust the environment files according to your local setup:
+
+```bash
+cp .env.example .env
+cp backend/.env.example backend/.env
+cp bot-runtime/.env.example bot-runtime/.env
+```
+
+These are the required `.env` files to run the just commands successfully. Additionally, there are other 
+`.env.example` files in [bot](#bot) and [bot-manager](#bot-manager). 
+Those services also need their own .env configuration to run properly. 
+Make sure all required environment variables are properly configured before continuing.
+
+### direnv setup (recommended)
+
+If you use `direnv`, allow the project environment from the repository root:
+
+```bash
+direnv allow
+```
+
+Otherwise, you can manually load the environment variables before running any `just` command, but this will
+pollute your current environment:
+
+```bash
+source .env
+source backend/.env
+source bot-runtime/.env
+```
 
 ## Architecture
 
@@ -33,166 +103,239 @@ The application is fully containerised using Docker and follows a microservice a
 running each service in its own Docker container. The entire system is organised in a single 
 monorepo. The microservices include:
 
-- **nginx**: the application’s entry point, acting as a reverse proxy that exposes the **backend** 
-and **bot-manager** services and protects against CORS attacks.
+### Infrastructure services
 
-- **tusd**: a file upload service that handles user uploads based on 
-[https://github.com/tus/tusd](https://github.com/tus/tusd), the official reference implementation
-of tus, a protocol based on HTTP for resumable file uploads.
+#### nginx
+The application’s entry point, acting as a reverse proxy that exposes the
+[backend](#backend), the
+[bot-manager](#bot-manager), the
+[tusd](#tusd) and the
+[grafana](#grafana) services and protects against CORS attacks.
 
-- **redis** and **postgres**: data storage infrastructure. **postgres** serves as the primary 
-persistence layer, while **redis** enables real-time communication between **bot-manager** 
-and **bot** services through pub/sub.
+#### tusd
+A file upload service that handles user uploads based on 
+[tusd](https://github.com/tus/tusd), the official reference implementation
+of tus, a protocol based on HTTP for resumable file uploads, written in Go.
 
-- **loki**, **grafana**, and **alloy**: the centralized logging and monitoring stack, 
-providing log collection, aggregation, and visualization.
+#### redis
+A key-value store used for caching and storing session data. It enables real-time communication between
+[bot-manager](#bot-manager) and
+[bot](#bot) services through pub/sub.
 
-- **backend**, **bot-manager**, **bot**: core business logic services.
+#### postgres
+A relational database used for storing persistent data. It serves as the primary persistence layer.
 
-    - **backend** is served behind **nginx**, providing a dashboard to manage the entire application. 
-    It maintains a WebSocket connection to **bot-manager** (via **nginx** as a reverse proxy) to control the userbot.
-    It runs on `php-fpm`, and **nginx** communicates with it over TCP using the FastCGI protocol.
-  
-    - **bot-manager** listens for commands from WebSocket clients, managing and controlling **bot** service 
-    processes through Supervisor.
-  
-    - **bot** runs isolated processes that interact directly with the MTProto API; these processes do not 
-    self-manage and report their status back to **bot-manager**. The **bot-manager** uses the status to validate 
-    incoming commands and emits updates to the dashboard via WebSocket.
-  
-- **dev**: a container that only runs on development environment. It provides testing and debugging utilities
-    for the core services. To do so, it installs the following dependencies: 
-    - `composer`: to run composer scripts and to dynamically manage dependencies, as in the core containers on 
-    development environment.
-    - `phpunit`, `mockery` and `xdebug`: testing suite with code coverage analysis
-    - `phpstan`: code static analysis tool
-    - `laravel pint`: code linter and style enforcer
-  
+### Core application logic services
 
-## Build Phase
+#### backend
+It provides a dashboard to manage the entire application using 
+[Symfony](https://symfony.com/). It runs on `php-fpm`, and is served behind
+[nginx](#nginx) over TCP using FastCGI protocol, and communicates through it using a reverse proxy with
+[bot-manager](#bot-manager) establishing a WebSocket connection to control the userbot.
 
-Each of the core business logic services has its own Dockerfile using a multi-stage build process.
-**bot-manager** and **bot** are based on the `php:8.5-alpine` image, while **backend** is based on the
-`php:8.5-fpm-alpine` image.
+#### bot-manager
+It listens for commands from WebSocket clients, managing and controlling
+[bot](#bot) service processes through
+[supervisor](https://supervisord.org/).
 
-- **Base stage**: installs runtime dependencies and required PHP extensions.
+#### bot
+It runs isolated processes that interact directly with the MTProto API; these processes do not
+self-manage and report their status back to
+[bot-manager](#bot-manager), who uses the status to validate
+incoming commands and emits updates back again to the dashboard via WebSocket.
 
-- **Production stage**: copies service-specific code and shared code inside the container and runs `composer install` 
-to install dependencies. Composer is then removed to keep the image lean. This produces an immutable image with 
-all dependencies pre-installed, ensuring reproducible deployments.
+### Logging and monitoring services
 
-- **Assets**: frontend assets are built once during the **backend** image build and then copied into the **nginx**
-image. This avoids double builds and guarantees consistency.
+#### alloy
+A telemetry agent responsible for collecting and forwarding logs from the core services to
+[loki](#loki) for centralized aggregation and analysis.
 
-- **Development stage**: installs `xdebug` and `composer` inside the container. Instead of copying code, volumes 
-mount the local codebases via Docker Compose. On container start, `composer install` runs dynamically to allow 
-live dependency management during development.
+Shared common code used across multiple services resides in the **application** domain. Also, the
+[bot](#bot) and the
+[bot-manager](#bot-manager) services share a common **bot-runtime** domain.
 
-Shared common code used across multiple services resides in the **application** domain.
-Also, the **bot** and the **bot-manager** services share a common **bot-runtime** domain.
 Those are not standalone services but are installed inside the containers of the services that
 depend on them.
 
+#### loki
+A log aggregation backend used to store, index, and query logs collected from the application's services.
+
+#### grafana
+A dashboarding service that visualizes and analyzes the logs collected by
+[loki](#loki)
+
+### Development environment services
+
+#### dev
+It provides testing and code linting utilities for the core services. To do so, it installs the following dependencies: 
+- [composer](https://getcomposer.org/): to run composer scripts and to dynamically manage dependencies, as in the core containers on the development environment.
+- [phpunit](https://phpunit.de/index.html), [mockery](https://github.com/mockery/mockery) and [xdebug](https://xdebug.org/): testing suite with code coverage analysis
+- [phpstan](https://phpstan.org/): code static analysis tool
+- [pint](https://laravel.com/docs/13.x/pint): code linter and style enforcer
+- [rector](https://getrector.com/): code refactoring tool
+
+#### vite
+it compiles the frontend assets using [Vite](https://vitejs.dev/) and provides Hot Module Replacement (HMR) for development.
+It installs [npm](https://www.npmjs.com/)
+  
+## Build phases
+
+Each of the core business logic services has its own Dockerfile using a multi-stage build process.
+[bot-manager](#bot-manager) and
+[bot](#bot) are based on the `php:8.5-alpine` image, while
+[backend](#backend) is based on the `php:8.5-fpm-alpine` image.
+
+### Base stage
+It installs runtime dependencies and required PHP extensions.
+
+### Production stage
+It copies service-specific code and shared code inside the container, installs composer and runs `composer install` 
+to install dependencies. Composer is then removed to keep the image lean. This produces an immutable image with 
+all dependencies pre-installed, ensuring reproducible deployments.
+
+On the [backend](#backend) service image, there's also an intermediate previous stage that compiles the frontend assets using 
+[Vite](https://vitejs.dev/) so they can be directly copied in the final production stage.
+
+### Development stage
+It installs `xdebug` and `composer` inside the container. Instead of copying code, volumes
+mount the local codebases via Docker Compose. On container start, `composer install` runs dynamically to allow
+live dependency management during development.
+
+
+The decision of whether to use the production or the development images is based on the `APP_ENV` environment variable.
+If it is set to `prod`, the production stage of Dockerfiles is used, creating immutable containers with pre-installed dependencies.
+Otherwise, the development image is used, allowing dynamic dependency installation and live code updates.
+
 ## Application Management
 
-All services are managed via Docker Compose. For convenience, a `Makefile` with helpful recipes is provided in the 
+All services are managed via Docker Compose. For convenience, a `Justfile` with helpful recipes is provided in the 
 project root.
 
-### Starting the Application
+### Installation and setup
 
-This command builds (if needed) and starts all containers:
-
-```bash
-make upd
-```
-
-To build the images without running the containers:
+After git cloning the repository, run on the root of the project:
 
 ```bash
-make build
+just install
 ```
 
-The environment is controlled by the `APP_ENV` variable.
-
-- If set to `production`, the production stage of Dockerfiles is used, creating immutable containers with 
-pre-installed dependencies.
-
-- For other environments, the development stage is used, allowing dynamic dependency installation and live code updates.
-
-To stop running containers:
+This will freshly start the containers in a clean state. After that, run:
 
 ```bash
-make stop
+just setup
 ```
 
-To stop and remove containers:
+This will run the necessary database migrations and clear the Symfony cache.
+
+There's also a deployment recipe for production environments:
 
 ```bash
-make down
+just deploy
 ```
 
-### Development
+This command fetches the latest changes from the remote repository, checks out the target branch, 
+and hard-resets the local repository to match origin/<branch>.
+
+⚠️ Any uncommitted local changes will be permanently lost after running this command.
+
+After that it runs `just install` and `just setup` as shown above to rebuild and configure the application.
+
+### Container lifecycle
+
+To build all the containers or a specified one:
+
+```bash
+just build [?container]
+```
+
+To start all the containers or a specified one (the first one does it in foreground mode,
+the second one in background detached mode):
+
+```bash
+just up [?container]
+just upd [?container]
+```
+
+To stop running containers or a specified one:
+
+```bash
+just stop [?container]
+```
+
+To stop and remove containers or a specified one:
+
+```bash
+just down [?container]
+```
+
+### Debugging
 
 Restart a single service without impacting others:
 
 ```bash
-make restart [service]
+just restart [service]
 ```
 
 Run a service in a temporary container (deleted after exit) with an interactive shell, bypassing the usual entrypoint 
 (useful if the container build is failing):
 
 ```bash
-make debug [service]
+just debug [service]
 ```
 
 Open an interactive shell inside a running service container:
 
 ```bash
-make [service]
+just [service]
 ```
 
-For **redis** and **postgres**, this command opens the respective CLI tools (`redis-cli` and `psql`) 
+[loki](#loki) cannot be accessed using a `just loki` command because loki is a distroless service, so it doesn't have a 
+built-in shell.
+
+For [redis](#redis) there's also the `just redis-cli` command, and for [postgres](#postgres) there's also the
+`just postgres-psql` command. Those helpers are just shortcuts for running the respective CLI tools inside the container,
 instead of a shell.
 
-### Debugging
+### Code quality
 
-The following commands can target a specific service, or be run in all the core services if no service is specified.
-
-As explained before, this will open the shell of the **dev** container, from where all the debugging commands
-can be run.
-
-```bash
-make dev
-```
-
-But there's also this list of useful make commands to use the tools from outside the containers.
-An optional service argument can be passed to apply them to a single service; if no service argument is
-passed, they will be run in all the services.
+The following commands can target a specific service or be run in all the core services if no service is specified.
 
 Code static analysis:
 
 ```bash
-make phpstan [?service]
+just phpstan [?service] [?--no-progress]
 ```
+
+The `--no-progress` flag will disable the progress bar and show only the errors.
 
 Code linting:
 
 ```bash
-make pint [?service] [?test]
+just pint [?service] [?--test]
 ```
 
-Without the optional `test` flag it will only show the suggested code changes to follow `PSR-12` code style. 
+Without the optional `--test` flag it will only show the suggested code changes to follow `PSR-12` code style. 
+Passing the flag will actually apply them.
+
+Code refactoring:
+
+```bash
+just rector [?service] [?--dry-run]
+```
+
+Without the optional `--dry-run` flag it will only show the suggested refactorings.
 Passing the flag will actually apply them.
 
 Unit tests:
 
 ```bash
-make phpunit [?service] [?filter] [?debug] [?coverage] [?--ci]
+just phpunit [?service] [?--filter] [?--debug] [?--coverage-text] [?--coverage-clover]
 ```
 
-The optional `filter` flag will restrict the tests to be run to those that match it as a pattern.
+The optional `--filter` flag will restrict the tests to be run to those that match it as a pattern in 
+a given service.
 
-The tests will normally be run with `Opcache` enabled. The `debug`, `coverage` and `ci` filters will disable
-it and enable `XDebug`: The first one can be used to set breakpoints on tests, the second one will add
-text coverage through the CLI and the third one will add clover coverage (useful during CI/CD pipelines).
+The tests will normally be run with `Opcache` enabled, but the following flags will disable it and enable `XDebug`:
+- `--debug` can be used to set breakpoints on tests
+- `--coverage-text` will add text coverage through the CLI
+- `--coverage-clover` will add clover coverage (useful during CI/CD pipelines)

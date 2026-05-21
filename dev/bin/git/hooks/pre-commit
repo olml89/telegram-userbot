@@ -13,7 +13,7 @@ for file in $FILES; do
 done
 
 # Execute the pre-commit script inside the container, that launches validate-commit.sh
-if ! make validate-commit; then
+if ! just validate-commit; then
     echo "❌ Pre-commit checks failed. Commit aborted."
     exit 1
 fi

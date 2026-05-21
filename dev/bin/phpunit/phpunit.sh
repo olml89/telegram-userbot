@@ -1,99 +1,84 @@
 #!/bin/sh
 
-SERVICE=""
+SERVICES=""
 FILTER=""
-COVERAGE=false
-CI=false
 DEBUG=false
+COVERAGE_TEXT=false
+COVERAGE_CLOVER=false
 
 while [ $# -gt 0 ]; do
-	case $1 in
-		--service=*) SERVICE="${1#*=}" ;;
-		--filter=*)
-			# Add filters separated by whitespace
-			if [ -z "$FILTER" ]; then
-				FILTER="${1#*=}"
-			else
-				FILTER="$FILTER ${1#*=}"
-			fi
-			;;
-		--coverage) COVERAGE=true ;;
-		--ci) CI=true ;;
-		--debug) DEBUG=true;;
-		*)
-			echo "❌ Unknown option: $1"
-			exit 1
-			;;
-	esac
-	shift
+    case $1 in
+        application|bot-runtime|bot|bot-manager|backend)
+            SERVICES="$SERVICES $1"
+            ;;
+        --filter)
+            shift
+            FILTER="$1"
+            ;;
+        --debug)
+            DEBUG=true
+            ;;
+        --coverage-text)
+            COVERAGE_TEXT=true
+            ;;
+        --coverage-clover)
+            COVERAGE_CLOVER=true
+            ;;
+        *)
+            echo "❌ Unknown option: $1"
+            exit 1
+            ;;
+    esac
+    shift
 done
 
-run_phpunit() {
-	SERVICE=$1
+if [ -z "$SERVICES" ]; then
+    SERVICES="application bot-runtime bot bot-manager backend"
+fi
 
-	echo "🔍 Running phpunit for '$SERVICE'..."
-
-	# By default: Opcache enabled (Xdebug disabled)
-	PHP="php -n -c /usr/local/etc/php/docker-php-ext-opcache.ini"
-
-	# On --debug, --ci or --coverage: enable Xdebug (Opcache disabled)
-	if $DEBUG || $COVERAGE || $CI; then
-		PHP="XDEBUG_TRIGGER=1 php -n -c /usr/local/etc/php/docker-php-ext-xdebug.ini"
-		echo "🔍 Xdebug enabled"
-	else
-		echo "🔍 Opcache enabled"
-	fi
-
-	# Dynamic configuration file
-	CONFIG="/telegram-userbot/$SERVICE/phpunit.xml.dist"
-	echo "🔍 Configuration file: $CONFIG"
-
-	PHPUNIT="./vendor/bin/phpunit --colors=always --configuration $CONFIG"
-
-	if [ -n "$FILTER" ]; then
-		# phpunit does not support --filter=Class1 --filter=Class2
-		# We have to convert it to --filter "Class1|Class2"
-		FILTER_REGEX=$(echo "$FILTER" | sed 's/ /|/g')
-
-		echo "🔍 Using --filter '$FILTER_REGEX'"
-		PHPUNIT="$PHPUNIT --filter \"$FILTER_REGEX\""
-	fi
-
-	# On --coverage: add text coverage
-	if $COVERAGE; then
-		PHPUNIT="$PHPUNIT --coverage-text"
-		echo "🔍 Add text coverage"
-	fi
-
-	# On --ci: add clover coverage
-	if $CI; then
-		PHPUNIT="$PHPUNIT --coverage-clover var/clover.xml"
-		echo "🔍 Add clover coverage"
-	fi
-
-	if ! eval "$PHP $PHPUNIT"; then
-		echo "❌ phpunit found errors in '$SERVICE'"
-		exit 1
-	fi
+run() {
+    if $DEBUG; then
+        XDEBUG_TRIGGER=1 "$@"
+    else
+        "$@"
+    fi
 }
 
-if [ -z "$SERVICE" ]; then
-	# Test all services
-	run_phpunit "application"
-	run_phpunit "bot-runtime"
-	run_phpunit "bot"
-	run_phpunit "bot-manager"
-	run_phpunit "backend"
-else
-	case "$SERVICE" in
-		application|bot-runtime|bot|bot-manager|backend)
-			run_phpunit "$SERVICE"
-			;;
-		*)
-			echo "❌ Unknown service: $SERVICE"
-			exit 1
-			;;
-	esac
-fi
+run_phpunit() {
+    SERVICE=$1
+
+    # Extension
+    ($DEBUG || $COVERAGE_TEXT || $COVERAGE_CLOVER) \
+        && EXTENSION="/usr/local/etc/php/docker-php-ext-xdebug.ini" \
+        || EXTENSION="/usr/local/etc/php/docker-php-ext-opcache.ini"
+
+    # Dynamic configuration file
+    CONFIG="/telegram-userbot/$SERVICE/phpunit.xml.dist"
+
+    # XDEBUG_TRIGGER flag
+    ($DEBUG || $COVERAGE_TEXT || $COVERAGE_CLOVER) \
+        && XDEBUG_TRIGGER_FLAG="XDEBUG_TRIGGER=1 " \
+        || XDEBUG_TRIGGER_FLAG=
+
+    # Build arguments
+    set -- php -n -c "$EXTENSION" ./vendor/bin/phpunit \
+        --colors=always \
+        --configuration "$CONFIG"
+
+    [ -n "$FILTER" ] && set -- "$@" --filter "$FILTER"
+    $COVERAGE_TEXT && set -- "$@" --coverage-text
+    $COVERAGE_CLOVER && set -- "$@" --coverage-clover var/clover.xml
+
+    printf '🔍 [%s] %s%s\n' "$SERVICE" "$XDEBUG_TRIGGER_FLAG" "$*"
+
+    if ! run "$@"; then
+        echo "❌ phpunit found errors in $SERVICE"
+        exit 1
+    fi
+}
+
+for SERVICE in $SERVICES; do
+    run_phpunit "$SERVICE"
+done
 
 exit 0

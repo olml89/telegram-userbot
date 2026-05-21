@@ -1,70 +1,60 @@
 #!/bin/sh
 set -eu
 
-SERVICE=""
+SERVICES=""
 TEST=false
 
 while [ $# -gt 0 ]; do
-	case $1 in
-		--service=*) SERVICE="${1#*=}" ;;
-		--test) TEST=true ;;
-		*)
-			echo "❌ Unknown option: $1"
-			exit 1
-			;;
-	esac
-	shift
+    case $1 in
+        application|bot-runtime|bot|bot-manager|backend)
+            SERVICES="$SERVICES $1"
+            ;;
+        --test)
+            TEST=true
+            ;;
+        *)
+            echo "❌ Unknown option: $1"
+            exit 1
+            ;;
+    esac
+    shift
 done
 
+if [ -z "$SERVICES" ]; then
+    SERVICES="application bot-runtime bot bot-manager backend"
+fi
+
 run_pint() {
-	SERVICE=$1
-	TEST_FLAG=""
+    SERVICE=$1
 
-	if $TEST; then
-		TEST_FLAG="--test"
-	fi
+    # Dynamic codebase path
+    CODE_PATH="/telegram-userbot/$SERVICE"
 
-	echo "🔍 Running pint${TEST_FLAG:+ $TEST_FLAG} for '$SERVICE'"
+    # Dynamic config file
+    CONFIG="$CODE_PATH/pint.json"
 
-	# Dynamic codebase path
-	CODE_PATH="/telegram-userbot/$SERVICE"
-
-	# Dynamic config file
-	CONFIG="$CODE_PATH/pint.json"
-	echo "🔍 Configuration file: $CONFIG"
-
-	# Enable Opcache
-	#
-	# The --ansi flag forces colored output, even when the command is run in a non-interactive shell
+    # Enable Opcache
+    #
+    # The --ansi flag forces colored output, even when the command is run in a non-interactive shell
     # (e.g., from within a Git hook). This helps maintain readable output with syntax highlighting.
-	if ! php -n -c "/usr/local/etc/php/docker-php-ext-opcache.ini" ./vendor/bin/pint \
-		--ansi \
-		--config="$CONFIG" \
-		"$CODE_PATH" \
-		$TEST_FLAG
-	then
-		echo "❌ pint found errors in '$SERVICE'"
-		exit 1
-	fi
+    set -- php -n -c "/usr/local/etc/php/docker-php-ext-opcache.ini" \
+        ./vendor/bin/pint \
+        --ansi \
+        --config="$CONFIG" \
+        "$CODE_PATH"
+
+    $TEST && set -- "$@" --test
+
+    printf '🔍 [%s] %s\n' "$SERVICE" "$*"
+
+    if ! "$@"; then
+        echo "❌ pint found errors in $SERVICE"
+        exit 1
+    fi
 }
 
-if [ -z "$SERVICE" ]; then
-	# Format all services
-	run_pint "application"
-	run_pint "bot-runtime"
-	run_pint "bot"
-	run_pint "bot-manager"
-	run_pint "backend"
-else
-	case "$SERVICE" in
-		application|bot-runtime|bot|bot-manager|backend)
-			run_pint "$SERVICE"
-			;;
-		*)
-			echo "❌ Unknown service: $SERVICE"
-			exit 1
-			;;
-	esac
-fi
+for SERVICE in $SERVICES; do
+    run_pint "$SERVICE"
+done
 
 exit 0
