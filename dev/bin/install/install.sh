@@ -74,13 +74,13 @@ reset_cache_directories() {
 
 just down
 
-if [ "$RESET" = true ]; then
+if $RESET; then
     reset_cache_directories
 fi
 
 setup_runtime_directories
 
-if [ "$BUILD" = true ]; then
+if $BUILD; then
     just build
 fi
 
