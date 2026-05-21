@@ -22,31 +22,31 @@ DOCKER_COMPOSE := '-f docker-compose.yml ' + if env('APP_ENV', 'prod') == 'prod'
 # Build Docker containers (optionally specify a container)
 # Example: just build backend
 build SERVICE='':
-	@echo "🔨 Building ${SERVICE:-containers}..."
+	@echo "🔨 Building {{ if SERVICE == '' { 'containers' } else { SERVICE } }}..."
 	docker compose {{DOCKER_COMPOSE}} build --no-cache {{SERVICE}}
 
 # Start containers in foreground (optionally specify a container)
 # Example: just up backend
 up SERVICE='':
-	@echo "🟢 Starting ${SERVICE:-containers}..."
+	@echo "🟢 Starting {{ if SERVICE == '' { 'containers' } else { SERVICE } }}..."
 	docker compose {{DOCKER_COMPOSE}} up --remove-orphans {{SERVICE}}
 
 # Start containers in detached mode (optionally specify a container)
 # Example: just upd backend
 upd SERVICE='':
-	@echo "🟢 [DETACHED] Starting ${SERVICE:-containers}..."
+	@echo "🟢 [DETACHED] Starting {{ if SERVICE == '' { 'containers' } else { SERVICE } }}..."
 	docker compose {{DOCKER_COMPOSE}} up -d --remove-orphans {{SERVICE}}
 
 # Stop containers (optionally specify a container)
 # Example: just stop backend
 stop SERVICE='':
-	@echo "⛔ Stopping ${SERVICE:-containers}..."
+	@echo "⛔ Stopping {{ if SERVICE == '' { 'containers' } else { SERVICE } }}..."
 	docker compose {{DOCKER_COMPOSE}} stop {{SERVICE}}
 
 # Shut down and remove containers (optionally specify a container)
 # Example: just down backend
 down SERVICE='':
-	@echo "🛑 Shutting down and removing ${SERVICE:-containers}..."
+	@echo "🛑 Shutting down and removing {{ if SERVICE == '' { 'containers' } else { SERVICE } }}..."
 	docker compose {{DOCKER_COMPOSE}} down {{SERVICE}}
 
 

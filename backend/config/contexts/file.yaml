@@ -6,7 +6,7 @@ services:
 
   olml89\TelegramUserbot\Backend\File\Infrastructure\Symfony\File\TusdUploadFinder:
     arguments:
-      $uploadDirectory: '/var/uploads'
+      $uploadDirectory: '/telegram-userbot/backend/var/uploads'
 
   # FileRepository
   olml89\TelegramUserbot\Backend\File\Domain\FileRepository:
@@ -19,7 +19,7 @@ services:
   olml89\TelegramUserbot\Backend\File\Infrastructure\Symfony\File\SymfonyFileManager:
     arguments:
       $filesystem: '@filesystem'
-      $contentDirectory: '/var/content'
+      $contentDirectory: '/telegram-userbot/backend/var/content'
 
   # FFMpeg, instantiated through a static constructor factory
   FFMpeg\FFMpeg:

@@ -107,7 +107,9 @@ services:
 
   tusd:
     container_name: telegram_userbot_tusd
-    image: tusproject/tusd:latest
+    build:
+      context: .
+      dockerfile: tusd/Dockerfile
     depends_on:
       alloy:
         condition: service_started

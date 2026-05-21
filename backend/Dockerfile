@@ -68,8 +68,12 @@ RUN rm /usr/local/bin/composer && \
     apk del curl bash && \
     rm /usr/local/bin/install-php-extensions
 
-# Set the ownership of the container to www-data
-RUN chown -R www-data:www-data /telegram-userbot
+# Pre-create runtime directories to avoid Docker volume mount edge cases where the mount point does not exist and is
+# created as root-owned, which would break expected permissions for the application user (www-data UID 82).
+# Then set the ownership of the container to www-data. This ensures consistent ownership from first container startup.
+RUN mkdir -p var/uploads var/content && \
+    chown -R www-data:www-data /telegram-userbot
+
 USER www-data
 
 FROM base AS dev
