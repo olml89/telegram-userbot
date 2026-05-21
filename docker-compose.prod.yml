@@ -72,8 +72,8 @@ services:
       APP_LIBRARY_CONTENT_PER_PAGE: ${APP_LIBRARY_CONTENT_PER_PAGE}
     volumes:
       - telegram-userbot-assets:/telegram-userbot/backend/public/build:cached
-      - telegram-userbot-uploads:/var/uploads:cached
-      - telegram-userbot-content:/var/content:cached
+      - telegram-userbot-uploads:/telegram-userbot/backend/var/uploads:cached
+      - telegram-userbot-content:/telegram-userbot/backend/var/content:cached
 
   tusd:
     volumes:
