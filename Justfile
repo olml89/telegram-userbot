@@ -83,8 +83,8 @@ setup:
 deploy BRANCH='main':
 	@echo "🚀 Fetching repository (branch: {{BRANCH}})..."
 	git fetch origin
-	git checkout "$BRANCH"
-	git reset --hard origin/"$BRANCH"
+	git checkout {{BRANCH}}
+	git reset --hard origin/{{BRANCH}}
 
 	@just install {{ if env('APP_ENV', 'prod') == 'prod' { '--build' } else { '--reset' } }}
 	@just setup
