@@ -4,34 +4,34 @@ SERVICES=""
 DRY_RUN=false
 
 while [ $# -gt 0 ]; do
-	case $1 in
-		application|bot-runtime|bot|bot-manager|backend)
-			SERVICES="$SERVICES $1"
-			;;
-		--dry-run)
-		    DRY_RUN=true
-		    ;;
-		*)
-			echo "❌ Unknown option: $1"
-			exit 1
-			;;
-	esac
-	shift
+    case $1 in
+        application|bot-runtime|bot|bot-manager|backend)
+            SERVICES="$SERVICES $1"
+            ;;
+        --dry-run)
+            DRY_RUN=true
+            ;;
+        *)
+            echo "❌ Unknown option: $1"
+            exit 1
+            ;;
+    esac
+    shift
 done
 
 if [ -z "$SERVICES" ]; then
-	SERVICES="application bot-runtime bot bot-manager backend"
+    SERVICES="application bot-runtime bot bot-manager backend"
 fi
 
 run_rector() {
-	SERVICE=$1
+    SERVICE=$1
 
-	# Dynamic config file
-	CONFIG="/telegram-userbot/$SERVICE/rector.php"
+    # Dynamic config file
+    CONFIG="/telegram-userbot/$SERVICE/rector.php"
 
-	# Enable Opcache
-	#
-	# The --ansi flag forces colored output, even when the command is run in a non-interactive shell
+    # Enable Opcache
+    #
+    # The --ansi flag forces colored output, even when the command is run in a non-interactive shell
     # (e.g., from within a Git hook). This helps maintain readable output with syntax highlighting.
     set -- php -n -c "/usr/local/etc/php/docker-php-ext-opcache.ini" \
         ./vendor/bin/rector \
@@ -42,10 +42,10 @@ run_rector() {
 
     printf '🔍 [%s] %s\n' "$SERVICE" "$*"
 
-	if ! "$@"; then
-		echo "❌ rector found errors in $SERVICE"
-		exit 1
-	fi
+    if ! "$@"; then
+        echo "❌ rector found errors in $SERVICE"
+        exit 1
+    fi
 }
 
 for SERVICE in $SERVICES; do
