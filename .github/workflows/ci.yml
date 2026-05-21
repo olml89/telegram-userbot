@@ -89,7 +89,7 @@ jobs:
             -e APP_ENV=ci \
             -w /telegram-userbot/dev \
             ghcr.io/olml89/telegram-userbot-dev:ci \
-            ./bin/phpstan/phpstan.sh --ci
+            ./bin/phpstan/phpstan.sh --no-progress
 
   phpunit:
     needs: build-image
