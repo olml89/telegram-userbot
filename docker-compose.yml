@@ -23,6 +23,8 @@ services:
     depends_on:
       alloy:
         condition: service_started
+    healthcheck:
+      test: [CMD-SHELL, pg_isready -U $DB_USER]
     environment:
       POSTGRES_DB: ${DB_NAME}
       POSTGRES_USER: ${DB_USER}
@@ -40,7 +42,7 @@ services:
       redis:
         condition: service_started
       postgres:
-        condition: service_started
+        condition: service_healthy
     healthcheck:
       # Wait until the 9001 port is responsive, meaning supervisor is already running
       test: [CMD, nc, -z, 0.0.0.0, '9001']
@@ -86,7 +88,7 @@ services:
       alloy:
         condition: service_started
       postgres:
-        condition: service_started
+        condition: service_healthy
       bot-manager:
         condition: service_healthy
     healthcheck:
