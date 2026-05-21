@@ -20,16 +20,40 @@ with the MTProto API, similarly to an official app, using
 
 ## Table of Contents
 
-- [Prerequisites](#architecture)
+- [Prerequisites](#prerequisites)
+  - [Required tools](#required-tools)
+  - [Local environment configuration](#local-environment-configuration)
+  - [direnv setup (recommended)](#direnv-setup-recommended)
+
 - [Architecture](#architecture)
+  - [Infrastructure services](#infrastructure-services)
+    - nginx
+    - tusd
+    - redis
+    - postgres
+  - [Core application services](#core-application-logic-services)
+    - backend
+    - bot-manager
+    - bot
+  - [Logging and monitoring services](#logging-and-monitoring-services)
+    - alloy
+    - loki
+    - grafana
+  - [Development environment services](#development-environment-services)
+    - dev
+    - vite
+
 - [Build phases](#build-phases)
+
 - [Application Management](#application-management)
-    - [Installation](#installation-and-setup)
-    - [Container lifecycle](#container-lifecycle)
-    - [Debugging](#debugging)
-    - [Code quality](#code-quality)
+  - [Installation and setup](#installation-and-setup)
+  - [Container lifecycle](#container-lifecycle)
+  - [Debugging](#debugging)
+  - [Code quality](#code-quality)
 
 ## Prerequisites
+
+### Required tools
 
 This project uses a `Justfile` as the main task runner for local development and common workflows and on 
 CI/CD pipelines to automate the deployment process.
@@ -37,6 +61,41 @@ CI/CD pipelines to automate the deployment process.
 Before getting started, make sure the following tools are installed on your system:
 
 - [just](https://github.com/casey/just) — command runner used throughout the project
+- [direnv](https://direnv.net/) *(optional but recommended)* — automatically loads the project environment variables from `.envrc`
+
+### Local environment configuration
+
+Before running any `just` command, local environment files must be created from the provided `.env.example` templates.
+
+Copy and adjust the environment files according to your local setup:
+
+```bash
+cp .env.example .env
+cp backend/.env.example backend/.env
+cp bot-runtime/.env.example bot-runtime/.env
+```
+
+These are the required `.env` files to run the just commands successfully. Additionally, there are other 
+`.env.example` files in [bot](#bot) and [bot-manager](#bot-manager). 
+Those services also need their own .env configuration to run properly. 
+Make sure all required environment variables are properly configured before continuing.
+
+### direnv setup (recommended)
+
+If you use `direnv`, allow the project environment from the repository root:
+
+```bash
+direnv allow
+```
+
+Otherwise, you can manually load the environment variables before running any `just` command, but this will
+pollute your current environment:
+
+```bash
+source .env
+source backend/.env
+source bot-runtime/.env
+```
 
 ## Architecture
 
@@ -183,17 +242,17 @@ After that it runs `just install` and `just setup` as shown above to rebuild and
 
 ### Container lifecycle
 
-This command builds all the containers or a specified one:
+To build all the containers or a specified one:
 
 ```bash
 just build [?container]
 ```
 
-This commands and start all the containers or a specified one. The first one does it in foreground mode,
-the second one in background detached mode:
+To start all the containers or a specified one (the first one does it in foreground mode,
+the second one in background detached mode):
 
 ```bash
-just upd [?container]
+just up [?container]
 just upd [?container]
 ```
 
