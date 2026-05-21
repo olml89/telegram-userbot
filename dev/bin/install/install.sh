@@ -2,7 +2,7 @@
 set -eu
 
 # It destroys the containers, creates the needed runtime directories and starts the containers again
-# --reset: it will remove the mounted composer.lock, vendor, node_modules and var (not applicable on prod)
+# --reset: it will remove the mounted node_modules, var and vendor (not applicable on prod)
 # --build: it will also rebuild the containers before starting them
 
 BUILD=false
@@ -59,7 +59,7 @@ reset_cache_directories() {
     echo "🔧 Setting application in a factory reset state..."
 
     SERVICES="application bot-runtime bot bot-manager backend vite dev"
-    DIRECTORIES="composer.lock node_modules var vendor"
+    DIRECTORIES="node_modules var vendor"
 
     for SERVICE in $SERVICES; do
         for DIRECTORY in $DIRECTORIES; do
@@ -72,7 +72,7 @@ reset_cache_directories() {
     done
 }
 
-make down
+just down
 
 if [ "$RESET" = true ]; then
     reset_cache_directories
@@ -81,7 +81,7 @@ fi
 setup_runtime_directories
 
 if [ "$BUILD" = true ]; then
-    make build
+    just build
 fi
 
-make upd
+just upd

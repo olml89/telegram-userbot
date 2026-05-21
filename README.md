@@ -103,13 +103,13 @@ project root.
 This command builds (if needed) and starts all containers:
 
 ```bash
-make upd
+just upd
 ```
 
 To build the images without running the containers:
 
 ```bash
-make build
+just build
 ```
 
 The environment is controlled by the `APP_ENV` variable.
@@ -122,13 +122,13 @@ pre-installed dependencies.
 To stop running containers:
 
 ```bash
-make stop
+just stop
 ```
 
 To stop and remove containers:
 
 ```bash
-make down
+just down
 ```
 
 ### Development
@@ -136,20 +136,20 @@ make down
 Restart a single service without impacting others:
 
 ```bash
-make restart [service]
+just restart [service]
 ```
 
 Run a service in a temporary container (deleted after exit) with an interactive shell, bypassing the usual entrypoint 
 (useful if the container build is failing):
 
 ```bash
-make debug [service]
+just debug [service]
 ```
 
 Open an interactive shell inside a running service container:
 
 ```bash
-make [service]
+just [service]
 ```
 
 For **redis** and **postgres**, this command opens the respective CLI tools (`redis-cli` and `psql`) 
@@ -163,36 +163,49 @@ As explained before, this will open the shell of the **dev** container, from whe
 can be run.
 
 ```bash
-make dev
+just dev
 ```
 
-But there's also this list of useful make commands to use the tools from outside the containers.
+But there's also this list of useful just commands to use the tools from outside the containers.
 An optional service argument can be passed to apply them to a single service; if no service argument is
 passed, they will be run in all the services.
 
 Code static analysis:
 
 ```bash
-make phpstan [?service]
+just phpstan [?service] [?--no-progress]
 ```
+
+The `--no-progress` flag will disable the progress bar and show only the errors.
 
 Code linting:
 
 ```bash
-make pint [?service] [?test]
+just pint [?service] [?--test]
 ```
 
-Without the optional `test` flag it will only show the suggested code changes to follow `PSR-12` code style. 
+Without the optional `--test` flag it will only show the suggested code changes to follow `PSR-12` code style. 
+Passing the flag will actually apply them.
+
+Code refactoring:
+
+```bash
+just rector [?service] [?--dry-run]
+```
+
+Without the optional `--dry-run` flag it will only show the suggested refactorings.
 Passing the flag will actually apply them.
 
 Unit tests:
 
 ```bash
-make phpunit [?service] [?filter] [?debug] [?coverage] [?--ci]
+just phpunit [?service] [?--filter] [?--debug] [?--coverage-text] [?--coverage-clover]
 ```
 
-The optional `filter` flag will restrict the tests to be run to those that match it as a pattern.
+The optional `--filter` flag will restrict the tests to be run to those that match it as a pattern in 
+a given service.
 
-The tests will normally be run with `Opcache` enabled. The `debug`, `coverage` and `ci` filters will disable
-it and enable `XDebug`: The first one can be used to set breakpoints on tests, the second one will add
-text coverage through the CLI and the third one will add clover coverage (useful during CI/CD pipelines).
+The tests will normally be run with `Opcache` enabled, but the following flags will disable it and enable `XDebug`:
+- `--debug` can be used to set breakpoints on tests
+- `--coverage-text` will add text coverage through the CLI
+- `--coverage-clover` will add clover coverage (useful during CI/CD pipelines)

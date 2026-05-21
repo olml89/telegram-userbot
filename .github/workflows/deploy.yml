@@ -108,5 +108,5 @@ jobs:
             ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << EOF
               cd /home/tbot/telegram-userbot
               chmod 600 .env
-              make deploy "${{ env.BRANCH }}"           
+              just deploy "${{ env.BRANCH }}"           
             EOF
