@@ -5,9 +5,9 @@
             "sort_algorithm": "alpha"
         }
     },
-    "exclude": [
-        "supervisor",
-        "var",
-        "vendor"
+    "paths": [
+        "bin",
+        "src",
+        "tests"
     ]
 }

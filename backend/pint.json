@@ -6,14 +6,11 @@
             "sort_algorithm": "alpha"
         }
     },
-    "exclude": [
-        "assets",
-        "config",
-        "doc",
-        "node_modules",
-        "php-fpm",
-        "templates",
-        "var",
-        "vendor"
+    "paths": [
+        "bin",
+        "migrations",
+        "public",
+        "src",
+        "tests"
     ]
 }

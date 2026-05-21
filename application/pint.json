@@ -5,8 +5,8 @@
             "sort_algorithm": "alpha"
         }
     },
-    "exclude": [
-        "var",
-        "vendor"
+    "paths": [
+        "src",
+        "tests"
     ]
 }
