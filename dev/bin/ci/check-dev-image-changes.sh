@@ -48,5 +48,5 @@ $REBUILD && REBUILD_STATUS="✅" || REBUILD_STATUS="⚪"
 echo "$REBUILD_STATUS rebuild=$REBUILD"
 
 if [ -n "$GITHUB_OUTPUT" ]; then
-    echo "$REBUILD_STATUS rebuild=$REBUILD" >> "$GITHUB_OUTPUT"
+    echo "rebuild=$REBUILD" >> "$GITHUB_OUTPUT"
 fi
