@@ -1,4 +1,5 @@
 #!/bin/sh
+set -eu
 
 SERVICES=""
 FILTER=""
@@ -65,13 +66,21 @@ run_phpunit() {
         --colors=always \
         --configuration "$CONFIG"
 
-    [ -n "$FILTER" ] && set -- "$@" --filter "$FILTER"
-    $COVERAGE_TEXT && set -- "$@" --coverage-text
-    $COVERAGE_CLOVER && set -- "$@" --coverage-clover var/clover.xml
+    if  [ -n "$FILTER" ]; then
+        set -- "$@" --filter "$FILTER"
+    fi
+
+    if $COVERAGE_TEXT; then
+        set -- "$@" --coverage-text
+    fi
+
+    if $COVERAGE_CLOVER; then
+        set -- "$@" --coverage-clover var/clover.xml
+    fi
 
     printf '🔍 [%s] %s%s\n' "$SERVICE" "$XDEBUG_TRIGGER_FLAG" "$*"
 
-    if ! run "$@"; then
+    if ! "$@"; then
         echo "❌ phpunit found errors in $SERVICE"
         exit 1
     fi

@@ -1,4 +1,5 @@
 #!/bin/sh
+set -eu
 
 SERVICES=""
 DRY_RUN=false
@@ -38,7 +39,9 @@ run_rector() {
         --ansi \
         --config="$CONFIG" \
 
-    $DRY_RUN && set -- "$@" --dry-run
+    if $DRY_RUN; then
+        set -- "$@" --dry-run
+    fi
 
     printf '🔍 [%s] %s\n' "$SERVICE" "$*"
 

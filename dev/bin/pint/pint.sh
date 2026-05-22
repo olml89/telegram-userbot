@@ -43,7 +43,9 @@ run_pint() {
         --config="$CONFIG" \
         "$CODE_PATH"
 
-    $TEST && set -- "$@" --test
+    if $TEST; then
+        set -- "$@" --test
+    fi
 
     printf '🔍 [%s] %s\n' "$SERVICE" "$*"
 

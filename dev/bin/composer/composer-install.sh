@@ -24,14 +24,21 @@ for SERVICE in "$@"; do
 			fi
 
 			echo "🔧 Installing dependencies in $SERVICE..."
-			COMPOSER_CMD="composer install --no-interaction --no-progress --optimize-autoloader --prefer-dist --working-dir=$WORKING_DIR"
+
+			# Build arguments
+            set -- composer install \
+                --no-interaction \
+                --no-progress \
+                --optimize-autoloader \
+                --prefer-dist \
+                --working-dir="$WORKING_DIR"
 
 			if [ "$APP_ENV" = "ci" ]; then
-				COMPOSER_CMD="$COMPOSER_CMD --ignore-platform-reqs"
+				set -- "$@" --ignore-platform-reqs
 			fi
 
-			echo "🔧 $COMPOSER_CMD"
-			eval "$COMPOSER_CMD"
+            printf '🔍 [%s] %s\n' "$SERVICE" "$*"
+            "$@"
 			;;
 		*)
 			echo "❌ Unknown service: $SERVICE"
