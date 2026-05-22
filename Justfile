@@ -179,13 +179,11 @@ redis-cli:
 # Options:
 #   --no-progress	Remove mounted node_modules, var, and vendor directories
 #             		(not applicable in production)
-#
-#   --build			Rebuild containers before starting them
 phpstan *ARGS:
 	@just _env-dev
 	docker compose {{DOCKER_COMPOSE}} exec -T dev ./bin/phpstan/phpstan.sh {{ARGS}}
 
-# Runs phpunit
+# Runs pint
 #
 # Arguments:
 # 	[SERVICES...] 	The services to analyse (application, bot-runtime, bot, bot-manager, backend, dev)
@@ -207,7 +205,7 @@ rector *ARGS:
 	@just _env-dev
 	docker compose {{DOCKER_COMPOSE}} exec -T dev ./bin/rector/rector.sh {{ARGS}}
 
-# Runs rector
+# Runs phpunit
 #
 # Arguments:
 # 	[SERVICES...] 			The services to analyse (application, bot-runtime, bot, bot-manager, backend, dev)

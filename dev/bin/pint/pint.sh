@@ -1,6 +1,17 @@
 #!/bin/sh
 set -eu
 
+# Runs pint
+#
+# Usage:
+#   pint.sh [SERVICES...] [--test]
+#
+# Arguments:
+# 	[SERVICES...] 	The services to analyse (application, bot-runtime, bot, bot-manager, backend, dev)
+#
+# Options:
+#   --test			Only show the suggested code changes to follow the PER coding style, without applying them
+
 SERVICES=""
 TEST=false
 
@@ -47,10 +58,9 @@ run_pint() {
         set -- "$@" --test
     fi
 
-    printf '🔍 [%s] %s\n' "$SERVICE" "$*"
+    printf '🔍 [%s>pint] %s\n' "$SERVICE" "$*"
 
     if ! "$@"; then
-        echo "❌ pint found errors in $SERVICE"
         exit 1
     fi
 }

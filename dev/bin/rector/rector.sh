@@ -1,6 +1,17 @@
 #!/bin/sh
 set -eu
 
+# Runs rector
+#
+# Usage:
+#   rector.sh [SERVICES...] [--dry-run]
+#
+# Arguments:
+# 	[SERVICES...] 	The services to analyse (application, bot-runtime, bot, bot-manager, backend, dev)
+#
+# Options:
+#   --dry-run		Only show the suggested refactorings, without applying them
+
 SERVICES=""
 DRY_RUN=false
 
@@ -43,10 +54,9 @@ run_rector() {
         set -- "$@" --dry-run
     fi
 
-    printf '🔍 [%s] %s\n' "$SERVICE" "$*"
+    printf '🔍 [%s>rector] %s\n' "$SERVICE" "$*"
 
     if ! "$@"; then
-        echo "❌ rector found errors in $SERVICE"
         exit 1
     fi
 }

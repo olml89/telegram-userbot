@@ -1,6 +1,20 @@
 #!/bin/sh
 set -eu
 
+# Runs phpunit
+#
+# Usage:
+#   phpunit.sh [SERVICES...] [--filter EXPRESSION] [--debug] [--coverage-text] [--coverage-clover]
+#
+# Arguments:
+# 	[SERVICES...] 	The services to analyse (application, bot-runtime, bot, bot-manager, backend, dev)
+#
+# Options:
+#   --filter EXPRESSION		Run only tests that match the given expression in the given services
+# 	--debug					Enable the ability to set breakpoints on tests
+# 	--coverage-text			Add text coverage through the CLI
+#	--coverage-clover		Add clover coverage (useful during CI/CD pipelines)
+
 SERVICES=""
 FILTER=""
 DEBUG=false
@@ -37,7 +51,7 @@ if [ -z "$SERVICES" ]; then
     SERVICES="application bot-runtime bot bot-manager backend"
 fi
 
-run() {
+execute_debuggable() {
     if $DEBUG; then
         XDEBUG_TRIGGER=1 "$@"
     else
@@ -78,10 +92,9 @@ run_phpunit() {
         set -- "$@" --coverage-clover var/clover.xml
     fi
 
-    printf '🔍 [%s] %s%s\n' "$SERVICE" "$XDEBUG_TRIGGER_FLAG" "$*"
+    printf '🔍 [%s>phpunit] %s%s\n' "$SERVICE" "$XDEBUG_TRIGGER_FLAG" "$*"
 
-    if ! "$@"; then
-        echo "❌ phpunit found errors in $SERVICE"
+    if ! execute_debuggable "$@"; then
         exit 1
     fi
 }
