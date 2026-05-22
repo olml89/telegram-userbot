@@ -21,13 +21,13 @@ if ! ./bin/phpstan/phpstan.sh; then
 fi
 
 echo "🔍 Checking PHP code linting (pint)..."
-if ! ./bin/pint/pint.sh; then
+if ! ./bin/pint/pint.sh --test; then
 	echo "❌ pint checks failed. Run pint linting before commiting."
 	exit 1
 fi
 
 echo "🔍 Checking PHP code refactoring (rector)..."
-if ! ./bin/rector/rector.sh; then
+if ! ./bin/rector/rector.sh --dry-run; then
 	echo "❌ rector checks failed. Run rector refactoring before commiting."
 	exit 1
 fi
