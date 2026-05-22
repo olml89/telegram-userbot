@@ -31,14 +31,14 @@ for SERVICE in "$@"; do
                 --no-progress \
                 --optimize-autoloader \
                 --prefer-dist \
-                --working="$WORKING_DIR"
+                --working_dir="$WORKING_DIR"
 
 			if [ "$APP_ENV" = "ci" ]; then
 			    set -- "$@" --ignore-platform-reqs
 			fi
 
             printf '🔍 [%s] %s\n' "$SERVICE" "$*"
-            run "$@"
+            "$@"
 			;;
 		*)
 			echo "❌ Unknown service: $SERVICE"
