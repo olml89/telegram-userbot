@@ -31,7 +31,7 @@ for SERVICE in "$@"; do
                 --no-progress \
                 --optimize-autoloader \
                 --prefer-dist \
-                --working_dir="$WORKING_DIR"
+                --working-dir="$WORKING_DIR"
 
 			if [ "$APP_ENV" = "ci" ]; then
 			    set -- "$@" --ignore-platform-reqs
