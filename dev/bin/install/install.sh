@@ -44,7 +44,7 @@ setup_runtime_directories() {
     	DIRECTORIES="${DIRECTORIES} bot-runtime/var"
 
     	# Var directories for containers needed on local development
-        DIRECTORIES="${DIRECTORIES} dev/var"
+        DIRECTORIES="${DIRECTORIES} dev/var dev/var/npm"
         DIRECTORIES="${DIRECTORIES} vite/var vite/var/npm"
     fi
 
