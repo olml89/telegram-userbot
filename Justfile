@@ -54,10 +54,15 @@ down SERVICE='':
 # INSTALLATION & SETUP
 # ============================================================================
 
-# Install application (accepts '--reset' and '--build' as arguments)
-# Example: just install reset build
-install *ARGS:
-	bash dev/bin/install/install.sh {{ARGS}}
+# Reinitializes the application by recreating containers and required runtime directories.
+#
+# Options:
+#   --reset		Remove mounted node_modules, var, and vendor directories
+#             	(not applicable in production)
+#
+#   --build   	Rebuild containers before starting them
+init *ARGS:
+	bash dev/bin/init/init.sh {{ARGS}}
 
 # Run database migrations and clear Symfony cache
 setup:
@@ -77,16 +82,24 @@ setup:
 		backend \
 		bin/console cache:clear --env=prod
 
-# Get the last changes from origin and point the repository to a specific branch
-# Set the application in a clean state
-# Example: just deploy feature/TBOT-xx-feature-description
+# [PRODUCTION]
+#
+# Fetches the last changes from origin and points the repository to a specific branch (main if not specified)
+#
+# Arguments:
+#	BRANCH 		Git branch to deploy (default: main)
 deploy BRANCH='main':
-	@echo "🚀 Fetching repository (branch: {{BRANCH}})..."
-	git fetch origin
-	git checkout {{BRANCH}}
-	git reset --hard origin/{{BRANCH}}
+	@if [ "${APP_ENV:-}" != "prod" ]; then \
+		echo "❌ deploy only allowed in prod (APP_ENV=${APP_ENV:-unset})"; \
+		exit 1; \
+	fi
 
-	@just install {{ if env('APP_ENV', 'prod') == 'prod' { '--build' } else { '--reset' } }}
+	@echo "🚀 Fetching repository (branch: {{BRANCH}})..."
+	#git fetch origin
+	#git checkout {{BRANCH}}
+	#git reset --hard origin/{{BRANCH}}
+
+	@just init {{ if env('APP_ENV', 'prod') == 'prod' { '--build' } else { '' } }}
 	@just setup
 
 
