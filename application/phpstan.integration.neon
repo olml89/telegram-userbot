@@ -3,8 +3,5 @@ parameters:
         - src
         - tests
 
-    excludePaths:
-        - vendor
-
     bootstrapFiles:
         - vendor/autoload.php
