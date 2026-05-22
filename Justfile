@@ -219,6 +219,13 @@ phpunit *ARGS:
 		dev \
 		composer phpunit -- {{ARGS}}
 
+# Run npm tsc (Typescript compiler). It only executes type checks and reports compilation errors
+tsc:
+	docker compose {{DOCKER_COMPOSE}} exec \
+		-T \
+		dev \
+		./bin/tsc/tsc.sh --noEmit
+
 # It checks if the dev/composer.json is updated with the platform requirements (dev/bin/git/commit/sync-platform-reqs.php)
 # and runs the code quality tools. This is used by the pre-commit git hook but it can be used standalone
 validate-commit:
