@@ -9,25 +9,25 @@ if ! ./bin/git/commit/sync-platform-reqs.php; then
 fi
 
 echo "🔍 Checking PHP tests (phpunit)..."
-if ! composer phpunit; then
+if ! ./bin/phpunit/phpunit.sh; then
 	echo "❌ phpunit failed. Fix failing tests before commiting."
 	exit 1
 fi
 
 echo "🔍 Checking PHP code static analysis (phpstan)..."
-if ! composer phpstan; then
+if ! ./bin/phpstan/phpstan.sh; then
 	echo "❌ phpstan failed. Fix code before commiting."
 	exit 1
 fi
 
 echo "🔍 Checking PHP code linting (pint)..."
-if ! composer pint -- --test; then
+if ! ./bin/pint/pint.sh; then
 	echo "❌ pint checks failed. Run pint linting before commiting."
 	exit 1
 fi
 
 echo "🔍 Checking PHP code refactoring (rector)..."
-if ! composer rector -- --dry-run; then
+if ! ./bin/rector/rector.sh; then
 	echo "❌ rector checks failed. Run rector refactoring before commiting."
 	exit 1
 fi

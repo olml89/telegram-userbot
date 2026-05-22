@@ -192,7 +192,7 @@ phpstan *ARGS:
 	docker compose {{DOCKER_COMPOSE}} exec \
 		-T \
 		dev \
-		composer phpstan -- {{ARGS}}
+		./bin/phpstan/phpstan.sh {{ARGS}}
 
 # Run Pint (accepts services and '--test' flag)
 # Example: just pint backend application --test
@@ -200,7 +200,7 @@ pint *ARGS:
 	docker compose {{DOCKER_COMPOSE}} exec \
 		-T \
 		dev \
-		composer pint -- {{ARGS}}
+		./bin/pint/pint.sh {{ARGS}}
 
 # Run Rector (accepts services and '--dry-run' flag)
 # Example: just rector backend application --dry-run
@@ -208,7 +208,7 @@ rector *ARGS:
 	docker compose {{DOCKER_COMPOSE}} exec \
 		-T \
 		dev \
-		composer rector -- {{ARGS}}
+		./bin/rector/rector.sh {{ARGS}}
 
 # Run PHPUnit (accepts services and '--filter', '--debug', '--coverage-text', '--coverage-clover' flags)
 # Example: just phpunit backend application --coverage-clover
@@ -217,14 +217,14 @@ phpunit *ARGS:
 	docker compose {{DOCKER_COMPOSE}} exec \
 		-T \
 		dev \
-		composer phpunit -- {{ARGS}}
+		./bin/phpunit/phpunit.sh {{ARGS}}
 
 # Run npm tsc (Typescript compiler). It only typechecks frontend assets
 tsc:
 	docker compose {{DOCKER_COMPOSE}} exec \
 		-T \
 		dev \
-		bin/tsc/tsc.sh
+		./bin/tsc/tsc.sh
 
 # It checks if the dev/composer.json is updated with the platform requirements (dev/bin/git/commit/sync-platform-reqs.php)
 # and runs the code quality tools. This is used by the pre-commit git hook but it can be used standalone
@@ -232,4 +232,4 @@ validate-commit:
 	docker compose {{DOCKER_COMPOSE}} exec \
 		-T \
 		dev \
-		composer validate-commit
+		./bin/git/commit/validate-commit.sh
