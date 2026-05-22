@@ -14,40 +14,62 @@ DOCKER_COMPOSE := '-f docker-compose.yml ' + if env('APP_ENV', 'prod') == 'prod'
 	'-f docker-compose.dev.yml'
 }
 
+_env-dev:
+	@if [ "${APP_ENV:-}" != "dev" ]; then \
+		echo "❌ only allowed in development (APP_ENV=${APP_ENV:-unset})"; \
+		exit 1; \
+	fi
+
+_env-prod:
+	@if [ "${APP_ENV:-}" != "prod" ]; then \
+		echo "❌ only allowed in production (APP_ENV=${APP_ENV:-unset})"; \
+		exit 1; \
+	fi
+
 
 # ============================================================================
 # CONTAINER LIFECYCLE
 # ============================================================================
 
-# Build Docker containers (optionally specify a container)
-# Example: just build backend
-build SERVICE='':
-	@echo "🔨 Building {{ if SERVICE == '' { 'containers' } else { SERVICE } }}..."
-	docker compose {{DOCKER_COMPOSE}} build --no-cache {{SERVICE}}
+# Builds containers
+#
+# Arguments:
+#	[SERVICES...] 		The services to build (all of them if no service is specified)
+build *SERVICES:
+	@echo "🔨 Building {{ if SERVICES == '' { 'containers' } else { SERVICES } }}..."
+	docker compose {{DOCKER_COMPOSE}} build --no-cache {{SERVICES}}
 
-# Start containers in foreground (optionally specify a container)
-# Example: just up backend
-up SERVICE='':
-	@echo "🟢 Starting {{ if SERVICE == '' { 'containers' } else { SERVICE } }}..."
-	docker compose {{DOCKER_COMPOSE}} up --remove-orphans {{SERVICE}}
+# Starts containers in foreground
+#
+# Arguments:
+#	[SERVICES...] 		The services to start (all of them if no service is specified)
+up *SERVICES:
+	@echo "🟢 Starting {{ if SERVICES == '' { 'containers' } else { SERVICES } }}..."
+	docker compose {{DOCKER_COMPOSE}} up --remove-orphans {{SERVICES}}
 
-# Start containers in detached mode (optionally specify a container)
-# Example: just upd backend
-upd SERVICE='':
-	@echo "🟢 [DETACHED] Starting {{ if SERVICE == '' { 'containers' } else { SERVICE } }}..."
-	docker compose {{DOCKER_COMPOSE}} up -d --remove-orphans {{SERVICE}}
+# Starts containers in detached mode
+#
+# Arguments:
+#	[SERVICES...] 		The services to start (all of them if no service is specified)
+upd *SERVICES:
+	@echo "🟢 [DETACHED] Starting {{ if SERVICES == '' { 'containers' } else { SERVICES } }}..."
+	docker compose {{DOCKER_COMPOSE}} up -d --remove-orphans {{SERVICES}}
 
-# Stop containers (optionally specify a container)
-# Example: just stop backend
-stop SERVICE='':
-	@echo "⛔ Stopping {{ if SERVICE == '' { 'containers' } else { SERVICE } }}..."
-	docker compose {{DOCKER_COMPOSE}} stop {{SERVICE}}
+# Stops containers
+#
+# Arguments:
+#	[SERVICES...] 		The services to stop (all of them if no service is specified)
+stop *SERVICES:
+	@echo "⛔ Stopping {{ if SERVICES == '' { 'containers' } else { SERVICES } }}..."
+	docker compose {{DOCKER_COMPOSE}} stop {{SERVICES}}
 
-# Shut down and remove containers (optionally specify a container)
-# Example: just down backend
-down SERVICE='':
-	@echo "🛑 Shutting down and removing {{ if SERVICE == '' { 'containers' } else { SERVICE } }}..."
-	docker compose {{DOCKER_COMPOSE}} down {{SERVICE}}
+# Shuts down and removes containers
+#
+# Arguments:
+#	[SERVICES...] 		The services to shut down and remove (all of them if no service is specified)
+down *SERVICES:
+	@echo "🛑 Shutting down and removing {{ if SERVICES == '' { 'containers' } else { SERVICES } }}..."
+	docker compose {{DOCKER_COMPOSE}} down {{SERVICES}}
 
 
 # ============================================================================
@@ -60,11 +82,11 @@ down SERVICE='':
 #   --reset		Remove mounted node_modules, var, and vendor directories
 #             	(not applicable in production)
 #
-#   --build   	Rebuild containers before starting them
-init *ARGS:
-	bash dev/bin/init/init.sh {{ARGS}}
+#   --build		Rebuild containers before starting them
+init *OPTIONS:
+	bash dev/bin/init/init.sh {{OPTIONS}}
 
-# Run database migrations and clear Symfony cache
+# Runs database migrations and clears Symfony cache
 setup:
 	@echo "⏳ Waiting for containers to be ready..."
 	docker compose {{DOCKER_COMPOSE}} up postgres -d --wait 2>/dev/null
@@ -89,10 +111,7 @@ setup:
 # Arguments:
 #	BRANCH 		Git branch to deploy (default: main)
 deploy BRANCH='main':
-	@if [ "${APP_ENV:-}" != "prod" ]; then \
-		echo "❌ deploy only allowed in prod (APP_ENV=${APP_ENV:-unset})"; \
-		exit 1; \
-	fi
+	@just _env-prod
 
 	@echo "🚀 Fetching repository (branch: {{BRANCH}})..."
 	#git fetch origin
@@ -107,13 +126,17 @@ deploy BRANCH='main':
 # DEBUGGING
 # ============================================================================
 
-# Restart a container
-# Example: just restart backend
+# Restarts a container
+#
+# Arguments:
+#	SERVICE 		The container to restart
 restart SERVICE:
 	docker compose {{DOCKER_COMPOSE}} restart {{SERVICE}}
 
-# Force a shell into a container, even if it cannot start normally
-# Example: just debug backend
+# Forces SSH access into a container, even if it cannot start normally
+#
+# Arguments:
+#	SERVICE 		The container to log into
 debug SERVICE:
 	docker compose {{DOCKER_COMPOSE}} run \
 		--rm \
@@ -121,138 +144,103 @@ debug SERVICE:
 		/bin/sh \
 		{{SERVICE}}
 
+# Opens an interactive shell inside the container via docker exec (bin/ssh)
+#
+# Arguments:
+#	SERVICE 	Name of the service/container to attach to
+#
+# Note:
+# 	loki cannot be accessed doing `just ssh loki` as it is a distroless container without shell
+sh SERVICE:
+	docker compose {{DOCKER_COMPOSE}} exec {{SERVICE}} /bin/sh
 
-# ============================================================================
-# SHELL ACCESS
-# ============================================================================
-
-alloy:
-	docker compose {{DOCKER_COMPOSE}} exec \
-		alloy \
-		/bin/sh
-
-backend:
-	docker compose {{DOCKER_COMPOSE}} exec \
-		backend \
-		/bin/sh
-
-bot:
-	docker compose {{DOCKER_COMPOSE}} exec \
-		bot \
-		/bin/sh
-
-bot-manager:
-	docker compose {{DOCKER_COMPOSE}} exec \
-		bot-manager \
-		/bin/sh
-
-dev:
-	docker compose {{DOCKER_COMPOSE}} exec \
-		dev \
-		/bin/sh
-
-grafana:
-	docker compose {{DOCKER_COMPOSE}} exec \
-		grafana \
-		/bin/sh
-
-nginx:
-	docker compose {{DOCKER_COMPOSE}} exec \
-		nginx \
-		/bin/sh
-
-tusd:
-	docker compose {{DOCKER_COMPOSE}} exec \
-		tusd \
-		/bin/sh
-
-postgres:
-	docker compose {{DOCKER_COMPOSE}} exec \
-		postgres \
-		/bin/sh
-
-postgres-psql:
-	$(just _env)
+# Runs psql inside the postgres container
+psql:
 	docker compose {{DOCKER_COMPOSE}} exec \
 		-e PGPASSWORD="$DB_PASSWORD" \
 		postgres psql \
 		-U "$DB_USER" \
 		-d "$DB_NAME"
 
-redis:
-	docker compose {{DOCKER_COMPOSE}} exec \
-		redis \
-		/bin/sh
-
+# Runs redis-cli inside the redis container
 redis-cli:
-	docker compose {{DOCKER_COMPOSE}} exec \
-		redis \
-		redis-cli
-
-vite:
-	docker compose {{DOCKER_COMPOSE}} exec \
-		vite \
-		/bin/sh
+	docker compose {{DOCKER_COMPOSE}} exec redis redis-cli
 
 
 # ============================================================================
-# CODE QUALITY TOOLS
+# CODE QUALITY TOOLS [DEVELOPMENT]
 # ============================================================================
 
-# Run PHPStan (accepts services and '--no-progress' flag)
-# Example: just phpstan backend application --no-progress
+# Runs phpstan
+#
+# Arguments:
+# 	[SERVICES...] 	The services to analyse (application, bot-runtime, bot, bot-manager, backend, dev)
+#
+# Options:
+#   --no-progress	Remove mounted node_modules, var, and vendor directories
+#             		(not applicable in production)
+#
+#   --build			Rebuild containers before starting them
 phpstan *ARGS:
-	docker compose {{DOCKER_COMPOSE}} exec \
-		-T \
-		dev \
-		./bin/phpstan/phpstan.sh {{ARGS}}
+	@just _env-dev
+	docker compose {{DOCKER_COMPOSE}} exec -T dev ./bin/phpstan/phpstan.sh {{ARGS}}
 
-# Run Pint (accepts services and '--test' flag)
-# Example: just pint backend application --test
+# Runs phpunit
+#
+# Arguments:
+# 	[SERVICES...] 	The services to analyse (application, bot-runtime, bot, bot-manager, backend, dev)
+#
+# Options:
+#   --test			Only show the suggested code changes to follow the PER coding style, without applying them
 pint *ARGS:
-	docker compose {{DOCKER_COMPOSE}} exec \
-		-T \
-		dev \
-		./bin/pint/pint.sh {{ARGS}}
+	@just _env-dev
+	docker compose {{DOCKER_COMPOSE}} exec -T dev ./bin/pint/pint.sh {{ARGS}}
 
-# Run Rector (accepts services and '--dry-run' flag)
-# Example: just rector backend application --dry-run
+# Runs rector
+#
+# Arguments:
+# 	[SERVICES...] 	The services to analyse (application, bot-runtime, bot, bot-manager, backend, dev)
+#
+# Options:
+#   --dry-run		Only show the suggested refactorings, without applying them
 rector *ARGS:
-	docker compose {{DOCKER_COMPOSE}} exec \
-		-T \
-		dev \
-		./bin/rector/rector.sh {{ARGS}}
+	@just _env-dev
+	docker compose {{DOCKER_COMPOSE}} exec -T dev ./bin/rector/rector.sh {{ARGS}}
 
-# Run PHPUnit (accepts services and '--filter', '--debug', '--coverage-text', '--coverage-clover' flags)
-# Example: just phpunit backend application --coverage-clover
-# Note: If a --filter is passed, be careful to pass the correct service where to apply it
+# Runs rector
+#
+# Arguments:
+# 	[SERVICES...] 			The services to analyse (application, bot-runtime, bot, bot-manager, backend, dev)
+#
+# Options:
+#   --filter EXPRESSION		Run only tests that match the given expression in the given services
+# 	--debug					Enable the ability to set breakpoints on tests
+# 	--coverage-text			Add text coverage through the CLI
+#	--coverage-clover		Add clover coverage (useful during CI/CD pipelines)
 phpunit *ARGS:
-	docker compose {{DOCKER_COMPOSE}} exec \
-		-T \
-		dev \
-		./bin/phpunit/phpunit.sh {{ARGS}}
+	@just _env-dev
+	docker compose {{DOCKER_COMPOSE}} exec -T dev ./bin/phpunit/phpunit.sh {{ARGS}}
 
-# Run npm tsc (Typescript compiler). It only executes type checks and reports compilation errors
+# Runs tsc
+#
+# Arguments:
+# 	[SERVICES...] 			The services to analyse (backend)
 tsc:
-	docker compose {{DOCKER_COMPOSE}} exec \
-		-T \
-		dev \
-		./bin/tsc/tsc.sh --noEmit
+	@just _env-dev
+	docker compose {{DOCKER_COMPOSE}} exec -T dev ./bin/tsc/tsc.sh --noEmit
 
 # It checks if the dev/composer.json is updated with the platform requirements (dev/bin/git/commit/sync-platform-reqs.php)
 # and runs the code quality tools. This is used by the pre-commit git hook but it can be used standalone
 validate-commit:
-	docker compose {{DOCKER_COMPOSE}} exec \
-		-T \
-		dev \
-		./bin/git/commit/validate-commit.sh
+	@just _env-dev
+	docker compose {{DOCKER_COMPOSE}} exec -T dev ./bin/git/commit/validate-commit.sh
 
-# It checks that the composer.json is in sync with the composer.lock and the package.json is in sync with the
-# package-lock.json for the specified services, or for all the services if none specified
+# It checks that the dependencies are in check
+# 	composer.json 	<-> 	composer.lock 		(application, bot, bot-runtime, bot-manager, backend, dev)
+# 	package.json 	<-> 	package-lock.json	(backend)
 #
-# (This is used by the pre-commit git hook but it can be used standalone while developing)
+# Arguments:
+# 	[SERVICES...] 			The services to analyse (application, bot-runtime, bot, bot-manager, backend, dev)
 check-dependencies *SERVICES:
-	docker compose {{DOCKER_COMPOSE}} exec \
-		-T \
-		dev \
-		./bin/ci/check-dependencies-sync.sh {{SERVICES}}
+	@just _env-dev
+	docker compose {{DOCKER_COMPOSE}} exec -T dev ./bin/ci/check-dependencies-sync.sh {{SERVICES}}

@@ -1,9 +1,9 @@
 #!/bin/sh
 set -eu
 
-# Checks if any service has synced dependencies:
-# - If it is a PHP repository: composer.json  <-> composer.lock
-# - If it is a npm repository: package.json   <-> package-lock.json
+# It checks that the dependencies of a service are in check
+# 	composer.json 	<-> 	composer.lock 		(application, bot, bot-runtime, bot-manager, backend, dev)
+# 	package.json 	<-> 	package-lock.json	(backend)
 #
 # Usage:
 #   check-dependencies-sync.sh [SERVICES...]

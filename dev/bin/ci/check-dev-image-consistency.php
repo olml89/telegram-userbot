@@ -4,10 +4,11 @@
 declare(strict_types=1);
 
 /**
- * Validates that the PHP extensions installed in dev/Dockerfile match those
- * declared in dev/composer.json. Exits with code 1 on mismatch.
+ * Checks that the PHP extensions are synced between:
+ * - dev/Dockerfile
+ * - dev/composer.json
  *
- * Usage: php validate-image-consistency.php
+ * Usage: php check-dev-image-consistency.php
  */
 
 $projectRoot = dirname(__DIR__, 3);
