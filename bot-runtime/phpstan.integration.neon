@@ -4,5 +4,9 @@ parameters:
         - src
         - tests
 
+    excludePaths:
+        - var
+        - vendor
+
     bootstrapFiles:
         - vendor/autoload.php

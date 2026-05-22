@@ -4,5 +4,10 @@ parameters:
         - src
         - tests
 
+    excludePaths:
+        - supervisor
+        - var
+        - vendor
+
     bootstrapFiles:
         - vendor/autoload.php

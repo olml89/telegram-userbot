@@ -6,5 +6,16 @@ parameters:
         - src
         - tests
 
+    excludePaths:
+        - assets
+        - config
+        - doc
+        - node_modules
+        - php-fpm
+        - public/build
+        - templates
+        - var
+        - vendor
+
     bootstrapFiles:
         - vendor/autoload.php

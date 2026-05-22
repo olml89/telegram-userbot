@@ -12,5 +12,16 @@
         "public",
         "src",
         "tests"
+    ],
+    "exclude": [
+        "assets",
+        "config",
+        "doc",
+        "node_modules",
+        "php-fpm",
+        "public/build",
+        "templates",
+        "var",
+        "vendor"
     ]
 }

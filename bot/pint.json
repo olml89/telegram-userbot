@@ -9,5 +9,10 @@
         "bin",
         "src",
         "tests"
+    ],
+    "exclude": [
+        "supervisor",
+        "var",
+        "vendor"
     ]
 }
