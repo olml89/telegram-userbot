@@ -227,11 +227,18 @@ tsc:
 	@just _env-dev
 	docker compose {{DOCKER_COMPOSE}} exec -T dev ./bin/tsc/tsc.sh --noEmit
 
-# It checks if the dev/composer.json is updated with the platform requirements (dev/bin/git/commit/sync-platform-reqs.php)
-# and runs the code quality tools. This is used by the pre-commit git hook but it can be used standalone
-validate-commit:
+# Is the equivalent of running:
+#	just phpunit [SERVICES...]
+#	just phpstan [SERVICES...]
+#	just pint --test [SERVICES...]
+#	just rector --dry-run [SERVICES...]
+#	just tsc [SERVICES...]
+#
+# Arguments:
+# 	[SERVICES...] 			The services to analyse (application, bot-runtime, bot, bot-manager, backend, dev)
+code-quality *SERVICES:
 	@just _env-dev
-	docker compose {{DOCKER_COMPOSE}} exec -T dev ./bin/git/commit/validate-commit.sh
+	docker compose {{DOCKER_COMPOSE}} exec -T dev ./bin/git/commit/code-quality.sh {{SERVICES}}
 
 # It checks that the dependencies are in check
 # 	composer.json 	<-> 	composer.lock 		(application, bot, bot-runtime, bot-manager, backend, dev)

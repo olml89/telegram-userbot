@@ -17,8 +17,7 @@ if ! just check-dependencies; then
 fi
 
 # Execute the pre-commit script inside the container, that launches validate-commit.sh
-if ! just validate-commit; then
-    echo "❌ Pre-commit checks failed. Commit aborted."
+if ! just code-quality; then
     exit 1
 fi
 
