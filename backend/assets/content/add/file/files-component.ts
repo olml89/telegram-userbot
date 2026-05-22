@@ -104,8 +104,6 @@ export class FilesComponent extends CollectionComponent<BackendFile> {
     }
 
     public override destroy() {
-        super.destroy();
-
         this.fileCount.destroy();
         this.fileHandler.destroy();
     }

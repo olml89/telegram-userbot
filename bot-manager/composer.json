@@ -15,7 +15,7 @@
         "ext-redis": "*",
         "olml89/telegram-userbot-bot-runtime": "*",
         "cboden/ratchet": "^0.4.4",
-        "clue/redis-react": "^3@dev || ^2"
+        "clue/redis-react": "^3@dev"
     },
     "repositories": [
         {

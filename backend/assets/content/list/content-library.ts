@@ -187,7 +187,7 @@ export class ContentLibrary implements BusyAware {
             this.contentList.delete(content, nextPageContents.first());
         } catch (e: any) {
             const backendError = e as BackendError;
-            console.log(backendError);
+            console.log(backendError.consoleMessage);
             this.contentList.delete(content);
             this.contentList.error(backendError);
         } finally {
@@ -214,7 +214,7 @@ export class ContentLibrary implements BusyAware {
             this.paginationComponent.update(paginatedContents.pagination);
         } catch (e: any) {
             const backendError = e as BackendError;
-            console.log(backendError);
+            console.log(backendError.consoleMessage);
             this.contentList.load();
             this.contentList.error(backendError);
             this.paginationComponent.reset();

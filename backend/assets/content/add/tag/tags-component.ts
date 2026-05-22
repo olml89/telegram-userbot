@@ -131,8 +131,6 @@ export class TagsComponent extends CollectionComponent<Tag> {
     }
 
     public override destroy(): void {
-        super.destroy();
-
         this.tagDropdown.clear();
         this.tagCount.destroy();
     }

@@ -12,7 +12,7 @@ use Symfony\Component\HttpKernel\KernelEvents;
 final readonly class ApiExceptionResponseSubscriber
 {
     public function __construct(
-        private ApiExceptionResponseMapper $exceptionJsonResponseMapper,
+        private ApiExceptionResponseMapper $apiExceptionResponseMapper,
     ) {}
 
     /**
@@ -25,7 +25,7 @@ final readonly class ApiExceptionResponseSubscriber
         $exception = $event->getThrowable();
         $request = $event->getRequest();
 
-        if (!is_null($apiErrorResponse = $this->exceptionJsonResponseMapper->map($request, $exception))) {
+        if (!is_null($apiErrorResponse = $this->apiExceptionResponseMapper->map($request, $exception))) {
             $event->setResponse($apiErrorResponse);
         }
     }

@@ -273,7 +273,7 @@ export class ContentAddModal implements Component<Content|null> {
 
         this.setAddButtonDisabled(!this.contentFields.validate());
 
-        this.contentFields.files.onChange((): void => {
+        this.contentFields.onChange((): void => {
             this.setAddButtonDisabled(this.contentFields.hasErrors());
 
             this.closeBtns.forEach((closeBtn: HTMLButtonElement): void => {
@@ -329,8 +329,14 @@ export class ContentAddModal implements Component<Content|null> {
         this.formError.hidden = true;
     };
 
-    public close(): void {
+    private close(): void {
         this.contentAddModalElement.classList.remove('is-active');
+    }
+
+    private destroy(): void {
+        this.clearFormError();
+        this.setAddButtonDisabled(false);
+        this.contentFields.destroy();
     }
 
     public onAddedContent(listener: (content: Content) => void) {
@@ -384,17 +390,15 @@ export class ContentAddModal implements Component<Content|null> {
         try {
             const content = await this.backend.addContent(this.contentFields.getValue());
             this.eventTarget.dispatchEvent(new CustomEvent('contents-component:add', { detail: content }));
-            this.contentFields.destroy();
-            this.setAddButtonDisabled(!this.contentFields.validate());
+            this.destroy();
             this.close();
         } catch (e: any) {
             const backendError = e as BackendError;
-            console.error(e.consoleMessage);
-            const validationErrors = e.validationErrors;
-            hasValidationErrors = validationErrors !== null;
+            console.error(backendError.consoleMessage);
+            hasValidationErrors = backendError.isValidationError();
 
-            validationErrors !== null
-                ? this.setValidationErrors(validationErrors)
+            hasValidationErrors
+                ? this.setValidationErrors(backendError.validationErrors)
                 : this.setFormError(backendError.message);
         } finally {
             this.setSubmitLoading(false, hasValidationErrors);
