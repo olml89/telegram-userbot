@@ -233,3 +233,13 @@ validate-commit:
 		-T \
 		dev \
 		./bin/git/commit/validate-commit.sh
+
+# It checks that the composer.json is in sync with the composer.lock and the package.json is in sync with the
+# package-lock.json for the specified services, or for all the services if none specified
+#
+# (This is used by the pre-commit git hook but it can be used standalone while developing)
+check-dependencies *SERVICES:
+	docker compose {{DOCKER_COMPOSE}} exec \
+		-T \
+		dev \
+		./bin/ci/check-dependencies-sync.sh {{SERVICES}}

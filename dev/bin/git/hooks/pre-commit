@@ -12,6 +12,10 @@ for file in $FILES; do
     fi
 done
 
+if ! just check-dependencies; then
+    exit 1
+fi
+
 # Execute the pre-commit script inside the container, that launches validate-commit.sh
 if ! just validate-commit; then
     echo "❌ Pre-commit checks failed. Commit aborted."

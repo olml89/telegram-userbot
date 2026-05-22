@@ -28,8 +28,8 @@ jobs:
         with:
           php-version: 8.5
 
-      - name: Check if composer.json files are in sync with their composer.lock counterparts
-        run: dev/bin/ci/check-composer-sync.sh
+      - name: Check if dependencies are updated
+        run: dev/bin/ci/check-depencies-sync.sh
 
       - name: Check if dev image affecting files changed
         id: check
