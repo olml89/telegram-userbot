@@ -157,6 +157,7 @@ services:
       APP_ENV: ${APP_ENV}
       PHP_IDE_CONFIG: "serverName=${PHP_SERVER_NAME}"
       COMPOSER_PROCESS_TIMEOUT: 0
+      NPM_CONFIG_CACHE: /telegram-userbot/dev/var/npm
     user: ${UID}:${GID}
     volumes:
       - ./.git:/telegram-userbot/.git:cached

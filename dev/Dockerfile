@@ -14,6 +14,9 @@ RUN rm /usr/local/bin/install-php-extensions
 # In PHP 8.5 Opcache is already integrated into the core. Copy the Opcache configuration
 COPY docker-php-ext-opcache.ini /usr/local/etc/php/docker-php-ext-opcache.ini
 
+# Install npm
+RUN apk add --no-cache nodejs npm
+
 FROM base AS dev
 
 # Xdebug dev config (allow coverage mode, start on trigger)
@@ -37,3 +40,6 @@ COPY . /telegram-userbot/
 
 # Pre-install PHP dependencies to cache them in the image
 RUN /telegram-userbot/dev/bin/composer/composer-install.sh application bot-runtime bot bot-manager backend dev
+
+# Pre-install npm dependencies (in the backend context, to run frontend assets quality checks) to cache them in the image
+RUN npm ci --prefix /telegram-userbot/backend
