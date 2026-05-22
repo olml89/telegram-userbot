@@ -34,7 +34,9 @@ run_integration_analysis() {
         --ansi \
         --configuration="$CONFIG"
 
-    $NO_PROGRESS && set -- "$@" --no-progress
+    if $NO_PROGRESS; then
+        set -- "$@" --no-progress
+    fi
 
     printf '🔍 [integration] %s\n' "$*"
 
@@ -60,7 +62,9 @@ run_service_analysis() {
         --ansi \
         --configuration="$CONFIG" \
 
-    $NO_PROGRESS && set -- "$@" --no-progress
+    if $NO_PROGRESS; then
+        set -- "$@" --no-progress
+    fi
 
     printf '🔍 [%s] %s\n' "$SERVICE" "$*"
 
