@@ -66,7 +66,7 @@ try {
         implode(', ', array_keys($missingExtensions)),
     );
 } catch (Exception $e) {
-    echo sprintf('❌ [update-dev-php-extensions.php] %s)', $e->getMessage()) . PHP_EOL;
+    echo sprintf('❌ [update-dev-php-extensions.php] %s', $e->getMessage()) . PHP_EOL;
     exit(1);
 }
 
