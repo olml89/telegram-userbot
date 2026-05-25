@@ -15,34 +15,20 @@ set -eu
 # 	[SERVICES...] 	The services to analyse (application, bot-runtime, bot, bot-manager, backend, dev)
 
 run_php_checks() {
-    if ! ./bin/phpstan/phpstan.sh "$@"; then
-        exit 1
-    fi
-
-    if ! ./bin/pint/pint.sh --test "$@"; then
-    	exit 1
-    fi
-
-    if ! ./bin/rector/rector.sh --dry-run "$@"; then
-    	exit 1
-    fi
-
-    if ! ./bin/phpunit/phpunit.sh "$@"; then
-        exit 1
-    fi
+    ./bin/phpstan/phpstan.sh "$@"
+    ./bin/pint/pint.sh --test "$@"
+    ./bin/rector/rector.sh --dry-run "$@"
+    ./bin/phpunit/phpunit.sh "$@"
 }
 
 run_npm_checks() {
-    if ! ./bin/tsc/tsc.sh --noEmit "$@"; then
-        exit 1
-    fi
+    ./bin/tsc/tsc.sh --noEmit "$@"
 }
 
 # Run global checks
 if [ $# -eq 0 ]; then
     run_php_checks
     run_npm_checks
-    exit 0
 fi
 
 # Run service-based checks

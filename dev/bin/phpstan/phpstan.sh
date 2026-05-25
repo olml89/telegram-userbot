@@ -50,11 +50,8 @@ run_integration_analysis() {
         set -- "$@" --no-progress
     fi
 
-    printf '🔍 [integration>phpstan] %s\n' "$*"
-
-    if ! "$@"; then
-        exit 1
-    fi
+    printf '🔍 [phpstan][integration] %s\n' "$*"
+    "$@"
 }
 
 run_service_analysis() {
@@ -77,11 +74,8 @@ run_service_analysis() {
         set -- "$@" --no-progress
     fi
 
-    printf '🔍 [%s>phpstan] %s\n' "$SERVICE" "$*"
-
-    if ! "$@"; then
-        exit 1
-    fi
+    printf '🔍 [phpstan][%s] %s\n' "$SERVICE" "$*"
+    "$@"
 }
 
 if [ -z "$SERVICES" ]; then
@@ -91,5 +85,3 @@ else
         run_service_analysis "$SERVICE"
     done
 fi
-
-exit 0

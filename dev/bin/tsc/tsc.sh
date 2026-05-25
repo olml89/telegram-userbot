@@ -31,9 +31,7 @@ while [ $# -gt 0 ]; do
     shift
 done
 
-if [ -z "$SERVICES" ]; then
-    SERVICES="backend"
-fi
+SERVICES="${SERVICES:-backend}"
 
 run_tsc() {
     SERVICE=$1
@@ -52,15 +50,10 @@ run_tsc() {
         set -- "$@" --noEmit
     fi
 
-    printf '🔍 [%s>tsc] %s\n' "$SERVICE" "$*"
-
-    if ! "$@"; then
-        exit 1
-    fi
+    printf '🔍 [tsc][%s] %s\n' "$SERVICE" "$*"
+    "$@"
 }
 
 for SERVICE in $SERVICES; do
     run_tsc "$SERVICE"
 done
-
-exit 0

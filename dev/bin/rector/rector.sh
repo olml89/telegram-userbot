@@ -31,9 +31,7 @@ while [ $# -gt 0 ]; do
     shift
 done
 
-if [ -z "$SERVICES" ]; then
-    SERVICES="application bot-runtime bot bot-manager backend"
-fi
+SERVICES="${SERVICES:-application bot-runtime bot bot-manager backend}"
 
 run_rector() {
     SERVICE=$1
@@ -54,15 +52,10 @@ run_rector() {
         set -- "$@" --dry-run
     fi
 
-    printf '🔍 [%s>rector] %s\n' "$SERVICE" "$*"
-
-    if ! "$@"; then
-        exit 1
-    fi
+    printf '🔍 [rector][%s] %s\n' "$SERVICE" "$*"
+    "$@"
 }
 
 for SERVICE in $SERVICES; do
     run_rector "$SERVICE"
 done
-
-exit 0

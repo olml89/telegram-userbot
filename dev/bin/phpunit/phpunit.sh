@@ -47,17 +47,7 @@ while [ $# -gt 0 ]; do
     shift
 done
 
-if [ -z "$SERVICES" ]; then
-    SERVICES="application bot-runtime bot bot-manager backend"
-fi
-
-execute_debuggable() {
-    if $DEBUG; then
-        XDEBUG_TRIGGER=1 "$@"
-    else
-        "$@"
-    fi
-}
+SERVICES="${SERVICES:-application bot-runtime bot bot-manager backend}"
 
 run_phpunit() {
     SERVICE=$1
@@ -92,15 +82,15 @@ run_phpunit() {
         set -- "$@" --coverage-clover var/clover.xml
     fi
 
-    printf '🔍 [%s>phpunit] %s%s\n' "$SERVICE" "$XDEBUG_TRIGGER_FLAG" "$*"
+    printf '🔍 [phpunit][%s] %s%s\n' "$SERVICE" "$XDEBUG_TRIGGER_FLAG" "$*"
 
-    if ! execute_debuggable "$@"; then
-        exit 1
+    if $DEBUG; then
+        XDEBUG_TRIGGER=1 "$@"
+    else
+        "$@"
     fi
 }
 
 for SERVICE in $SERVICES; do
     run_phpunit "$SERVICE"
 done
-
-exit 0

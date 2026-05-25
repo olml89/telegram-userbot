@@ -48,4 +48,3 @@ for SERVICE in "$@"; do
 done
 
 echo "✅ Dependencies successfully installed"
-exit 0

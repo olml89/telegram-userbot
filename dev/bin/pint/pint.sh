@@ -31,9 +31,7 @@ while [ $# -gt 0 ]; do
     shift
 done
 
-if [ -z "$SERVICES" ]; then
-    SERVICES="application bot-runtime bot bot-manager backend"
-fi
+SERVICES="${SERVICES:-application bot-runtime bot bot-manager backend}"
 
 run_pint() {
     SERVICE=$1
@@ -58,15 +56,10 @@ run_pint() {
         set -- "$@" --test
     fi
 
-    printf '🔍 [%s>pint] %s\n' "$SERVICE" "$*"
-
-    if ! "$@"; then
-        exit 1
-    fi
+    printf '🔍 [pint][%s] %s\n' "$SERVICE" "$*"
+    "$@"
 }
 
 for SERVICE in $SERVICES; do
     run_pint "$SERVICE"
 done
-
-exit 0
