@@ -1,6 +1,5 @@
 #!/bin/sh
 set -eu
-set -o pipefail
 
 # It checks if staged files have CRLF line endings
 #
