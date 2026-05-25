@@ -31,7 +31,7 @@ _env-prod:
 # CONTAINER LIFECYCLE
 # ============================================================================
 
-# Builds containers
+# > It builds containers
 #
 # Arguments:
 #	[SERVICES...] 		The services to build (all of them if no service is specified)
@@ -39,7 +39,7 @@ build *SERVICES:
 	@echo "🔨 Building {{ if SERVICES == '' { 'containers' } else { SERVICES } }}..."
 	docker compose {{DOCKER_COMPOSE}} build --no-cache {{SERVICES}}
 
-# Starts containers in foreground
+# > It starts containers in foreground
 #
 # Arguments:
 #	[SERVICES...] 		The services to start (all of them if no service is specified)
@@ -47,7 +47,7 @@ up *SERVICES:
 	@echo "🟢 Starting {{ if SERVICES == '' { 'containers' } else { SERVICES } }}..."
 	docker compose {{DOCKER_COMPOSE}} up --remove-orphans {{SERVICES}}
 
-# Starts containers in detached mode
+# > It starts containers in detached mode
 #
 # Arguments:
 #	[SERVICES...] 		The services to start (all of them if no service is specified)
@@ -55,7 +55,7 @@ upd *SERVICES:
 	@echo "🟢 [DETACHED] Starting {{ if SERVICES == '' { 'containers' } else { SERVICES } }}..."
 	docker compose {{DOCKER_COMPOSE}} up -d --remove-orphans {{SERVICES}}
 
-# Stops containers
+# > It stops containers
 #
 # Arguments:
 #	[SERVICES...] 		The services to stop (all of them if no service is specified)
@@ -63,7 +63,7 @@ stop *SERVICES:
 	@echo "⛔ Stopping {{ if SERVICES == '' { 'containers' } else { SERVICES } }}..."
 	docker compose {{DOCKER_COMPOSE}} stop {{SERVICES}}
 
-# Shuts down and removes containers
+# > It shuts down and removes containers
 #
 # Arguments:
 #	[SERVICES...] 		The services to shut down and remove (all of them if no service is specified)
@@ -71,12 +71,60 @@ down *SERVICES:
 	@echo "🛑 Shutting down and removing {{ if SERVICES == '' { 'containers' } else { SERVICES } }}..."
 	docker compose {{DOCKER_COMPOSE}} down {{SERVICES}}
 
+# > It restarts a container
+#
+# Arguments:
+#	[SERVICES...] 		The containers to restart (all of them if no service is specified)
+restart *SERVICES:
+	@echo "🔄 Restarting {{ if SERVICES == '' { 'containers' } else { SERVICES } }}..."
+	docker compose {{DOCKER_COMPOSE}} restart {{SERVICES}}
+
+
+# ============================================================================
+# SHELL ACCESS
+# ============================================================================
+
+# > It forces SSH access into a container, even if it cannot start normally
+#
+# Arguments:
+#	SERVICE 		The container to log into
+debug SERVICE:
+	@echo "🐞 Forcing shell access to {{ SERVICE }}"
+	docker compose {{DOCKER_COMPOSE}} run \
+		--rm \
+		--entrypoint \
+		/bin/sh \
+		{{SERVICE}}
+
+# > It opens an interactive shell inside the container via docker exec (bin/ssh)
+#
+# Arguments:
+#	SERVICE 	The service/container to attach to
+#
+# Note:
+# 	loki cannot be accessed doing `just ssh loki` as it is a distroless container without shell
+sh SERVICE:
+	@echo "💻 Getting shell access to {{ SERVICE }}"
+	docker compose {{DOCKER_COMPOSE}} exec {{SERVICE}} /bin/sh
+
+# > It runs psql inside the postgres container
+psql:
+	docker compose {{DOCKER_COMPOSE}} exec \
+		-e PGPASSWORD="$DB_PASSWORD" \
+		postgres psql \
+		-U "$DB_USER" \
+		-d "$DB_NAME"
+
+# > It runs redis-cli inside the redis container
+redis-cli:
+	docker compose {{DOCKER_COMPOSE}} exec redis redis-cli
+
 
 # ============================================================================
 # INSTALLATION & SETUP
 # ============================================================================
 
-# Reinitializes the application by recreating containers and required runtime directories.
+# > It reinitializes the application by recreating containers and required runtime directories.
 #
 # Options:
 #   --reset		Remove mounted node_modules, var, and vendor directories
@@ -86,7 +134,7 @@ down *SERVICES:
 init *OPTIONS:
 	bash dev/bin/init/init.sh {{OPTIONS}}
 
-# Runs database migrations and clears Symfony cache
+# > It runs database migrations and clears Symfony cache
 setup:
 	@echo "⏳ Waiting for containers to be ready..."
 	docker compose {{DOCKER_COMPOSE}} up postgres -d --wait 2>/dev/null
@@ -106,7 +154,7 @@ setup:
 
 # [PRODUCTION]
 #
-# Fetches the last changes from origin and points the repository to a specific branch (main if not specified)
+# > It fetches the last changes from origin and points the repository to a specific branch (main if not specified)
 #
 # Arguments:
 #	BRANCH 		Git branch to deploy (default: main)
@@ -123,55 +171,10 @@ deploy BRANCH='main':
 
 
 # ============================================================================
-# DEBUGGING
-# ============================================================================
-
-# Restarts a container
-#
-# Arguments:
-#	SERVICE 		The container to restart
-restart SERVICE:
-	docker compose {{DOCKER_COMPOSE}} restart {{SERVICE}}
-
-# Forces SSH access into a container, even if it cannot start normally
-#
-# Arguments:
-#	SERVICE 		The container to log into
-debug SERVICE:
-	docker compose {{DOCKER_COMPOSE}} run \
-		--rm \
-		--entrypoint \
-		/bin/sh \
-		{{SERVICE}}
-
-# Opens an interactive shell inside the container via docker exec (bin/ssh)
-#
-# Arguments:
-#	SERVICE 	Name of the service/container to attach to
-#
-# Note:
-# 	loki cannot be accessed doing `just ssh loki` as it is a distroless container without shell
-sh SERVICE:
-	docker compose {{DOCKER_COMPOSE}} exec {{SERVICE}} /bin/sh
-
-# Runs psql inside the postgres container
-psql:
-	docker compose {{DOCKER_COMPOSE}} exec \
-		-e PGPASSWORD="$DB_PASSWORD" \
-		postgres psql \
-		-U "$DB_USER" \
-		-d "$DB_NAME"
-
-# Runs redis-cli inside the redis container
-redis-cli:
-	docker compose {{DOCKER_COMPOSE}} exec redis redis-cli
-
-
-# ============================================================================
 # CODE QUALITY TOOLS [DEVELOPMENT]
 # ============================================================================
 
-# Runs phpstan
+# > It runs phpstan
 #
 # Arguments:
 # 	[SERVICES...] 	The services to analyse (application, bot-runtime, bot, bot-manager, backend, dev)
@@ -183,7 +186,7 @@ phpstan *ARGS:
 	@just _env-dev
 	docker compose {{DOCKER_COMPOSE}} exec -T dev ./bin/phpstan/phpstan.sh {{ARGS}}
 
-# Runs pint
+# > It runs pint
 #
 # Arguments:
 # 	[SERVICES...] 	The services to analyse (application, bot-runtime, bot, bot-manager, backend, dev)
@@ -194,7 +197,7 @@ pint *ARGS:
 	@just _env-dev
 	docker compose {{DOCKER_COMPOSE}} exec -T dev ./bin/pint/pint.sh {{ARGS}}
 
-# Runs rector
+# > It runs rector
 #
 # Arguments:
 # 	[SERVICES...] 	The services to analyse (application, bot-runtime, bot, bot-manager, backend, dev)
@@ -205,7 +208,7 @@ rector *ARGS:
 	@just _env-dev
 	docker compose {{DOCKER_COMPOSE}} exec -T dev ./bin/rector/rector.sh {{ARGS}}
 
-# Runs phpunit
+# > It runs phpunit
 #
 # Arguments:
 # 	[SERVICES...] 			The services to analyse (application, bot-runtime, bot, bot-manager, backend, dev)
@@ -219,7 +222,7 @@ phpunit *ARGS:
 	@just _env-dev
 	docker compose {{DOCKER_COMPOSE}} exec -T dev ./bin/phpunit/phpunit.sh {{ARGS}}
 
-# Runs tsc
+# > It runs tsc
 #
 # Arguments:
 # 	[SERVICES...] 			The services to analyse (backend)
@@ -227,7 +230,7 @@ tsc:
 	@just _env-dev
 	docker compose {{DOCKER_COMPOSE}} exec -T dev ./bin/tsc/tsc.sh --noEmit
 
-# Is the equivalent of running:
+# > Is the equivalent of running:
 #	just phpunit [SERVICES...]
 #	just phpstan [SERVICES...]
 #	just pint --test [SERVICES...]
@@ -240,7 +243,7 @@ code-quality *SERVICES:
 	@just _env-dev
 	docker compose {{DOCKER_COMPOSE}} exec -T dev ./bin/git/commit/code-quality.sh {{SERVICES}}
 
-# It checks if the dependencies are in sync
+# > It checks if the dependencies are in sync
 # 	composer.json 	<-> 	composer.lock 		(application, bot, bot-runtime, bot-manager, backend, dev)
 # 	package.json 	<-> 	package-lock.json	(backend)
 #
