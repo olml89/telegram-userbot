@@ -1,5 +1,6 @@
 #!/bin/sh
 set -eu
+set -o pipefail
 
 # It checks if staged files have CRLF line endings
 #
@@ -26,7 +27,8 @@ while [ $# -gt 0 ]; do
     shift
 done
 
-STAGED_FILES=$(git -C "$PROJECT_ROOT" diff --cached --name-only | grep -v '^\.git/')
+# Prevent grep from failing with exit code 1 when no files match the filter (required due to set -e)
+STAGED_FILES=$(git -C "$PROJECT_ROOT" diff --cached --name-only | grep -v '^\.git/' || true)
 
 for STAGED_FILE in $STAGED_FILES; do
     FILE_PATH="$PROJECT_ROOT/$STAGED_FILE"
