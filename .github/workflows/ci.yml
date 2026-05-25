@@ -29,7 +29,8 @@ jobs:
           php-version: 8.5
 
       - name: Check if the repository is in a consistent state
-        run: dev/bin/commit/check-repository/check-repository.sh
+        working-directory: ./dev
+        run: ./bin/git/commit/check-repository/check-repository.sh
 
       - name: Check if dev image files changed
         id: check
