@@ -240,7 +240,7 @@ code-quality *SERVICES:
 	@just _env-dev
 	docker compose {{DOCKER_COMPOSE}} exec -T dev ./bin/git/commit/code-quality.sh {{SERVICES}}
 
-# It checks that the dependencies are in check
+# It checks if the dependencies are in sync
 # 	composer.json 	<-> 	composer.lock 		(application, bot, bot-runtime, bot-manager, backend, dev)
 # 	package.json 	<-> 	package-lock.json	(backend)
 #
@@ -248,4 +248,17 @@ code-quality *SERVICES:
 # 	[SERVICES...] 			The services to analyse (application, bot-runtime, bot, bot-manager, backend, dev)
 check-dependencies *SERVICES:
 	@just _env-dev
-	docker compose {{DOCKER_COMPOSE}} exec -T dev ./bin/ci/check-dependencies-sync.sh {{SERVICES}}
+	docker compose {{DOCKER_COMPOSE}} exec -T dev ./bin/commit/dependencies/check-dependencies-sync.sh {{SERVICES}}
+
+# > It checks if staged files have CRLF line endings
+# > It checks if dependencies are in sync (application, bot-runtime, bot, bot-manager, backend)
+# > It checks if the require section of the dev/composer.json is in sync with required php extensions from the services
+# > It checks if the dependencies are in sync (dev)
+#
+# Options:
+#   -f		Automatically convert CRLF line endings to LF and git add the modified files
+#			Force update the dev/composer.json with the missing php extensions from services
+#			Automatically update composer.lock, and add composer.json and composer.lock to the git staged files
+check-repository *ARGS:
+	@just _env-dev
+	docker compose {{DOCKER_COMPOSE}} exec -T dev ./bin/git/commit/check-repository/check-repository.sh {{ARGS}}

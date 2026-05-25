@@ -1,16 +1,15 @@
 #!/bin/sh
 set -eu
 
-# It checks that the dependencies of a service are in check
+# It checks if the dependencies of a service are in sync:
 # 	composer.json 	<-> 	composer.lock 		(application, bot, bot-runtime, bot-manager, backend, dev)
 # 	package.json 	<-> 	package-lock.json	(backend)
 #
 # Usage:
 #   check-dependencies-sync.sh [SERVICES...]
 
-SERVICES="${1:-}"
-PROJECT_ROOT="$(cd "$(dirname "$0")/../../.." && pwd)"
-EXIT=0
+PROJECT_ROOT="$(cd "$(dirname "$0")/../../../../../.." && pwd)"
+SERVICES="${*:-application bot-runtime bot bot-manager backend dev}"
 
 check_composer_dependencies() {
     SERVICE="$1"
@@ -18,31 +17,31 @@ check_composer_dependencies() {
 
     if [ ! -f "$DIRECTORY/composer.json" ]; then
         echo "❌ $DIRECTORY missing composer.json"
-        EXIT=1
 
-        return
+        exit 1
     fi
 
     if [ ! -f "$DIRECTORY/composer.lock" ]; then
         echo "❌ $DIRECTORY missing composer.lock"
-        EXIT=1
 
-        return
+        exit 1
     fi
 
-    set -- composer install \
-        --dry-run \
+    set -- composer validate \
+        --ansi \
+        --check-lock \
+        --no-check-all \
         --no-interaction \
         --working-dir="$DIRECTORY"
 
-    printf '🔍 [%s>composer dependencies] %s\n' "$SERVICE" "$*"
+    printf '🔍 [check-dependencies-sync.sh][%s] %s\n' "$SERVICE" "$*"
+    "$@"
 
-    if ! "$@"; then
-        echo "❌ $DIRECTORY/composer.json is not in sync with $DIRECTORY/composer.lock"
-        EXIT=1
-    else
-        echo "✅ $DIRECTORY/composer.json is in sync with $DIRECTORY/composer.lock"
+    if [ ! -f "$DIRECTORY/Dockerfile" ]; then
+        return
     fi
+
+    ./bin/git/commit/check-repository/dependencies/check-dockerfile-sync.php "$SERVICE"
 }
 
 check_npm_dependencies() {
@@ -51,16 +50,14 @@ check_npm_dependencies() {
 
     if [ ! -f "$DIRECTORY/package.json" ]; then
         echo "❌ $DIRECTORY missing package.json"
-        EXIT=1
 
-        return
+        exit 1
     fi
 
     if [ ! -f "$DIRECTORY/package-lock.json" ]; then
         echo "❌ $DIRECTORY missing package-lock.json"
-        EXIT=1
 
-        return
+        exit 1
     fi
 
     set -- npm \
@@ -68,19 +65,8 @@ check_npm_dependencies() {
         "$DIRECTORY" \
         ci --dry-run
 
-    printf '🔍 [%s>npm dependencies] %s\n' "$SERVICE" "$*"
-
-    if ! "$@"; then
-        echo "❌ $DIRECTORY/composer.json is not in sync with $DIRECTORY/composer.lock"
-        EXIT=1
-    else
-        echo "✅ $DIRECTORY/composer.json is in sync with $DIRECTORY/composer.lock"
-    fi
+    printf '🔍 [check-dependencies-sync.sh][%s] %s\n' "$SERVICE" "$*"
 }
-
-if [ -z "$SERVICES" ]; then
-    SERVICES="application bot-runtime bot bot-manager backend dev"
-fi
 
 for SERVICE in $SERVICES; do
     case $SERVICE in
@@ -97,5 +83,3 @@ for SERVICE in $SERVICES; do
             ;;
     esac
 done
-
-exit $EXIT

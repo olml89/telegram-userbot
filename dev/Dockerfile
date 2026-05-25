@@ -3,6 +3,12 @@ FROM php:8.5-alpine AS base
 # Set the container working directory
 WORKDIR /telegram-userbot/dev
 
+# Install git
+#
+# in dev: needed to prepare the repository on the pre-commit
+# in CI: needed to install dependencies on Github when dist fails due to rate limiting HTTP/2 429
+RUN apk add --no-cache git
+
 # Install additional PHP extensions and clear extensions installer
 COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/local/bin/
 RUN install-php-extensions xdebug @composer
@@ -19,6 +25,9 @@ RUN apk add --no-cache nodejs npm
 
 FROM base AS dev
 
+# Configure Git to trust the repository directory (solves dubious ownership issues with mounted volumes)
+RUN git config --global --add safe.directory /telegram-userbot
+
 # Xdebug dev config (allow coverage mode, start on trigger)
 ARG XDEBUG_PORT=9003
 COPY dev/docker-php-ext-xdebug.dev.ini /usr/local/etc/php/docker-php-ext-xdebug.ini
@@ -28,9 +37,6 @@ FROM base AS ci
 
 # Set CI environment
 ENV APP_ENV=ci
-
-# Install git (needed to install dependencies on Github when dist fails due to rate limiting HTTP/2 429)
-RUN apk add --no-cache git
 
 # Xdebug ci config (only coverage mode)
 COPY dev/docker-php-ext-xdebug.ci.ini /usr/local/etc/php/docker-php-ext-xdebug.ini

@@ -1,30 +1,7 @@
 #!/bin/sh
 set -eu
 
-# Normalize all files from CRLF to LF
-FILES=$(git diff --cached --name-only | grep -v '^\.git/')
+just check-repository -f
+just code-quality
 
-for file in $FILES; do
-    if [ -f "$file" ] && grep -q "$(printf '\r')" "$file"; then
-        echo "🔄 Converting '$file' from CRLF to LF line ending..."
-        sed -i 's/\r$//' "$file"
-        git add "$file"
-    fi
-done
-
-if ! just check-dependencies; then
-    exit 1
-fi
-
-# Execute the pre-commit script inside the container, that launches validate-commit.sh
-if ! just code-quality; then
-    exit 1
-fi
-
-# Stage any changes the sync made (on the host, where git lives)
-if ! git diff --quiet dev/composer.json 2>/dev/null; then
-    echo "📦 dev/composer.json was updated with new platform requirements. Staging changes..."
-    git add dev/composer.json
-fi
-
-echo "✅ All checks have passed. Proceeding with the commit."
+echo "✅ All commit validation checks have passed. Proceeding with the commit."
