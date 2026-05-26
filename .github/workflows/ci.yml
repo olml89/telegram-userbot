@@ -38,9 +38,15 @@ jobs:
         working-directory: ./dev
         id: check
         run: |
+          BEFORE_SHA="${{ github.event.before }}"
+          
+          if [ -z "$BEFORE_SHA" ] && [ "${{ github.event_name }}" = "pull_request" ]; then
+            BEFORE_SHA="${{ github.event.pull_request.base.sha }}"
+          fi
+          
           ./bin/ci/check-dev-image-changes.sh \
             "${{ github.event_name }}" \
-            "${{ github.event.before }}" \
+            "$BEFORE_SHA" \
             "${{ github.sha }}" \
             "$GITHUB_OUTPUT"
 
