@@ -53,6 +53,10 @@ jobs:
           set -euo pipefail
           
           cat << EOF > .env
+            # Host variables
+            DOMAIN=${{ vars.DOMAIN }}
+            LETSENCRYPT_EMAIL=${{ vars.LETSENCRYPT_EMAIL }}
+          
             # .env variables
             APP_ENV=${{ vars.APP_ENV }}
             BACKEND_PORT=${{ vars.BACKEND_PORT }}
