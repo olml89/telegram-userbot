@@ -162,9 +162,9 @@ deploy BRANCH='main':
 	@just _env-prod
 
 	@echo "🚀 Fetching repository (branch: {{BRANCH}})..."
-	#git fetch origin
-	#git checkout {{BRANCH}}
-	#git reset --hard origin/{{BRANCH}}
+	git fetch origin
+	git checkout {{BRANCH}}
+	git reset --hard origin/{{BRANCH}}
 
 	@just init {{ if env('APP_ENV', 'prod') == 'prod' { '--build' } else { '' } }}
 	@just setup
