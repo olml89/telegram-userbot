@@ -32,13 +32,17 @@ RUN docker-php-ext-install \
 # Install bot-manager redis extension (PECL)
 RUN pecl install redis && docker-php-ext-enable redis
 
-# Install npm
-RUN apk add --no-cache nodejs npm
+# Install xdebug
+RUN pecl install xdebug && docker-php-ext-enable xdebug
 
-# Install git
-# - dev:   needed to prepare the repository on the pre-commit
-# - CI:    needed to install dependencies on Github when dist fails due to rate limiting HTTP/2 429
-RUN apk add --no-cache git
+# Install needed runtime dependencies
+# - git:            on dev: prepare the repository on the pre-commit
+#                   on CI: install dependencies on Github when dist fails due to rate limiting HTTP/2 429)
+# - nodejs, npm:    run tsc type checks
+RUN apk add --no-cache \
+    git \
+    nodejs \
+    npm
 
 # Install composer
 COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
