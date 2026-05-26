@@ -3,22 +3,36 @@ FROM php:8.5-fpm-alpine AS base
 # Set the container working directory
 WORKDIR /telegram-userbot/backend
 
+# Install PHP compilation dependencies
+# - icu-dev:        needed to install intl PHP extension
+# - postgresql-dev: needed to install pgsql and pdo_pgsql PHP extensions
+RUN apk add --no-cache \
+    $PHPIZE_DEPS \
+    autoconf \
+    make \
+    g++ \
+    linux-headers \
+    icu-dev \
+    postgresql-dev
+
+# Install PHP extensions (core)
+RUN docker-php-ext-install \
+    intl \
+    pgsql \
+    pdo_pgsql
+
 # Install needed runtime dependencies
-# - ffmpeg: get resolution and duration and strip metadata from audio and video files
-# - exiftool: strip metadata from image and pdf files
-# - ghostcript: strip metadata from pdf files
-# - poppler-utils: installs pdfsig to determine if a pdf is signed ot not
-# - qpdf: determines if a pdf has AcroForms, JS or Attachments
+# - ffmpeg:         get resolution and duration and strip metadata from audio and video files
+# - exiftool:       strip metadata from image and pdf files
+# - ghostcript:     strip metadata from pdf files
+# - poppler-utils:  installs pdfsig to determine if a pdf is signed ot not
+# - qpdf:           determines if a pdf has AcroForms, JS or Attachments
 RUN apk add --no-cache \
     ffmpeg \
     ghostscript \
     exiftool \
     poppler-utils \
     qpdf
-
-# Install PHP extensions
-COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/local/bin/
-RUN install-php-extensions intl pgsql pdo_pgsql
 
 # In PHP 8.5 Opcache is already integrated into the core. Copy the Opcache configuration
 COPY docker-php-ext-opcache.ini /usr/local/etc/php/docker-php-ext-opcache.ini
@@ -55,18 +69,14 @@ COPY --from=assets /telegram-userbot/backend/public/build /telegram-userbot/back
 COPY backend/php-fpm/www.prod.conf /usr/local/etc/php-fpm.d/www.conf
 
 # Install composer
-# - curl, bash, composer: needed to install dependencies during the build phase, don't keep them in the container
-RUN apk add --no-cache curl bash && \
-    curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
 
 # Install PHP dependencies (without require-dev, optimized autoload)
 RUN composer install --no-dev --no-interaction --no-progress --optimize-autoloader --working-dir=/telegram-userbot/application && \
     composer install --no-dev --no-interaction --no-progress --optimize-autoloader
 
-# Clear composer, curl, bash and extensions installer
-RUN rm /usr/local/bin/composer && \
-    apk del curl bash && \
-    rm /usr/local/bin/install-php-extensions
+# Clear composer
+RUN rm /usr/local/bin/composer
 
 # Pre-create runtime directories to avoid Docker volume mount edge cases where the mount point does not exist and is
 # created as root-owned, which would break expected permissions for the application user (www-data UID 82).
@@ -78,8 +88,11 @@ USER www-data
 
 FROM base AS dev
 
-# Install composer and xdebug and clear extensions installer
-RUN install-php-extensions xdebug @composer && rm /usr/local/bin/install-php-extensions
+# Install composer
+COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
+
+# Install xdebug
+RUN pecl install xdebug && docker-php-ext-enable xdebug
 
 # Copy xdebug configuration file
 COPY docker-php-ext-xdebug.ini /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
