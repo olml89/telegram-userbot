@@ -27,7 +27,7 @@ services:
       alloy:
         condition: service_started
     healthcheck:
-      test: [CMD-SHELL, pg_isready -U $DB_USER]
+      test: [CMD-SHELL, pg_isready -U $DB_USER -d $DB_NAME]
     environment:
       POSTGRES_DB: ${DB_NAME}
       POSTGRES_USER: ${DB_USER}
