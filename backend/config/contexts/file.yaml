@@ -12,6 +12,10 @@ services:
   olml89\TelegramUserbot\Backend\File\Domain\FileRepository:
     alias: olml89\TelegramUserbot\Backend\File\Infrastructure\Doctrine\DoctrineFileRepository
 
+  # UnattachedFileRepository
+  olml89\TelegramUserbot\Backend\File\Domain\UnattachedFileRepository:
+    alias: olml89\TelegramUserbot\Backend\File\Infrastructure\Doctrine\DoctrineUnattachedFileRepository
+
   # FileManager
   olml89\TelegramUserbot\Backend\File\Domain\FileManager:
     alias: olml89\TelegramUserbot\Backend\File\Infrastructure\Symfony\File\SymfonyFileManager

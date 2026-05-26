@@ -1,4 +1,19 @@
 #!/bin/sh
+set -eu
+
+# Runs phpunit
+#
+# Usage:
+#   phpunit.sh [SERVICES...] [--filter EXPRESSION] [--debug] [--coverage-text] [--coverage-clover]
+#
+# Arguments:
+# 	[SERVICES...] 	The services to analyse (application, bot-runtime, bot, bot-manager, backend, dev)
+#
+# Options:
+#   --filter EXPRESSION		Run only tests that match the given expression in the given services
+# 	--debug					Enable the ability to set breakpoints on tests
+# 	--coverage-text			Add text coverage through the CLI
+#	--coverage-clover		Add clover coverage (useful during CI/CD pipelines)
 
 SERVICES=""
 FILTER=""
@@ -32,17 +47,7 @@ while [ $# -gt 0 ]; do
     shift
 done
 
-if [ -z "$SERVICES" ]; then
-    SERVICES="application bot-runtime bot bot-manager backend"
-fi
-
-run() {
-    if $DEBUG; then
-        XDEBUG_TRIGGER=1 "$@"
-    else
-        "$@"
-    fi
-}
+SERVICES="${SERVICES:-application bot-runtime bot bot-manager backend}"
 
 run_phpunit() {
     SERVICE=$1
@@ -65,20 +70,27 @@ run_phpunit() {
         --colors=always \
         --configuration "$CONFIG"
 
-    [ -n "$FILTER" ] && set -- "$@" --filter "$FILTER"
-    $COVERAGE_TEXT && set -- "$@" --coverage-text
-    $COVERAGE_CLOVER && set -- "$@" --coverage-clover var/clover.xml
+    if  [ -n "$FILTER" ]; then
+        set -- "$@" --filter "$FILTER"
+    fi
 
-    printf '🔍 [%s] %s%s\n' "$SERVICE" "$XDEBUG_TRIGGER_FLAG" "$*"
+    if $COVERAGE_TEXT; then
+        set -- "$@" --coverage-text
+    fi
 
-    if ! run "$@"; then
-        echo "❌ phpunit found errors in $SERVICE"
-        exit 1
+    if $COVERAGE_CLOVER; then
+        set -- "$@" --coverage-clover var/clover.xml
+    fi
+
+    printf '🔍 [phpunit][%s] %s%s\n' "$SERVICE" "$XDEBUG_TRIGGER_FLAG" "$*"
+
+    if $DEBUG; then
+        XDEBUG_TRIGGER=1 "$@"
+    else
+        "$@"
     fi
 }
 
 for SERVICE in $SERVICES; do
     run_phpunit "$SERVICE"
 done
-
-exit 0

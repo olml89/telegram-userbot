@@ -48,9 +48,6 @@ export class FileItem implements BusyAware, Errorable, ErrorClearable, HtmlEleme
 
     public setBusy(isBusy: boolean) {
         this.fileItemElement.classList.toggle('is-disabled', isBusy);
-        this.fileActions.showCancel(!isBusy);
-        this.fileActions.showRemove(!isBusy);
-        this.fileActions.showRetry(!isBusy);
     }
 
     public setDeletingState(): void {

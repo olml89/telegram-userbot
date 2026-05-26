@@ -16,7 +16,7 @@
         "ext-posix": "*",
         "ext-ffi": "*",
         "olml89/telegram-userbot-bot-runtime": "*",
-        "danog/madelineproto": "^8.4"
+        "danog/madelineproto": "^8.7"
     },
     "repositories": [
         {

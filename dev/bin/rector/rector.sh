@@ -1,4 +1,16 @@
 #!/bin/sh
+set -eu
+
+# Runs rector
+#
+# Usage:
+#   rector.sh [SERVICES...] [--dry-run]
+#
+# Arguments:
+# 	[SERVICES...] 	The services to analyse (application, bot-runtime, bot, bot-manager, backend, dev)
+#
+# Options:
+#   --dry-run		Only show the suggested refactorings, without applying them
 
 SERVICES=""
 DRY_RUN=false
@@ -19,9 +31,7 @@ while [ $# -gt 0 ]; do
     shift
 done
 
-if [ -z "$SERVICES" ]; then
-    SERVICES="application bot-runtime bot bot-manager backend"
-fi
+SERVICES="${SERVICES:-application bot-runtime bot bot-manager backend}"
 
 run_rector() {
     SERVICE=$1
@@ -38,18 +48,14 @@ run_rector() {
         --ansi \
         --config="$CONFIG" \
 
-    $DRY_RUN && set -- "$@" --dry-run
-
-    printf '🔍 [%s] %s\n' "$SERVICE" "$*"
-
-    if ! "$@"; then
-        echo "❌ rector found errors in $SERVICE"
-        exit 1
+    if $DRY_RUN; then
+        set -- "$@" --dry-run
     fi
+
+    printf '🔍 [rector][%s] %s\n' "$SERVICE" "$*"
+    "$@"
 }
 
 for SERVICE in $SERVICES; do
     run_rector "$SERVICE"
 done
-
-exit 0

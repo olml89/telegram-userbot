@@ -23,9 +23,8 @@ export abstract class InputComponent<TValue = unknown> extends RequirableCompone
     }
 
     public override destroy() {
-        super.destroy();
-
         this.input.value = '';
+        this.input.dispatchEvent(new Event('input', { bubbles: true }));
     }
 
     protected disabled(): boolean {

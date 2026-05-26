@@ -1,6 +1,18 @@
 #!/bin/sh
 set -eu
 
+# Runs phpstan
+#
+# Usage:
+#   phpstan.sh [SERVICES...] [--no-progress]
+#
+# Arguments:
+# 	[SERVICES...] 	The services to analyse (application, bot-runtime, bot, bot-manager, backend, dev)
+#
+# Options:
+#   --no-progress	Remove mounted node_modules, var, and vendor directories
+#             		(not applicable in production)
+
 SERVICES=""
 NO_PROGRESS=false
 
@@ -34,14 +46,12 @@ run_integration_analysis() {
         --ansi \
         --configuration="$CONFIG"
 
-    $NO_PROGRESS && set -- "$@" --no-progress
-
-    printf '🔍 [integration] %s\n' "$*"
-
-    if ! "$@"; then
-        echo "❌ phpstan found errors in the integration analysis"
-        exit 1
+    if $NO_PROGRESS; then
+        set -- "$@" --no-progress
     fi
+
+    printf '🔍 [phpstan][integration] %s\n' "$*"
+    "$@"
 }
 
 run_service_analysis() {
@@ -60,14 +70,12 @@ run_service_analysis() {
         --ansi \
         --configuration="$CONFIG" \
 
-    $NO_PROGRESS && set -- "$@" --no-progress
-
-    printf '🔍 [%s] %s\n' "$SERVICE" "$*"
-
-    if ! "$@"; then
-        echo "❌ phpstan found errors in $SERVICE"
-        exit 1
+    if $NO_PROGRESS; then
+        set -- "$@" --no-progress
     fi
+
+    printf '🔍 [phpstan][%s] %s\n' "$SERVICE" "$*"
+    "$@"
 }
 
 if [ -z "$SERVICES" ]; then
@@ -77,5 +85,3 @@ else
         run_service_analysis "$SERVICE"
     done
 fi
-
-exit 0

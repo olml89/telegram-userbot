@@ -40,6 +40,7 @@ services:
         XDEBUG_PORT: ${XDEBUG_BOT_PORT}
     environment:
       PHP_IDE_CONFIG: "serverName=${PHP_SERVER_NAME}"
+      COMPOSER_HOME: var/composer
     user: ${UID}:${GID}
     volumes:
       - ./application:/telegram-userbot/application:cached
@@ -57,6 +58,7 @@ services:
         XDEBUG_PORT: ${XDEBUG_BOT_MANAGER_PORT}
     environment:
       PHP_IDE_CONFIG: "serverName=${PHP_SERVER_NAME}"
+      COMPOSER_HOME: var/composer
     user: ${UID}:${GID}
     volumes:
       - ./application:/telegram-userbot/application:cached
@@ -74,6 +76,7 @@ services:
         XDEBUG_PORT: ${XDEBUG_BACKEND_PORT}
     environment:
       PHP_IDE_CONFIG: "serverName=${PHP_SERVER_NAME}"
+      COMPOSER_HOME: var/composer
     user: ${UID}:${GID}
     volumes:
       - ./application:/telegram-userbot/application:cached
@@ -127,7 +130,7 @@ services:
         condition: service_healthy
     entrypoint: [sh, /telegram-userbot/vite/entrypoint.sh]
     environment:
-      NPM_CONFIG_CACHE: /telegram-userbot/vite/var/npm
+      NPM_CONFIG_CACHE: var/npm
     ports:
       - ${VITE_PORT}:5173
     user: ${UID}:${GID}
@@ -157,8 +160,12 @@ services:
       APP_ENV: ${APP_ENV}
       PHP_IDE_CONFIG: "serverName=${PHP_SERVER_NAME}"
       COMPOSER_PROCESS_TIMEOUT: 0
+      NPM_CONFIG_CACHE: var/npm
+      HOME: /home/${USER}
+      COMPOSER_HOME: var/composer
     user: ${UID}:${GID}
     volumes:
+      - /home/${USER}:/home/${USER}:cached
       - ./.git:/telegram-userbot/.git:cached
       - ./application:/telegram-userbot/application:cached
       - ./bot-runtime:/telegram-userbot/bot-runtime:cached

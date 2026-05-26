@@ -275,8 +275,6 @@ export abstract class ValidatableSelect<TValue = any> extends RequirableComponen
     }
 
     public override destroy(): void {
-        super.destroy();
-
         this.select.destroy();
     }
 

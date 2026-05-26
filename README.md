@@ -48,8 +48,15 @@ with the MTProto API, similarly to an official app, using
 - [Application Management](#application-management)
   - [Installation and setup](#installation-and-setup)
   - [Container lifecycle](#container-lifecycle)
-  - [Debugging](#debugging)
+  - [Shell Access](#shell-access)
   - [Code quality](#code-quality)
+    - [phpstan](#phpstan)
+    - [pint](#pint)
+    - [rector](#rector)
+    - [phpunit](#phpunit)
+    - [tsc](#tsc)
+  - [Dependency integrity checking](#dependency-integrity-checking)
+  - [Repository status checking](#repository-status-checking)
 
 ## Prerequisites
 
@@ -173,6 +180,7 @@ It provides testing and code linting utilities for the core services. To do so, 
 - [phpstan](https://phpstan.org/): code static analysis tool
 - [pint](https://laravel.com/docs/13.x/pint): code linter and style enforcer
 - [rector](https://getrector.com/): code refactoring tool
+- [npm](https://www.npmjs.com/): to run [tsc](https://www.typescriptlang.org/docs/handbook/compiler-options.html) and run TypeScript compiler type checks
 
 #### vite
 it compiles the frontend assets using [Vite](https://vitejs.dev/) and provides Hot Module Replacement (HMR) for development.
@@ -216,10 +224,21 @@ project root.
 After git cloning the repository, run on the root of the project:
 
 ```bash
-just install
+just init [--build] [--reset]
 ```
 
-This will freshly start the containers in a clean state. After that, run:
+It reinitialises the application by recreating containers and required runtime directories.
+
+It will:
+- Destroy existing containers
+- Create required runtime directories
+- Start the containers again
+
+Options:
+- `--reset` (only on development): remove mounted node_modules, var, and vendor directories
+- `--build`: rebuild containers before starting them
+
+After that, run:
 
 ```bash
 just setup
@@ -227,115 +246,241 @@ just setup
 
 This will run the necessary database migrations and clear the Symfony cache.
 
-There's also a deployment recipe for production environments:
+There's also a deployment recipe, only runnable on production environments:
 
+> 🔴 **PRODUCTION ONLY**
+> This command cannot be used in development
 ```bash
-just deploy
+just deploy [BRANCH=main]
 ```
 
-This command fetches the latest changes from the remote repository, checks out the target branch, 
-and hard-resets the local repository to match origin/<branch>.
+This command fetches the latest changes from the remote repository, checks out the specified branch, 
+and hard-resets the local repository to match origin/<branch>. If no branch is specified, the main branch is used.
+Any uncommitted local changes will be permanently lost after running this command.
 
-⚠️ Any uncommitted local changes will be permanently lost after running this command.
+After that it runs:
 
-After that it runs `just install` and `just setup` as shown above to rebuild and configure the application.
+```bash
+just init --build
+just setup
+```
 
 ### Container lifecycle
 
-To build all the containers or a specified one:
+Build containers (all of them if no service is specified):
 
 ```bash
-just build [?container]
+just build [SERVICES...]
 ```
 
-To start all the containers or a specified one (the first one does it in foreground mode,
-the second one in background detached mode):
+Start containers (all of them if no service is specified):
 
 ```bash
-just up [?container]
-just upd [?container]
+just up [SERVICES...]
+just upd [SERVICES...]
 ```
 
-To stop running containers or a specified one:
+The first one does it in foreground mode, while the second one does it in background detached mode.
+
+Stop running containers (all of them if no service is specified):
 
 ```bash
-just stop [?container]
+just stop [SERVICES...]
 ```
 
-To stop and remove containers or a specified one:
+Stop and remove containers (all of them if no service is specified):
 
 ```bash
-just down [?container]
+just down [SERVICES...]
+```
+
+Restart containers (all of them if no service is specified):
+
+```bash
+just restart [SERVICES...]
 ```
 
 ### Debugging
-
-Restart a single service without impacting others:
-
-```bash
-just restart [service]
-```
 
 Run a service in a temporary container (deleted after exit) with an interactive shell, bypassing the usual entrypoint 
 (useful if the container build is failing):
 
 ```bash
-just debug [service]
+just debug SERVICE
 ```
 
 Open an interactive shell inside a running service container:
 
 ```bash
-just [service]
+just sh [SERVICE]
 ```
 
-[loki](#loki) cannot be accessed using a `just loki` command because loki is a distroless service, so it doesn't have a 
+[loki](#loki) cannot be accessed using a `just ssh loki` command because loki is a distroless service, so it doesn't have a 
 built-in shell.
 
 For [redis](#redis) there's also the `just redis-cli` command, and for [postgres](#postgres) there's also the
-`just postgres-psql` command. Those helpers are just shortcuts for running the respective CLI tools inside the container,
+`just psql` command. Those helpers are just shortcuts for running the respective CLI tools inside the container,
 instead of a shell.
 
 ### Code quality
 
-The following commands can target a specific service or be run in all the core services if no service is specified.
+> 🧪 **DEVELOPMENT ONLY**
+> This command cannot be used in production
+```bash
+just code-quality [SERVICES...]
+```
+This command is the equivalent of running all the following commands:
 
+```bash
+just phpunit [SERVICES...]
+just phpstan [SERVICES...]
+just pint --test [SERVICES...]
+just rector --dry-run [SERVICES...]
+just tsc [SERVICES...]
+```
+
+The following sections describe each command in detail.
+
+#### phpstan
 Code static analysis:
 
+> 🧪 **DEVELOPMENT ONLY**
+> This command cannot be used in production
 ```bash
-just phpstan [?service] [?--no-progress]
+just phpstan [SERVICES...] [--no-progress]
 ```
+Services
+- application (runtime library)
+- bot-runtime (runtime library)
+- [bot](#bot)
+- [bot-manager](#bot-manager)
+- [backend](#backend)
+- [dev](#dev)
 
-The `--no-progress` flag will disable the progress bar and show only the errors.
+(Default: all of them if none is specified)
 
+Options:
+- `--no-progress`: disable the progress bar and show only the errors
+
+#### pint
 Code linting:
 
+> 🧪 **DEVELOPMENT ONLY**
+> This command cannot be used in production
 ```bash
-just pint [?service] [?--test]
+just pint [SERVICES...] [--test]
 ```
+Services
+- application (runtime library)
+- bot-runtime (runtime library)
+- [bot](#bot)
+- [bot-manager](#bot-manager)
+- [backend](#backend)
+- [dev](#dev)
 
-Without the optional `--test` flag it will only show the suggested code changes to follow `PSR-12` code style. 
-Passing the flag will actually apply them.
+(Default: all of them if none is specified)
 
+Options:
+- `--test`: only show the suggested code changes to follow the [PER](https://www.php-fig.org/per/coding-style/) 
+coding style, without applying them.
+
+#### rector
 Code refactoring:
 
+> 🧪 **DEVELOPMENT ONLY**
+> This command cannot be used in production
 ```bash
-just rector [?service] [?--dry-run]
+just rector [SERVICES...] [--dry-run]
 ```
+Services
+- application (runtime library)
+- bot-runtime (runtime library)
+- [bot](#bot)
+- [bot-manager](#bot-manager)
+- [backend](#backend)
+- [dev](#dev)
 
-Without the optional `--dry-run` flag it will only show the suggested refactorings.
-Passing the flag will actually apply them.
+(Default: all of them if none is specified)
 
-Unit tests:
+Options:
+- `--dry-run`: only show the suggested refactorings, without applying them
+
+#### phpunit
+PHP tests:
+
+> 🧪 **DEVELOPMENT ONLY**
+> This command cannot be used in production
+```bash
+just phpunit [SERVICES...] [--filter EXPRESSION] [--debug] [--coverage-text] [--coverage-clover]
+```
+Services
+- application (runtime library)
+- bot-runtime (runtime library)
+- [bot](#bot)
+- [bot-manager](#bot-manager)
+- [backend](#backend)
+- [dev](#dev)
+
+(Default: all of them if none is specified)
+
+Options:
+- `--filter EXPRESSION`: run only tests that match the given expression in the given services
+- `--debug`: enable the ability to set breakpoints on tests
+- `--coverage-text`: add text coverage through the CLI
+- `--coverage-clover`: add clover coverage (useful during CI/CD pipelines)
+
+The tests will normally run with `Opcache` enabled, but the `--debug`, `--coverage-text` and `--coverage-clover` flags 
+will disable it and enable `XDebug`.
+
+#### tsc
+TypeScript compiler type checks:
+
+> 🧪 **DEVELOPMENT ONLY**
+> This command cannot be used in production
+```bash
+just tsc [SERVICES...]
+```
+Services
+- [backend](#backend)
+
+(Default: all of them if none is specified)
+
+### Dependency integrity checking
 
 ```bash
-just phpunit [?service] [?--filter] [?--debug] [?--coverage-text] [?--coverage-clover]
+just check-dependencies [SERVICES...]
 ```
+It will check that composer.json and composer.lock are in sync in:
+- application (runtime library)
+- bot-runtime (runtime library)
+- [bot](#bot)
+- [bot-manager](#bot-manager)
+- [backend](#backend)
+- [dev](#dev)
 
-The optional `--filter` flag will restrict the tests to be run to those that match it as a pattern in 
-a given service.
+It will check that package.json and package-json.lock are in sync in:
+- [backend](#backend)
 
-The tests will normally be run with `Opcache` enabled, but the following flags will disable it and enable `XDebug`:
-- `--debug` can be used to set breakpoints on tests
-- `--coverage-text` will add text coverage through the CLI
-- `--coverage-clover` will add clover coverage (useful during CI/CD pipelines)
+### Repository status checking
+```bash
+just check-repository [-f]
+```
+It checks:
+- if staged files have CRLF line endings
+- if dependencies are in sync in:
+  - application (runtime library)
+  - bot-runtime (runtime library)
+  - [bot](#bot)
+  - [bot-manager](#bot-manager)
+  - [backend](#backend)
+- if package.json and package-json.lock are in sync in:
+  - [backend](#backend)
+- if the require section of the dev/composer.json is in sync with required php extensions from the services
+- if dependencies are in sync in:
+    - [dev](#dev)
+
+Options:
+- `-f`: Automatically convert CRLF line endings to LF and git add the modified files.
+        Force update the dev/composer.json with the missing php extensions from services.
+        Automatically update composer.lock and add composer.json and composer.lock to the git staged files
+

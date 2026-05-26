@@ -1,11 +1,10 @@
 parameters:
     paths:
         - bin
+        - migrations
+        - public
         - src
         - tests
-
-    excludePaths:
-        - vendor
 
     bootstrapFiles:
         - vendor/autoload.php

@@ -72,7 +72,7 @@ export class FileComponent extends BaseComponent<BackendFile|null> implements Bu
                     this.emit('file-item:uploaded', this);
                 } catch (e: any) {
                     const backendError = e as BackendError;
-                    console.error(e.consoleMessage);
+                    console.error(backendError.consoleMessage);
                     this.fileItem.setUploadErrorState(backendError);
                     this.emit('file-item:change');
                 } finally {
