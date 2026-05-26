@@ -7,7 +7,10 @@ x-bot-runtime-env: &bot-runtime-env
 
 services:
 
-  # Infrastructure layers
+  ######################################################################################################################
+  # Infrastructure layer
+  ######################################################################################################################
+
   alloy:
     build:
       context: .
@@ -32,7 +35,10 @@ services:
     volumes:
       - telegram-userbot-postgres:/var/lib/postgresql/data:cached
 
-  # Application layers
+  ######################################################################################################################
+  # Application layer
+  ######################################################################################################################
+
   bot:
     build:
       context: .
@@ -75,6 +81,10 @@ services:
       - telegram-userbot-uploads:/telegram-userbot/backend/var/uploads:cached
       - telegram-userbot-content:/telegram-userbot/backend/var/content:cached
 
+  ######################################################################################################################
+  # Gateway layer
+  ######################################################################################################################
+
   tusd:
     volumes:
       - telegram-userbot-uploads:/var/uploads:cached
@@ -86,8 +96,37 @@ services:
       target: prod
     volumes:
       - telegram-userbot-assets:/telegram-userbot/backend/public/build:ro
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.nginx.rule=Host(`${SSH_HOST}`)
+      - traefik.http.routers.nginx.entrypoints=websecure
+      - traefik.http.routers.nginx.tls.certresolver=letsencrypt
 
-  # Monitoring layers
+  traefik:
+    container_name: telegram_userbot_traefik
+    image: traefik:v3
+    command:
+      - --providers.docker=true
+      - --providers.docker.exposedbydefault=false
+      - --entrypoints.web.address=:80
+      - --entrypoints.websecure.address=:443
+      - --certificatesresolvers.letsencrypt.acme.email=${LETSENCRYPT_EMAIL}
+      - --certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json
+      - --certificatesresolvers.letsencrypt.acme.httpchallenge=true
+      - --certificatesresolvers.letsencrypt.acme.httpchallenge.entrypoint=web
+    ports:
+      - ${HTTP_PORT}:80
+      - ${HTTPS_PORT}:443
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - letsencrypt:/letsencrypt
+    networks:
+      - telegram-userbot-network
+
+  ######################################################################################################################
+  # Monitoring layer
+  ######################################################################################################################
+
   loki:
     build:
       context: .
@@ -114,3 +153,4 @@ volumes:
   telegram-userbot-assets:
   telegram-userbot-uploads:
   telegram-userbot-content:
+  letsencrypt:
