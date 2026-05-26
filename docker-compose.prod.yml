@@ -98,7 +98,7 @@ services:
       - telegram-userbot-assets:/telegram-userbot/backend/public/build:ro
     labels:
       - traefik.enable=true
-      - traefik.http.routers.nginx.rule=Host(`${DOMAIN}`)
+      - traefik.http.routers.nginx.rule=Host(`${SSH_HOST}`)
       - traefik.http.routers.nginx.entrypoints=websecure
       - traefik.http.routers.nginx.tls.certresolver=letsencrypt
 
