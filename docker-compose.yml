@@ -176,7 +176,9 @@ services:
         condition: service_started
       cadvisor:
         condition: service_started
-    command: [--config.file=/etc/prometheus/prometheus.yml]
+    command:
+      - --storage.tsdb.path=/prometheus
+      - --config.file=/etc/prometheus/prometheus.yml
     networks:
       - telegram-userbot-grafana-network
 
@@ -201,6 +203,7 @@ volumes:
   telegram-userbot-redis:
   telegram-userbot-postgres:
   telegram-userbot-loki:
+  telegram-userbot-prometheus:
 
 networks:
   telegram-userbot-network:

@@ -101,6 +101,8 @@ services:
       context: .
       dockerfile: prometheus/Dockerfile
       target: prod
+    volumes:
+      - telegram-userbot-prometheus:/prometheus
 
   grafana:
     build:
