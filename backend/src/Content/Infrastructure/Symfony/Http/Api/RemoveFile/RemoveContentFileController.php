@@ -15,7 +15,7 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Uid\Uuid;
 
 #[Route(
-    path: '/content/{contentId}/files/{fileId}',
+    path: '/contents/{contentId}/files/{fileId}',
     name: 'api.content.files.remove',
     defaults: ['_api' => true],
     methods: ['DELETE'],
