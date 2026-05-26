@@ -66,10 +66,8 @@ jobs:
             APP_DEBUG=${{ vars.APP_DEBUG }}
             APP_SECRET=${{ secrets.APP_SECRET }}
             BACKEND_SENTRY_DSN=${{ secrets.BACKEND_SENTRY_DSN }}
-            DB_HOST=${{ secrets.DB_HOST }}
-            DB_PORT=${{ vars.DB_PORT }}
-            DB_NAME=${{ secrets.DB_NAME }}
-            DB_USER=${{ secrets.DB_USER }}
+            DB_NAME=${{ vars.DB_NAME }}
+            DB_USER=${{ vars.DB_USER }}
             DB_PASSWORD=${{ secrets.DB_PASSWORD }}
             APP_LIBRARY_CONTENT_PER_PAGE=${{ vars.APP_LIBRARY_CONTENT_PER_PAGE }}
 

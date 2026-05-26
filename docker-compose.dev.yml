@@ -28,7 +28,7 @@ services:
       dockerfile: postgres/Dockerfile
       target: dev
     ports: # Expose the database port to the outside: only during development
-      - ${POSTGRES_PORT}:${DB_PORT}
+      - ${POSTGRES_PORT}:5432
     volumes:
       - telegram-userbot-postgres:/var/lib/postgresql/data:cached
       - ./postgres/postgresql.conf:/etc/postgresql/postgresql.conf:cached
