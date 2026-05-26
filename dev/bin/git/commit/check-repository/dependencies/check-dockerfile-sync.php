@@ -40,8 +40,9 @@ foreach ($services as $service) {
             $dockerfilePath,
         );
     } catch (Exception $e) {
-        echo sprintf('❌ [check-dockerfile-sync.php][%s] %s)', $service, $e->getMessage()) . PHP_EOL;
-        exit(1);
+        echo sprintf('❌ [check-dockerfile-sync.php][%s] %s', $service, $e->getMessage()) . PHP_EOL;
+        throw $e;
+        //exit(1);
     }
 }
 
@@ -75,7 +76,10 @@ function assertDockerfileExtensionsMatchComposerExtensions(string $composerJsonP
         throw new Exception(sprintf('%s not found', $dockerfilePath));
     }
 
-    // Extract ext-* from dev/composer.json
+    /**
+     * Extract extensions in dev/composer.json
+     * - ext-*
+     */
     $composerJson = json_decode(file_get_contents($composerJsonPath), true);
     $composerExtensions = [];
 
@@ -85,33 +89,35 @@ function assertDockerfileExtensionsMatchComposerExtensions(string $composerJsonP
         }
     }
 
-    sort($composerExtensions);
-
-    // Extract extensions from RUN install-php-extensions lines in dev/Dockerfile
-    $dockerFile = file($dockerfilePath, flags: FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
-    $ignorableExtensions = ['xdebug', '@composer'];
+    /**
+     * Extract extensions from dev/Dockerfile
+     * - docker-php-ext-install [extension]
+     * - pecl install [extension]
+     */
+    $dockerFileLines = file($dockerfilePath, flags: FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+    $normalizedDockerfile = normalizeDockerfile($dockerFileLines);
+    $ignorableDockerfileExtensions = ['xdebug'];
     $dockerfileExtensions = [];
 
-    foreach ($dockerFile as $dockerfileLine) {
-        $dockerfileLine = trim($dockerfileLine);
+    foreach ($normalizedDockerfile as $dockerfileLine) {
+        $extensions = getLineExtensions($dockerfileLine);
 
-        // Only match lines that are RUN install-php-extensions commands
-        // Cut the line before any &&
-        if (!preg_match('/^RUN\s+install-php-extensions\s+(.+?)(?:\s*&&|$)/', $dockerfileLine, $m)) {
-            continue;
-        }
-
-        // Strip inline comments
-        $extensions = preg_replace('/#.*/', '', $m[1]);
-
-        foreach (preg_split('/\s+/', trim($extensions)) as $extension) {
-            if ($extension !== '' && !in_array($extension, $ignorableExtensions, true)) {
-                $dockerfileExtensions[] = $extension;
+        foreach ($extensions as $extension) {
+            if (in_array($extension, $ignorableDockerfileExtensions, strict: true)) {
+                continue;
             }
+
+            if (in_array($extension, $dockerfileExtensions, strict: true)) {
+                continue;
+            }
+
+            $dockerfileExtensions[] = $extension;
         }
     }
 
-    $dockerfileExtensions = array_unique($dockerfileExtensions);
+    /**
+     * Compare extensions
+     */
     $inComposerOnly = array_diff($composerExtensions, $dockerfileExtensions);
     $inDockerfileOnly = array_diff($dockerfileExtensions, $composerExtensions);
 
@@ -132,4 +138,70 @@ function assertDockerfileExtensionsMatchComposerExtensions(string $composerJsonP
             implode(', ', $inDockerfileOnly),
         ));
     }
+}
+
+/**
+ * @return list<string>
+ */
+function normalizeDockerfile(array $dockerFileLines): array
+{
+    $normalizedLines = [];
+    $current = '';
+
+    foreach ($dockerFileLines as $dockerFileLine) {
+        $dockerFileLine = rtrim($dockerFileLine);
+
+        if (strlen($dockerFileLine) === 0 || str_starts_with($dockerFileLine, '#')) {
+            continue;
+        }
+
+        // continuation line: \ token
+        if (str_ends_with($dockerFileLine, '\\')) {
+            $current .= ' ' . rtrim($dockerFileLine, '\\');
+
+            continue;
+        }
+
+        // normal line
+        $current .= ' ' . $dockerFileLine;
+        $normalizedLines[] = trim($current);
+        $current = '';
+    }
+
+    return $normalizedLines;
+}
+
+/**
+ * @return list<string>
+ */
+function getLineExtensions(string $line): array
+{
+    if (preg_match('/docker-php-ext-install\s+(.+?)(?:\s*&&|$)/s', $line, $m) === 1) {
+        return formatExtensions($m[1]);
+    }
+
+    if (preg_match('/pecl\s+install\s+(.+?)(?:\s*&&|$)/s', $line, $m) === 1) {
+        return formatExtensions($m[1]);
+    }
+
+    return [];
+}
+
+/**
+ * @return list<string>
+ */
+function formatExtensions(string $lineWithExtensionMatch): array
+{
+    $items = explode(' ', $lineWithExtensionMatch);
+    $extensions = [];
+
+    foreach ($items as $item) {
+        $extension = trim($item);
+
+        if (strlen($extension) > 0) {
+            $extensions[] = $extension;
+        }
+    }
+
+    return $extensions;
 }
