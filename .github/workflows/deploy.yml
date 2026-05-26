@@ -85,7 +85,7 @@ jobs:
             REDIS_STATUS_CHANNEL=${{ vars.REDIS_STATUS_CHANNEL }}
             REDIS_PHONE_CODE_STORAGE_KEY=${{ vars.REDIS_PHONE_CODE_STORAGE_KEY }}
             SUPERVISOR_CONFIG_PATH=${{ vars.SUPERVISOR_CONFIG_PATH }}
-            SUPERVISOR_USER=${{ secrets.SUPERVISOR_USER }}
+            SUPERVISOR_USER=${{ vars.SUPERVISOR_USER }}
             SUPERVISOR_PASSWORD=${{ secrets.SUPERVISOR_PASSWORD }}
           EOF
           
