@@ -124,7 +124,7 @@ services:
       dockerfile: grafana/Dockerfile
       target: dev
     volumes:
-      - ./grafana/provisioning:/etc/grafana/provisioning:cached
+      - ./grafana/dev:/etc/grafana/provisioning/datasources:cached
 
   # Vite server for Hot Module Replacement
   vite:
