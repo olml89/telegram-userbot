@@ -17,7 +17,7 @@ final class Version20260204144518 extends AbstractMigration
     public function up(Schema $schema): void
     {
         $this->addSql('
-            CREATE TABLE content_tag (
+            CREATE TABLE content_tags (
                 content_id INT NOT NULL, 
                 tag_id INT NOT NULL, 
                 PRIMARY KEY (content_id, tag_id)
@@ -25,20 +25,20 @@ final class Version20260204144518 extends AbstractMigration
         ');
         $this->addSql('
             CREATE INDEX IDX_B662E17684A0A3ED 
-            ON content_tag (content_id)
+            ON content_tags (content_id)
         ');
         $this->addSql('
             CREATE INDEX IDX_B662E176BAD26311 
-            ON content_tag (tag_id)
+            ON content_tags (tag_id)
         ');
         $this->addSql('
-            ALTER TABLE content_tag 
+            ALTER TABLE content_tags 
             ADD CONSTRAINT FK_B662E17684A0A3ED 
             FOREIGN KEY (content_id) 
             REFERENCES contents (id)
         ');
         $this->addSql('
-            ALTER TABLE content_tag 
+            ALTER TABLE content_tags 
             ADD CONSTRAINT FK_B662E176BAD26311 
             FOREIGN KEY (tag_id) 
             REFERENCES tags (id)
@@ -107,15 +107,15 @@ final class Version20260204144518 extends AbstractMigration
     public function down(Schema $schema): void
     {
         $this->addSql('
-            ALTER TABLE content_tag 
+            ALTER TABLE content_tags 
             DROP CONSTRAINT FK_B662E17684A0A3ED
         ');
         $this->addSql('
-            ALTER TABLE content_tag 
+            ALTER TABLE content_tags 
             DROP CONSTRAINT FK_B662E176BAD26311
         ');
         $this->addSql('
-            DROP TABLE content_tag
+            DROP TABLE content_tags
         ');
         $this->addSql('
             ALTER TABLE contents 
