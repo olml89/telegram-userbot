@@ -103,6 +103,7 @@ services:
       - traefik.http.routers.nginx.tls.certresolver=letsencrypt
 
   traefik:
+    container_name: telegram_userbot_traefik
     image: traefik:v3
     command:
       - --providers.docker=true
