@@ -28,3 +28,10 @@ loki.write "default" {
 		url = "http://loki:3100/loki/api/v1/push"
 	}
 }
+
+prometheus.exporter.self "alloy_metrics" { }
+
+prometheus.scrape "alloy" {
+  targets    = prometheus.exporter.self.alloy_metrics.targets
+  forward_to = []
+}

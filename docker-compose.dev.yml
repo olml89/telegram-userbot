@@ -109,13 +109,22 @@ services:
       - telegram-userbot-loki:/loki
       - ./loki/local-config.yaml:/etc/loki/local-config.yaml
 
+  prometheus:
+    build:
+      context: .
+      dockerfile: prometheus/Dockerfile
+      target: dev
+    volumes:
+      - telegram-userbot-prometheus:/prometheus
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:cached
+
   grafana:
     build:
       context: .
       dockerfile: grafana/Dockerfile
       target: dev
     volumes:
-      - ./grafana/provisioning:/etc/grafana/provisioning:cached
+      - ./grafana/dev:/etc/grafana/provisioning/datasources:cached
 
   # Vite server for Hot Module Replacement
   vite:
