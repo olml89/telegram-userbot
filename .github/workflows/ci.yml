@@ -11,12 +11,14 @@ on:
       - main
 
 jobs:
-  # Builds the dev/Dockerfile image if any of the image-affecting files changed
+  # Builds the dev/Dockerfile image if any of the dev/* files changed
   build-image:
     runs-on: ubuntu-latest
+
     permissions:
       packages: write
       contents: read
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
@@ -33,19 +35,13 @@ jobs:
         run: ./bin/git/commit/check-repository/check-repository.sh
 
       - name: Check if dev image files changed
+        working-directory: ./dev
         id: check
         run: |
-          if [ "${{ github.event_name }}" = "push" ]; then
-            BEFORE="${{ github.event.before }}"
-            AFTER="${{ github.event.after }}"
-          else
-            BEFORE="${{ github.event.pull_request.base.sha }}"
-            AFTER="${{ github.event.pull_request.head.sha }}"
-          fi
-          dev/bin/ci/check-dev-image-changes.sh \
+          ./bin/ci/check-dev-image-changes.sh \
             "${{ github.event_name }}" \
-            "$BEFORE" \
-            "$AFTER" \
+            "${{ github.event.before }}" \
+            "${{ github.sha }}" \
             "$GITHUB_OUTPUT"
 
       - name: Login to GHCR
