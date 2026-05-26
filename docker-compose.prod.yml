@@ -120,6 +120,8 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - letsencrypt:/letsencrypt
+    networks:
+      - telegram-userbot-network
 
   ######################################################################################################################
   # Monitoring layer
