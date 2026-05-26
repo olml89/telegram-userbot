@@ -3,13 +3,21 @@ FROM php:8.5-alpine AS base
 # Set the container working directory
 WORKDIR /telegram-userbot/bot-manager
 
+# Install PHP compilation dependencies
+RUN apk add --no-cache \
+    $PHPIZE_DEPS \
+    autoconf \
+    make \
+    g++ \
+    linux-headers
+
+# Install redis (PECL)
+RUN pecl install redis && docker-php-ext-enable redis
+
 # Install needed runtime dependencies
 # - supervisor: supervisord to manage bot container
-RUN apk add --no-cache supervisor
-
-# Install additional PHP extensions
-COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/local/bin/
-RUN install-php-extensions redis
+RUN apk add --no-cache \
+    supervisor
 
 # In PHP 8.5 Opcache is already integrated into the core. Copy the Opcache configuration
 COPY docker-php-ext-opcache.ini /usr/local/etc/php/docker-php-ext-opcache.ini
@@ -27,18 +35,14 @@ COPY bot-runtime/ /telegram-userbot/bot-runtime/
 COPY bot-manager/supervisor/supervisord.conf /etc/supervisor/supervisord.conf
 
 # Install composer
-# - curl, bash, composer: needed to install dependencies during the build phase, don't keep it in the container
-RUN apk add --no-cache curl bash && \
-    curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
 
 # Install PHP dependencies (without require-dev, optimized autoload)
 RUN composer install --no-dev --no-interaction --no-progress --optimize-autoloader --working-dir=/telegram-userbot/bot-runtime && \
     composer install --no-dev --no-interaction --no-progress --optimize-autoloader
 
-# Clear composer, curl, bash and extensions installer
-RUN rm /usr/local/bin/composer && \
-    apk del curl bash && \
-    rm /usr/local/bin/install-php-extensions
+# Clear composer
+RUN rm /usr/local/bin/composer
 
 # Set the ownership of the container to www-data
 RUN chown -R www-data:www-data /telegram-userbot
@@ -47,8 +51,11 @@ USER www-data
 
 FROM base AS dev
 
-# Install composer and xdebug and clear extensions installer
-RUN install-php-extensions xdebug @composer && rm /usr/local/bin/install-php-extensions
+# Install composer
+COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
+
+# Install xdebug
+RUN pecl install xdebug && docker-php-ext-enable xdebug
 
 # Copy xdebug configuration file
 COPY docker-php-ext-xdebug.ini /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini

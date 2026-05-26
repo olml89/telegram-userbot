@@ -9,15 +9,13 @@ FROM alpine:3.22 AS build
 WORKDIR /tmp
 
 # Install system tools so MadelineProto can compile PrimeModule-ext
-# - git: needed to clone the repository
-# - build-base: needed to compile C/C++
-# - cmake: needed by PrimeModule to build
-# - netcat-openbsd: needed to perform the health check for the container
+# - git:            needed to clone the repository
+# - build-base:     needed to compile C/C++
+# - cmake:          needed by PrimeModule to build
 RUN apk add --no-cache \
     git \
     build-base \
-    cmake \
-    netcat-openbsd
+    cmake
 
 # Clone and compile PrimeModule-ext to libprimemodule.so
 RUN git clone https://github.com/danog/PrimeModule-ext && \
@@ -29,20 +27,32 @@ FROM php:8.5-alpine AS base
 # Set the container working directory
 WORKDIR /telegram-userbot/bot
 
+# Install PHP compilation dependencies
+# - libffi-dev: needed to install ffi PHP extension
+RUN apk add --no-cache \
+    $PHPIZE_DEPS \
+    autoconf \
+    make \
+    g++ \
+    linux-headers \
+    libffi-dev
+
+# Install PHP extensions (core)
+RUN docker-php-ext-install \
+    pcntl \
+    posix \
+    ffi
+
 # Install needed runtime dependencies
-# - libstdc++: C++ runtime, needed to execute '.so' compiled with g++
+# - libstdc++:  C++ runtime, needed to execute '.so' compiled with g++
 # - supervisor: supervisord to manage /telegram-userbot/bot/bin/action/runner.php
-RUN apk add --no-cache  \
-    libstdc++  \
+RUN apk add --no-cache \
+    libstdc++ \
     supervisor
 
 # Copy the compiled libprimemodule.so and the primemodule-ffi.h into the container to use the library through FFI
 COPY --from=build /tmp/PrimeModule-ext/libprimemodule.so /usr/lib/
 COPY --from=build /tmp/PrimeModule-ext/src/primemodule-ffi.h /usr/include/
-
-# Install additional PHP extensions
-COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/local/bin/
-RUN install-php-extensions pcntl posix ffi
 
 # In PHP 8.5 Opcache is already integrated into the core. Copy the Opcache configuration
 COPY docker-php-ext-opcache.ini /usr/local/etc/php/docker-php-ext-opcache.ini
@@ -56,23 +66,19 @@ COPY bot/ ./
 COPY application/ /telegram-userbot/application/
 COPY bot-runtime/ /telegram-userbot/bot-runtime/
 
-# Copy supervisord config files during the build phase, before the docker volume is mounted
+# Copy supervisord config files
 COPY bot/supervisor/supervisord.conf /etc/supervisor/supervisord.conf
 COPY bot/supervisor/conf.d/*.conf /etc/supervisor/conf.d/
 
 # Install composer
-# - curl, bash, composer: needed to install dependencies during the build phase, don't keep it in the container
-RUN apk add --no-cache curl bash && \
-    curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
 
 # Install PHP dependencies (without require-dev, optimized autoload)
 RUN composer install --no-dev --no-interaction --no-progress --optimize-autoloader --working-dir=/telegram-userbot/bot-runtime && \
     composer install --no-dev --no-interaction --no-progress --optimize-autoloader
 
-# Clear composer, curl, bash and extensions installer
-RUN rm /usr/local/bin/composer && \
-    apk del curl bash && \
-    rm /usr/local/bin/install-php-extensions
+# Clear composer
+RUN rm /usr/local/bin/composer
 
 # Set the ownership of the container to www-data
 RUN chown -R www-data:www-data /telegram-userbot
@@ -80,8 +86,11 @@ USER www-data
 
 FROM base AS dev
 
-# Install composer and xdebug and clear extensions installer
-RUN install-php-extensions xdebug @composer && rm /usr/local/bin/install-php-extensions
+# Install composer
+COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
+
+# Install xdebug
+RUN pecl install xdebug && docker-php-ext-enable xdebug
 
 # Copy xdebug configuration file
 COPY docker-php-ext-xdebug.ini /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini

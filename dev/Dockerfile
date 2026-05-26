@@ -3,25 +3,48 @@ FROM php:8.5-alpine AS base
 # Set the container working directory
 WORKDIR /telegram-userbot/dev
 
-# Install git
-#
-# in dev: needed to prepare the repository on the pre-commit
-# in CI: needed to install dependencies on Github when dist fails due to rate limiting HTTP/2 429
-RUN apk add --no-cache git
+# Install PHP compilation dependencies
+# - icu-dev:        needed to install intl PHP extension
+# - postgresql-dev: needed to install pgsql and pdo_pgsql PHP extensions
+# - libffi-dev:     needed to install ffi PHP extension
+RUN apk add --no-cache \
+    $PHPIZE_DEPS \
+    autoconf \
+    make \
+    g++ \
+    linux-headers \
+    icu-dev \
+    postgresql-dev \
+    libffi-dev
 
-# Install additional PHP extensions and clear extensions installer
-COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/local/bin/
-RUN install-php-extensions xdebug @composer
-RUN install-php-extensions intl pgsql pdo_pgsql # backend
-RUN install-php-extensions pcntl posix ffi      # bot
-RUN install-php-extensions redis                # bot-manager
-RUN rm /usr/local/bin/install-php-extensions
+# Install backend PHP extensions (core)
+RUN docker-php-ext-install \
+    intl \
+    pgsql \
+    pdo_pgsql
 
-# In PHP 8.5 Opcache is already integrated into the core. Copy the Opcache configuration
-COPY docker-php-ext-opcache.ini /usr/local/etc/php/docker-php-ext-opcache.ini
+# Install bot PHP extensions (core)
+RUN docker-php-ext-install \
+    pcntl \
+    posix \
+    ffi
+
+# Install bot-manager redis extension (PECL)
+RUN pecl install redis && docker-php-ext-enable redis
 
 # Install npm
 RUN apk add --no-cache nodejs npm
+
+# Install git
+# - dev:   needed to prepare the repository on the pre-commit
+# - CI:    needed to install dependencies on Github when dist fails due to rate limiting HTTP/2 429
+RUN apk add --no-cache git
+
+# Install composer
+COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
+
+# In PHP 8.5 Opcache is already integrated into the core. Copy the Opcache configuration
+COPY docker-php-ext-opcache.ini /usr/local/etc/php/docker-php-ext-opcache.ini
 
 FROM base AS dev
 
