@@ -7,7 +7,10 @@ x-bot-runtime-env: &bot-runtime-env
 
 services:
 
-  # Infrastructure layers
+  ######################################################################################################################
+  # Infrastructure layer
+  ######################################################################################################################
+
   alloy:
     build:
       context: .
@@ -32,7 +35,10 @@ services:
     volumes:
       - telegram-userbot-postgres:/var/lib/postgresql/data:cached
 
-  # Application layers
+  ######################################################################################################################
+  # Application layer
+  ######################################################################################################################
+
   bot:
     build:
       context: .
@@ -75,6 +81,10 @@ services:
       - telegram-userbot-uploads:/telegram-userbot/backend/var/uploads:cached
       - telegram-userbot-content:/telegram-userbot/backend/var/content:cached
 
+  ######################################################################################################################
+  # Gateway layer
+  ######################################################################################################################
+
   tusd:
     volumes:
       - telegram-userbot-uploads:/var/uploads:cached
@@ -87,7 +97,10 @@ services:
     volumes:
       - telegram-userbot-assets:/telegram-userbot/backend/public/build:ro
 
-  # Monitoring layers
+  ######################################################################################################################
+  # Monitoring layer
+  ######################################################################################################################
+
   loki:
     build:
       context: .
