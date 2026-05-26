@@ -115,8 +115,8 @@ services:
       - --certificatesresolvers.letsencrypt.acme.httpchallenge=true
       - --certificatesresolvers.letsencrypt.acme.httpchallenge.entrypoint=web
     ports:
-      - "80:80"
-      - "443:443"
+      - ${HTTP_PORT}:80
+      - ${HTTPS_PORT}:443
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - letsencrypt:/letsencrypt

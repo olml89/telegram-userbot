@@ -53,13 +53,14 @@ jobs:
           set -euo pipefail
           
           cat << EOF > .env
-            # Host variables
+            # HTTPS variables
             DOMAIN=${{ vars.DOMAIN }}
             LETSENCRYPT_EMAIL=${{ vars.LETSENCRYPT_EMAIL }}
+            HTTPS_PORT=${{ vars.HTTPS_PORT }}
           
             # .env variables
             APP_ENV=${{ vars.APP_ENV }}
-            BACKEND_PORT=${{ vars.BACKEND_PORT }}
+            HTTP_PORT=${{ vars.HTTP_PORT }}
             GRAFANA_SECURITY_ADMIN_PASSWORD=${{ secrets.GRAFANA_SECURITY_ADMIN_PASSWORD }}
 
             # backend/.env variables
