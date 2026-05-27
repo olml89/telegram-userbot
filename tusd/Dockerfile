@@ -8,7 +8,9 @@ USER root
 RUN addgroup -g 2000 -S upload-managers && \
     addgroup tusd upload-managers
 
-# Grant tusd and the shared upload-managers group access to the upload-dir directory
-RUN chown -R tusd:upload-managers /srv/tusd-data
+# Pre-create tusd default upload-dir directory to avoid root-owned mount points
+# Grant tusd and the shared upload-managers group access to the upload-dir
+RUN mkdir -p /srv/tusd-data/data && \
+    chown -R tusd:upload-managers /srv/tusd-data/data
 
 USER tusd
