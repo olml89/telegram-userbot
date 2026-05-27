@@ -85,7 +85,7 @@ services:
 
   tusd:
     volumes:
-      - telegram-userbot-uploads:/var/uploads:cached
+      - telegram-userbot-uploads:/srv/tusd-data/data:cached
 
   nginx:
     build:

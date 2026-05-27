@@ -131,7 +131,6 @@ services:
       retries: 5
     command:
       - -base-path=/tus/uploads
-      - -upload-dir=/var/uploads
       - -hooks-http=http://nginx/api/files/validation
       - -hooks-enabled-events=pre-create
       - -behind-proxy

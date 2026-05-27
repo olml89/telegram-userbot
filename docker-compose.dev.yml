@@ -99,7 +99,7 @@ services:
   tusd:
     user: ${UID}:${GID}
     volumes:
-      - ./.runtime/uploads:/var/uploads:cached
+      - ./.runtime/uploads:/srv/tusd-data/data:cached
 
   nginx:
     build:
