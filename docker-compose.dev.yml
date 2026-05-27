@@ -89,8 +89,8 @@ services:
       - ./backend:/telegram-userbot/backend:cached
       - ./backend/php-fpm/www.dev.conf:/usr/local/etc/php-fpm.d/www.conf:cached
       - ./dev/bin/composer/composer-install.sh:/telegram-userbot/dev/bin/composer/composer-install.sh:cached
-      - ./.runtime/uploads:/var/uploads:cached
-      - ./.runtime/content:/var/content:cached
+      - ./.runtime/uploads:/telegram-userbot/backend/var/uploads:cached
+      - ./.runtime/content:/telegram-userbot/backend/var/content:cached
 
   ######################################################################################################################
   # Gateway layer
