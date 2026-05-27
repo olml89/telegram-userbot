@@ -54,6 +54,7 @@ jobs:
           
           cat << EOF > .env
             # HTTPS variables
+            DOMAIN=${{ vars.SSH_HOST }}
             LETSENCRYPT_EMAIL=${{ vars.LETSENCRYPT_EMAIL }}
             HTTPS_PORT=${{ vars.HTTPS_PORT }}
           
