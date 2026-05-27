@@ -78,11 +78,18 @@ RUN composer install --no-dev --no-interaction --no-progress --optimize-autoload
 # Clear composer
 RUN rm /usr/local/bin/composer
 
-# Pre-create runtime directories to avoid Docker volume mount edge cases where the mount point does not exist and is
-# created as root-owned, which would break expected permissions for the application user (www-data UID 82).
-# Then set the ownership of the container to www-data. This ensures consistent ownership from first container startup.
+# Set the ownership of the container to www-data
+RUN chown -R www-data:www-data /telegram-userbot
+
+# Shared group for telegram-userbot-uploads volume
+RUN addgroup -g 2000 -S upload-managers && \
+    addgroup www-data upload-managers
+
+# Pre-create internal runtime directories to avoid root-owned mount points
+# var/uploads uses the shared upload-managers group because it mounts the telegram-userbot-uploads volume shared with tusd
 RUN mkdir -p var/uploads var/content && \
-    chown -R www-data:www-data /telegram-userbot
+    chown -R www-data:upload-managers var/uploads && \
+    chown -R www-data:www-data var/content
 
 USER www-data
 

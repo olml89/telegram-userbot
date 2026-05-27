@@ -97,6 +97,10 @@ services:
   ######################################################################################################################
 
   tusd:
+    build:
+      context: .
+      dockerfile: tusd/Dockerfile
+      target: dev
     user: ${UID}:${GID}
     volumes:
       - ./.runtime/uploads:/srv/tusd-data/data:cached
