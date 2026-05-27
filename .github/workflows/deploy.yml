@@ -3,11 +3,9 @@ name: Deploy
 # Waits for the CI workflow to complete successfully before deploying
 
 on:
-  workflow_run:
-    workflows:
-      - CI
-    types:
-      - completed
+  # It doesn't have to wait for CI to run because it's already done on PRs and CI will not run on push on the main branch,
+  # since direct pushes to main are disabled.
+  push:
     branches:
       - main
   workflow_dispatch:  # Allows manual deployment
