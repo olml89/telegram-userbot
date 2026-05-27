@@ -3,9 +3,7 @@ name: CI
 # Runs all quality checks in parallel
 
 on:
-  push:
-    branches:
-      - main
+  # push is disabled as main is a locked branch
   pull_request:
     branches:
       - main
