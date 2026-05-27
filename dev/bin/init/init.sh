@@ -65,9 +65,6 @@ setup_runtime_directories() {
     DIRECTORIES="${DIRECTORIES} backend/var backend/var/cache"
 
     if [ "$APP_ENV" = "dev" ]; then
-        # Runtime directories. On prod they are on named volumes
-        DIRECTORIES="${DIRECTORIES} .runtime/uploads .runtime/content"
-
     	# Var directories for libraries, needed for static analysis on local development
     	DIRECTORIES="${DIRECTORIES} application/var"
     	DIRECTORIES="${DIRECTORIES} bot-runtime/var"

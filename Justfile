@@ -43,7 +43,7 @@ build *SERVICES:
 #
 # Arguments:
 #	[SERVICES...] 		The services to start (all of them if no service is specified)
-up *SERVICES:
+up *SERVICES: _dev-startup
 	@echo "🟢 Starting {{ if SERVICES == '' { 'containers' } else { SERVICES } }}..."
 	docker compose {{DOCKER_COMPOSE}} up --remove-orphans {{SERVICES}}
 
@@ -51,7 +51,7 @@ up *SERVICES:
 #
 # Arguments:
 #	[SERVICES...] 		The services to start (all of them if no service is specified)
-upd *SERVICES:
+upd *SERVICES: _dev-startup
 	@echo "🟢 [DETACHED] Starting {{ if SERVICES == '' { 'containers' } else { SERVICES } }}..."
 	docker compose {{DOCKER_COMPOSE}} up -d --remove-orphans {{SERVICES}}
 
@@ -123,6 +123,15 @@ redis-cli:
 # ============================================================================
 # INSTALLATION & SETUP
 # ============================================================================
+
+# > It ensures runtime directories exist on dev
+_dev-startup:
+	@if [ "${APP_ENV}" = "dev" ]; then \
+		mkdir -p .runtime/uploads; \
+		echo "🔧 Created: .runtime/uploads"; \
+		mkdir -p .runtime/content; \
+		echo "🔧 Created: .runtime/content"; \
+	fi
 
 # > It reinitializes the application by recreating containers and required runtime directories.
 #
