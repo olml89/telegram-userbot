@@ -70,8 +70,6 @@ services:
       APP_DEBUG: ${APP_DEBUG}
       APP_SECRET: ${APP_SECRET}
       BACKEND_SENTRY_DSN: ${BACKEND_SENTRY_DSN}
-      DB_HOST: ${DB_HOST}
-      DB_PORT: ${DB_PORT}
       DB_NAME: ${DB_NAME}
       DB_USER: ${DB_USER}
       DB_PASSWORD: ${DB_PASSWORD}
