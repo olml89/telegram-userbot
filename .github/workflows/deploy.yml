@@ -51,10 +51,11 @@ jobs:
           set -euo pipefail
           
           cat << EOF > .env
-            # HTTPS variables
+            # Host variables
             DOMAIN=${{ vars.SSH_HOST }}
             LETSENCRYPT_EMAIL=${{ vars.LETSENCRYPT_EMAIL }}
             HTTPS_PORT=${{ vars.HTTPS_PORT }}
+            UPLOAD_MANAGERS_GID=${{ vars.UPLOAD_MANAGERS_GID }}
           
             # .env variables
             APP_ENV=${{ vars.APP_ENV }}

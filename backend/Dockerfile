@@ -81,17 +81,15 @@ RUN rm /usr/local/bin/composer
 # Set the ownership of the container to www-data
 RUN chown -R www-data:www-data /telegram-userbot
 
-# Shared group for telegram-userbot-uploads volume
-RUN addgroup -g 2000 -S upload-managers && \
+# Add www-data to the shared upload-managers group for the telegram-userbot-uploads volume
+ARG UPLOAD_MANAGERS_GID
+RUN addgroup -S -g ${UPLOAD_MANAGERS_GID} upload-managers &&  \
     addgroup www-data upload-managers
 
-# Pre-create internal runtime directories to avoid root-owned mount points
-# var/uploads uses the shared upload-managers group because it mounts the telegram-userbot-uploads volume shared with tusd
-RUN mkdir -p var/uploads var/content && \
-    chown -R www-data:upload-managers var/uploads && \
-    chown -R www-data:www-data var/content
-
 USER www-data
+
+# Pre-create internal runtime /var/content directory to avoid root-owned mount points
+RUN mkdir -p var/content
 
 FROM base AS dev
 
