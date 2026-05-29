@@ -55,7 +55,7 @@ services:
       - ./dev/bin/composer/composer-install:/usr/local/bin/composer-install:cached
       - ./bot/docker/bot-entrypoint:/usr/local/bin/bot-entrypoint:cached
       #Configuration
-      - ./bot/supervisor:/etc/supervisor:cached
+      - ./bot/docker/supervisor:/etc/supervisor:cached
       # Source code
       - ./application:/telegram-userbot/application:cached
       - ./bot-runtime:/telegram-userbot/bot-runtime:cached
@@ -78,7 +78,7 @@ services:
       - ./dev/bin/composer/composer-install:/usr/local/bin/composer-install:cached
       - ./bot-manager/docker/bot-manager-entrypoint:/usr/local/bin/bot-manager-entrypoint:cached
       # Configuration
-      - ./bot-manager/supervisor:/etc/supervisor:cached
+      - ./bot-manager/docker/supervisor:/etc/supervisor:cached
       # Source code
       - ./application:/telegram-userbot/application:cached
       - ./bot-runtime:/telegram-userbot/bot-runtime:cached
@@ -103,7 +103,7 @@ services:
       - ./dev/bin/composer/composer-install:/usr/local/bin/composer-install:cached
       - ./backend/docker/backend-entrypoint:/usr/local/bin/backend-entrypoint:cached
       # Configuration
-      - ./backend/php-fpm/www.dev.conf:/usr/local/etc/php-fpm.d/www.conf:cached
+      - ./backend/docker/php-fpm/www.dev.conf:/usr/local/etc/php-fpm.d/www.conf:cached
       # Source code
       - ./application:/telegram-userbot/application:cached
       - ./backend:/telegram-userbot/backend:cached

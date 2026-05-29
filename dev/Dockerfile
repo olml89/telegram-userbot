@@ -60,7 +60,7 @@ RUN git config --global --add safe.directory /telegram-userbot
 
 # Xdebug dev config (allow coverage mode, start on trigger)
 ARG XDEBUG_PORT
-COPY dev/docker-php-ext-xdebug.dev.ini /tmp/docker-php-ext-xdebug.ini
+COPY dev/docker/php/docker-php-ext-xdebug.dev.ini /tmp/docker-php-ext-xdebug.ini
 RUN sed "s|\${XDEBUG_PORT}|$XDEBUG_PORT|g" /tmp/docker-php-ext-xdebug.ini > /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
 
 FROM base AS ci
@@ -69,7 +69,7 @@ FROM base AS ci
 ENV APP_ENV=ci
 
 # Xdebug ci config (only coverage mode)
-COPY dev/docker-php-ext-xdebug.ci.ini /usr/local/etc/php/docker-php-ext-xdebug.ini
+COPY dev/docker/php/docker-php-ext-xdebug.ci.ini /usr/local/etc/php/docker-php-ext-xdebug.ini
 
 # Copy the entire project into the image
 COPY . /telegram-userbot/

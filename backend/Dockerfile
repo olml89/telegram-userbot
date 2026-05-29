@@ -66,7 +66,7 @@ COPY application/ /telegram-userbot/application/
 COPY --from=assets /telegram-userbot/backend/public/build /telegram-userbot/backend/public/build
 
 # Copy production PHP-FPM configuration
-COPY backend/php-fpm/www.prod.conf /usr/local/etc/php-fpm.d/www.conf
+COPY backend/docker/php-fpm/www.prod.conf /usr/local/etc/php-fpm.d/www.conf
 
 # Install PHP dependencies (without require-dev, optimized autoload)
 COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
