@@ -75,7 +75,7 @@ COPY dev/docker-php-ext-xdebug.ci.ini /usr/local/etc/php/docker-php-ext-xdebug.i
 COPY . /telegram-userbot/
 
 # Pre-install PHP dependencies to cache them in the image
-COPY dev/bin/composer/composer-install /usr/bin/local/composer-install
+COPY dev/bin/composer/composer-install /usr/local/bin/composer-install
 RUN composer-install application bot-runtime bot bot-manager backend dev
 
 # Pre-install npm dependencies (in the backend context, to run frontend assets quality checks) to cache them in the image
