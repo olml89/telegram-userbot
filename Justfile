@@ -127,13 +127,15 @@ redis-cli:
 # > It ensures runtime directories exist on dev
 _dev-startup:
 	@if [ "${APP_ENV}" = "dev" ]; then \
-		mkdir -p .runtime/uploads; \
-		echo "🔧 Created: .runtime/uploads"; \
-		mkdir -p .runtime/content; \
-		echo "🔧 Created: .runtime/content"; \
+		if [ ! -d .runtime/uploads ]; then \
+			mkdir -p .runtime/uploads && echo "🔧 Created: .runtime/uploads"; \
+		fi; \
+		if [ ! -d .runtime/content ]; then \
+			mkdir -p .runtime/content && echo "🔧 Created: .runtime/content"; \
+		fi; \
 	fi
 
-# > It reinitializes the application by recreating containers and required runtime directories.
+# > It reinitializes the application by recreating containers
 #
 # Options:
 #   --reset		Remove mounted node_modules, var, and vendor directories
