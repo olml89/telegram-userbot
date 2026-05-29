@@ -27,6 +27,9 @@ ENTRYPOINT ["php", "bin/bot-manager.php"]
 
 FROM base AS prod
 
+# Immutable prod environment
+ENV APP_ENV=prod
+
 # Copy the needed codebases to the container
 COPY bot-manager/ ./
 COPY application/ /telegram-userbot/application/
@@ -49,6 +52,9 @@ RUN chown -R www-data:www-data /telegram-userbot
 USER www-data
 
 FROM base AS dev
+
+# Immutable dev environment
+ENV APP_ENV=dev
 
 # Install composer
 COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer

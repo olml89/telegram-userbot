@@ -62,7 +62,6 @@ services:
       timeout: 10s
       retries: 50
     environment:
-      APP_ENV: ${APP_ENV}
       SUPERVISOR_USER: ${SUPERVISOR_USER}
       SUPERVISOR_PASSWORD: ${SUPERVISOR_PASSWORD}
     tty: true
@@ -88,7 +87,6 @@ services:
       timeout: 5s
       retries: 10
     environment:
-      APP_ENV: ${APP_ENV}
       SUPERVISOR_USER: ${SUPERVISOR_USER}
       SUPERVISOR_PASSWORD: ${SUPERVISOR_PASSWORD}
     tty: true
@@ -111,8 +109,6 @@ services:
       interval: 5s
       timeout: 5s
       retries: 10
-    environment:
-      APP_ENV: ${APP_ENV}
     extra_hosts:
       - 'host.docker.internal:host-gateway'
     networks:

@@ -55,6 +55,9 @@ RUN npm run build
 
 FROM base AS prod
 
+# Immutable prod environment
+ENV APP_ENV=prod
+
 # Copy the needed codebases to the container
 COPY backend/ ./
 COPY application/ /telegram-userbot/application/
@@ -87,6 +90,9 @@ USER www-data
 RUN mkdir -p var/content
 
 FROM base AS dev
+
+# Immutable dev environment
+ENV APP_ENV=dev
 
 # Install composer
 COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer

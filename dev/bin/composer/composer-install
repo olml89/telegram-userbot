@@ -14,11 +14,11 @@ for SERVICE in "$@"; do
 			WORKING_DIR="/telegram-userbot/$SERVICE";
 
 			if [ -d "$WORKING_DIR/vendor" ]; then
-				echo "✅ Dependencies already installed in $SERVICE"
+				echo "🟢 [$SERVICE] Dependencies already installed"
 				continue;
 			fi
 
-			echo "🔧 Installing dependencies in $SERVICE..."
+            echo "⚪ [$SERVICE] Installing dependencies..."
 
 			# Build arguments
             set -- composer install \
@@ -41,6 +41,8 @@ for SERVICE in "$@"; do
 
             printf '🔍 [%s] %s\n' "$SERVICE" "$*"
             "$@"
+
+            echo "🟢 [$SERVICE] Dependencies successfully installed"
 			;;
 		*)
 			echo "❌ Unknown service: $SERVICE"

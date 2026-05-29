@@ -52,6 +52,9 @@ COPY docker-php-ext-opcache.ini /usr/local/etc/php/docker-php-ext-opcache.ini
 
 FROM base AS dev
 
+# Immutable dev environment
+ENV APP_ENV=dev
+
 # Configure Git to trust the repository directory (solves dubious ownership issues with mounted volumes)
 RUN git config --global --add safe.directory /telegram-userbot
 
@@ -62,7 +65,7 @@ RUN sed "s|\${XDEBUG_PORT}|$XDEBUG_PORT|g" /tmp/docker-php-ext-xdebug.ini > /usr
 
 FROM base AS ci
 
-# Set CI environment
+# Immutable CI environment
 ENV APP_ENV=ci
 
 # Xdebug ci config (only coverage mode)
