@@ -2,9 +2,9 @@ FROM alpine:latest AS init
 
 RUN apk add --no-cache acl
 
-COPY tusd/docker/tusd-init-entrypoint /usr/bin/local/tusd-init-entrypoint
+COPY tusd/docker/tusd-init-entrypoint /usr/local/bin/tusd-init-entrypoint
 
-ENTRYPOINT ["/usr/bin/local/tusd-init-entrypoint"]
+ENTRYPOINT ["/usr/local/bin/tusd-init-entrypoint"]
 
 FROM tusproject/tusd:latest AS dev
 
