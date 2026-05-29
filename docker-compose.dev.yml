@@ -27,7 +27,8 @@ services:
       context: .
       dockerfile: postgres/Dockerfile
       target: dev
-    ports: # Expose the database port to the outside: only during development
+    # Expose the database port to the outside: only during development
+    ports:
       - ${POSTGRES_PORT}:5432
     volumes:
       - telegram-userbot-postgres:/var/lib/postgresql/data:cached
@@ -44,16 +45,21 @@ services:
       target: dev
       args:
         XDEBUG_PORT: ${XDEBUG_BOT_PORT}
+    entrypoint: [/usr/local/bin/bot-entrypoint]
     environment:
       PHP_IDE_CONFIG: "serverName=${PHP_SERVER_NAME}"
       COMPOSER_HOME: var/composer
     user: ${UID}:${GID}
     volumes:
+      #Executables
+      - ./dev/bin/composer/composer-install:/usr/local/bin/composer-install:cached
+      - ./bot/docker/bot-entrypoint:/usr/local/bin/bot-entrypoint:cached
+      #Configuration
+      - ./bot/supervisor:/etc/supervisor:cached
+      # Source code
       - ./application:/telegram-userbot/application:cached
       - ./bot-runtime:/telegram-userbot/bot-runtime:cached
       - ./bot:/telegram-userbot/bot:cached
-      - ./bot/supervisor:/etc/supervisor:cached
-      - ./dev/bin/composer/composer-install.sh:/telegram-userbot/dev/bin/composer/composer-install.sh:cached
 
   bot-manager:
     build:
@@ -62,16 +68,21 @@ services:
       target: dev
       args:
         XDEBUG_PORT: ${XDEBUG_BOT_MANAGER_PORT}
+    entrypoint: [/usr/local/bin/bot-manager-entrypoint]
     environment:
       PHP_IDE_CONFIG: "serverName=${PHP_SERVER_NAME}"
       COMPOSER_HOME: var/composer
     user: ${UID}:${GID}
     volumes:
+      # Executables
+      - ./dev/bin/composer/composer-install:/usr/local/bin/composer-install:cached
+      - ./bot-manager/docker/bot-manager-entrypoint:/usr/local/bin/bot-manager-entrypoint:cached
+      # Configuration
+      - ./bot-manager/supervisor:/etc/supervisor:cached
+      # Source code
       - ./application:/telegram-userbot/application:cached
       - ./bot-runtime:/telegram-userbot/bot-runtime:cached
       - ./bot-manager:/telegram-userbot/bot-manager:cached
-      - ./bot-manager/supervisor:/etc/supervisor:cached
-      - ./dev/bin/composer/composer-install.sh:/telegram-userbot/dev/bin/composer/composer-install.sh:cached
 
   backend:
     build:
@@ -80,15 +91,23 @@ services:
       target: dev
       args:
         XDEBUG_PORT: ${XDEBUG_BACKEND_PORT}
+    entrypoint: [/usr/local/bin/backend-entrypoint]
+    command:
+      - php-fpm
     environment:
       PHP_IDE_CONFIG: "serverName=${PHP_SERVER_NAME}"
       COMPOSER_HOME: var/composer
     user: ${UID}:${GID}
     volumes:
+      # Executables
+      - ./dev/bin/composer/composer-install:/usr/local/bin/composer-install:cached
+      - ./backend/docker/backend-entrypoint:/usr/local/bin/backend-entrypoint:cached
+      # Configuration
+      - ./backend/php-fpm/www.dev.conf:/usr/local/etc/php-fpm.d/www.conf:cached
+      # Source code
       - ./application:/telegram-userbot/application:cached
       - ./backend:/telegram-userbot/backend:cached
-      - ./backend/php-fpm/www.dev.conf:/usr/local/etc/php-fpm.d/www.conf:cached
-      - ./dev/bin/composer/composer-install.sh:/telegram-userbot/dev/bin/composer/composer-install.sh:cached
+      # Runtime directories
       - ./.runtime/uploads:/telegram-userbot/backend/var/uploads:cached
       - ./.runtime/content:/telegram-userbot/backend/var/content:cached
 
@@ -160,13 +179,22 @@ services:
         condition: service_started
       backend:
         condition: service_healthy
-    entrypoint: [sh, /telegram-userbot/vite/entrypoint.sh]
+    entrypoint: [/usr/local/bin/vite-entrypoint]
+    command:
+      - --
+      - --host
+      - 0.0.0.0
+      - --port
+      - "5173"
     environment:
       NPM_CONFIG_CACHE: var/npm
     ports:
       - ${VITE_PORT}:5173
     user: ${UID}:${GID}
     volumes:
+      # Executables
+      - ./vite/docker/vite-entrypoint:/usr/local/bin/vite-entrypoint:cached
+      # Source code
       - ./backend:/telegram-userbot/backend:cached
       - ./vite:/telegram-userbot/vite:cached
 
@@ -187,7 +215,7 @@ services:
     cpus: 12
     mem_limit: 24g
     tty: true
-    entrypoint: [sh, bin/entrypoint.sh]
+    entrypoint: [/usr/local/bin/dev-entrypoint]
     environment:
       APP_ENV: ${APP_ENV}
       PHP_IDE_CONFIG: "serverName=${PHP_SERVER_NAME}"
@@ -197,8 +225,13 @@ services:
       COMPOSER_HOME: var/composer
     user: ${UID}:${GID}
     volumes:
+      # Executables
+      - ./dev/bin/composer/composer-install:/usr/local/bin/composer-install:cached
+      - ./dev/docker/dev-entrypoint:/usr/local/bin/dev-entrypoint:cached
+      # Git: use the host's git config
       - /home/${USER}:/home/${USER}:cached
       - ./.git:/telegram-userbot/.git:cached
+      # Source code
       - ./application:/telegram-userbot/application:cached
       - ./bot-runtime:/telegram-userbot/bot-runtime:cached
       - ./bot:/telegram-userbot/bot:cached

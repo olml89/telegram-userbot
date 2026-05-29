@@ -8,7 +8,9 @@ services:
 
   alloy:
     container_name: telegram_userbot_alloy
-    command: [run, /etc/alloy/config.alloy]
+    command:
+      - run
+      - /etc/alloy/config.alloy
     networks:
       - telegram-userbot-grafana-network
 
@@ -17,7 +19,9 @@ services:
     depends_on:
       alloy:
         condition: service_started
-    command: [redis-server, /usr/local/etc/redis/redis.conf]
+    command:
+      - redis-server
+      - /usr/local/etc/redis/redis.conf
     networks:
       - telegram-userbot-network
 
@@ -32,7 +36,9 @@ services:
       POSTGRES_DB: ${DB_NAME}
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
-    command: [-c, config_file=/etc/postgresql/postgresql.conf]
+    command:
+      - -c
+      - config_file=/etc/postgresql/postgresql.conf
     networks:
       - telegram-userbot-network
 
@@ -60,7 +66,9 @@ services:
       SUPERVISOR_USER: ${SUPERVISOR_USER}
       SUPERVISOR_PASSWORD: ${SUPERVISOR_PASSWORD}
     tty: true
-    entrypoint: [sh, bin/entrypoint.sh]
+    command:
+      - -c
+      - /etc/supervisor/supervisord.conf
     networks:
       - telegram-userbot-network
 
@@ -105,7 +113,6 @@ services:
       retries: 10
     environment:
       APP_ENV: ${APP_ENV}
-    entrypoint: [sh, bin/entrypoint.sh]
     extra_hosts:
       - 'host.docker.internal:host-gateway'
     networks:
@@ -157,7 +164,8 @@ services:
     depends_on:
       alloy:
         condition: service_started
-    command: [-config.file=/etc/loki/local-config.yaml]
+    command:
+      - -config.file=/etc/loki/local-config.yaml
     networks:
       - telegram-userbot-grafana-network
 

@@ -56,9 +56,9 @@ FROM base AS dev
 RUN git config --global --add safe.directory /telegram-userbot
 
 # Xdebug dev config (allow coverage mode, start on trigger)
-ARG XDEBUG_PORT=9003
-COPY dev/docker-php-ext-xdebug.dev.ini /usr/local/etc/php/docker-php-ext-xdebug.ini
-RUN printf '\nxdebug.client_port=%s\n' ${XDEBUG_PORT} >> /usr/local/etc/php/docker-php-ext-xdebug.ini
+ARG XDEBUG_PORT
+COPY dev/docker-php-ext-xdebug.dev.ini /tmp/docker-php-ext-xdebug.ini
+RUN sed "s|\${XDEBUG_PORT}|$XDEBUG_PORT|g" /tmp/docker-php-ext-xdebug.ini > /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
 
 FROM base AS ci
 
@@ -72,7 +72,8 @@ COPY dev/docker-php-ext-xdebug.ci.ini /usr/local/etc/php/docker-php-ext-xdebug.i
 COPY . /telegram-userbot/
 
 # Pre-install PHP dependencies to cache them in the image
-RUN ./bin/composer/composer-install.sh application bot-runtime bot bot-manager backend dev
+COPY dev/bin/composer/composer-install /usr/bin/local/composer-install
+RUN composer-install application bot-runtime bot bot-manager backend dev
 
 # Pre-install npm dependencies (in the backend context, to run frontend assets quality checks) to cache them in the image
 RUN npm ci --prefix /telegram-userbot/backend

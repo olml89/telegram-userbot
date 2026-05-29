@@ -91,7 +91,6 @@ services:
       context: .
       dockerfile: tusd/Dockerfile
       target: init
-    entrypoint: [sh, /init.sh]
     environment:
       UPLOAD_MANAGERS_GID: ${UPLOAD_MANAGERS_GID}
     volumes:

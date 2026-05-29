@@ -1,0 +1,6 @@
+#!/bin/sh
+set -eu
+
+composer-install bot-runtime bot-manager
+
+exec php bin/bot-manager.php "$@"
