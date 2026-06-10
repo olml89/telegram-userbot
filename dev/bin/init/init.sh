@@ -8,28 +8,49 @@ set -eu
 # - Start the containers again
 #
 # Usage:
-#   init.sh [--reset] [--build]
+#   init.sh [--reset-deps] [--reset-cache] [--build]
 #
 # Options:
-#   --reset   Remove mounted node_modules, var, and vendor directories
-#             (not applicable in production)
+#   --reset-deps    Remove mounted node_modules and vendor directories
+#                   (not applicable in production)
 #
-#   --build   Rebuild containers before starting them
+#   --reset-cache   Remove mounted var mounted directory
+#                   (not applicable in production)
+#
+#   --build         Rebuild containers before starting them
 
 BUILD=false
-RESET=false
+RESET_DEPS=false
+RESET_CACHE=false
+
+SERVICES="
+application
+bot-runtime
+bot
+bot-manager
+backend
+dev
+vite
+"
 
 for arg in "$@"; do
     case "$arg" in
         --build)
             BUILD=true
             ;;
-        --reset)
+        --reset-deps)
             if [ "$APP_ENV" != "dev" ]; then
-                echo "❌ The --reset flag can only be applied in dev"
+                echo "❌ The --reset-deps flag can only be applied in dev"
                 exit 1
             fi
-            RESET=true
+            RESET_DEPS=true
+            ;;
+        --reset-cache)
+            if [ "$APP_ENV" != "dev" ]; then
+                echo "❌ The --reset-cache flag can only be applied in dev"
+                exit 1
+            fi
+            RESET_CACHE=true
             ;;
         *)
             echo "❌ Unknown argument: $arg"
@@ -38,27 +59,37 @@ for arg in "$@"; do
     esac
 done
 
-reset_cache_directories() {
-    echo "🔧 Setting application in a factory reset state..."
-
-    SERVICES="application bot-runtime bot bot-manager backend vite dev"
-    DIRECTORIES="node_modules var vendor"
+reset_deps() {
+    echo "🔧 Deleting dependency directories..."
 
     for SERVICE in $SERVICES; do
-        for DIRECTORY in $DIRECTORIES; do
-            CURRENT_TARGET="$SERVICE/$DIRECTORY"
+        if [ -e "${SERVICE:?}/node_modules" ] && rm -rf "${SERVICE:?}/node_modules"; then
+            echo "Deleted: ${SERVICE:?}/node_modules"
+        fi
+        if [ -e "${SERVICE:?}/vendor" ] && rm -rf "${SERVICE:?}/vendor"; then
+            echo "Deleted: ${SERVICE:?}/vendor"
+        fi
+    done
+}
 
-            if [ -e "$CURRENT_TARGET" ] && rm -rf "$CURRENT_TARGET"; then
-                echo "Deleted: $CURRENT_TARGET"
-            fi
-        done
+reset_cache() {
+    echo "🔧 Deleting cache directories..."
+
+    for SERVICE in $SERVICES; do
+        if [ -e "${SERVICE:?}/var" ] && rm -rf "${SERVICE:?}/var"; then
+            echo "Deleted: ${SERVICE:?}/var"
+        fi
     done
 }
 
 just down
 
-if $RESET; then
-    reset_cache_directories
+if $RESET_DEPS; then
+    reset_deps
+fi
+
+if $RESET_CACHE; then
+    reset_cache
 fi
 
 if $BUILD; then

@@ -26,6 +26,11 @@ _env-prod:
 		exit 1; \
 	fi
 
+_dev-startup:
+	@if [ "${APP_ENV}" = "dev" ]; then \
+		./dev/bin/init/dev-startup.sh; \
+	fi
+
 
 # ============================================================================
 # CONTAINER LIFECYCLE
@@ -124,26 +129,18 @@ redis-cli:
 # INSTALLATION & SETUP
 # ============================================================================
 
-# > It ensures runtime directories exist on dev
-_dev-startup:
-	@if [ "${APP_ENV}" = "dev" ]; then \
-		if [ ! -d .runtime/uploads ]; then \
-			mkdir -p .runtime/uploads && echo "🔧 Created: .runtime/uploads"; \
-		fi; \
-		if [ ! -d .runtime/content ]; then \
-			mkdir -p .runtime/content && echo "🔧 Created: .runtime/content"; \
-		fi; \
-	fi
-
 # > It reinitializes the application by recreating containers
 #
 # Options:
-#   --reset		Remove mounted node_modules, var, and vendor directories
-#             	(not applicable in production)
+#   --reset-deps	Remove mounted node_modules and vendor directories
+#             		(not applicable in production)
 #
-#   --build		Rebuild containers before starting them
+# 	--reset-cache 	Remove mounted var mounted directory
+#					(not applicable in production)
+#
+#   --build			Rebuild containers before starting them
 init *OPTIONS:
-	bash dev/bin/init/init.sh {{OPTIONS}}
+	@sh ./dev/bin/init/init.sh {{OPTIONS}}
 
 # > It runs database migrations and clears Symfony cache
 setup:

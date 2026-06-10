@@ -224,7 +224,7 @@ project root.
 After git cloning the repository, run on the root of the project:
 
 ```bash
-just init [--build] [--reset]
+just init [--build] [--reset-deps] [--reset-cache]
 ```
 
 It reinitialises the application by recreating containers and required runtime directories.
@@ -235,7 +235,8 @@ It will:
 - Start the containers again
 
 Options:
-- `--reset` (only on development): remove mounted node_modules, var, and vendor directories
+- `--reset-deps` (only on development): remove mounted node_modules and vendor directories
+- `--reset-cache` (only on development): remove mounted var directory
 - `--build`: rebuild containers before starting them
 
 After that, run:
