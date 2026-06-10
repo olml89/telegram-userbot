@@ -87,6 +87,9 @@ RUN chown -R www-data:www-data /telegram-userbot
 
 USER www-data
 
+# Pre-create internal runtime var directory to allocate supervisord.pid
+RUN mkdir -p var
+
 FROM base AS dev
 
 # Immutable dev environment
