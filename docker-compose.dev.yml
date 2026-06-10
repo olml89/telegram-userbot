@@ -109,7 +109,7 @@ services:
       - ./backend:/telegram-userbot/backend:cached
       # Runtime directories
       - ./.runtime/uploads:/telegram-userbot/backend/var/uploads:cached
-      - ./.runtime/content:/telegram-userbot/backend/var/content:cached
+      - ./.runtime/contents:/telegram-userbot/backend/var/contents:cached
 
   ######################################################################################################################
   # Gateway layer

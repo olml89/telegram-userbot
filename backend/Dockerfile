@@ -86,8 +86,8 @@ RUN addgroup -S -g ${UPLOAD_MANAGERS_GID} upload-managers &&  \
 
 USER www-data
 
-# Pre-create internal runtime var/content directory to avoid root-owned mount point for telegram-userbot-uploads
-RUN mkdir -p var/content
+# Pre-create internal runtime var/contents directory to avoid root-owned mount point for telegram-userbot-uploads
+RUN mkdir -p var/contents
 
 FROM base AS dev
 
