@@ -90,7 +90,6 @@ services:
       SUPERVISOR_USER: ${SUPERVISOR_USER}
       SUPERVISOR_PASSWORD: ${SUPERVISOR_PASSWORD}
     tty: true
-    entrypoint: [sh, bin/entrypoint.sh]
     networks:
       - telegram-userbot-network
 
