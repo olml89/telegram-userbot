@@ -1,28 +1,25 @@
+FROM alpine:latest AS init
+
+RUN apk add --no-cache acl
+
+COPY tusd/docker/tusd-init-entrypoint /usr/local/bin/tusd-init-entrypoint
+
+ENTRYPOINT ["/usr/local/bin/tusd-init-entrypoint"]
+
 FROM tusproject/tusd:latest AS dev
 
 FROM dev AS prod
 
 USER root
 
-# We create a local www-data user/group in this container with fixed UID/GID 82 to match the backend container's
-# www-data identity.
-#
-# This is required because Docker named volumes store file ownership as numeric UID/GID, not usernames.
-# If tusd and backend use different UID mappings for www-data, files written by tusd would appear owned by a
-#different user in backend, preventing backend from deleting or modifying uploaded files.
-#
-# This ensures both services treat the same files as owned by the same OS user (UID 82).
-RUN addgroup -g 82 -S www-data || true
-RUN adduser -S -D -H -u 82 -G www-data www-data
+# Add tusd to the shared upload-managers group for the telegram-userbot-uploads volume
+ARG UPLOAD_MANAGERS_GID
+RUN addgroup -S -g ${UPLOAD_MANAGERS_GID} upload-managers &&  \
+    addgroup tusd upload-managers
 
-# Create /var/uploads as the expected mount point for the shared telegram-userbot-uploads Docker volume.
-# This directory is used by tusd as the storage backend for uploaded files.
-#
-# Ownership is set to www-data (UID 82) to match the backend container owner, ensuring both services operate on the
-# same files without permission conflicts.
-#
-# Note: when the Docker volume is mounted at runtime, it will override these
-# permissions if it already exists. This step mainly affects first-time volume creation.
-RUN mkdir -p /var/uploads && chown -R www-data:www-data /var/uploads
+# Pre-create tusd default upload-dir directory to avoid root-owned mount points
+# Set ownership of the upload-dir to tusd:upload-managers
+RUN mkdir -p /srv/tusd-data/data && \
+    chown -R tusd:upload-managers /srv/tusd-data/data
 
-USER www-data
+USER tusd

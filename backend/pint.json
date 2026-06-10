@@ -10,8 +10,8 @@
         "assets",
         "config",
         "doc",
+        "docker",
         "node_modules",
-        "php-fpm",
         "templates",
         "var",
         "vendor"

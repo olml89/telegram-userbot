@@ -1,15 +1,15 @@
 #!/bin/sh
 set -eu
 
-echo "🔧 Loading pre-commit git hook..."
+# Load the pre-commit hook
 cp bin/git/hooks/pre-commit /telegram-userbot/.git/hooks/pre-commit
 
 # Install PHP dependencies
-./bin/composer/composer-install.sh application bot-runtime bot bot-manager backend dev
+composer-install application bot-runtime bot bot-manager backend dev
 
 # Install npm dependencies (in the backend context, to run frontend assets quality checks)
+echo "🔧 Installing npm dependencies..."
 npm install --prefix /telegram-userbot/backend
 
 # Maintain the container always up with tail
-echo "✅ Container up [dev]."
 tail -f /dev/null

@@ -15,15 +15,20 @@ DOCKER_COMPOSE := '-f docker-compose.yml ' + if env('APP_ENV', 'prod') == 'prod'
 }
 
 _env-dev:
-	@if [ "${APP_ENV:-}" != "dev" ]; then \
-		echo "❌ only allowed in development (APP_ENV=${APP_ENV:-unset})"; \
+	@if [ "${APP_ENV}" != "dev" ]; then \
+		echo "❌ only allowed in development (APP_ENV=${APP_ENV})"; \
 		exit 1; \
 	fi
 
 _env-prod:
-	@if [ "${APP_ENV:-}" != "prod" ]; then \
-		echo "❌ only allowed in production (APP_ENV=${APP_ENV:-unset})"; \
+	@if [ "${APP_ENV}" != "prod" ]; then \
+		echo "❌ only allowed in production (APP_ENV=${APP_ENV})"; \
 		exit 1; \
+	fi
+
+_dev-startup:
+	@if [ "${APP_ENV}" = "dev" ]; then \
+		./dev/bin/init/dev-startup.sh; \
 	fi
 
 
@@ -43,7 +48,7 @@ build *SERVICES:
 #
 # Arguments:
 #	[SERVICES...] 		The services to start (all of them if no service is specified)
-up *SERVICES:
+up *SERVICES: _dev-startup
 	@echo "🟢 Starting {{ if SERVICES == '' { 'containers' } else { SERVICES } }}..."
 	docker compose {{DOCKER_COMPOSE}} up --remove-orphans {{SERVICES}}
 
@@ -51,7 +56,7 @@ up *SERVICES:
 #
 # Arguments:
 #	[SERVICES...] 		The services to start (all of them if no service is specified)
-upd *SERVICES:
+upd *SERVICES: _dev-startup
 	@echo "🟢 [DETACHED] Starting {{ if SERVICES == '' { 'containers' } else { SERVICES } }}..."
 	docker compose {{DOCKER_COMPOSE}} up -d --remove-orphans {{SERVICES}}
 
@@ -124,15 +129,18 @@ redis-cli:
 # INSTALLATION & SETUP
 # ============================================================================
 
-# > It reinitializes the application by recreating containers and required runtime directories.
+# > It reinitializes the application by recreating containers
 #
 # Options:
-#   --reset		Remove mounted node_modules, var, and vendor directories
-#             	(not applicable in production)
+#   --reset-deps	Remove mounted node_modules and vendor directories
+#             		(not applicable in production)
 #
-#   --build		Rebuild containers before starting them
+# 	--reset-cache 	Remove mounted var mounted directory
+#					(not applicable in production)
+#
+#   --build			Rebuild containers before starting them
 init *OPTIONS:
-	bash dev/bin/init/init.sh {{OPTIONS}}
+	@sh ./dev/bin/init/init.sh {{OPTIONS}}
 
 # > It runs database migrations and clears Symfony cache
 setup:
@@ -158,9 +166,7 @@ setup:
 #
 # Arguments:
 #	BRANCH 		Git branch to deploy (default: main)
-deploy BRANCH='main':
-	@just _env-prod
-
+deploy BRANCH='main': _env-prod
 	@echo "🚀 Fetching repository (branch: {{BRANCH}})..."
 	git fetch origin
 	git checkout {{BRANCH}}
@@ -182,8 +188,7 @@ deploy BRANCH='main':
 # Options:
 #   --no-progress	Remove mounted node_modules, var, and vendor directories
 #             		(not applicable in production)
-phpstan *ARGS:
-	@just _env-dev
+phpstan *ARGS: _env-dev
 	docker compose {{DOCKER_COMPOSE}} exec -T dev ./bin/phpstan/phpstan.sh {{ARGS}}
 
 # > It runs pint
@@ -193,8 +198,7 @@ phpstan *ARGS:
 #
 # Options:
 #   --test			Only show the suggested code changes to follow the PER coding style, without applying them
-pint *ARGS:
-	@just _env-dev
+pint *ARGS: _env-dev
 	docker compose {{DOCKER_COMPOSE}} exec -T dev ./bin/pint/pint.sh {{ARGS}}
 
 # > It runs rector
@@ -204,8 +208,7 @@ pint *ARGS:
 #
 # Options:
 #   --dry-run		Only show the suggested refactorings, without applying them
-rector *ARGS:
-	@just _env-dev
+rector *ARGS: _env-dev
 	docker compose {{DOCKER_COMPOSE}} exec -T dev ./bin/rector/rector.sh {{ARGS}}
 
 # > It runs phpunit
@@ -218,16 +221,14 @@ rector *ARGS:
 # 	--debug					Enable the ability to set breakpoints on tests
 # 	--coverage-text			Add text coverage through the CLI
 #	--coverage-clover		Add clover coverage (useful during CI/CD pipelines)
-phpunit *ARGS:
-	@just _env-dev
+phpunit *ARGS: _env-dev
 	docker compose {{DOCKER_COMPOSE}} exec -T dev ./bin/phpunit/phpunit.sh {{ARGS}}
 
 # > It runs tsc
 #
 # Arguments:
 # 	[SERVICES...] 			The services to analyse (backend)
-tsc:
-	@just _env-dev
+tsc: _env-dev
 	docker compose {{DOCKER_COMPOSE}} exec -T dev ./bin/tsc/tsc.sh --noEmit
 
 # > Is the equivalent of running:
@@ -239,8 +240,7 @@ tsc:
 #
 # Arguments:
 # 	[SERVICES...] 			The services to analyse (application, bot-runtime, bot, bot-manager, backend, dev)
-code-quality *SERVICES:
-	@just _env-dev
+code-quality *SERVICES: _env-dev
 	docker compose {{DOCKER_COMPOSE}} exec -T dev ./bin/git/commit/code-quality.sh {{SERVICES}}
 
 # > It checks if the dependencies are in sync
@@ -249,8 +249,7 @@ code-quality *SERVICES:
 #
 # Arguments:
 # 	[SERVICES...] 			The services to analyse (application, bot-runtime, bot, bot-manager, backend, dev)
-check-dependencies *SERVICES:
-	@just _env-dev
+check-dependencies *SERVICES: _env-dev
 	docker compose {{DOCKER_COMPOSE}} exec -T dev ./bin/commit/dependencies/check-dependencies-sync.sh {{SERVICES}}
 
 # > It checks if staged files have CRLF line endings
@@ -262,6 +261,5 @@ check-dependencies *SERVICES:
 #   -f		Automatically convert CRLF line endings to LF and git add the modified files
 #			Force update the dev/composer.json with the missing php extensions from services
 #			Automatically update composer.lock, and add composer.json and composer.lock to the git staged files
-check-repository *ARGS:
-	@just _env-dev
+check-repository *ARGS: _env-dev
 	docker compose {{DOCKER_COMPOSE}} exec -T dev ./bin/git/commit/check-repository/check-repository.sh {{ARGS}}
