@@ -23,7 +23,7 @@ services:
   olml89\TelegramUserbot\Backend\File\Infrastructure\Symfony\File\SymfonyFileManager:
     arguments:
       $filesystem: '@filesystem'
-      $contentDirectory: '/telegram-userbot/backend/var/content'
+      $contentDirectory: '/telegram-userbot/backend/var/contents'
 
   # FFMpeg, instantiated through a static constructor factory
   FFMpeg\FFMpeg:

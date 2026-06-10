@@ -77,7 +77,7 @@
                       target-entity="olml89\TelegramUserbot\Backend\Tag\Domain\Tag"
                       cascade="persist"
                       fetch="LAZY">
-            <join-table name="content_tag">
+            <join-table name="content_tags">
                 <join-columns>
                     <join-column name="content_id"
                                  referenced-column-name="id"/>

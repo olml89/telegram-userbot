@@ -5,16 +5,16 @@ declare(strict_types=1);
 namespace olml89\TelegramUserbot\Backend\File\Application;
 
 use DateTimeInterface;
+use olml89\TelegramUserbot\Application\IsJsonSerializable;
 use olml89\TelegramUserbot\Backend\File\Domain\Audio;
 use olml89\TelegramUserbot\Backend\File\Domain\File;
 use olml89\TelegramUserbot\Backend\File\Domain\Image;
 use olml89\TelegramUserbot\Backend\File\Domain\Video;
-use olml89\TelegramUserbot\Backend\Shared\Application\Result\IsResult;
-use olml89\TelegramUserbot\Backend\Shared\Application\Result\Result;
+use olml89\TelegramUserbot\Backend\Shared\Application\Result;
 
 readonly class FileResult implements Result
 {
-    use IsResult;
+    use IsJsonSerializable;
 
     public string $publicId;
     public string $fileName;

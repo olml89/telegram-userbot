@@ -20,7 +20,7 @@ vite
 "
 
 # Mount tusd:/srv/tusd-data/data with UID:GID
-# Mount backend:/telegram-userbot/backend/var/content and backend:/telegram-userbot/backend/var/uploads with UID:GID
+# Mount backend:/telegram-userbot/backend/var/contents and backend:/telegram-userbot/backend/var/uploads with UID:GID
 RUNTIMES="
 .runtime
 backend/var
@@ -40,8 +40,8 @@ create_runtime() {
     echo "🔧 Creating runtime directories..."
 
     for RUNTIME in $RUNTIMES; do
-        if [ ! -e "${RUNTIME:?}/content" ] && mkdir -p "${RUNTIME:?}/content"; then
-            echo "Created: ${RUNTIME:?}/content ($UID:$GID)"
+        if [ ! -e "${RUNTIME:?}/contents" ] && mkdir -p "${RUNTIME:?}/contents"; then
+            echo "Created: ${RUNTIME:?}/contents ($UID:$GID)"
         fi
         if [ ! -e "${RUNTIME:?}/uploads" ] && mkdir -p "${RUNTIME:?}/uploads"; then
             echo "Created: ${RUNTIME:?}/uploads ($UID:$GID)"

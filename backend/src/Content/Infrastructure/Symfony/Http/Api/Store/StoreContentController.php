@@ -13,7 +13,7 @@ use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
 use Symfony\Component\Routing\Attribute\Route;
 
 #[Route(
-    path: '/content',
+    path: '/contents',
     name: 'api.content.store',
     defaults: ['_api' => true],
     methods: ['POST'],

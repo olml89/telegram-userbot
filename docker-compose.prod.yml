@@ -79,7 +79,7 @@ services:
     volumes:
       - telegram-userbot-assets:/telegram-userbot/backend/public/build:cached
       - telegram-userbot-uploads:/telegram-userbot/backend/var/uploads:cached
-      - telegram-userbot-content:/telegram-userbot/backend/var/content:cached
+      - telegram-userbot-contents:/telegram-userbot/backend/var/contents:cached
 
   ######################################################################################################################
   # Gateway layer
@@ -174,5 +174,5 @@ services:
 volumes:
   telegram-userbot-assets:
   telegram-userbot-uploads:
-  telegram-userbot-content:
+  telegram-userbot-contents:
   letsencrypt:

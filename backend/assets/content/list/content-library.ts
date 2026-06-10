@@ -179,7 +179,7 @@ export class ContentLibrary implements BusyAware {
 
     private async delete(content: Content): Promise<void> {
         try {
-            const nextPageContents = await this.backend.findContent(
+            const nextPageContents = await this.backend.findContents(
                 this.contentQueryFields.getValue(),
                 this.paginationComponent.getValue().nextPage(),
             );
@@ -205,7 +205,7 @@ export class ContentLibrary implements BusyAware {
         try {
             const findContentParams = this.contentQueryFields.getValue()
 
-            const paginatedContents = await this.backend.findContent(
+            const paginatedContents = await this.backend.findContents(
                 findContentParams,
                 pagination,
             );

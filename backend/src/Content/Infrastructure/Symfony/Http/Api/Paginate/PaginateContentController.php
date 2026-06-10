@@ -13,7 +13,7 @@ use Symfony\Component\HttpKernel\Attribute\MapQueryString;
 use Symfony\Component\Routing\Attribute\Route;
 
 #[Route(
-    path: '/content',
+    path: '/contents',
     name: 'api.content.paginate',
     defaults: ['_api' => true],
     methods: ['GET'],

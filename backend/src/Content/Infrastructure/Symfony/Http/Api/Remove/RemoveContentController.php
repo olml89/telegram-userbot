@@ -14,7 +14,7 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Uid\Uuid;
 
 #[Route(
-    path: '/content/{publicId}',
+    path: '/contents/{publicId}',
     name: 'api.content.remove',
     defaults: ['_api' => true],
     methods: ['DELETE'],

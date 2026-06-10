@@ -112,7 +112,7 @@ export class BackendApi {
     public async addContent(contentData: Record<string, ContentFieldValue>): Promise<Content> {
         const response = await this.fetch({
             method: 'POST',
-            endpoint: 'content',
+            endpoint: 'contents',
             body: contentData,
         });
 
@@ -146,7 +146,7 @@ export class BackendApi {
     public async deleteContent(content: Content): Promise<void> {
         const response = await this.fetch({
             method: 'DELETE',
-            endpoint: `content/${content.publicId}`,
+            endpoint: `contents/${content.publicId}`,
         });
 
         if (!response.ok) {
@@ -160,7 +160,7 @@ export class BackendApi {
     public async deleteContentFile(content: Content, file: BackendFile): Promise<void> {
         const response = await this.fetch({
             method: 'DELETE',
-            endpoint: `content/${content.publicId}/files/${file.publicId}`,
+            endpoint: `contents/${content.publicId}/files/${file.publicId}`,
         });
 
         if (!response.ok) {
@@ -185,10 +185,10 @@ export class BackendApi {
         }
     }
 
-    public async findContent(params: FindContentParams, pagination: Pagination): Promise<Paginated<Content>> {
+    public async findContents(params: FindContentParams, pagination: Pagination): Promise<Paginated<Content>> {
         const response = await this.fetch({
             method: 'GET',
-            endpoint: `content${params.build(pagination)}`,
+            endpoint: `contents${params.build(pagination)}`,
         });
 
         if (!response.ok) {
