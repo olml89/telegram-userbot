@@ -1,10 +1,8 @@
 name: Deploy
 
-# Waits for the CI workflow to complete successfully before deploying
-
 on:
-  # It doesn't have to wait for CI to run because it's already done on PRs and CI will not run on push on the main branch,
-  # since direct pushes to main are disabled.
+  # It doesn't have to wait for CI to run because it's already done on PRs (and CI will not run on push on the
+  # main branch, since direct pushes to main are disabled).
   push:
     branches:
       - main
@@ -18,16 +16,11 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    if: >
-      github.event_name == 'workflow_dispatch' ||
-      (
-        github.event.workflow_run.conclusion == 'success' &&
-        github.event.workflow_run.event == 'push'
-      )
     environment: staging
 
     env:
-      BRANCH: ${{ github.event.inputs.branch || github.event.workflow_run.head_branch || 'main' }}
+      # github.event.inputs.branch only exists on manual deployments, we fallback to main on automatic deployments
+      BRANCH: ${{ github.event.inputs.branch || 'main' }}
 
     steps:
       - name: Checkout code
@@ -51,42 +44,42 @@ jobs:
           set -euo pipefail
           
           cat << EOF > .env
-            # Host variables
-            DOMAIN=${{ vars.SSH_HOST }}
-            LETSENCRYPT_EMAIL=${{ vars.LETSENCRYPT_EMAIL }}
-            HTTPS_PORT=${{ vars.HTTPS_PORT }}
-            UPLOAD_MANAGERS_GID=${{ vars.UPLOAD_MANAGERS_GID }}
-          
-            # .env variables
-            APP_ENV=${{ vars.APP_ENV }}
-            HTTP_PORT=${{ vars.HTTP_PORT }}
-            GRAFANA_SECURITY_ADMIN_PASSWORD=${{ secrets.GRAFANA_SECURITY_ADMIN_PASSWORD }}
+          # Host variables
+          DOMAIN=${{ vars.SSH_HOST }}
+          LETSENCRYPT_EMAIL=${{ vars.LETSENCRYPT_EMAIL }}
+          HTTPS_PORT=${{ vars.HTTPS_PORT }}
+          UPLOAD_MANAGERS_GID=${{ vars.UPLOAD_MANAGERS_GID }}
+        
+          # .env variables
+          APP_ENV=${{ vars.APP_ENV }}
+          HTTP_PORT=${{ vars.HTTP_PORT }}
+          GRAFANA_SECURITY_ADMIN_PASSWORD=${{ secrets.GRAFANA_SECURITY_ADMIN_PASSWORD }}
 
-            # backend/.env variables
-            APP_DEBUG=${{ vars.APP_DEBUG }}
-            APP_SECRET=${{ secrets.APP_SECRET }}
-            BACKEND_SENTRY_DSN=${{ secrets.BACKEND_SENTRY_DSN }}
-            DB_NAME=${{ vars.DB_NAME }}
-            DB_USER=${{ vars.DB_USER }}
-            DB_PASSWORD=${{ secrets.DB_PASSWORD }}
-            APP_LIBRARY_CONTENT_PER_PAGE=${{ vars.APP_LIBRARY_CONTENT_PER_PAGE }}
+          # backend/.env variables
+          APP_DEBUG=${{ vars.APP_DEBUG }}
+          APP_SECRET=${{ secrets.APP_SECRET }}
+          BACKEND_SENTRY_DSN=${{ secrets.BACKEND_SENTRY_DSN }}
+          DB_NAME=${{ vars.DB_NAME }}
+          DB_USER=${{ vars.DB_USER }}
+          DB_PASSWORD=${{ secrets.DB_PASSWORD }}
+          APP_LIBRARY_CONTENT_PER_PAGE=${{ vars.APP_LIBRARY_CONTENT_PER_PAGE }}
 
-            # bot/.env variables
-            BOT_SENTRY_DSN=${{ secrets.BOT_SENTRY_DSN }}
-            TELEGRAM_API_ID=${{ secrets.TELEGRAM_API_ID }}
-            TELEGRAM_API_HASH=${{ secrets.TELEGRAM_API_HASH }}
-            TELEGRAM_PHONE_NUMBER=${{ secrets.TELEGRAM_PHONE_NUMBER }}
-            TELEGRAM_USERNAME=${{ secrets.TELEGRAM_USERNAME }}
+          # bot/.env variables
+          BOT_SENTRY_DSN=${{ secrets.BOT_SENTRY_DSN }}
+          TELEGRAM_API_ID=${{ secrets.TELEGRAM_API_ID }}
+          TELEGRAM_API_HASH=${{ secrets.TELEGRAM_API_HASH }}
+          TELEGRAM_PHONE_NUMBER=${{ secrets.TELEGRAM_PHONE_NUMBER }}
+          TELEGRAM_USERNAME=${{ secrets.TELEGRAM_USERNAME }}
 
-            # Export bot-manager/.env variables
-            BOT_MANAGER_SENTRY_DSN=${{ secrets.BOT_MANAGER_SENTRY_DSN }}
+          # Export bot-manager/.env variables
+          BOT_MANAGER_SENTRY_DSN=${{ secrets.BOT_MANAGER_SENTRY_DSN }}
 
-            # Export bot-runtime/.env variables
-            REDIS_STATUS_CHANNEL=${{ vars.REDIS_STATUS_CHANNEL }}
-            REDIS_PHONE_CODE_STORAGE_KEY=${{ vars.REDIS_PHONE_CODE_STORAGE_KEY }}
-            SUPERVISOR_CONFIG_PATH=${{ vars.SUPERVISOR_CONFIG_PATH }}
-            SUPERVISOR_USER=${{ vars.SUPERVISOR_USER }}
-            SUPERVISOR_PASSWORD=${{ secrets.SUPERVISOR_PASSWORD }}
+          # Export bot-runtime/.env variables
+          REDIS_STATUS_CHANNEL=${{ vars.REDIS_STATUS_CHANNEL }}
+          REDIS_PHONE_CODE_STORAGE_KEY=${{ vars.REDIS_PHONE_CODE_STORAGE_KEY }}
+          SUPERVISOR_CONFIG_PATH=${{ vars.SUPERVISOR_CONFIG_PATH }}
+          SUPERVISOR_USER=${{ vars.SUPERVISOR_USER }}
+          SUPERVISOR_PASSWORD=${{ secrets.SUPERVISOR_PASSWORD }}
           EOF
           
           # Set permissions to .env file Only the owner can read or write
