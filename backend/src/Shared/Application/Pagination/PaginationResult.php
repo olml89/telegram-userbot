@@ -6,8 +6,8 @@ namespace olml89\TelegramUserbot\Backend\Shared\Application\Pagination;
 
 use ArrayIterator;
 use IteratorAggregate;
-use olml89\TelegramUserbot\Backend\Shared\Application\Result\IsResult;
-use olml89\TelegramUserbot\Backend\Shared\Application\Result\Result;
+use olml89\TelegramUserbot\Application\IsJsonSerializable;
+use olml89\TelegramUserbot\Backend\Shared\Application\Result;
 use Traversable;
 
 /**
@@ -16,7 +16,7 @@ use Traversable;
  */
 final readonly class PaginationResult implements Result, IteratorAggregate
 {
-    use IsResult;
+    use IsJsonSerializable;
 
     /**
      * @var array<int, T>

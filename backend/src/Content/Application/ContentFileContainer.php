@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace olml89\TelegramUserbot\Backend\Content\Application;
 
+use olml89\TelegramUserbot\Application\IsJsonSerializable;
 use olml89\TelegramUserbot\Backend\Content\Domain\ContentFile\ContentFile;
 use olml89\TelegramUserbot\Backend\File\Application\FileResult;
-use olml89\TelegramUserbot\Backend\Shared\Application\Result\IsResult;
-use olml89\TelegramUserbot\Backend\Shared\Application\Result\Result;
+use olml89\TelegramUserbot\Backend\Shared\Application\Result;
 use olml89\TelegramUserbot\Backend\Shared\Domain\Collection\ReadonlyCollection;
 
 final readonly class ContentFileContainer implements Result
 {
-    use IsResult;
+    use IsJsonSerializable;
 
     public function __construct(
         public ContentFileTypeCounter $types,
