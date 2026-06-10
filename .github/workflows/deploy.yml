@@ -1,10 +1,8 @@
 name: Deploy
 
-# Waits for the CI workflow to complete successfully before deploying
-
 on:
-  # It doesn't have to wait for CI to run because it's already done on PRs and CI will not run on push on the main branch,
-  # since direct pushes to main are disabled.
+  # It doesn't have to wait for CI to run because it's already done on PRs (and CI will not run on push on the
+  # main branch, since direct pushes to main are disabled).
   push:
     branches:
       - main
@@ -18,16 +16,11 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    if: >
-      github.event_name == 'workflow_dispatch' ||
-      (
-        github.event.workflow_run.conclusion == 'success' &&
-        github.event.workflow_run.event == 'push'
-      )
     environment: staging
 
     env:
-      BRANCH: ${{ github.event.inputs.branch || github.event.workflow_run.head_branch || 'main' }}
+      # github.event.inputs.branch only exists on manual deployments, we fallback to main on automatic deployments
+      BRANCH: ${{ github.event.inputs.branch || 'main' }}
 
     steps:
       - name: Checkout code
