@@ -36,7 +36,7 @@ COPY application/ /telegram-userbot/application/
 COPY bot-runtime/ /telegram-userbot/bot-runtime/
 
 # Copy supervisord config files
-COPY bot-manager/supervisor/supervisord.conf /etc/supervisor/supervisord.conf
+COPY bot-manager/docker/supervisor/supervisord.conf /etc/supervisor/supervisord.conf
 
 # Install PHP dependencies (without require-dev, optimized autoload)
 COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
