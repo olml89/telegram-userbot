@@ -3,11 +3,9 @@ name: Deploy
 # Waits for the CI workflow to complete successfully before deploying
 
 on:
-  workflow_run:
-    workflows:
-      - CI
-    types:
-      - completed
+  # It doesn't have to wait for CI to run because it's already done on PRs and CI will not run on push on the main branch,
+  # since direct pushes to main are disabled.
+  push:
     branches:
       - main
   workflow_dispatch:  # Allows manual deployment
@@ -53,10 +51,11 @@ jobs:
           set -euo pipefail
           
           cat << EOF > .env
-            # HTTPS variables
+            # Host variables
             DOMAIN=${{ vars.SSH_HOST }}
             LETSENCRYPT_EMAIL=${{ vars.LETSENCRYPT_EMAIL }}
             HTTPS_PORT=${{ vars.HTTPS_PORT }}
+            UPLOAD_MANAGERS_GID=${{ vars.UPLOAD_MANAGERS_GID }}
           
             # .env variables
             APP_ENV=${{ vars.APP_ENV }}

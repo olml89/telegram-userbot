@@ -1,0 +1,6 @@
+#!/bin/sh
+set -eu
+
+composer-install application backend
+
+exec "$@"

@@ -8,7 +8,9 @@ services:
 
   alloy:
     container_name: telegram_userbot_alloy
-    command: [run, /etc/alloy/config.alloy]
+    command:
+      - run
+      - /etc/alloy/config.alloy
     networks:
       - telegram-userbot-grafana-network
 
@@ -17,7 +19,9 @@ services:
     depends_on:
       alloy:
         condition: service_started
-    command: [redis-server, /usr/local/etc/redis/redis.conf]
+    command:
+      - redis-server
+      - /usr/local/etc/redis/redis.conf
     networks:
       - telegram-userbot-network
 
@@ -32,7 +36,9 @@ services:
       POSTGRES_DB: ${DB_NAME}
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
-    command: [-c, config_file=/etc/postgresql/postgresql.conf]
+    command:
+      - -c
+      - config_file=/etc/postgresql/postgresql.conf
     networks:
       - telegram-userbot-network
 
@@ -56,11 +62,12 @@ services:
       timeout: 10s
       retries: 50
     environment:
-      APP_ENV: ${APP_ENV}
       SUPERVISOR_USER: ${SUPERVISOR_USER}
       SUPERVISOR_PASSWORD: ${SUPERVISOR_PASSWORD}
     tty: true
-    entrypoint: [sh, bin/entrypoint.sh]
+    command:
+      - -c
+      - /etc/supervisor/supervisord.conf
     networks:
       - telegram-userbot-network
 
@@ -80,11 +87,9 @@ services:
       timeout: 5s
       retries: 10
     environment:
-      APP_ENV: ${APP_ENV}
       SUPERVISOR_USER: ${SUPERVISOR_USER}
       SUPERVISOR_PASSWORD: ${SUPERVISOR_PASSWORD}
     tty: true
-    entrypoint: [sh, bin/entrypoint.sh]
     networks:
       - telegram-userbot-network
 
@@ -103,9 +108,6 @@ services:
       interval: 5s
       timeout: 5s
       retries: 10
-    environment:
-      APP_ENV: ${APP_ENV}
-    entrypoint: [sh, bin/entrypoint.sh]
     extra_hosts:
       - 'host.docker.internal:host-gateway'
     networks:
@@ -117,9 +119,6 @@ services:
 
   tusd:
     container_name: telegram_userbot_tusd
-    build:
-      context: .
-      dockerfile: tusd/Dockerfile
     depends_on:
       alloy:
         condition: service_started
@@ -131,7 +130,6 @@ services:
       retries: 5
     command:
       - -base-path=/tus/uploads
-      - -upload-dir=/var/uploads
       - -hooks-http=http://nginx/api/files/validation
       - -hooks-enabled-events=pre-create
       - -behind-proxy
@@ -161,7 +159,8 @@ services:
     depends_on:
       alloy:
         condition: service_started
-    command: [-config.file=/etc/loki/local-config.yaml]
+    command:
+      - -config.file=/etc/loki/local-config.yaml
     networks:
       - telegram-userbot-grafana-network
 

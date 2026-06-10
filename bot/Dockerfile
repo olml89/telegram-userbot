@@ -57,34 +57,40 @@ COPY --from=build /tmp/PrimeModule-ext/src/primemodule-ffi.h /usr/include/
 # In PHP 8.5 Opcache is already integrated into the core. Copy the Opcache configuration
 COPY docker-php-ext-opcache.ini /usr/local/etc/php/docker-php-ext-opcache.ini
 
+# Set supervisord as the entrypoint
+ENTRYPOINT ["/usr/bin/supervisord"]
+
 FROM base AS prod
 
-# Copy the bot codebase to the container
-COPY bot/ ./
+# Immutable prod environment
+ENV APP_ENV=prod
 
-# Copy application and bot-runtime codebases to the container
+# Copy the needed codebases to the container
+COPY bot/ ./
 COPY application/ /telegram-userbot/application/
 COPY bot-runtime/ /telegram-userbot/bot-runtime/
 
 # Copy supervisord config files
-COPY bot/supervisor/supervisord.conf /etc/supervisor/supervisord.conf
-COPY bot/supervisor/conf.d/*.conf /etc/supervisor/conf.d/
-
-# Install composer
-COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
+COPY bot/docker/supervisor/supervisord.conf /etc/supervisor/supervisord.conf
+COPY bot/docker/supervisor/conf.d/*.conf /etc/supervisor/conf.d/
 
 # Install PHP dependencies (without require-dev, optimized autoload)
-RUN composer install --no-dev --no-interaction --no-progress --optimize-autoloader --working-dir=/telegram-userbot/bot-runtime && \
-    composer install --no-dev --no-interaction --no-progress --optimize-autoloader
+COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
+COPY dev/bin/composer/composer-install /usr/local/bin/composer-install
 
-# Clear composer
-RUN rm /usr/local/bin/composer
+RUN composer-install bot-runtime bot && \
+    rm /usr/local/bin/composer && \
+    rm /usr/local/bin/composer-install
 
 # Set the ownership of the container to www-data
 RUN chown -R www-data:www-data /telegram-userbot
+
 USER www-data
 
 FROM base AS dev
+
+# Immutable dev environment
+ENV APP_ENV=dev
 
 # Install composer
 COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
@@ -92,9 +98,6 @@ COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
 # Install xdebug
 RUN pecl install xdebug && docker-php-ext-enable xdebug
 
-# Copy xdebug configuration file
-COPY docker-php-ext-xdebug.ini /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
-
-# Override xdebug default port with the environment provided one
-ARG XDEBUG_PORT=9003
-RUN printf '\nxdebug.client_port=%s\n' ${XDEBUG_PORT} >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
+ARG XDEBUG_PORT
+COPY docker-php-ext-xdebug.ini /tmp/docker-php-ext-xdebug.ini
+RUN sed "s|\${XDEBUG_PORT}|$XDEBUG_PORT|g" /tmp/docker-php-ext-xdebug.ini > /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini

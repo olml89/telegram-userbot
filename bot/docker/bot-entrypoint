@@ -1,0 +1,7 @@
+#!/bin/sh
+set -eu
+
+composer-install bot-runtime bot
+
+# Use exec to replace the shell and start with PID 1
+exec /usr/bin/supervisord "$@"

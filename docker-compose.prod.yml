@@ -66,12 +66,12 @@ services:
       context: .
       dockerfile: backend/Dockerfile
       target: prod
+      args:
+        UPLOAD_MANAGERS_GID: ${UPLOAD_MANAGERS_GID}
     environment:
       APP_DEBUG: ${APP_DEBUG}
       APP_SECRET: ${APP_SECRET}
       BACKEND_SENTRY_DSN: ${BACKEND_SENTRY_DSN}
-      DB_HOST: ${DB_HOST}
-      DB_PORT: ${DB_PORT}
       DB_NAME: ${DB_NAME}
       DB_USER: ${DB_USER}
       DB_PASSWORD: ${DB_PASSWORD}
@@ -85,9 +85,31 @@ services:
   # Gateway layer
   ######################################################################################################################
 
-  tusd:
+  tusd-init:
+    container_name: telegram_userbot_tusd_init
+    build:
+      context: .
+      dockerfile: tusd/Dockerfile
+      target: init
+    environment:
+      UPLOAD_MANAGERS_GID: ${UPLOAD_MANAGERS_GID}
     volumes:
-      - telegram-userbot-uploads:/var/uploads:cached
+      - telegram-userbot-uploads:/srv/tusd-data/data:cached
+
+  tusd:
+    build:
+      context: .
+      dockerfile: tusd/Dockerfile
+      target: prod
+      args:
+        UPLOAD_MANAGERS_GID: ${UPLOAD_MANAGERS_GID}
+    depends_on:
+      alloy:
+        condition: service_started
+      tusd-init:
+        condition: service_completed_successfully
+    volumes:
+      - telegram-userbot-uploads:/srv/tusd-data/data:cached
 
   nginx:
     build:
