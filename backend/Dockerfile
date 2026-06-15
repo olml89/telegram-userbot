@@ -37,22 +37,6 @@ RUN apk add --no-cache \
 # In PHP 8.5 Opcache is already integrated into the core. Copy the Opcache configuration
 COPY docker-php-ext-opcache.ini /usr/local/etc/php/docker-php-ext-opcache.ini
 
-FROM node:26-alpine AS frontend-build
-
-WORKDIR /app
-
-# Install npm packages (vite)
-COPY backend/package.json backend/package-lock.json ./
-RUN npm ci
-
-# Copy the assets and the vite config
-COPY backend/assets ./assets
-COPY backend/public ./public
-COPY backend/vite.config.js ./
-
-# Generate the assets in public/build
-RUN npm run build
-
 FROM base AS prod
 
 # Immutable prod environment
@@ -63,7 +47,7 @@ COPY backend/ ./
 COPY application/ /telegram-userbot/application/
 
 # Copy Vite manifest files used by Symfony to generate asset tags.
-COPY --from=frontend-build /app/public/build/.vite /telegram-userbot/backend/public/build/.vite
+COPY --from=telegram-userbot-frontend /app/public/build/.vite /telegram-userbot/backend/public/build/.vite
 
 # Copy production PHP-FPM configuration
 COPY backend/docker/php-fpm/www.prod.conf /usr/local/etc/php-fpm.d/www.conf

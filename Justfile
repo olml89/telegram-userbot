@@ -172,6 +172,7 @@ deploy BRANCH='main': _env-prod
 	git checkout {{BRANCH}}
 	git reset --hard origin/{{BRANCH}}
 
+	docker build -f frontend/Dockerfile -t telegram-userbot-frontend:build .
 	@just init {{ if env('APP_ENV', 'prod') == 'prod' { '--build' } else { '' } }}
 	@just setup
 
