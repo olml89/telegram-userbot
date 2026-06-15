@@ -23,14 +23,17 @@ BUILD=false
 RESET_DEPS=false
 RESET_CACHE=false
 
-SERVICES="
+NPM="
+frontend
+"
+
+COMPOSER="
 application
 bot-runtime
 bot
 bot-manager
 backend
 dev
-vite
 "
 
 for arg in "$@"; do
@@ -62,10 +65,13 @@ done
 reset_deps() {
     echo "🔧 Deleting dependency directories..."
 
-    for SERVICE in $SERVICES; do
+    for SERVICE in $NPM; do
         if [ -e "${SERVICE:?}/node_modules" ] && rm -rf "${SERVICE:?}/node_modules"; then
             echo "Deleted: ${SERVICE:?}/node_modules"
         fi
+    done
+
+    for SERVICE in $COMPOSER; do
         if [ -e "${SERVICE:?}/vendor" ] && rm -rf "${SERVICE:?}/vendor"; then
             echo "Deleted: ${SERVICE:?}/vendor"
         fi
@@ -75,7 +81,7 @@ reset_deps() {
 reset_cache() {
     echo "🔧 Deleting cache directories..."
 
-    for SERVICE in $SERVICES; do
+    for SERVICE in $NPM $COMPOSER; do
         if [ -e "${SERVICE:?}/var" ] && rm -rf "${SERVICE:?}/var"; then
             echo "Deleted: ${SERVICE:?}/var"
         fi
