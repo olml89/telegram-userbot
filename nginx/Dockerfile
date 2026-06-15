@@ -8,4 +8,4 @@ FROM dev AS prod
 COPY nginx/default.conf /etc/nginx/conf.d/default.conf
 
 # Copy built assets after the building stage
-COPY --from=telegram-userbot-frontend /app/public/build/assets /var/www/html/assets
+COPY --from=telegram-userbot-frontend:build /app/public/build/assets /var/www/html/assets

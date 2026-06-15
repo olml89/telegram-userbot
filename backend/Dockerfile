@@ -47,7 +47,7 @@ COPY backend/ ./
 COPY application/ /telegram-userbot/application/
 
 # Copy Vite manifest files used by Symfony to generate asset tags.
-COPY --from=telegram-userbot-frontend /app/public/build/.vite /telegram-userbot/backend/public/build/.vite
+COPY --from=telegram-userbot-frontend:build /app/public/build/.vite /telegram-userbot/backend/public/build/.vite
 
 # Copy production PHP-FPM configuration
 COPY backend/docker/php-fpm/www.prod.conf /usr/local/etc/php-fpm.d/www.conf
