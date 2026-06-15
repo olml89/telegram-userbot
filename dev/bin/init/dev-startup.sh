@@ -16,7 +16,7 @@ bot
 bot-manager
 backend
 dev
-vite
+frontend
 "
 
 # Mount tusd:/srv/tusd-data/data with UID:GID
