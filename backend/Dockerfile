@@ -39,7 +39,7 @@ COPY docker-php-ext-opcache.ini /usr/local/etc/php/docker-php-ext-opcache.ini
 
 FROM node:26-alpine AS assets
 
-WORKDIR /app
+WORKDIR /telegram-userbot/backend
 
 # Install npm packages (vite)
 COPY backend/package.json backend/package-lock.json ./
@@ -63,7 +63,7 @@ COPY backend/ ./
 COPY application/ /telegram-userbot/application/
 
 # Copy built assets from assets stage directly to public/build, overwriting anything there
-COPY --from=assets /app/public/build /telegram-userbot/backend/public/build
+COPY --from=assets /telegram-userbot/backend/public/build /telegram-userbot/backend/public/build
 
 # Copy production PHP-FPM configuration
 COPY backend/docker/php-fpm/www.prod.conf /usr/local/etc/php-fpm.d/www.conf
