@@ -41,7 +41,7 @@ with the MTProto API, similarly to an official app, using
     - grafana
   - [Development environment services](#development-environment-services)
     - dev
-    - vite
+    - frontend
 
 - [Build phases](#build-phases)
 
@@ -182,7 +182,7 @@ It provides testing and code linting utilities for the core services. To do so, 
 - [rector](https://getrector.com/): code refactoring tool
 - [npm](https://www.npmjs.com/): to run [tsc](https://www.typescriptlang.org/docs/handbook/compiler-options.html) and run TypeScript compiler type checks
 
-#### vite
+#### frontend
 it compiles the frontend assets using [Vite](https://vitejs.dev/) and provides Hot Module Replacement (HMR) for development.
 It installs [npm](https://www.npmjs.com/)
   

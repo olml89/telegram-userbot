@@ -124,8 +124,6 @@ services:
       dockerfile: nginx/Dockerfile
       target: prod
     restart: unless-stopped
-    volumes:
-      - telegram-userbot-assets:/telegram-userbot/backend/public/build:ro
     labels:
       - traefik.enable=true
       - traefik.http.routers.nginx.rule=Host(`${DOMAIN}`)

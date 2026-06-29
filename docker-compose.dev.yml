@@ -169,17 +169,17 @@ services:
   ######################################################################################################################
 
   # Vite server for Hot Module Replacement
-  vite:
-    container_name: telegram_userbot_vite
+  frontend:
+    container_name: telegram_userbot_frontend
     build:
       context: .
-      dockerfile: vite/Dockerfile
+      dockerfile: frontend/Dockerfile
     depends_on:
       alloy:
         condition: service_started
       backend:
         condition: service_healthy
-    entrypoint: [/usr/local/bin/vite-entrypoint]
+    entrypoint: [/usr/local/bin/frontend-entrypoint]
     command:
       - --
       - --host
@@ -193,10 +193,9 @@ services:
     user: ${UID}:${GID}
     volumes:
       # Executables
-      - ./vite/docker/vite-entrypoint:/usr/local/bin/vite-entrypoint:cached
+      - ./frontend/docker/frontend-entrypoint:/usr/local/bin/frontend-entrypoint:cached
       # Source code
       - ./backend:/telegram-userbot/backend:cached
-      - ./vite:/telegram-userbot/vite:cached
 
   # dev container to run code quality tools
   dev:
