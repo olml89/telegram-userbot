@@ -53,7 +53,7 @@ COPY --from=telegram-userbot-frontend:build /app/public/build/.vite /telegram-us
 COPY backend/docker/php-fpm/www.prod.conf /usr/local/etc/php-fpm.d/www.conf
 
 # Install PHP dependencies (without require-dev, optimized autoload)
-COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
+COPY --from=composer:2.10.1 /usr/bin/composer /usr/local/bin/composer
 COPY dev/bin/composer/composer-install /usr/local/bin/composer-install
 
 RUN composer-install application backend && \
@@ -79,7 +79,7 @@ FROM base AS dev
 ENV APP_ENV=dev
 
 # Install composer
-COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
+COPY --from=composer:2.10.1 /usr/bin/composer /usr/local/bin/composer
 
 # Install xdebug
 RUN pecl install xdebug && docker-php-ext-enable xdebug
