@@ -10,7 +10,7 @@ export default defineConfig(( configEnv: ConfigEnv): UserConfig => {
             }),
         ],
 
-        base: configEnv.command === 'build' ? '/build/' : '/',
+        base: configEnv.command === 'build' ? '/assets/' : '/',
 
         build: {
             outDir: 'public/build',
