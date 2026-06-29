@@ -45,7 +45,7 @@ RUN apk add --no-cache \
     npm
 
 # Install composer
-COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
+COPY --from=composer:2.10.1 /usr/bin/composer /usr/local/bin/composer
 
 # In PHP 8.5 Opcache is already integrated into the core. Copy the Opcache configuration
 COPY docker-php-ext-opcache.ini /usr/local/etc/php/docker-php-ext-opcache.ini
