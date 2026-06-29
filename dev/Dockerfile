@@ -36,11 +36,8 @@ RUN pecl install redis && docker-php-ext-enable redis
 RUN pecl install xdebug && docker-php-ext-enable xdebug
 
 # Install needed runtime dependencies
-# - git:            on dev: prepare the repository on the pre-commit
-#                   on CI: install dependencies on Github when dist fails due to rate limiting HTTP/2 429)
 # - nodejs, npm:    run tsc type checks
 RUN apk add --no-cache \
-    git \
     nodejs \
     npm
 
@@ -55,8 +52,10 @@ FROM base AS dev
 # Immutable dev environment
 ENV APP_ENV=dev
 
-# Configure Git to trust the repository directory (solves dubious ownership issues with mounted volumes)
-RUN git config --global --add safe.directory /telegram-userbot
+# Install git to prepare the repository on the pre-commit and configure it to trust the repository directory
+# (it solves dubious ownership issues with mounted volumes)
+RUN apk add --no-cache git && \
+    git config --global --add safe.directory /telegram-userbot
 
 # Xdebug dev config (allow coverage mode, start on trigger)
 ARG XDEBUG_PORT
