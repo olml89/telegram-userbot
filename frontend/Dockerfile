@@ -13,7 +13,7 @@ RUN npm ci
 # Copy the assets and the vite config
 COPY backend/assets ./assets
 COPY backend/public ./public
-COPY backend/vite.config.js ./
+COPY backend/vite.config.ts ./
 
 # Generate the assets in public/build
 RUN npm run build

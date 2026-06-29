@@ -1,37 +1,37 @@
-import { defineConfig } from 'vite';
+import { ConfigEnv, defineConfig, UserConfig } from 'vite';
 import symfony from 'vite-plugin-symfony';
 
-export default defineConfig(({ command }) => {
-    const isDev = command === 'serve';
-
-    return {
+export default defineConfig(( configEnv: ConfigEnv): UserConfig => {
+    const config = {
         plugins: [
             symfony({
-                input: {
-                    app: './assets/app.ts',
-                },
-                buildDirectory: 'build/.vite',
+                stimulus: false,
+                refresh: true,
             }),
         ],
-        base: isDev ? '/' : '/build/',
+
+        base: configEnv.command === 'build' ? '/build/' : '/',
+
         build: {
             outDir: 'public/build',
             emptyOutDir: true,
+            assetsDir: 'assets',
             rollupOptions: {
                 input: {
                     app: './assets/app.ts',
-                },
+                }
             },
         },
+
         server: {
             host: '0.0.0.0',
             port: 5173,
             strictPort: true,
-            origin: 'http://localhost:5173',
             hmr: {
                 host: 'localhost',
-                port: 5173,
             },
         },
     };
+
+    return config as any;
 });
