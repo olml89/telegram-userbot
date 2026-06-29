@@ -25,11 +25,8 @@ for SERVICE in "$@"; do
                 --no-interaction \
                 --no-progress \
                 --optimize-autoloader \
+                --prefer-dist \
                 --working-dir="$WORKING_DIR"
-
-            if [ "$APP_ENV" = "dev" ]; then
-                set -- "$@" --prefer-dist
-            fi
 
             if [ "$APP_ENV" = "prod" ]; then
                 set -- "$@" --no-dev
