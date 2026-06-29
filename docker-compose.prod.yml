@@ -83,6 +83,7 @@ services:
       DB_PASSWORD: ${DB_PASSWORD}
       APP_LIBRARY_CONTENT_PER_PAGE: ${APP_LIBRARY_CONTENT_PER_PAGE}
     volumes:
+      - telegram-userbot-assets:/telegram-userbot/backend/public/build:cached
       - telegram-userbot-uploads:/telegram-userbot/backend/var/uploads:cached
       - telegram-userbot-contents:/telegram-userbot/backend/var/contents:cached
 
@@ -187,6 +188,7 @@ services:
     restart: unless-stopped
 
 volumes:
+  telegram-userbot-assets:
   telegram-userbot-uploads:
   telegram-userbot-contents:
   letsencrypt:
